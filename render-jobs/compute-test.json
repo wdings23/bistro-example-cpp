@@ -1,0 +1,22 @@
+{
+    "Type": "Compute",
+    "PassType": "Compute",
+    "Shader": "compute-test.shader",
+    "Dispatch": [1, 1, 1],
+    "Attachments": [
+        {
+            "Name" : "Output",
+            "Type": "BufferOutput",
+            "Size": 1048576
+        }
+    ],
+    "ShaderResources": [
+        { 
+            "name" : "uniformData",
+            "type" : "buffer",
+            "size" : 1024,
+            "shader_stage" : "compute",
+            "usage": "uniform"
+        }
+    ]
+}

@@ -1,0 +1,40 @@
+{
+    "Type": "Graphics",
+    "PassType": "Swap Chain",
+    "Shader": "swap-chain-bistro-example.shader",
+    "Attachments": [
+        {
+            "Name" : "Output",
+            "Type": "TextureOutput",
+            "Format": "bgra8unorm"
+        },
+
+
+        {
+            "Name" : "Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Ray Traced Ambient Occlusion",
+            "ParentName": "Output"
+        }
+    ],
+    "ShaderResources": [
+    ],
+    "BlendStates": [
+        {
+            "Enabled": "True"
+        }
+    ],
+    "DepthStencilState":
+    {
+        "DepthEnable": "False",
+        "DepthWriteMask": "One",
+        "DepthFunc": "LessEqual",
+        "StencilEnable": "False"
+    },
+    "RasterState":
+    {
+        "FillMode": "Solid",
+        "CullMode": "None",
+        "FrontFace": "CounterClockwise"
+    }
+}

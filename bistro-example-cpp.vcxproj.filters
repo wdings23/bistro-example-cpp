@@ -1,0 +1,276 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="externals">
+      <UniqueIdentifier>{d1bf85a7-e16f-4581-a6a8-570d3c61d9b9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="main">
+      <UniqueIdentifier>{7cd7de7f-1e98-47c8-9229-f2f1545a7ba2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="math">
+      <UniqueIdentifier>{876ffcaa-cc35-4d7a-8f3b-aa73be7c45a0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mesh-clusters">
+      <UniqueIdentifier>{ecdc1bb8-25d2-47ad-84f5-d6caf3029a5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="mesh-clusters\DX12">
+      <UniqueIdentifier>{223f87d9-53b5-49c1-8c61-23b08e62f9bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render">
+      <UniqueIdentifier>{b0a99862-c157-45e5-96ae-49b04ed4d294}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="skeletal-animation">
+      <UniqueIdentifier>{b64c164c-a5d8-4e6b-beec-3d3e02f66adb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="utils">
+      <UniqueIdentifier>{f68a2677-3179-4431-822c-90c60e78df88}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\DX12">
+      <UniqueIdentifier>{78cd491b-bb60-4680-b5c5-a17ecdcf59f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render\Vulkan">
+      <UniqueIdentifier>{a6be4566-ffec-4c00-a41f-e3c5fb52af4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals\imgui">
+      <UniqueIdentifier>{800cb34b-5738-46a9-9b00-dbb78f2d222c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="externals\imgui\backends">
+      <UniqueIdentifier>{0cce3a53-6874-449b-842c-9a05325d391e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="externals\stb_image.h">
+      <Filter>externals</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\stb_image_write.h">
+      <Filter>externals</Filter>
+    </ClInclude>
+    <ClInclude Include="math\mat4.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\quaternion.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="math\vec.h">
+      <Filter>math</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh-clusters\cluster_tree.h">
+      <Filter>mesh-clusters</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh-clusters\mesh_cluster.h">
+      <Filter>mesh-clusters</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh-clusters\MeshClusterManager.h">
+      <Filter>mesh-clusters</Filter>
+    </ClInclude>
+    <ClInclude Include="mesh-clusters\DX12\MeshClusterManagerDX12.h">
+      <Filter>mesh-clusters\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Camera.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="skeletal-animation\AnimationManager.h">
+      <Filter>skeletal-animation</Filter>
+    </ClInclude>
+    <ClInclude Include="skeletal-animation\Joint.h">
+      <Filter>skeletal-animation</Filter>
+    </ClInclude>
+    <ClInclude Include="skeletal-animation\SkeletalAnimation.h">
+      <Filter>skeletal-animation</Filter>
+    </ClInclude>
+    <ClInclude Include="skeletal-animation\SkeletalHierarchy.h">
+      <Filter>skeletal-animation</Filter>
+    </ClInclude>
+    <ClInclude Include="skeletal-animation\Skin.h">
+      <Filter>skeletal-animation</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\JobManager.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\LogPrint.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\Utils.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\wtfassert.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Renderer.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\RenderJobSerializer.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\VertexFormat.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\DX12\RendererDX12.h">
+      <Filter>render\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="render\DX12\RenderJobSerializerDX12.h">
+      <Filter>render\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Vulkan\RendererVulkan.h">
+      <Filter>render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Vulkan\RenderJobSerializerVulkan.h">
+      <Filter>render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\image_utils.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\usleep.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\imconfig.h">
+      <Filter>externals\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\imgui.h">
+      <Filter>externals\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\imgui_internal.h">
+      <Filter>externals\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\imstb_rectpack.h">
+      <Filter>externals\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\imstb_textedit.h">
+      <Filter>externals\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\imstb_truetype.h">
+      <Filter>externals\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\backends\imgui_impl_dx12.h">
+      <Filter>externals\imgui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\backends\imgui_impl_vulkan.h">
+      <Filter>externals\imgui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="externals\imgui\backends\imgui_impl_win32.h">
+      <Filter>externals\imgui\backends</Filter>
+    </ClInclude>
+    <ClInclude Include="utils\serialize_utils.h">
+      <Filter>utils</Filter>
+    </ClInclude>
+    <ClInclude Include="render\RenderJob.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Vulkan\RenderJobVulkan.h">
+      <Filter>render\Vulkan</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main\main.cpp">
+      <Filter>main</Filter>
+    </ClCompile>
+    <ClCompile Include="math\mat4.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\quaternion.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="math\vec.cpp">
+      <Filter>math</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh-clusters\cluster_tree.cpp">
+      <Filter>mesh-clusters</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh-clusters\mesh_cluster.cpp">
+      <Filter>mesh-clusters</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh-clusters\MeshClusterManager.cpp">
+      <Filter>mesh-clusters</Filter>
+    </ClCompile>
+    <ClCompile Include="mesh-clusters\DX12\MeshClusterManagerDX12.cpp">
+      <Filter>mesh-clusters\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Camera.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="skeletal-animation\AnimationManager.cpp">
+      <Filter>skeletal-animation</Filter>
+    </ClCompile>
+    <ClCompile Include="skeletal-animation\SkeletalAnimation.cpp">
+      <Filter>skeletal-animation</Filter>
+    </ClCompile>
+    <ClCompile Include="skeletal-animation\SkeletalHierartchy.cpp">
+      <Filter>skeletal-animation</Filter>
+    </ClCompile>
+    <ClCompile Include="skeletal-animation\Skin.cpp">
+      <Filter>skeletal-animation</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\JobManager.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\LogPrint.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\Utils.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\wtfassert.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Renderer.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\RenderJobSerializer.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\DX12\RendererDX12.cpp">
+      <Filter>render\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="render\DX12\RenderJobSerializerDX12.cpp">
+      <Filter>render\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Vulkan\RendererVulkan.cpp">
+      <Filter>render\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Vulkan\RenderJobSerializerVulkan.cpp">
+      <Filter>render\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\image_utils.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\usleep.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\imgui.cpp">
+      <Filter>externals\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\imgui_demo.cpp">
+      <Filter>externals\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\imgui_draw.cpp">
+      <Filter>externals\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\imgui_tables.cpp">
+      <Filter>externals\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\imgui_widgets.cpp">
+      <Filter>externals\imgui</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\backends\imgui_impl_dx12.cpp">
+      <Filter>externals\imgui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\backends\imgui_impl_vulkan.cpp">
+      <Filter>externals\imgui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="externals\imgui\backends\imgui_impl_win32.cpp">
+      <Filter>externals\imgui\backends</Filter>
+    </ClCompile>
+    <ClCompile Include="utils\serialize_utils.cpp">
+      <Filter>utils</Filter>
+    </ClCompile>
+    <ClCompile Include="render\RenderJob.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Vulkan\RenderJobVulkan.cpp">
+      <Filter>render\Vulkan</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>

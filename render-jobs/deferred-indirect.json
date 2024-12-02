@@ -1,0 +1,63 @@
+{
+    "Type": "Graphics",
+    "PassType": "Draw Meshes",
+    "Shader": "deferred-indirect.shader",
+    "Attachments": [
+        {
+            "Name" : "World Position Output",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
+        },
+        {
+            "Name" : "Texture Coordinate Output",
+            "Type": "TextureOutput",
+            "Format": "rgba16float"
+        },
+        {
+            "Name" : "Normal Output",
+            "Type": "TextureOutput",
+            "Format": "rgba16float"
+        }
+    ],
+    "ShaderResources": [
+        {
+            "name": "materials",
+            "type": "buffer",
+            "size": 1048576,
+            "shader_stage": "all",
+            "usage": "read_write_storage"
+        },
+        {
+            "name": "meshMaterialIDs",
+            "type": "buffer",
+            "size": 1048576,
+            "shader_stage": "all",
+            "usage": "read_write_storage"
+        },
+        { 
+            "name" : "meshIndexRanges",
+            "type" : "buffer",
+            "parent_job": "Mesh Culling Compute",
+            "shader_stage" : "vertex",
+            "usage": "read_write_storage"
+        }
+    ],
+    "BlendStates": [
+        {
+            "Enabled": "True"
+        }
+    ],
+    "DepthStencilState":
+    {
+        "DepthEnable": "True",
+        "DepthWriteMask": "All",
+        "DepthFunc": "LessEqual",
+        "StencilEnable": "False"
+    },
+    "RasterState":
+    {
+        "FillMode": "Solid",
+        "CullMode": "None",
+        "FrontFace": "True"
+    }
+}

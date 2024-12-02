@@ -1,0 +1,13 @@
+{
+    "Type": "Copy",
+    "PassType": "Copy",
+    "Attachments": [
+        {
+            "Name": "Previous World Position Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Deferred Indirect Graphics",
+            "ParentName": "World Position Output",
+            "Format": "rgba32float"
+        }
+    ]
+}

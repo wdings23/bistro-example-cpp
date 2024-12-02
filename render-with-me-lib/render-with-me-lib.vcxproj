@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\render-driver\AccelerationStructure.cpp" />
+    <ClCompile Include="..\render-driver\Buffer.cpp" />
+    <ClCompile Include="..\render-driver\BufferView.cpp" />
+    <ClCompile Include="..\render-driver\CommandAllocator.cpp" />
+    <ClCompile Include="..\render-driver\CommandBuffer.cpp" />
+    <ClCompile Include="..\render-driver\CommandQueue.cpp" />
+    <ClCompile Include="..\render-driver\DescriptorHeap.cpp" />
+    <ClCompile Include="..\render-driver\DescriptorSet.cpp" />
+    <ClCompile Include="..\render-driver\Device.cpp" />
+    <ClCompile Include="..\render-driver\DX12\BufferDX12.cpp" />
+    <ClCompile Include="..\render-driver\DX12\BufferViewDX12.cpp" />
+    <ClCompile Include="..\render-driver\DX12\CommandAllocatorDX12.cpp" />
+    <ClCompile Include="..\render-driver\DX12\CommandBufferDX12.cpp" />
+    <ClCompile Include="..\render-driver\DX12\CommandQueueDX12.cpp" />
+    <ClCompile Include="..\render-driver\DX12\DescriptorHeapDX12.cpp" />
+    <ClCompile Include="..\render-driver\DX12\DescriptorSetDX12.cpp" />
+    <ClCompile Include="..\render-driver\DX12\DeviceDX12.cpp" />
+    <ClCompile Include="..\render-driver\DX12\FenceDX12.cpp" />
+    <ClCompile Include="..\render-driver\DX12\ImageDX12.cpp" />
+    <ClCompile Include="..\render-driver\DX12\ImageViewDX12.cpp" />
+    <ClCompile Include="..\render-driver\DX12\PhysicalDeviceDX12.cpp" />
+    <ClCompile Include="..\render-driver\DX12\PipelineStateDX12.cpp" />
+    <ClCompile Include="..\render-driver\DX12\RenderTargetDX12.cpp" />
+    <ClCompile Include="..\render-driver\DX12\SwapChainDX12.cpp" />
+    <ClCompile Include="..\render-driver\DX12\UtilsDX12.cpp" />
+    <ClCompile Include="..\render-driver\Fence.cpp" />
+    <ClCompile Include="..\render-driver\FrameBuffer.cpp" />
+    <ClCompile Include="..\render-driver\Image.cpp" />
+    <ClCompile Include="..\render-driver\ImageView.cpp" />
+    <ClCompile Include="..\render-driver\PhysicalDevice.cpp" />
+    <ClCompile Include="..\render-driver\PipelineState.cpp" />
+    <ClCompile Include="..\render-driver\RenderTarget.cpp" />
+    <ClCompile Include="..\render-driver\SwapChain.cpp" />
+    <ClCompile Include="..\render-driver\Vulkan\AccelerationStructureVulkan.cpp" />
+    <ClCompile Include="..\render-driver\Vulkan\BufferViewVulkan.cpp" />
+    <ClCompile Include="..\render-driver\Vulkan\BufferVulkan.cpp" />
+    <ClCompile Include="..\render-driver\Vulkan\CommandAllocatorVulkan.cpp" />
+    <ClCompile Include="..\render-driver\Vulkan\CommandBufferVulkan.cpp" />
+    <ClCompile Include="..\render-driver\Vulkan\CommandQueueVulkan.cpp" />
+    <ClCompile Include="..\render-driver\Vulkan\DescriptorHeapVulkan.cpp" />
+    <ClCompile Include="..\render-driver\Vulkan\DescriptorSetVulkan.cpp" />
+    <ClCompile Include="..\render-driver\Vulkan\DeviceVulkan.cpp" />
+    <ClCompile Include="..\render-driver\Vulkan\FenceVulkan.cpp" />
+    <ClCompile Include="..\render-driver\Vulkan\FrameBufferVulkan.cpp" />
+    <ClCompile Include="..\render-driver\Vulkan\ImageViewVulkan.cpp" />
+    <ClCompile Include="..\render-driver\Vulkan\ImageVulkan.cpp" />
+    <ClCompile Include="..\render-driver\Vulkan\PhyiscalDeviceVulkan.cpp" />
+    <ClCompile Include="..\render-driver\Vulkan\PipelineStateVulkan.cpp" />
+    <ClCompile Include="..\render-driver\Vulkan\RenderTargetVulkan.cpp" />
+    <ClCompile Include="..\render-driver\Vulkan\SwapChainVulkan.cpp" />
+    <ClCompile Include="..\render-driver\Vulkan\UtilsVulkan.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\render-driver\AccelerationStructure.h" />
+    <ClInclude Include="..\render-driver\Buffer.h" />
+    <ClInclude Include="..\render-driver\BufferView.h" />
+    <ClInclude Include="..\render-driver\CommandAllocator.h" />
+    <ClInclude Include="..\render-driver\CommandBuffer.h" />
+    <ClInclude Include="..\render-driver\CommandQueue.h" />
+    <ClInclude Include="..\render-driver\DescriptorHeap.h" />
+    <ClInclude Include="..\render-driver\DescriptorSet.h" />
+    <ClInclude Include="..\render-driver\Device.h" />
+    <ClInclude Include="..\render-driver\DX12\BufferDX12.h" />
+    <ClInclude Include="..\render-driver\DX12\BufferViewDX12.h" />
+    <ClInclude Include="..\render-driver\DX12\CommandAllocatorDX12.h" />
+    <ClInclude Include="..\render-driver\DX12\CommandBufferDX12.h" />
+    <ClInclude Include="..\render-driver\DX12\CommandQueueDX12.h" />
+    <ClInclude Include="..\render-driver\DX12\DescriptorHeapDX12.h" />
+    <ClInclude Include="..\render-driver\DX12\DescriptorSetDX12.h" />
+    <ClInclude Include="..\render-driver\DX12\DeviceDX12.h" />
+    <ClInclude Include="..\render-driver\DX12\FenceDX12.h" />
+    <ClInclude Include="..\render-driver\DX12\ImageDX12.h" />
+    <ClInclude Include="..\render-driver\DX12\ImageViewDX12.h" />
+    <ClInclude Include="..\render-driver\DX12\PhysicalDeviceDX12.h" />
+    <ClInclude Include="..\render-driver\DX12\PipelineStateDX12.h" />
+    <ClInclude Include="..\render-driver\DX12\RenderTargetDX12.h" />
+    <ClInclude Include="..\render-driver\DX12\SwapChainDX12.h" />
+    <ClInclude Include="..\render-driver\DX12\UtilsDX12.h" />
+    <ClInclude Include="..\render-driver\Fence.h" />
+    <ClInclude Include="..\render-driver\Format.h" />
+    <ClInclude Include="..\render-driver\FrameBuffer.h" />
+    <ClInclude Include="..\render-driver\Image.h" />
+    <ClInclude Include="..\render-driver\ImageView.h" />
+    <ClInclude Include="..\render-driver\Object.h" />
+    <ClInclude Include="..\render-driver\PhysicalDevice.h" />
+    <ClInclude Include="..\render-driver\PipelineInfo.h" />
+    <ClInclude Include="..\render-driver\PipelineState.h" />
+    <ClInclude Include="..\render-driver\RenderTarget.h" />
+    <ClInclude Include="..\render-driver\SwapChain.h" />
+    <ClInclude Include="..\render-driver\Utils.h" />
+    <ClInclude Include="..\render-driver\Vulkan\AccelerationStructureVulkan.h" />
+    <ClInclude Include="..\render-driver\Vulkan\BufferViewVulkan.h" />
+    <ClInclude Include="..\render-driver\Vulkan\BufferVulkan.h" />
+    <ClInclude Include="..\render-driver\Vulkan\CommandAllocatorVulkan.h" />
+    <ClInclude Include="..\render-driver\Vulkan\CommandBufferVulkan.h" />
+    <ClInclude Include="..\render-driver\Vulkan\CommandQueueVulkan.h" />
+    <ClInclude Include="..\render-driver\Vulkan\DescriptorHeapVulkan.h" />
+    <ClInclude Include="..\render-driver\Vulkan\DescriptorSetVulkan.h" />
+    <ClInclude Include="..\render-driver\Vulkan\DeviceVulkan.h" />
+    <ClInclude Include="..\render-driver\Vulkan\FenceVulkan.h" />
+    <ClInclude Include="..\render-driver\Vulkan\FrameBufferVulkan.h" />
+    <ClInclude Include="..\render-driver\Vulkan\ImageViewVulkan.h" />
+    <ClInclude Include="..\render-driver\Vulkan\ImageVulkan.h" />
+    <ClInclude Include="..\render-driver\Vulkan\PhysicalDeviceVulkan.h" />
+    <ClInclude Include="..\render-driver\Vulkan\PipelineStateVulkan.h" />
+    <ClInclude Include="..\render-driver\Vulkan\RenderTargetVulkan.h" />
+    <ClInclude Include="..\render-driver\Vulkan\SwapChainVulkan.h" />
+    <ClInclude Include="..\render-driver\Vulkan\UtilsVulkan.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <VCProjectVersion>17.0</VCProjectVersion>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectGuid>{4f7ca067-1b38-4527-9fa7-57ee58086260}</ProjectGuid>
+    <RootNamespace>renderwithmelib</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>_DEBUG;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>$(SolutionDir);$(SolutionDir)utils;$(SolutionDir)externals;D:\VulkanSDK\1.3.296.0\Include</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <AdditionalOptions>-d2FH4- %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <PreprocessorDefinitions>NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ConformanceMode>true</ConformanceMode>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <Link>
+      <SubSystem>
+      </SubSystem>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\WinPixEventRuntime.1.0.240308001\build\WinPixEventRuntime.targets" Condition="Exists('..\packages\WinPixEventRuntime.1.0.240308001\build\WinPixEventRuntime.targets')" />
+  </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\WinPixEventRuntime.1.0.240308001\build\WinPixEventRuntime.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\WinPixEventRuntime.1.0.240308001\build\WinPixEventRuntime.targets'))" />
+  </Target>
+</Project>

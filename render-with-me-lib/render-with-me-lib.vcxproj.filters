@@ -1,0 +1,339 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="render-driver">
+      <UniqueIdentifier>{d19a5b57-f284-4b05-a231-8c7d9ddcbe40}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render-driver\DX12">
+      <UniqueIdentifier>{a1491fd6-3375-44c4-ba14-3583e2946b16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="render-driver\Vulkan">
+      <UniqueIdentifier>{f5f5fef6-38e0-45f8-8e16-35b9b36f6993}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\render-driver\Buffer.cpp">
+      <Filter>render-driver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\BufferView.cpp">
+      <Filter>render-driver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\CommandAllocator.cpp">
+      <Filter>render-driver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\CommandBuffer.cpp">
+      <Filter>render-driver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\CommandQueue.cpp">
+      <Filter>render-driver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\DescriptorHeap.cpp">
+      <Filter>render-driver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\DescriptorSet.cpp">
+      <Filter>render-driver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Device.cpp">
+      <Filter>render-driver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Fence.cpp">
+      <Filter>render-driver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\FrameBuffer.cpp">
+      <Filter>render-driver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Image.cpp">
+      <Filter>render-driver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\ImageView.cpp">
+      <Filter>render-driver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\PhysicalDevice.cpp">
+      <Filter>render-driver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\PipelineState.cpp">
+      <Filter>render-driver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\RenderTarget.cpp">
+      <Filter>render-driver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\SwapChain.cpp">
+      <Filter>render-driver</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\DX12\BufferDX12.cpp">
+      <Filter>render-driver\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\DX12\BufferViewDX12.cpp">
+      <Filter>render-driver\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\DX12\CommandAllocatorDX12.cpp">
+      <Filter>render-driver\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\DX12\CommandBufferDX12.cpp">
+      <Filter>render-driver\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\DX12\CommandQueueDX12.cpp">
+      <Filter>render-driver\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\DX12\DescriptorHeapDX12.cpp">
+      <Filter>render-driver\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\DX12\DescriptorSetDX12.cpp">
+      <Filter>render-driver\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\DX12\DeviceDX12.cpp">
+      <Filter>render-driver\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\DX12\FenceDX12.cpp">
+      <Filter>render-driver\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\DX12\ImageDX12.cpp">
+      <Filter>render-driver\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\DX12\ImageViewDX12.cpp">
+      <Filter>render-driver\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\DX12\PhysicalDeviceDX12.cpp">
+      <Filter>render-driver\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\DX12\PipelineStateDX12.cpp">
+      <Filter>render-driver\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\DX12\RenderTargetDX12.cpp">
+      <Filter>render-driver\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\DX12\SwapChainDX12.cpp">
+      <Filter>render-driver\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\DX12\UtilsDX12.cpp">
+      <Filter>render-driver\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Vulkan\BufferViewVulkan.cpp">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Vulkan\BufferVulkan.cpp">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Vulkan\CommandAllocatorVulkan.cpp">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Vulkan\CommandBufferVulkan.cpp">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Vulkan\CommandQueueVulkan.cpp">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Vulkan\DescriptorHeapVulkan.cpp">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Vulkan\DescriptorSetVulkan.cpp">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Vulkan\DeviceVulkan.cpp">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Vulkan\FenceVulkan.cpp">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Vulkan\FrameBufferVulkan.cpp">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Vulkan\ImageViewVulkan.cpp">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Vulkan\ImageVulkan.cpp">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Vulkan\PhyiscalDeviceVulkan.cpp">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Vulkan\PipelineStateVulkan.cpp">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Vulkan\RenderTargetVulkan.cpp">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Vulkan\SwapChainVulkan.cpp">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Vulkan\UtilsVulkan.cpp">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\Vulkan\AccelerationStructureVulkan.cpp">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="..\render-driver\AccelerationStructure.cpp">
+      <Filter>render-driver</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\render-driver\Buffer.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\BufferView.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\CommandAllocator.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\CommandBuffer.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\CommandQueue.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\DescriptorHeap.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\DescriptorSet.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Device.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Fence.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Format.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\FrameBuffer.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Image.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\ImageView.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Object.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\PhysicalDevice.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\PipelineInfo.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\PipelineState.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\RenderTarget.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\SwapChain.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Utils.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\DX12\BufferDX12.h">
+      <Filter>render-driver\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\DX12\BufferViewDX12.h">
+      <Filter>render-driver\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\DX12\CommandAllocatorDX12.h">
+      <Filter>render-driver\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\DX12\CommandBufferDX12.h">
+      <Filter>render-driver\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\DX12\CommandQueueDX12.h">
+      <Filter>render-driver\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\DX12\DescriptorHeapDX12.h">
+      <Filter>render-driver\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\DX12\DescriptorSetDX12.h">
+      <Filter>render-driver\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\DX12\DeviceDX12.h">
+      <Filter>render-driver\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\DX12\FenceDX12.h">
+      <Filter>render-driver\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\DX12\ImageDX12.h">
+      <Filter>render-driver\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\DX12\ImageViewDX12.h">
+      <Filter>render-driver\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\DX12\PhysicalDeviceDX12.h">
+      <Filter>render-driver\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\DX12\PipelineStateDX12.h">
+      <Filter>render-driver\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\DX12\RenderTargetDX12.h">
+      <Filter>render-driver\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\DX12\SwapChainDX12.h">
+      <Filter>render-driver\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\DX12\UtilsDX12.h">
+      <Filter>render-driver\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Vulkan\BufferViewVulkan.h">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Vulkan\BufferVulkan.h">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Vulkan\CommandAllocatorVulkan.h">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Vulkan\CommandBufferVulkan.h">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Vulkan\CommandQueueVulkan.h">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Vulkan\DescriptorHeapVulkan.h">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Vulkan\DescriptorSetVulkan.h">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Vulkan\DeviceVulkan.h">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Vulkan\FenceVulkan.h">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Vulkan\FrameBufferVulkan.h">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Vulkan\ImageViewVulkan.h">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Vulkan\ImageVulkan.h">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Vulkan\PhysicalDeviceVulkan.h">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Vulkan\PipelineStateVulkan.h">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Vulkan\RenderTargetVulkan.h">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Vulkan\SwapChainVulkan.h">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Vulkan\UtilsVulkan.h">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\AccelerationStructure.h">
+      <Filter>render-driver</Filter>
+    </ClInclude>
+    <ClInclude Include="..\render-driver\Vulkan\AccelerationStructureVulkan.h">
+      <Filter>render-driver\Vulkan</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>

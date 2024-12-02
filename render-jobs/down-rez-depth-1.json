@@ -1,0 +1,43 @@
+{
+    "Type": "Graphics",
+    "PassType": "Full Triangle",
+    "Shader": "down-rez-depth-graphics.shader",
+    "Attachments": [
+        {
+            "Name" : "Down Rez Output",
+            "Type": "TextureOutput",
+            "Format": "r32float",
+            "ImageWidth": 128,
+            "ImageHeight": 128
+        },
+        
+        {
+            "Name" : "Down Rezzed Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Down Rez Depth Gather Graphics"
+            
+        }
+        
+    ],
+    "ShaderResources": [
+       
+    ],
+    "BlendStates": [
+        {
+            "Enabled": "True"
+        }
+    ],
+    "DepthStencilState":
+    {
+        "DepthEnable": "False",
+        "DepthWriteMask": "One",
+        "DepthFunc": "LessEqual",
+        "StencilEnable": "False"
+    },
+    "RasterState":
+    {
+        "FillMode": "Solid",
+        "CullMode": "None",
+        "FrontFace": "CounterClockwise"
+    }
+}

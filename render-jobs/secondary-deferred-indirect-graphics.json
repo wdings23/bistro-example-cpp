@@ -1,0 +1,68 @@
+{
+    "Type": "Graphics",
+    "PassType": "Draw Meshes",
+    "Shader": "deferred-indirect.shader",
+    "Attachments": [
+        {
+            "Name" : "World Position Output",
+            "Type": "TextureInputOutput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name" : "Texture Coordinate Output",
+            "Type": "TextureInputOutput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name" : "Normal Output",
+            "Type": "TextureInputOutput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name" : "Depth Output",
+            "Type": "TextureInputOutput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        }
+    ],
+    "ShaderResources": [
+        {
+            "name": "materials",
+            "type": "buffer",
+            "size": 1048576,
+            "shader_stage": "all",
+            "usage": "read_write_storage"
+        },
+        {
+            "name": "meshMaterialIDs",
+            "type": "buffer",
+            "size": 1048576,
+            "shader_stage": "all",
+            "usage": "read_write_storage"
+        },
+        { 
+            "name" : "meshIndexRanges",
+            "type" : "buffer",
+            "parent_job": "Mesh Culling Compute",
+            "shader_stage" : "vertex",
+            "usage": "read_write_storage"
+        }
+    ],
+    "BlendStates": [
+        {
+            "Enabled": "True"
+        }
+    ],
+    "DepthStencilState":
+    {
+        "DepthEnable": "True",
+        "DepthWriteMask": "All",
+        "DepthFunc": "LessEqual",
+        "StencilEnable": "False"
+    },
+    "RasterState":
+    {
+        "FillMode": "Solid",
+        "CullMode": "None",
+        "FrontFace": "True"
+    }
+}
