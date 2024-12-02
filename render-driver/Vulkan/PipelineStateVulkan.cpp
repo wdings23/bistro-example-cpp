@@ -287,6 +287,7 @@ namespace RenderDriver
 			std::vector<VkVertexInputAttributeDescription> aInputElementDescs;
 			for(uint32_t iMember = 0; iMember < desc.miNumVertexMembers; iMember++)
 			{
+				// skip normal (float4) entry
 				if((desc.mbFullTrianglePass || desc.mbOutputPresent) && iMember == 1)
 				{
 					iOffset += sizeof(float) * 4;

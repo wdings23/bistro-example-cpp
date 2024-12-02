@@ -1,7 +1,9 @@
 #include "mesh-culling-headers.slang"
+#include "tone-mapping-headers.slang"
 
 [[vk::binding(0, 0)]] Texture2D<float4> texture0;
-[[vk::binding(1, 0)]] SamplerState sampler;
+[[vk::binding(1, 0)]] Texture2D<float4> texture1;
+[[vk::binding(2, 0)]] SamplerState sampler;
 [[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData;
 
 struct AssembledVertex
@@ -42,6 +44,14 @@ PSOutput PSMain(VertexStageOutput in)
     out.mOutput = texture0.Sample(
         sampler,
         texCoord
+    ) * 
+    texture1.Sample(
+        sampler, 
+        texCoord
+    );
+
+    out.mOutput.xyz = ACESFilm(
+        out.mOutput.xyz
     );
 
     //float3 sdrColor = ACESFilm(out.mOutput.xyz);
@@ -53,16 +63,4 @@ PSOutput PSMain(VertexStageOutput in)
     return out;
 }
 
-/////
-float3 ACESFilm(
-    float3 radiance)
-{
-    float3 fA = 2.51f;
-    float3 fB = 0.03f;
-    float3 fC = 2.43f;
-    float3 fD = 0.59f;
-    float3 fE = 0.14f;
-
-    return saturate((radiance * (fA * radiance + fB)) / (radiance * (fC * radiance + fD) + fE));
-}
 

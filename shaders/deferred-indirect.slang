@@ -74,7 +74,7 @@ PSOutput PSMain(VertexStageOutput in)
     out.mTexCoord = float4(in.texCoord.x, in.texCoord.y, 0.0f, 1.0f);
     float3 normalXYZ = normalize(in.normal.xyz);
     out.mNormal.x = normalXYZ.x;
-    out.mNormal.y = -normalXYZ.y;
+    out.mNormal.y = normalXYZ.y;
     out.mNormal.z = normalXYZ.z;
     out.mNormal.w = 1.0f;
 

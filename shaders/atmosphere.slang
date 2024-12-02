@@ -49,14 +49,14 @@ cbuffer DefaultUniforms
 struct AssembledVertex
 {
     float4 position : POSITION;
-    float4 normal : NORMAL;
     float4 uv : TEXCOORD;
 };
 
 // Output of the fragment shader
 struct Fragment
 {
-    float4 color;
+    float4 mSkyRadiance : SV_TARGET0;
+    float4 mSunLightRadiance : SV_TARGET1;
 };
 
 // Vertex  Shader
@@ -74,7 +74,7 @@ VertexStageOutput VSMain(
     VertexStageOutput output;
 
     float4 position = assembledVertex.position;
-    float4 uv    = assembledVertex.uv;
+    float4 uv = assembledVertex.uv;
 
     output.sv_position = float4(position.xyz, 1.0f);
     output.texcoord = uv;
@@ -85,16 +85,18 @@ VertexStageOutput VSMain(
 // Fragment Shader
 
 [shader("fragment")]
-float4 PSMain(
+Fragment PSMain(
     VertexStageOutput input) : SV_Target
 {
+    Fragment ret;
+
     float3 direction = decodeOctahedronMap(input.texcoord.xy).xyz;
     float3 transmittance = float3(0.0f, 0.0f, 0.0f);
 
-    float3 lightDirection = normalize(float3(1.0f, 1.0f, 0.0f));
-    float3 lightRadiance = float3(2.0f, 2.0f, 2.0f);
+    float3 lightDirection = normalize(float3(-0.5f, 1.0f, 0.0f));
+    float3 lightRadiance = float3(1.0f, 1.0f, 1.0f);
 
-    ScatteringResult ret = IntegrateScattering(
+    ScatteringResult sky = IntegrateScattering(
         float3(0.0f, 0.0f, 0.0f),
         direction,
         PLANET_RADIUS,
@@ -102,7 +104,18 @@ float4 PSMain(
         lightRadiance,
         transmittance);
 
-    return float4(ret.radiance * ret.transmittance, 1.0f);
+    ScatteringResult sun = IntegrateScattering(
+        float3(0.0f, 0.0f, 0.0f),
+        lightDirection,
+        PLANET_RADIUS,
+        lightDirection,
+        lightRadiance,
+        transmittance);
+
+    ret.mSkyRadiance = float4(sky.radiance * sky.transmittance, 1.0f);
+    ret.mSunLightRadiance = float4(sun.radiance * sun.transmittance, 1.0f);
+
+    return ret;
 }
 
 // -------------------------------------
@@ -217,7 +230,7 @@ float3 IntegrateOpticalDepth(
 float3 Absorb(float3 opticalDepth)
 {
     // Note that Mie results in slightly more light absorption than scattering, about 10%
-    float3 ret = ((C_RAYLEIGH * opticalDepth.x) + (C_MIE * (opticalDepth.y * 1.1f)) + (C_OZONE * opticalDepth.z)) * ATMOSPHERE_DENSITY;
+    float3 ret = ((C_RAYLEIGH * opticalDepth.x) + (C_MIE * (opticalDepth.y * 1.1f)) + (C_OZONE * opticalDepth.z)) * -ATMOSPHERE_DENSITY;
     return float3(
         exp(ret.x),
         exp(ret.y),

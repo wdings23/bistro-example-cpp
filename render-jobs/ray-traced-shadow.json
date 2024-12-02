@@ -1,0 +1,22 @@
+{
+    "Type": "RayTrace",
+    "PassType": "RayTrace",
+    "Shader": "ray-trace-shadow.shader",
+    "Attachments": [
+        {
+            "Name": "Scene",
+            "Type": "AccelerationStructure"
+        },
+        {
+            "Name": "Output",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
+        },
+        {
+            "Name" : "World Position Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        }
+    ],
+    "ShaderResources": []
+}

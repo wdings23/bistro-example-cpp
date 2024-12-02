@@ -99,22 +99,13 @@
     <ClInclude Include="render\Renderer.h">
       <Filter>render</Filter>
     </ClInclude>
-    <ClInclude Include="render\RenderJobSerializer.h">
-      <Filter>render</Filter>
-    </ClInclude>
     <ClInclude Include="render\VertexFormat.h">
       <Filter>render</Filter>
     </ClInclude>
     <ClInclude Include="render\DX12\RendererDX12.h">
       <Filter>render\DX12</Filter>
     </ClInclude>
-    <ClInclude Include="render\DX12\RenderJobSerializerDX12.h">
-      <Filter>render\DX12</Filter>
-    </ClInclude>
     <ClInclude Include="render\Vulkan\RendererVulkan.h">
-      <Filter>render\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="render\Vulkan\RenderJobSerializerVulkan.h">
       <Filter>render\Vulkan</Filter>
     </ClInclude>
     <ClInclude Include="utils\image_utils.h">
@@ -154,6 +145,15 @@
       <Filter>utils</Filter>
     </ClInclude>
     <ClInclude Include="render\RenderJob.h">
+      <Filter>render</Filter>
+    </ClInclude>
+    <ClInclude Include="render\Vulkan\RenderJobSerializerVulkan.h">
+      <Filter>render\Vulkan</Filter>
+    </ClInclude>
+    <ClInclude Include="render\DX12\RenderJobSerializerDX12.h">
+      <Filter>render\DX12</Filter>
+    </ClInclude>
+    <ClInclude Include="render\RenderJobSerializer.h">
       <Filter>render</Filter>
     </ClInclude>
     <ClInclude Include="render\Vulkan\RenderJobVulkan.h">
@@ -215,19 +215,10 @@
     <ClCompile Include="render\Renderer.cpp">
       <Filter>render</Filter>
     </ClCompile>
-    <ClCompile Include="render\RenderJobSerializer.cpp">
-      <Filter>render</Filter>
-    </ClCompile>
     <ClCompile Include="render\DX12\RendererDX12.cpp">
       <Filter>render\DX12</Filter>
     </ClCompile>
-    <ClCompile Include="render\DX12\RenderJobSerializerDX12.cpp">
-      <Filter>render\DX12</Filter>
-    </ClCompile>
     <ClCompile Include="render\Vulkan\RendererVulkan.cpp">
-      <Filter>render\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="render\Vulkan\RenderJobSerializerVulkan.cpp">
       <Filter>render\Vulkan</Filter>
     </ClCompile>
     <ClCompile Include="utils\image_utils.cpp">
@@ -264,6 +255,15 @@
       <Filter>utils</Filter>
     </ClCompile>
     <ClCompile Include="render\RenderJob.cpp">
+      <Filter>render</Filter>
+    </ClCompile>
+    <ClCompile Include="render\Vulkan\RenderJobSerializerVulkan.cpp">
+      <Filter>render\Vulkan</Filter>
+    </ClCompile>
+    <ClCompile Include="render\DX12\RenderJobSerializerDX12.cpp">
+      <Filter>render\DX12</Filter>
+    </ClCompile>
+    <ClCompile Include="render\RenderJobSerializer.cpp">
       <Filter>render</Filter>
     </ClCompile>
     <ClCompile Include="render\Vulkan\RenderJobVulkan.cpp">

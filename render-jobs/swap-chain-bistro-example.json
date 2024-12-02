@@ -15,6 +15,12 @@
             "Type": "TextureInput",
             "ParentJobName": "Ray Traced Ambient Occlusion",
             "ParentName": "Output"
+        },
+        {
+            "Name" : "Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Light Composite Graphics",
+            "ParentName": "Output"
         }
     ],
     "ShaderResources": [
