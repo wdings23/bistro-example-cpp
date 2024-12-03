@@ -4,11 +4,14 @@
 #include <render-driver/Image.h>
 #include <render-driver/ImageView.h>
 #include <render-driver/Buffer.h>
+#include <render-driver/BufferView.h>
 #include <render-driver/CommandQueue.h>
 #include <render-driver/DescriptorSet.h>
+#include <render-driver/FrameBuffer.h>
 #include <render-driver/PipelineState.h>
+#include <render/render_job_enums.h>
 
-#include <render/RenderJobSerializer.h>
+#include <math/vec.h>
 
 #include <vector>
 

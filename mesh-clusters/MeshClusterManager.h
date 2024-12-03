@@ -117,10 +117,12 @@ namespace Render
 
             virtual void update();
 
+#if 0
             virtual void execIndirectDrawCommands(
                 RenderDriver::Common::CCommandBuffer& commandBuffer,
                 RenderDriver::Common::Utils::TransitionBarrierInfo& barrierInfo,
                 Render::Common::RenderJobInfo const& renderJobInfo) = 0;
+#endif // #if 0
 
             inline RenderDriver::Common::CBuffer* getIndirectDrawCommandBuffer()
             {

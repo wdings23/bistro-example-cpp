@@ -10,7 +10,6 @@
 #include <render/Vulkan/RendererVulkan.h>
 
 #include <render-driver/Vulkan/ImageViewVulkan.h>
-#include <render/Vulkan/RenderJobSerializerVulkan.h>
 
 #include <skeletal-animation/AnimationManager.h>
 #include <LogPrint.h>
@@ -823,6 +822,7 @@ static std::map<uint64_t, VkDescriptorSet>  saImageDescriptorSets;
 */
 void outputAttachmentLayout(Render::Common::CRenderer* pRenderer)
 {
+#if 0
     Render::Common::Serializer* pSerializer = pRenderer->getSerializer();
     auto const& aRenderJobs = pSerializer->getRenderJobs();
 
@@ -911,19 +911,19 @@ void outputAttachmentLayout(Render::Common::CRenderer* pRenderer)
                         imageViewDesc.miNumImages = 1;
                         PLATFORM_OBJECT_HANDLE handle = imageView->create(imageViewDesc, *(pRenderer->getDevice()));
 
-                        Render::Vulkan::Serializer* pSerializer = static_cast<Render::Vulkan::Serializer*>(pRenderer->getSerializer());
-                        RenderDriver::Vulkan::CImageView* pImageView = static_cast<RenderDriver::Vulkan::CImageView*>(pSerializer->registerObject(imageView, handle));
+                        //Render::Vulkan::Serializer* pSerializer = static_cast<Render::Vulkan::Serializer*>(pRenderer->getSerializer());
+                        //RenderDriver::Vulkan::CImageView* pImageView = static_cast<RenderDriver::Vulkan::CImageView*>(pSerializer->registerObject(imageView, handle));
 
                         // descriptor set for the image, use as input for texture id used in ImageButton
                         // pass descriptor_set to , ie.  ImGui::Image((ImTextureID)descriptor_set, ...)
-                        VkDescriptorSet descriptorSet = ImGui_ImplVulkan_AddTexture(
-                            pRendererVulkan->getNativeLinearSampler(),
-                            pImageView->getNativeImageView(),
-                            VK_IMAGE_LAYOUT_GENERAL);
+                        //VkDescriptorSet descriptorSet = ImGui_ImplVulkan_AddTexture(
+                        //    pRendererVulkan->getNativeLinearSampler(),
+                        //    pImageView->getNativeImageView(),
+                        //    VK_IMAGE_LAYOUT_GENERAL);
 
                         // save descriptor set
-                        iTexturePtr = reinterpret_cast<uint64_t>(descriptorSet);
-                        saImageDescriptorSets[iID] = std::move(descriptorSet);
+                        //iTexturePtr = reinterpret_cast<uint64_t>(descriptorSet);
+                        //saImageDescriptorSets[iID] = std::move(descriptorSet);
                     }
                     else
                     {
@@ -980,6 +980,7 @@ void outputAttachmentLayout(Render::Common::CRenderer* pRenderer)
         }
     }
     ImGui::End();
+#endif // #if 0
 }
 
 /*
@@ -987,6 +988,7 @@ void outputAttachmentLayout(Render::Common::CRenderer* pRenderer)
 */
 void inputAttachmentLayout(Render::Common::CRenderer* pRenderer)
 {
+#if 0
     Render::Common::Serializer* pSerializer = pRenderer->getSerializer();
     auto const& aRenderJobs = pSerializer->getRenderJobs();
 
@@ -1017,19 +1019,19 @@ void inputAttachmentLayout(Render::Common::CRenderer* pRenderer)
             imageViewDesc.miNumImages = 1;
             PLATFORM_OBJECT_HANDLE handle = imageView->create(imageViewDesc, *(pRenderer->getDevice()));
 
-            Render::Vulkan::Serializer* pSerializer = static_cast<Render::Vulkan::Serializer*>(pRenderer->getSerializer());
-            RenderDriver::Vulkan::CImageView* pImageView = static_cast<RenderDriver::Vulkan::CImageView*>(pSerializer->registerObject(imageView, handle));
-
-            // descriptor set for the image, use as input for texture id used in ImageButton
-            // pass descriptor_set to , ie.  ImGui::Image((ImTextureID)descriptor_set, ...)
-            VkDescriptorSet descriptorSet = ImGui_ImplVulkan_AddTexture(
-                pRendererVulkan->getNativeLinearSampler(),
-                pImageView->getNativeImageView(),
-                VK_IMAGE_LAYOUT_GENERAL);
-
-            // save descriptor set
-            iTexturePtr = reinterpret_cast<uint64_t>(descriptorSet);
-            saImageDescriptorSets[iID] = std::move(descriptorSet);
+            //Render::Vulkan::Serializer* pSerializer = static_cast<Render::Vulkan::Serializer*>(pRenderer->getSerializer());
+            //RenderDriver::Vulkan::CImageView* pImageView = static_cast<RenderDriver::Vulkan::CImageView*>(pSerializer->registerObject(imageView, handle));
+            //
+            //// descriptor set for the image, use as input for texture id used in ImageButton
+            //// pass descriptor_set to , ie.  ImGui::Image((ImTextureID)descriptor_set, ...)
+            //VkDescriptorSet descriptorSet = ImGui_ImplVulkan_AddTexture(
+            //    pRendererVulkan->getNativeLinearSampler(),
+            //    pImageView->getNativeImageView(),
+            //    VK_IMAGE_LAYOUT_GENERAL);
+            //
+            //// save descriptor set
+            //iTexturePtr = reinterpret_cast<uint64_t>(descriptorSet);
+            //saImageDescriptorSets[iID] = std::move(descriptorSet);
         }
         else
         {
@@ -1200,6 +1202,7 @@ void inputAttachmentLayout(Render::Common::CRenderer* pRenderer)
         }
     }
     ImGui::End();
+#endif // #if 0
 }
 
 /*
@@ -1333,6 +1336,7 @@ void debugOptionsLayout(Render::Common::CRenderer* pRenderer)
 */
 void renderJobStatsLayout(Render::Common::CRenderer* pRenderer)
 {
+#if 0
     Render::Common::Serializer* pSerializer = pRenderer->getSerializer();
     auto const& aRenderJobs = pSerializer->getRenderJobs();
 
@@ -1368,6 +1372,7 @@ void renderJobStatsLayout(Render::Common::CRenderer* pRenderer)
         ImGui::LabelText("", renderJobTime.str().c_str());
     }
     ImGui::End();
+#endif // #if 0
 }
 
 /*

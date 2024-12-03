@@ -1,6 +1,7 @@
 #include <render/DX12/RendererDX12.h>
 
 #include <render-driver/DX12/DeviceDX12.h>
+#include <render-driver/DX12/BufferDX12.h>
 #include <render-driver/DX12/PhysicalDeviceDX12.h>
 #include <render-driver/DX12/SwapChainDX12.h>
 #include <render-driver/DX12/UtilsDX12.h>
@@ -360,7 +361,7 @@ namespace Render
 
             RenderDriver::DX12::CDevice* nativeDevice = static_cast<RenderDriver::DX12::CDevice*>(mpDevice.get());
 
-            mpSerializer = std::make_unique<Render::DX12::Serializer>();
+            //mpSerializer = std::make_unique<Render::DX12::Serializer>();
 
 #if defined(ENABLE_DEBUG_LAYER) && !defined(USE_AFTERMATH)
             ComPtr<ID3D12Debug3> spDebugController;
@@ -618,7 +619,7 @@ namespace Render
                 /* .miVertexDataSize    */          1 << 27,
                 /* .miInidexDataSize    */          1 << 27,
             };
-            initializeTotalVertexAndIndexBuffer(initializeVBDesc);
+            //initializeTotalVertexAndIndexBuffer(initializeVBDesc);
 
             mHWND = dx12Desc.mHWND;
 
@@ -750,6 +751,7 @@ namespace Render
             mRenderDriverType = Render::Common::RenderDriverType::DX12;
         }
 
+#if 0
         /*
         **
         */
@@ -763,33 +765,7 @@ namespace Render
         void CRenderer::platformEndRenderPass(Render::Common::RenderPassDescriptor& renderPassDesc)
         {
         }
-
-        /*
-        **
-        */
-        void CRenderer::platformCreateVertexIndexBufferViews(uint32_t iVertexBufferSize, uint32_t iIndexBufferSize)
-        {
-            char szOutput[256];
-            sprintf(szOutput, "create vertex and index buffer views vertex size: %d index size: %d\n",
-                iVertexBufferSize,
-                iVertexBufferSize);
-
-            PIXBeginEvent(
-                0xff0000,
-                szOutput);
-
-            // d3d12 vertex buffer view
-            mTotalVertexBufferInputView.BufferLocation = static_cast<ID3D12Resource*>(mpTotalMeshesVertexBuffer->getNativeBuffer())->GetGPUVirtualAddress();
-            mTotalVertexBufferInputView.SizeInBytes = static_cast<uint32_t>(iVertexBufferSize);
-            mTotalVertexBufferInputView.StrideInBytes = sizeof(Render::Common::VertexFormat);
-
-            // d3d12 index buffer view
-            mTotalIndexBufferView.BufferLocation = static_cast<ID3D12Resource*>(mpTotalMeshesIndexBuffer->getNativeBuffer())->GetGPUVirtualAddress();
-            mTotalIndexBufferView.SizeInBytes = static_cast<uint32_t>(iIndexBufferSize);
-            mTotalIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
-
-            PIXEndEvent();
-        }
+#endif // #if 0
 
         /*
         **
@@ -864,143 +840,6 @@ namespace Render
                 static_cast<ID3D12CommandQueue*>(mpCopyCommandQueue->getNativeCommandQueue())
 #endif // GPU_PIX_MARKER
             );
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformUploadResourceDataImmediate(
-            RenderDriver::Common::CBuffer& buffer,
-            void* pRawSrcData,
-            uint64_t iDataSize,
-            uint64_t iDestDataOffset)
-        {
-            char szOutput[256];
-            sprintf(szOutput, "Upload Resource %s (%lld bytes)\n",
-                buffer.getID().c_str(),
-                iDataSize);
-
-            PIXBeginEvent(
-#if defined(GPU_PIX_MARKER)
-                static_cast<ID3D12CommandQueue*>(mpCopyCommandQueue->getNativeCommandQueue()),
-#endif // GPU_PIX_MARKER
-                0xff0000,
-                szOutput);
-
-            mapUploadBuffers.emplace_back(std::make_unique<RenderDriver::DX12::CBuffer>());
-
-            RenderDriver::DX12::CBuffer& uploadBuffer = static_cast<RenderDriver::DX12::CBuffer&>(*mapUploadBuffers.back());
-            RenderDriver::Common::BufferDescriptor uploadBufferDesc = {};
-
-            uploadBufferDesc.mHeapType = RenderDriver::Common::HeapType::Upload;
-            uploadBufferDesc.miSize = iDataSize;
-            uploadBuffer.create(uploadBufferDesc, *mpDevice);
-            uploadBuffer.setID("UploadBuffer");
-
-            uint8_t* pData = nullptr;
-            HRESULT hr = static_cast<ID3D12Resource*>(uploadBuffer.getNativeBuffer())->Map(0, nullptr, reinterpret_cast<void**>(&pData));
-            assert(SUCCEEDED(hr));
-            memcpy(pData, pRawSrcData, iDataSize);
-            static_cast<ID3D12Resource*>(uploadBuffer.getNativeBuffer())->Unmap(0, nullptr);
-
-            WTFASSERT(iDestDataOffset < UINT32_MAX, "Invalid destination data offset: %d\n", iDestDataOffset);
-
-            static_cast<ID3D12GraphicsCommandList*>(mpUploadCommandBuffer->getNativeCommandList())->CopyBufferRegion(
-                static_cast<ID3D12Resource*>(buffer.getNativeBuffer()),
-                iDestDataOffset,
-                static_cast<ID3D12Resource*>(uploadBuffer.getNativeBuffer()),
-                0,
-                uploadBufferDesc.miSize);
-
-#if defined(_DEBUG)
-            mpUploadCommandBuffer->addCommand(RenderDriver::Common::CCommandBuffer::COMMAND_COPY);
-#endif // DEBUG
-
-            mpUploadCommandBuffer->close();
-            mpCopyCommandQueue->execCommandBuffer(*mpUploadCommandBuffer, *mpDevice);
-
-            // wait until done
-            RenderDriver::Common::PlaceFenceDescriptor placeFenceDesc = {};
-            placeFenceDesc.mpCommandQueue = mpCopyCommandQueue.get();
-            placeFenceDesc.miFenceValue = ++miCopyCommandFenceValue;
-            mpUploadFence->place(placeFenceDesc);
-            mpUploadFence->waitCPU(UINT64_MAX);
-
-            mpUploadCommandAllocator->reset();
-            mpUploadCommandBuffer->reset();
-
-            PIXEndEvent(
-#if defined(GPU_PIX_MARKER)
-                static_cast<ID3D12CommandQueue*>(mpCopyCommandQueue->getNativeCommandQueue())
-#endif // GPU_PIX_MARKER
-            );
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformUpdateMeshDataFromGPUBuffer(Render::Common::MeshDataUpdateFromGPUDescriptor const& desc)
-        {
-            RenderDriver::DX12::CBuffer* pDX12SrcBuffer = static_cast<RenderDriver::DX12::CBuffer*>(desc.mpSrcBuffer);
-
-            RenderDriver::DX12::CCommandBuffer& commandBuffer = static_cast<RenderDriver::DX12::CCommandBuffer&>(*desc.mpCommandBuffer);
-
-            RenderDriver::DX12::Utils::transitionBarrier(
-                *pDX12SrcBuffer,
-                commandBuffer,
-                RenderDriver::Common::ResourceStateFlagBits::UnorderedAccess,
-                RenderDriver::Common::ResourceStateFlagBits::CopySource);
-
-            commandBuffer.close();
-            mpComputeCommandQueue->execCommandBuffer(commandBuffer, *mpDevice);
-            commandBuffer.reset();
-
-            static_cast<ID3D12GraphicsCommandList*>(mpUploadCommandBuffer->getNativeCommandList())->CopyBufferRegion(
-                static_cast<ID3D12Resource*>(mpTotalMeshesVertexBuffer->getNativeBuffer()),
-                desc.miDestDataOffset,
-                static_cast<ID3D12Resource*>(pDX12SrcBuffer->getNativeBuffer()),
-                desc.miSrcDataOffset,
-                desc.miDataSize);
-
-#if defined(_DEBUG)
-            mpUploadCommandBuffer->addCommand(RenderDriver::Common::CCommandBuffer::COMMAND_COPY);
-#endif // DEBUG
-
-            RenderDriver::DX12::Utils::transitionBarrier(
-                *pDX12SrcBuffer,
-                commandBuffer,
-                RenderDriver::Common::ResourceStateFlagBits::CopySource,
-                RenderDriver::Common::ResourceStateFlagBits::UnorderedAccess);
-
-            commandBuffer.close();
-            mpComputeCommandQueue->execCommandBuffer(commandBuffer, *mpDevice);
-            commandBuffer.reset();
-
-            // exec command buffer
-            mpUploadCommandBuffer->close();
-            mpCopyCommandQueue->execCommandBuffer(*mpUploadCommandBuffer, *mpDevice);
-
-            // wait until done
-            RenderDriver::Common::PlaceFenceDescriptor placeFenceDesc = {};
-            placeFenceDesc.mpCommandQueue = mpCopyCommandQueue.get();
-            placeFenceDesc.miFenceValue = miCopyCommandFenceValue++;
-            mpUploadFence->place(placeFenceDesc);
-            mpUploadFence->waitCPU(UINT64_MAX);
-
-            mpUploadCommandAllocator->reset();
-            mpUploadCommandBuffer->reset();
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformSetPipelineState(
-            RenderDriver::Common::CPipelineState& pipelineState,
-            RenderDriver::Common::CCommandBuffer& commandBuffer)
-        {
-            ID3D12PipelineState* dx12PipelineState = static_cast<ID3D12PipelineState*>(pipelineState.getNativePipelineState());
-            ID3D12GraphicsCommandList* dx12CommandList = static_cast<ID3D12GraphicsCommandList*>(commandBuffer.getNativeCommandList());
-            dx12CommandList->SetPipelineState(dx12PipelineState);
         }
 
         /*
@@ -1141,8 +980,8 @@ namespace Render
                 {
                     if(shaderResourceInfo.maHandles[iTripleBufferIndex] > 0)
                     {
-                        RenderDriver::Common::CBuffer& buffer = *mpSerializer->getBuffer(shaderResourceInfo.maHandles[iTripleBufferIndex]).get();
-                        gpuAddress = static_cast<ID3D12Resource*>(buffer.getNativeBuffer())->GetGPUVirtualAddress();
+                        //RenderDriver::Common::CBuffer& buffer = *mpSerializer->getBuffer(shaderResourceInfo.maHandles[iTripleBufferIndex]).get();
+                        //gpuAddress = static_cast<ID3D12Resource*>(buffer.getNativeBuffer())->GetGPUVirtualAddress();
                     }
                     else
                     {
@@ -1238,91 +1077,6 @@ namespace Render
         /*
         **
         */
-        void CRenderer::platformSwapChainClear(
-            RenderDriver::Common::CSwapChain* pSwapChain,
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            uint32_t iTripleBufferIndex,
-            float const* afClearColor)
-        {
-            RenderDriver::Common::ClearRenderTargetDescriptor clearDesc;
-            clearDesc.mafClearColor[0] = 0.0f;
-            clearDesc.mafClearColor[1] = 0.0f;
-            clearDesc.mafClearColor[2] = 0.3f;
-            clearDesc.mafClearColor[3] = 0.0f;
-            clearDesc.miFrameIndex = iTripleBufferIndex;
-            clearDesc.mpCommandBuffer = &commandBuffer;
-            pSwapChain->clear(clearDesc);
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformSetVertexAndIndexBuffers(
-            RenderDriver::Common::CCommandBuffer& commandBuffer)
-        {
-            ID3D12GraphicsCommandList* dx12CommandList = static_cast<ID3D12GraphicsCommandList*>(commandBuffer.getNativeCommandList());
-            dx12CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-            dx12CommandList->IASetVertexBuffers(0, 1, &mTotalVertexBufferInputView);
-            dx12CommandList->IASetIndexBuffer(&mTotalIndexBufferView);
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformSetRenderTargetAndClear(
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            std::vector<RenderDriver::Common::CDescriptorHeap*>& apRenderTargetDescriptorHeaps,
-            std::vector<RenderDriver::Common::CDescriptorHeap*>& apDepthStencilDescriptorHeaps,
-            uint32_t iNumRenderTargetAttachments,
-            float const* afClearColor,
-            std::vector<bool> const& abClear)
-        {
-            std::vector<D3D12_CPU_DESCRIPTOR_HANDLE> aDescriptorHandles(iNumRenderTargetAttachments);
-            for(uint32_t i = 0; i < iNumRenderTargetAttachments; i++)
-            {   
-                aDescriptorHandles[i] = static_cast<ID3D12DescriptorHeap*>(apRenderTargetDescriptorHeaps[i]->getNativeDescriptorHeap())->GetCPUDescriptorHandleForHeapStart();
-            }
-
-            D3D12_CPU_DESCRIPTOR_HANDLE depthStencilRTDescriptorHeapHandle = { 0 };
-            if(apDepthStencilDescriptorHeaps.size() > 0)
-            {
-                depthStencilRTDescriptorHeapHandle = static_cast<ID3D12DescriptorHeap*>(apDepthStencilDescriptorHeaps[0]->getNativeDescriptorHeap())->GetCPUDescriptorHandleForHeapStart();
-            }
-
-            ID3D12GraphicsCommandList* dx12CommandList = static_cast<ID3D12GraphicsCommandList*>(commandBuffer.getNativeCommandList());
-            dx12CommandList->OMSetRenderTargets(
-                iNumRenderTargetAttachments,
-                aDescriptorHandles.data(),
-                false,
-                depthStencilRTDescriptorHeapHandle.ptr == 0 ? nullptr : &depthStencilRTDescriptorHeapHandle);
-
-            for(uint32_t i = 0; i < iNumRenderTargetAttachments; i++)
-            {
-                if(abClear[i])
-                {
-                    dx12CommandList->ClearRenderTargetView(
-                        aDescriptorHandles[i],
-                        afClearColor,
-                        0,
-                        nullptr);
-                }
-            }
-
-            if(apDepthStencilDescriptorHeaps.size() > 0)
-            {
-                dx12CommandList->ClearDepthStencilView(
-                    depthStencilRTDescriptorHeapHandle,
-                    D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL,
-                    1.0f,
-                    0,
-                    0,
-                    nullptr);
-            }
-        }
-
-        /*
-        **
-        */
         void CRenderer::platformSetRenderTargetAndClear2(
             RenderDriver::Common::CCommandBuffer& commandBuffer,
             std::vector<RenderDriver::Common::CDescriptorHeap*>& apRenderTargetDescriptorHeaps,
@@ -1375,63 +1129,6 @@ namespace Render
                         nullptr);
                 }
             }
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformExecuteIndirectDrawMeshInstances(
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            uint32_t iDrawListAddress,
-            uint32_t iDrawCountBufferOffset,
-            Render::Common::PassType passType,
-            RenderDriver::Common::CBuffer* pIndirectDrawMeshList,
-            std::string const& renderJobName)
-        {
-            WTFASSERT(0, "Implement me");
-           
-
-            //ID3D12GraphicsCommandList* dx12CommandList = static_cast<ID3D12GraphicsCommandList*>(commandBuffer.getNativeCommandList());
-            //dx12CommandList->ExecuteIndirect(
-            //    pCommandSignature,
-            //    iNumInstances,
-            //    static_cast<ID3D12Resource*>(pIndirectDrawMeshList->getNativeBuffer()),
-            //    iDrawListAddress + sizeof(uint32_t) + iDrawCountBufferOffset,
-            //    static_cast<ID3D12Resource*>(pIndirectDrawMeshList->getNativeBuffer()),
-            //    iDrawListAddress);
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformExecuteIndirectCompute(
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            uint32_t iRenderJobIndirectCommandAddress,
-            RenderDriver::Common::CBuffer* pIndirectComputeList,
-            std::string const& renderJobName)
-        {
-            WTFASSERT(0, "Implement me");
-
-            //ID3D12GraphicsCommandList* commandList = static_cast<ID3D12GraphicsCommandList*>(commandBuffer.getNativeCommandList());
-            //PIXBeginEvent(
-            //    //commandList,
-            //    0xffff8000, 
-            //    renderJobName.c_str());
-            //
-            //commandList->ExecuteIndirect(
-            //    pCommandSignature,
-            //    iNumInstances,
-            //    static_cast<ID3D12Resource*>(pIndirectComputeList->getNativeBuffer()),
-            //    iRenderJobIndirectCommandAddress + sizeof(uint32_t) + sizeof(uint32_t),
-            //    static_cast<ID3D12Resource*>(pIndirectComputeList->getNativeBuffer()),
-            //    iRenderJobIndirectCommandAddress);
-            //
-            //PIXEndEvent(
-            ////    commandList
-            //);
-            //
-            //HRESULT hr = commandList->Close();
-            //assert(SUCCEEDED(hr));
         }
 
         /*
@@ -1617,58 +1314,6 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
         /*
         **
         */
-        void CRenderer::platformCopyBufferToCPUMemory2(
-            RenderDriver::Common::CBuffer* pGPUBuffer,
-            void* pCPUBuffer,
-            uint64_t iSrcOffset,
-            uint64_t iDataSize,
-            RenderDriver::Common::CBuffer* pTempBuffer)
-        {
-            mpUploadCommandBuffer->close();
-            mpCopyCommandQueue->execCommandBuffer(*mpUploadCommandBuffer, *mpDevice);
-            mpUploadCommandBuffer->reset();
-
-            RenderDriver::DX12::CBuffer* pBufferDX12 = static_cast<RenderDriver::DX12::CBuffer*>(pGPUBuffer);
-            static_cast<ID3D12GraphicsCommandList*>(mpUploadCommandBuffer->getNativeCommandList())->CopyBufferRegion(
-                static_cast<ID3D12Resource*>(pTempBuffer->getNativeBuffer()),
-                0,
-                static_cast<ID3D12Resource*>(pBufferDX12->getNativeBuffer()),
-                iSrcOffset,
-                iDataSize);
-
-#if defined(_DEBUG)
-            mpUploadCommandBuffer->addCommand(RenderDriver::Common::CCommandBuffer::COMMAND_COPY);
-#endif // DEBUG
-
-            // exec command buffer
-            mpUploadCommandBuffer->close();
-            mpCopyCommandQueue->execCommandBuffer(*mpUploadCommandBuffer, *mpDevice);
-
-            // wait until done
-            {
-                RenderDriver::Common::PlaceFenceDescriptor placeFenceDesc = {};
-                placeFenceDesc.mpCommandQueue = mpCopyCommandQueue.get();
-                placeFenceDesc.miFenceValue = miCopyCommandFenceValue++;
-                mpUploadFence->place(placeFenceDesc);
-                mpUploadFence->waitCPU(UINT64_MAX);
-            }
-
-            D3D12_RANGE readbackRange = { 0, iDataSize };
-            void* pData = nullptr;
-            static_cast<ID3D12Resource*>(pTempBuffer->getNativeBuffer())->Map(0, &readbackRange, &pData);
-            WTFASSERT(pData, "Error mapping GPU data to CPU\n");
-
-            memcpy(pCPUBuffer, pData, iDataSize);
-
-            D3D12_RANGE emptyRange = { 0, 0 };
-            static_cast<ID3D12Resource*>(pTempBuffer->getNativeBuffer())->Unmap(0, &emptyRange);
-
-            mpUploadCommandBuffer->reset();
-        }
-
-        /*
-        **
-        */
         void CRenderer::platformUpdateTextureInArray(
             RenderDriver::Common::CImage& image,
             void const* pRawSrcData,
@@ -1751,105 +1396,6 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
         /*
         **
         */
-        void CRenderer::platformCopyImage(
-            RenderDriver::Common::CImage& destImage,
-            RenderDriver::Common::CImage& srcImage,
-            bool bSrcWritable)
-        {
-            RenderDriver::DX12::CImage& destImageDX12 = static_cast<RenderDriver::DX12::CImage&>(destImage);
-            RenderDriver::DX12::CImage& srcImageDX12 = static_cast<RenderDriver::DX12::CImage&>(srcImage);
-            
-            ID3D12Resource* pSrcImageDX12 = static_cast<ID3D12Resource*>(srcImageDX12.getNativeImage());
-            ID3D12Resource* pDestImageDX12 = static_cast<ID3D12Resource*>(destImageDX12.getNativeImage());
-
-            WTFASSERT(pSrcImageDX12->GetDesc().Width == pDestImageDX12->GetDesc().Width, "Width do not match src \"%s\" %d != dest \"%s\" %d", 
-                srcImage.getID().c_str(),
-                pSrcImageDX12->GetDesc().Width, 
-                destImage.getID().c_str(),
-                pDestImageDX12->GetDesc().Width);
-            WTFASSERT(pSrcImageDX12->GetDesc().Height == pDestImageDX12->GetDesc().Height, "Height do not match src \"%s\" %d != dest \"%s\" %d",
-                srcImage.getID().c_str(),
-                pSrcImageDX12->GetDesc().Height,
-                destImage.getID().c_str(),
-                pDestImageDX12->GetDesc().Height);
-
-            
-
-            D3D12_TEXTURE_COPY_LOCATION srcCopyLocation =
-            {
-                pSrcImageDX12,
-                D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,
-                0
-            };
-            
-            D3D12_TEXTURE_COPY_LOCATION destCopyLocation =
-            {
-                pDestImageDX12,             //ID3D12Resource* pResource;
-                D3D12_TEXTURE_COPY_TYPE_SUBRESOURCE_INDEX,      // D3D12_TEXTURE_COPY_TYPE Type;
-                0
-            };
-            
-            ID3D12GraphicsCommandList* pCommandList = static_cast<ID3D12GraphicsCommandList*>(mpUploadCommandBuffer->getNativeCommandList());
-
-            //if(bSrcWritable)
-            //{
-            //    D3D12_RESOURCE_BARRIER barrier = {};
-            //    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-            //    barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-            //    barrier.Transition.pResource = pSrcImageDX12;
-            //    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
-            //    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_COMMON;
-            //    barrier.Transition.Subresource = 0;
-            //    pCommandList->ResourceBarrier(1, &barrier);
-            //
-            //    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON;
-            //    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_SOURCE;
-            //    barrier.Transition.Subresource = 0;
-            //    pCommandList->ResourceBarrier(1, &barrier);
-            //}
-            //else
-            //{
-            //    D3D12_RESOURCE_BARRIER barrier = {};
-            //    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-            //    barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-            //    barrier.Transition.pResource = pSrcImageDX12;
-            //    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COMMON;
-            //    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_COPY_SOURCE;
-            //    barrier.Transition.Subresource = 0;
-            //    pCommandList->ResourceBarrier(1, &barrier);
-            //}
-
-            pCommandList->CopyResource(pDestImageDX12, pSrcImageDX12);
-
-            //pCommandList->CopyTextureRegion(
-            //    &destCopyLocation,
-            //    0,
-            //    0,
-            //    0,
-            //    &srcCopyLocation,
-            //    nullptr);
-
-            //if(bSrcWritable)
-            //{
-            //    D3D12_RESOURCE_BARRIER barrier = {};
-            //    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
-            //    barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_END_ONLY;
-            //    barrier.Transition.pResource = pSrcImageDX12;
-            //    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_COPY_SOURCE;
-            //    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_UNORDERED_ACCESS;
-            //    barrier.Transition.Subresource = 0;
-            //    pCommandList->ResourceBarrier(1, &barrier);
-            //
-            //    D3D12_RESOURCE_BARRIER uavBarrier = {};
-            //    uavBarrier.Type = D3D12_RESOURCE_BARRIER_TYPE_UAV;
-            //    uavBarrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
-            //    pCommandList->ResourceBarrier(1, &uavBarrier);
-            //}
-        }
-
-        /*
-        **
-        */
         void CRenderer::platformCopyImage2(
             RenderDriver::Common::CImage& destImage,
             RenderDriver::Common::CImage& srcImage,
@@ -1892,100 +1438,6 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
             //ID3D12GraphicsCommandList* pCommandList = static_cast<ID3D12GraphicsCommandList*>(mpUploadCommandBuffer->getNativeCommandList());
             ID3D12GraphicsCommandList* pCommandList = static_cast<ID3D12GraphicsCommandList*>(commandBuffer.getNativeCommandList());
             pCommandList->CopyResource(pDestImageDX12, pSrcImageDX12);
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformCopyImageToBuffer(
-            RenderDriver::Common::CBuffer& destBuffer,
-            RenderDriver::Common::CImage& srcImage,
-            uint32_t iDestOffset)
-        {
-            auto const& desc = srcImage.getDescriptor();
-            uint32_t iNumChannels = SerializeUtils::Common::getNumComponents(desc.mFormat);
-            uint32_t iChannelSize = SerializeUtils::Common::getBaseComponentSize(desc.mFormat);
-
-            RenderDriver::DX12::Utils::copyTextureToBuffer(
-                srcImage,
-                destBuffer,
-                *mpUploadCommandBuffer,
-                iDestOffset,
-                desc.miWidth,
-                desc.miHeight,
-                iNumChannels,
-                iChannelSize);
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformCopyImageToBuffer2(
-            RenderDriver::Common::CBuffer& destBuffer,
-            RenderDriver::Common::CImage& srcImage,
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            uint32_t iDestOffset)
-        {
-            auto const& desc = srcImage.getDescriptor();
-            uint32_t iNumChannels = SerializeUtils::Common::getNumComponents(desc.mFormat);
-            uint32_t iChannelSize = SerializeUtils::Common::getBaseComponentSize(desc.mFormat);
-
-            RenderDriver::DX12::Utils::copyTextureToBuffer(
-                srcImage,
-                destBuffer,
-                commandBuffer,
-                iDestOffset,
-                desc.miWidth,
-                desc.miHeight,
-                iNumChannels,
-                iChannelSize);
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformCopyBufferToImage(
-            RenderDriver::Common::CImage& destImage,
-            RenderDriver::Common::CBuffer& srcBuffer,
-            uint32_t iSrcOffset)
-        {
-            auto const& desc = destImage.getDescriptor();
-            uint32_t iNumChannels = SerializeUtils::Common::getNumComponents(desc.mFormat);
-            uint32_t iChannelSize = SerializeUtils::Common::getBaseComponentSize(desc.mFormat);
-
-            RenderDriver::DX12::Utils::copyBufferToTexture(
-                srcBuffer,
-                destImage,
-                *mpUploadCommandBuffer,
-                iSrcOffset,
-                desc.miWidth,
-                desc.miHeight,
-                iNumChannels,
-                iChannelSize);
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformCopyBufferToImage2(
-            RenderDriver::Common::CImage& destImage,
-            RenderDriver::Common::CBuffer& srcBuffer,
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            uint32_t iSrcOffset)
-        {
-            auto const& desc = destImage.getDescriptor();
-            uint32_t iNumChannels = SerializeUtils::Common::getNumComponents(desc.mFormat);
-            uint32_t iChannelSize = SerializeUtils::Common::getBaseComponentSize(desc.mFormat);
-
-            RenderDriver::DX12::Utils::copyBufferToTexture(
-                srcBuffer,
-                destImage,
-                commandBuffer,
-                iSrcOffset,
-                desc.miWidth,
-                desc.miHeight,
-                iNumChannels,
-                iChannelSize);
         }
 
         /*
@@ -2052,185 +1504,13 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
         /*
         **
         */
-        void CRenderer::platformCopyBufferToBuffer3(
-            RenderDriver::Common::CBuffer* pDestBuffer,
-            RenderDriver::Common::CBuffer* pSrcBuffer,
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            RenderDriver::Common::CCommandAllocator& commandAllocator,
-            uint32_t iSrcOffset,
-            uint32_t iDestOffset,
-            uint64_t iDataSize,
-            bool bCloseAndExecute)
-        {
-            RenderDriver::Common::ResourceStateFlagBits prevSrcBufferState = pSrcBuffer->getState();
-            RenderDriver::DX12::Utils::transitionBarrier(
-                *pSrcBuffer,
-                commandBuffer,
-                prevSrcBufferState,
-                RenderDriver::Common::ResourceStateFlagBits::CopySource);
-
-            RenderDriver::DX12::Utils::transitionBarrier(
-                *pDestBuffer,
-                commandBuffer,
-                RenderDriver::Common::ResourceStateFlagBits::Common,
-                RenderDriver::Common::ResourceStateFlagBits::CopyDestination);
-
-            ID3D12GraphicsCommandList* pCommandList = static_cast<ID3D12GraphicsCommandList*>(commandBuffer.getNativeCommandList());
-            pCommandList->CopyBufferRegion(
-                static_cast<ID3D12Resource*>(pDestBuffer->getNativeBuffer()),
-                iDestOffset,
-                static_cast<ID3D12Resource*>(pSrcBuffer->getNativeBuffer()),
-                iSrcOffset,
-                static_cast<uint64_t>(iDataSize));
-
-#if defined(_DEBUG)
-            commandBuffer.addCommand(RenderDriver::Common::CCommandBuffer::COMMAND_COPY);
-#endif // DEBUG
-
-            RenderDriver::DX12::Utils::transitionBarrier(
-                *pDestBuffer,
-                commandBuffer,
-                RenderDriver::Common::ResourceStateFlagBits::CopyDestination,
-                RenderDriver::Common::ResourceStateFlagBits::Common);
-
-            RenderDriver::DX12::Utils::transitionBarrier(
-                *pSrcBuffer,
-                commandBuffer,
-                RenderDriver::Common::ResourceStateFlagBits::CopySource,
-                prevSrcBufferState);
-
-            if(bCloseAndExecute)
-            {
-                commandBuffer.close();
-                mpCopyCommandQueue->execCommandBuffer(commandBuffer, *mpDevice);
-
-                // wait until done
-                RenderDriver::Common::PlaceFenceDescriptor placeFenceDesc = {};
-                placeFenceDesc.mpCommandQueue = mpCopyCommandQueue.get();
-                placeFenceDesc.miFenceValue = miCopyCommandFenceValue++;
-                mpUploadFence->place(placeFenceDesc);
-                mpUploadFence->waitCPU(UINT64_MAX);
-
-                commandAllocator.reset();
-                commandBuffer.reset();
-            }
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformCopyBufferToBufferNoWait(
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            RenderDriver::Common::CBuffer* pDestBuffer,
-            RenderDriver::Common::CBuffer* pSrcBuffer,
-            uint32_t iSrcOffset,
-            uint32_t iDestOffset,
-            uint64_t iDataSize)
-        {
-            RenderDriver::Common::ResourceStateFlagBits prevSrcBufferState = pSrcBuffer->getState();
-            RenderDriver::DX12::Utils::transitionBarrier(
-                *pSrcBuffer,
-                commandBuffer,
-                prevSrcBufferState,
-                RenderDriver::Common::ResourceStateFlagBits::CopySource);
-
-            RenderDriver::DX12::Utils::transitionBarrier(
-                *pDestBuffer,
-                commandBuffer,
-                RenderDriver::Common::ResourceStateFlagBits::Common,
-                RenderDriver::Common::ResourceStateFlagBits::CopyDestination);
-
-            ID3D12GraphicsCommandList* pCommandList = static_cast<ID3D12GraphicsCommandList*>(commandBuffer.getNativeCommandList());
-            pCommandList->CopyBufferRegion(
-                static_cast<ID3D12Resource*>(pDestBuffer->getNativeBuffer()),
-                iDestOffset,
-                static_cast<ID3D12Resource*>(pSrcBuffer->getNativeBuffer()),
-                iSrcOffset,
-                static_cast<uint64_t>(iDataSize));
-
-#if defined(_DEBUG)
-            commandBuffer.addCommand(RenderDriver::Common::CCommandBuffer::COMMAND_COPY);
-#endif // DEBUG
-
-            RenderDriver::DX12::Utils::transitionBarrier(
-                *pDestBuffer,
-                commandBuffer,
-                RenderDriver::Common::ResourceStateFlagBits::CopyDestination,
-                RenderDriver::Common::ResourceStateFlagBits::Common);
-
-            RenderDriver::DX12::Utils::transitionBarrier(
-                *pSrcBuffer,
-                commandBuffer,
-                RenderDriver::Common::ResourceStateFlagBits::CopySource,
-                prevSrcBufferState);
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformCopyBufferToBuffer2(Render::Common::CopyBufferDescriptor const& desc)
-        {
-            RenderDriver::Common::ResourceStateFlagBits prevSrcBufferState = desc.mpSrcBuffer->getState();
-            if((desc.miFlags & static_cast<uint32_t>(Render::Common::CopyBufferFlags::USE_BARRIERS)) > 0)
-            {
-                RenderDriver::DX12::Utils::transitionBarrier(
-                    *desc.mpDestBuffer,
-                    *desc.mpCommandBuffer,
-                    RenderDriver::Common::ResourceStateFlagBits::Common,
-                    RenderDriver::Common::ResourceStateFlagBits::CopyDestination);
-            }
-
-            ID3D12GraphicsCommandList* pCommandList = static_cast<ID3D12GraphicsCommandList*>(desc.mpCommandBuffer->getNativeCommandList());
-            pCommandList->CopyBufferRegion(
-                static_cast<ID3D12Resource*>(desc.mpDestBuffer->getNativeBuffer()),
-                desc.miDestDataOffset,
-                static_cast<ID3D12Resource*>(desc.mpSrcBuffer->getNativeBuffer()),
-                desc.miSrcDataOffset,
-                static_cast<uint64_t>(desc.miSrcDataSize));
-
-#if defined(_DEBUG)
-            desc.mpCommandBuffer->addCommand(RenderDriver::Common::CCommandBuffer::COMMAND_COPY);
-#endif // DEBUG
-
-            if((desc.miFlags & static_cast<uint32_t>(Render::Common::CopyBufferFlags::USE_BARRIERS)) > 0)
-            {
-                RenderDriver::DX12::Utils::transitionBarrier(
-                    *desc.mpDestBuffer,
-                    *desc.mpCommandBuffer,
-                    RenderDriver::Common::ResourceStateFlagBits::CopyDestination,
-                    RenderDriver::Common::ResourceStateFlagBits::Common);
-            }
-
-            if((desc.miFlags & static_cast<uint32_t>(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY)) > 0)
-            {
-                desc.mpCommandBuffer->close();
-                mpCopyCommandQueue->execCommandBuffer(*mpUploadCommandBuffer, *mpDevice);
-            }
-
-            if((desc.miFlags & static_cast<uint32_t>(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION)) > 0)
-            {
-                // wait until done
-                RenderDriver::Common::PlaceFenceDescriptor placeFenceDesc = {};
-                placeFenceDesc.mpCommandQueue = mpCopyCommandQueue.get();
-                placeFenceDesc.miFenceValue = miCopyCommandFenceValue++;
-                mpUploadFence->place(placeFenceDesc);
-                mpUploadFence->waitCPU(UINT64_MAX);
-
-                desc.mpCommandAllocator->reset();
-                desc.mpCommandBuffer->reset();
-            }
-
-        }
-
-        /*
-        **
-        */
         float3 CRenderer::platformGetWorldFromScreenPosition(
             uint32_t iX,
             uint32_t iY,
             uint32_t iScreenWidth,
             uint32_t iScreenHeight)
         {
+#if 0
             Render::Common::RenderJobInfo& renderJob = mpSerializer->getRenderJob("Draw Mesh Graphics");
             PLATFORM_OBJECT_HANDLE handle = renderJob.maOutputRenderTargetAttachments[0];
             RenderDriver::Common::CRenderTarget& renderTarget = *mpSerializer->getRenderTarget(handle).get();
@@ -2301,55 +1581,9 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
 
             uint32_t iIndex = (iY * iScreenWidth + iX) * 4;
             float3 ret(afImageData[iIndex], afImageData[iIndex + 1], afImageData[iIndex + 2]);
-
+#endif // #if 0
+            float3 ret(0.0f);
             return ret;
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformResetUploadBuffers(bool bCloseAndResetUploadCommandBuffer)
-        {
-            if(bCloseAndResetUploadCommandBuffer)
-            {
-                mpUploadCommandBuffer->close();
-                mpCopyCommandQueue->execCommandBuffer(*mpUploadCommandBuffer, *mpDevice);
-
-                // wait until done
-                RenderDriver::Common::PlaceFenceDescriptor placeFenceDesc = {};
-                placeFenceDesc.mpCommandQueue = mpCopyCommandQueue.get();
-                placeFenceDesc.miFenceValue = ++miCopyCommandFenceValue;
-
-                mpUploadFence->place(placeFenceDesc);
-                mpUploadFence->waitCPU(UINT64_MAX);
-
-                mpUploadCommandAllocator->reset();
-                mpUploadCommandBuffer->reset();
-            }
-
-            for(uint32_t i = 0; i < static_cast<uint32_t>(mapUploadBuffers.size()); i++)
-            {
-                if(mapUploadBuffers[i]->getNativeBuffer())
-                {
-                    mapUploadBuffers[i]->releaseNativeBuffer();
-                }
-            }
-            
-            mapUploadBuffers.clear();
-            mapUploadBuffers.shrink_to_fit();
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformInitBuffers(
-            std::vector<std::shared_ptr<RenderDriver::Common::CBuffer>>& aBuffers,
-            uint32_t iNumBuffers)
-        {
-            for(uint32_t i = 0; i < iNumBuffers; i++)
-            {
-                aBuffers.push_back(std::make_shared<RenderDriver::DX12::CBuffer>());
-            }
         }
 
         /*
@@ -2429,38 +1663,6 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
         /*
         **
         */
-        void CRenderer::platformBeginRenderJobDebugEventMark(std::string const& renderJobName)
-        {
-            auto const& renderJob = mpSerializer->getRenderJob(renderJobName);
-            RenderDriver::Common::CCommandBuffer& commandBuffer = *mpSerializer->getCommandBuffer(renderJob.mCommandBufferHandle).get();
-            ID3D12GraphicsCommandList* dx12CommandList = static_cast<ID3D12GraphicsCommandList*>(commandBuffer.getNativeCommandList());
-
-            PIXBeginEvent(
-#if defined(GPU_PIX_MARKER)
-                dx12CommandList,
-#endif // GPU_PIX_MARKER
-                0,
-                renderJobName.c_str());
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformEndRenderJobDebugEventMark(std::string const& renderJobName)
-        {
-            auto const& renderJob = mpSerializer->getRenderJob(renderJobName);
-            RenderDriver::Common::CCommandBuffer& commandBuffer = *mpSerializer->getCommandBuffer(renderJob.mCommandBufferHandle).get();
-            ID3D12GraphicsCommandList* dx12CommandList = static_cast<ID3D12GraphicsCommandList*>(commandBuffer.getNativeCommandList());
-            PIXEndEvent(
-#if defined(GPU_PIX_MARKER)
-                dx12CommandList
-#endif // GPU_PIX_MARKER
-            );
-        }
-
-        /*
-        **
-        */
         void CRenderer::platformTransitionBarriers(
             RenderDriver::Common::Utils::TransitionBarrierInfo const* aBarrierInfo,
             RenderDriver::Common::CCommandBuffer& commandBuffer,
@@ -2473,154 +1675,6 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
                 commandBuffer,
                 iNumBarrierInfo,
                 bReverseState);
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformRenderImgui(
-            uint32_t iFrameIndex)
-        {
-#if 0
-            auto& renderJob = mpSerializer->getRenderJob("Imgui Pass Graphics");
-            auto const& renderTarget = mpSerializer->getRenderTarget(renderJob.maOutputRenderTargetAttachments[0]);
-            
-
-            ImGui::Render();
-
-            RenderDriver::Common::CDescriptorHeap* pColorDescriptorHeap = mpSerializer->getDescriptorHeap(renderTarget->getColorDescriptorHeapHandle()).get();
-            RenderDriver::Common::CDescriptorHeap* pDepthStencilDescriptorHeap = mpSerializer->getDescriptorHeap(renderTarget->getDepthStencilDescriptorHeapHandle()).get();
-            WTFASSERT(pColorDescriptorHeap, "Invalid color descriptor heap");
-            WTFASSERT(pDepthStencilDescriptorHeap, "Invalid depth stencil descriptor heap");
-
-            std::vector<RenderDriver::Common::CDescriptorHeap*> aColorRenderTargetHeaps;
-            std::vector<RenderDriver::Common::CDescriptorHeap*> aDepthStencilRenderTargetHeaps;
-            aColorRenderTargetHeaps.push_back(pColorDescriptorHeap);
-            aDepthStencilRenderTargetHeaps.push_back(pDepthStencilDescriptorHeap);
-            
-            std::vector<bool> abClear;
-            abClear.push_back(true);
-            RenderDriver::Common::Utils::TransitionBarrierInfo aBarrierInfo[] = 
-            {
-                {
-                    /* RenderDriver::Common::CBuffer* mpBuffer;                         */  nullptr,
-                    /* RenderDriver::Common::CImage* mpImage;                           */  renderTarget->getImage().get(),
-                    /* RenderDriver::Common::ResourceStateFlagBits          mBefore;    */  RenderDriver::Common::ResourceStateFlagBits::Present,
-                    /* RenderDriver::Common::ResourceStateFlagBits          mAfter;     */  RenderDriver::Common::ResourceStateFlagBits::RenderTarget,
-                }
-            };
-
-            platformTransitionBarriers(
-                aBarrierInfo,
-                *mpImguiCommandBuffer,
-                1,
-                false);
-
-            float afClearColor[4] = { 0.0f, 0.0f, 0.3f, 0.0f };
-            platformSetRenderTargetAndClear(
-                *mpImguiCommandBuffer,
-                aColorRenderTargetHeaps,
-                aDepthStencilRenderTargetHeaps,
-                1,
-                afClearColor,
-                abClear);
-
-            platformSetDescriptorHeap(*mpImguiDescriptorHeap, *mpImguiCommandBuffer);
-            ImGui_ImplDX12_RenderDrawData(
-                ImGui::GetDrawData(),
-                reinterpret_cast<ID3D12GraphicsCommandList*>(mpImguiCommandBuffer->getNativeCommandList()));
-
-            platformTransitionBarriers(
-                aBarrierInfo,
-                *mpImguiCommandBuffer,
-                1,
-                true);
-
-            mpImguiCommandBuffer->close();
-
-            mpGraphicsCommandQueue->execCommandBuffer(*mpImguiCommandBuffer, *mpDevice);
-
-            // place job fence
-            RenderDriver::Common::CFence& fence = *mpImguiFence;
-            RenderDriver::Common::PlaceFenceDescriptor fenceDesc;
-            fenceDesc.miFenceValue = miFenceValue++;
-            fenceDesc.mType = RenderDriver::Common::FenceType::CPU;
-            fenceDesc.mpCommandQueue = mpGraphicsCommandQueue.get();
-            fence.place(static_cast<RenderDriver::Common::PlaceFenceDescriptor const&>(fenceDesc));
-            //fence.waitGPU(mpGraphicsCommandQueue.get());
-            fence.waitCPU(UINT64_MAX);
-#endif // #if 0
-
-            //mpImguiCommandAllocator->reset();
-            //mpImguiCommandBuffer->reset();
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformRenderImgui2(
-            uint32_t iFrameIndex,
-            RenderDriver::Common::CCommandBuffer& commandBuffer)
-        {
-#if defined(USE_IMGUI)
-            auto& renderJob = mpSerializer->getRenderJob("Imgui Pass Graphics");
-            auto const& renderTarget = mpSerializer->getRenderTarget(renderJob.maOutputRenderTargetAttachments[0]);
-
-            ImGui::Render();
-
-            if(ImGui::GetDrawData() == nullptr)
-            {
-                return;
-            }
-
-            RenderDriver::Common::CDescriptorHeap* pColorDescriptorHeap = mpSerializer->getDescriptorHeap(renderTarget->getColorDescriptorHeapHandle()).get();
-            RenderDriver::Common::CDescriptorHeap* pDepthStencilDescriptorHeap = mpSerializer->getDescriptorHeap(renderTarget->getDepthStencilDescriptorHeapHandle()).get();
-            WTFASSERT(pColorDescriptorHeap, "Invalid color descriptor heap");
-            WTFASSERT(pDepthStencilDescriptorHeap, "Invalid depth stencil descriptor heap");
-
-            std::vector<RenderDriver::Common::CDescriptorHeap*> aColorRenderTargetHeaps;
-            std::vector<RenderDriver::Common::CDescriptorHeap*> aDepthStencilRenderTargetHeaps;
-            aColorRenderTargetHeaps.push_back(pColorDescriptorHeap);
-            aDepthStencilRenderTargetHeaps.push_back(pDepthStencilDescriptorHeap);
-
-            std::vector<bool> abClear;
-            abClear.push_back(true);
-            RenderDriver::Common::Utils::TransitionBarrierInfo aBarrierInfo[] =
-            {
-                {
-                    /* RenderDriver::Common::CBuffer* mpBuffer;                         */  nullptr,
-                    /* RenderDriver::Common::CImage* mpImage;                           */  renderTarget->getImage().get(),
-                    /* RenderDriver::Common::ResourceStateFlagBits          mBefore;    */  RenderDriver::Common::ResourceStateFlagBits::Present,
-                    /* RenderDriver::Common::ResourceStateFlagBits          mAfter;     */  RenderDriver::Common::ResourceStateFlagBits::RenderTarget,
-                }
-            };
-
-            platformTransitionBarriers(
-                aBarrierInfo,
-                commandBuffer,
-                1,
-                false);
-
-            float afClearColor[4] = { 0.0f, 0.0f, 0.3f, 0.0f };
-            platformSetRenderTargetAndClear(
-                commandBuffer,
-                aColorRenderTargetHeaps,
-                aDepthStencilRenderTargetHeaps,
-                1,
-                afClearColor,
-                abClear);
-
-            platformSetDescriptorHeap(*mpImguiDescriptorHeap, commandBuffer);
-            ImGui_ImplDX12_RenderDrawData(
-                ImGui::GetDrawData(),
-                reinterpret_cast<ID3D12GraphicsCommandList*>(commandBuffer.getNativeCommandList()));
-
-            platformTransitionBarriers(
-                aBarrierInfo,
-                commandBuffer,
-                1,
-                true);
-#endif // USE_IMGUI
         }
 
         /*
@@ -3177,315 +2231,6 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
         /*
         **
         */
-        void CRenderer::platformAllocateCopyCommandBuffers(
-            std::vector<std::shared_ptr<RenderDriver::Common::CCommandBuffer>>& aCopyCommandBuffers,
-            std::vector<std::shared_ptr<RenderDriver::Common::CCommandAllocator>>& aCopyCommandAllocators,
-            uint32_t iNumCopyCommandBuffers)
-        {
-            aCopyCommandBuffers.resize(iNumCopyCommandBuffers);
-            aCopyCommandAllocators.resize(iNumCopyCommandBuffers);
-            for(uint32_t i = 0; i < iNumCopyCommandBuffers; i++)
-            {
-                aCopyCommandAllocators[i] = std::make_shared<RenderDriver::DX12::CCommandAllocator>();
-                aCopyCommandBuffers[i] = std::make_shared<RenderDriver::DX12::CCommandBuffer>();
-
-                RenderDriver::Common::CommandAllocatorDescriptor commandAllocatorDesc = {};
-                commandAllocatorDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
-                aCopyCommandAllocators[i]->create(commandAllocatorDesc, *mpDevice);
-                aCopyCommandAllocators[i]->reset();
-
-                RenderDriver::Common::CommandBufferDescriptor commandBufferDesc = {};
-                commandBufferDesc.mpCommandAllocator = aCopyCommandAllocators[i].get();
-                commandBufferDesc.mpPipelineState = nullptr;
-                commandBufferDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
-                aCopyCommandBuffers[i]->create(commandBufferDesc, *mpDevice);
-                aCopyCommandBuffers[i]->close();
-                aCopyCommandBuffers[i]->reset();
-            }
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformUploadResourceDataWithCommandBufferAndUploadBuffer(
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            RenderDriver::Common::CCommandAllocator& commandAllocator,
-            RenderDriver::Common::CBuffer& uploadBuffer,
-            RenderDriver::Common::CBuffer& buffer,
-            void* pRawSrcData,
-            uint64_t iDataSize,
-            uint64_t iDestDataOffset)
-        {
-            char szOutput[256];
-            sprintf(szOutput, "Upload Resource %s (%lld bytes)\n",
-                buffer.getID().c_str(),
-                iDataSize);
-
-            PIXBeginEvent(
-#if defined(GPU_PIX_MARKER)
-                static_cast<ID3D12CommandQueue*>(mpCopyCommandQueue->getNativeCommandQueue()),
-#endif // GPU_PIX_MARKER
-                0xff0000,
-                szOutput);
-
-            RenderDriver::Common::Utils::TransitionBarrierInfo aBarrierInfo[1];
-            aBarrierInfo[0].mpBuffer = &buffer;
-            aBarrierInfo[0].mBefore = RenderDriver::Common::ResourceStateFlagBits::Common;
-            aBarrierInfo[0].mAfter = RenderDriver::Common::ResourceStateFlagBits::CopyDestination;
-            platformTransitionBarriers(
-                aBarrierInfo,
-                commandBuffer,
-                1,
-                false);
-
-            uint8_t* pData = nullptr;
-            HRESULT hr = static_cast<ID3D12Resource*>(uploadBuffer.getNativeBuffer())->Map(0, nullptr, reinterpret_cast<void**>(&pData));
-            assert(SUCCEEDED(hr));
-            memcpy(pData, pRawSrcData, iDataSize);
-            static_cast<ID3D12Resource*>(uploadBuffer.getNativeBuffer())->Unmap(0, nullptr);
-
-            WTFASSERT(iDestDataOffset < UINT32_MAX, "Invalid destination data offset: %d\n", iDestDataOffset);
-
-            static_cast<ID3D12GraphicsCommandList*>(commandBuffer.getNativeCommandList())->CopyBufferRegion(
-                static_cast<ID3D12Resource*>(buffer.getNativeBuffer()),
-                iDestDataOffset,
-                static_cast<ID3D12Resource*>(uploadBuffer.getNativeBuffer()),
-                0,
-                iDataSize);
-
-            platformTransitionBarriers(
-                aBarrierInfo,
-                commandBuffer,
-                1,
-                true);
-
-            PIXEndEvent(
-#if defined(GPU_PIX_MARKER)
-                static_cast<ID3D12CommandQueue*>(mpCopyCommandQueue->getNativeCommandQueue())
-#endif // GPU_PIX_MARKER
-            );
-
-            PIXBeginEvent(
-#if defined(GPU_PIX_MARKER)
-                static_cast<ID3D12CommandQueue*>(mpCopyCommandQueue->getNativeCommandQueue()),
-#endif // GPU_PIX_MARKER
-                0x008080,
-                std::string(std::string("Execute ") + commandBuffer.getID()).c_str());
-
-            commandBuffer.close();
-            mpCopyCommandQueue->execCommandBuffer(commandBuffer, *mpDevice);
-            
-            // wait until done
-            RenderDriver::Common::PlaceFenceDescriptor placeFenceDesc = {};
-            placeFenceDesc.mpCommandQueue = mpCopyCommandQueue.get();
-            ID3D12Fence* pFenceDX12 = reinterpret_cast<ID3D12Fence*>(mpUploadFence->getNativeFence());
-            {
-                std::lock_guard<std::mutex> lock(mUploadDataMutex);
-                placeFenceDesc.miFenceValue = ++miCopyCommandFenceValue;
-                mpUploadFence->place(placeFenceDesc);
-                mpUploadFence->waitCPU(UINT64_MAX);
-            }
-            
-            
-            PIXBeginEvent(
-#if defined(GPU_PIX_MARKER)
-                static_cast<ID3D12CommandQueue*>(mpCopyCommandQueue->getNativeCommandQueue()),
-#endif // GPU_PIX_MARKER
-                0xff00ff,
-                std::string(std::string("Reset ") + commandBuffer.getID()).c_str());
-
-            commandAllocator.reset();
-            commandBuffer.reset();
-            
-            PIXEndEvent(
-#if defined(GPU_PIX_MARKER)
-                static_cast<ID3D12CommandQueue*>(mpCopyCommandQueue->getNativeCommandQueue())
-#endif // GPU_PIX_MARKER
-            );
-
-            PIXEndEvent(
-#if defined(GPU_PIX_MARKER)
-                static_cast<ID3D12CommandQueue*>(mpCopyCommandQueue->getNativeCommandQueue())
-#endif // GPU_PIX_MARKER
-            );
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformAllocateUploadBuffer(
-            std::shared_ptr<RenderDriver::Common::CBuffer>& buffer,
-            uint32_t iSize)
-        {
-            buffer = std::make_shared<RenderDriver::DX12::CBuffer>();
-
-            RenderDriver::Common::BufferDescriptor createBufferDesc;
-            createBufferDesc.miSize = iSize;
-            createBufferDesc.mFormat = RenderDriver::Common::Format::R32_FLOAT;
-            createBufferDesc.mHeapType = RenderDriver::Common::HeapType::Upload;
-            buffer->create(createBufferDesc, *mpDevice);
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformSignalUploadFenceValue(uint64_t iFenceValue)
-        {
-            mpUploadFence->signal(mpCopyCommandQueue.get(), iFenceValue);
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformEncodeUploadBufferCommand(
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            RenderDriver::Common::CCommandAllocator& commandAllocator,
-            RenderDriver::Common::CBuffer& uploadBuffer,
-            RenderDriver::Common::CBuffer& buffer,
-            void* pRawSrcData,
-            uint64_t iDataSize,
-            uint64_t iDestDataOffset)
-        {
-            char szOutput[256];
-            sprintf(szOutput, "Upload Resource %s (%lld bytes)\n",
-                buffer.getID().c_str(),
-                iDataSize);
-
-            PIXBeginEvent(
-#if defined(GPU_PIX_MARKER)
-                static_cast<ID3D12CommandQueue*>(mpCopyCommandQueue->getNativeCommandQueue()),
-#endif // GPU_PIX_MARKER
-                0xff0000,
-                szOutput);
-
-            uint8_t* pData = nullptr;
-            HRESULT hr = static_cast<ID3D12Resource*>(uploadBuffer.getNativeBuffer())->Map(0, nullptr, reinterpret_cast<void**>(&pData));
-            assert(SUCCEEDED(hr));
-            memcpy(pData, pRawSrcData, iDataSize);
-            static_cast<ID3D12Resource*>(uploadBuffer.getNativeBuffer())->Unmap(0, nullptr);
-
-            WTFASSERT(iDestDataOffset < UINT32_MAX, "Invalid destination data offset: %d\n", iDestDataOffset);
-
-            static_cast<ID3D12GraphicsCommandList*>(commandBuffer.getNativeCommandList())->CopyBufferRegion(
-                static_cast<ID3D12Resource*>(buffer.getNativeBuffer()),
-                iDestDataOffset,
-                static_cast<ID3D12Resource*>(uploadBuffer.getNativeBuffer()),
-                0,
-                iDataSize);
-
-            PIXEndEvent(
-#if defined(GPU_PIX_MARKER)
-                static_cast<ID3D12CommandQueue*>(mpCopyCommandQueue->getNativeCommandQueue())
-#endif // GPU_PIX_MARKER
-            );
-
-            commandBuffer.close();
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformExecuteCopyCommandBuffers(
-            RenderDriver::Common::CCommandBuffer* const* apCommandBuffers,
-            uint32_t iNumCommandBuffers)
-        {
-            assert(iNumCommandBuffers < 64);
-            ID3D12CommandList* apCommandListsDX12[64];
-            for(uint32_t i = 0; i < iNumCommandBuffers; i++)
-            {
-                apCommandListsDX12[i] = reinterpret_cast<ID3D12CommandList*>(apCommandBuffers[i]->getNativeCommandList());
-            }
-
-            RenderDriver::DX12::CFence* pFence = static_cast<RenderDriver::DX12::CFence*>(mpUploadFence.get());
-
-            ID3D12Fence* pFenceDX12 = reinterpret_cast<ID3D12Fence*>(pFence->getNativeFence());
-            uint64_t iCompletedValue = pFenceDX12->GetCompletedValue();
-            
-            ID3D12CommandQueue* pCommandQueueDX12 = reinterpret_cast<ID3D12CommandQueue*>(mpCopyCommandQueue->getNativeCommandQueue());
-            pCommandQueueDX12->ExecuteCommandLists(
-                iNumCommandBuffers,
-                apCommandListsDX12);
-
-            // add a signal to the queue after command list execution is completed
-            uint64_t iFinishValue = iCompletedValue + iNumCommandBuffers;
-            pCommandQueueDX12->Signal(pFenceDX12, iFinishValue);
-
-            // wait for the completed signal that was added above
-            pFenceDX12->SetEventOnCompletion(iFinishValue, pFence->mFenceEvent);
-            DWORD ret = WaitForSingleObjectEx(pFence->mFenceEvent, INFINITE, FALSE);
-            iCompletedValue = pFenceDX12->GetCompletedValue();
-
-            WTFASSERT(iCompletedValue == miCopyCommandFenceValue + iNumCommandBuffers, "incorrect completed value %d %d", iCompletedValue, miCopyCommandFenceValue + iNumCommandBuffers);
-            miCopyCommandFenceValue += iNumCommandBuffers;
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformCreateTotalVertexAndIndexBuffer(Render::Common::InitializeVertexAndIndexBufferDescriptor const& desc)
-        {
-            // create vertex buffer 
-            RenderDriver::Common::BufferDescriptor vertexBufferDesc = {};
-            vertexBufferDesc.mFormat = RenderDriver::Common::Format::UNKNOWN;
-            vertexBufferDesc.miSize = static_cast<uint32_t>(desc.miVertexDataSize);
-            vertexBufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage::VertexBuffer;
-            mpTotalMeshesVertexBuffer->create(vertexBufferDesc, *mpDevice);
-            mpTotalMeshesVertexBuffer->setID("Total Meshes Vertex Buffer");
-
-            // create index buffer
-            RenderDriver::Common::BufferDescriptor indexBufferDesc = {};
-            indexBufferDesc.mFormat = RenderDriver::Common::Format::R32_UINT;
-            indexBufferDesc.miSize = static_cast<uint32_t>(desc.miIndexDataSize);
-            vertexBufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage::IndexBuffer;
-            mpTotalMeshesIndexBuffer->create(indexBufferDesc, *mpDevice);
-            mpTotalMeshesIndexBuffer->setID("Total Meshes Index Buffer");
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformPreFenceSignal(
-            RenderDriver::Common::CFence* pFence,
-            RenderDriver::Common::CCommandQueue* pCommandQueue,
-            uint32_t iQueueType,
-            uint64_t iSignalValue)
-        {
-
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformPostFenceSignal(
-            RenderDriver::Common::CFence* pFence,
-            RenderDriver::Common::CCommandQueue* pCommandQueue,
-            uint32_t iQueueType,
-            uint64_t iSignalValue)
-        {
-            platformBeginDebugMarker("Signal");
-
-            // fence signal value for next render job on this command queue
-            ++maiRenderJobFenceValues[iQueueType];
-            mapCommandQueueFences[iQueueType]->signal(
-                pCommandQueue,
-                maiRenderJobFenceValues[iQueueType]);
-
-            platformEndDebugMarker();    // Signal
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformTransitionImageLayouts(
-            Render::Common::RenderJobInfo const& renderJobInfo,
-            RenderDriver::Common::CCommandBuffer& commandBuffer)
-        {
-
-        }
-
-        /*
-        **
-        */
         void CRenderer::platformInitializeRenderJobs(
             std::vector<std::string> const& aRenderJobNames)
         {
@@ -3505,20 +2250,6 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
         */
         void CRenderer::platformCreateRenderJobCommandBuffers(
             std::vector<std::string> const& aRenderJobNames
-        )
-        {
-
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformTransitionBarriers2(
-            RenderDriver::Common::Utils::TransitionBarrierInfo const* aBarrierInfo,
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            uint32_t iNumBarrierInfo,
-            bool bReverseState,
-            RenderDriver::Common::CCommandQueue::Type const& queueType
         )
         {
 

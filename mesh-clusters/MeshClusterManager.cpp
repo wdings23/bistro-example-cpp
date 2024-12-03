@@ -536,6 +536,7 @@ namespace Render
         */
         void CMeshClusterManager::getGPUBuffers()
         {
+#if 0
             auto pSerializer = mpRenderer->getSerializer();
 
             mpClusterGroupTreeNodeBuffer = pSerializer->getBuffer("Cluster Group Tree Nodes");
@@ -743,6 +744,7 @@ namespace Render
                 }
 
             }
+#endif // #if 0
         }
 
 
@@ -872,11 +874,13 @@ namespace Render
                 }
             }
 
+#if 0
             Render::Common::Serializer* pSerializer = mpRenderer->getSerializer();
             RenderJobInfo& renderJob = pSerializer->getRenderJob(mFirstRenderJobName);
             renderJob.miNumDispatchX = static_cast<uint32_t>(maaClusterQueueInfo.size());
             renderJob.miNumDispatchY = 1;
             renderJob.miNumDispatchZ = 1;
+#endif // #if 0
 
 #if 0
             // esimated dispatches needed for pre and post culling

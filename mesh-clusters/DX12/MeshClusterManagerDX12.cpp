@@ -197,6 +197,7 @@ namespace Render
             indirectCommandSignatureDesc.NumArgumentDescs = static_cast<uint32_t>(aIndirectArgumentDescriptors.size());
             indirectCommandSignatureDesc.ByteStride = static_cast<uint32_t>(sizeof(IndirectDrawCommand));
 
+#if 0
             RenderDriver::Common::PipelineInfo const* pPipelineInfo = mpRenderer->getSerializer()->getPipelineInfo("Draw Pre Pass Mesh Cluster Graphics");
             if(pPipelineInfo)
             {
@@ -211,10 +212,11 @@ namespace Render
                     IID_PPV_ARGS(&mCommandSignature));
                 assert(SUCCEEDED(hr));
             }
-
+#endif // #if 0
 
         }
 
+#if 0
         /*
         **
         */
@@ -307,6 +309,7 @@ namespace Render
                 //static_cast<ID3D12CommandQueue*>(mpRenderer->getCommandQueue(RenderDriver::Common::CCommandQueue::Type::Graphics)->getNativeCommandQueue())
             );
         }
+#endif // #if 0
 
     }   // DX12
 

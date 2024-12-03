@@ -147,15 +147,6 @@
     <ClInclude Include="render\RenderJob.h">
       <Filter>render</Filter>
     </ClInclude>
-    <ClInclude Include="render\Vulkan\RenderJobSerializerVulkan.h">
-      <Filter>render\Vulkan</Filter>
-    </ClInclude>
-    <ClInclude Include="render\DX12\RenderJobSerializerDX12.h">
-      <Filter>render\DX12</Filter>
-    </ClInclude>
-    <ClInclude Include="render\RenderJobSerializer.h">
-      <Filter>render</Filter>
-    </ClInclude>
     <ClInclude Include="render\Vulkan\RenderJobVulkan.h">
       <Filter>render\Vulkan</Filter>
     </ClInclude>
@@ -255,15 +246,6 @@
       <Filter>utils</Filter>
     </ClCompile>
     <ClCompile Include="render\RenderJob.cpp">
-      <Filter>render</Filter>
-    </ClCompile>
-    <ClCompile Include="render\Vulkan\RenderJobSerializerVulkan.cpp">
-      <Filter>render\Vulkan</Filter>
-    </ClCompile>
-    <ClCompile Include="render\DX12\RenderJobSerializerDX12.cpp">
-      <Filter>render\DX12</Filter>
-    </ClCompile>
-    <ClCompile Include="render\RenderJobSerializer.cpp">
       <Filter>render</Filter>
     </ClCompile>
     <ClCompile Include="render\Vulkan\RenderJobVulkan.cpp">

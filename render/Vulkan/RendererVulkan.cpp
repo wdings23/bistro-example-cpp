@@ -1,5 +1,4 @@
 #include <render/Vulkan/RendererVulkan.h>
-#include <render/Vulkan/RenderJobSerializerVulkan.h>
 #include <render/Vulkan/RenderJobVulkan.h>
 
 #include <render-driver/Vulkan/CommandQueueVulkan.h>
@@ -284,7 +283,7 @@ namespace Render
                 mpUploadCommandBuffer->reset();
             }
 
-            mpSerializer = std::make_unique<Render::Vulkan::Serializer>();
+            //mpSerializer = std::make_unique<Render::Vulkan::Serializer>();
             
             vkSetDebugUtilsObjectNameEXT = reinterpret_cast<PFN_vkSetDebugUtilsObjectNameEXT>(vkGetInstanceProcAddr(mInstance, "vkSetDebugUtilsObjectNameEXT"));
             vkQueueBeginDebugUtilsLabelEXT = reinterpret_cast<PFN_vkQueueBeginDebugUtilsLabelEXT>(vkGetInstanceProcAddr(mInstance, "vkQueueBeginDebugUtilsLabelEXT"));
@@ -786,35 +785,6 @@ namespace Render
 
             ImGui_ImplVulkan_Init(&init_info, mImguiRenderPass);
 
-#if 0
-            // create graphics command buffer if needed
-            if(mapQueueGraphicsCommandBuffers[0] == nullptr)
-            {
-                mapQueueGraphicsCommandAllocators[0] = std::make_shared<RenderDriver::Vulkan::CCommandAllocator>();
-                mapQueueGraphicsCommandBuffers[0] = std::make_shared<RenderDriver::Vulkan::CCommandBuffer>();
-
-                RenderDriver::Common::CommandAllocatorDescriptor graphicsCommandAllocatorDesc;
-                graphicsCommandAllocatorDesc.mType = RenderDriver::Common::CommandBufferType::Graphics;
-                mapQueueGraphicsCommandAllocators[0]->create(graphicsCommandAllocatorDesc, *mpDevice);
-
-                std::ostringstream graphicCommandAllocatorName;
-                graphicCommandAllocatorName << "Graphics Command Allocator 0";
-                mapQueueGraphicsCommandAllocators[0]->setID(graphicCommandAllocatorName.str());
-                mapQueueGraphicsCommandAllocators[0]->reset();
-
-                RenderDriver::Common::CommandBufferDescriptor graphicsCommandBufferDesc;
-                graphicsCommandBufferDesc.mpCommandAllocator = mapQueueGraphicsCommandAllocators[0].get();
-                graphicsCommandBufferDesc.mpPipelineState = nullptr;
-                graphicsCommandBufferDesc.mType = RenderDriver::Common::CommandBufferType::Graphics;
-                mapQueueGraphicsCommandBuffers[0]->create(graphicsCommandBufferDesc, *mpDevice);
-
-                std::ostringstream graphicCommandBufferName;
-                graphicCommandBufferName << "Graphics Command Buffer 0";
-                mapQueueGraphicsCommandBuffers[0]->setID(graphicCommandBufferName.str());
-                mapQueueGraphicsCommandBuffers[0]->reset();
-            }
-#endif // #if 0
-
             std::unique_ptr<RenderDriver::Vulkan::CCommandAllocator> commandAllocator = std::make_unique<RenderDriver::Vulkan::CCommandAllocator>();
             RenderDriver::Common::CommandAllocatorDescriptor graphicsCommandAllocatorDesc;
             graphicsCommandAllocatorDesc.mType = RenderDriver::Common::CommandBufferType::Graphics;
@@ -841,102 +811,6 @@ namespace Render
             commandBuffer->reset();
         }
 
-        /*
-        **
-        */
-        void CRenderer::platformBeginRenderPass(Render::Common::RenderPassDescriptor& renderPassDesc)
-        {
-            RenderDriver::Vulkan::CPipelineState* pPipelineState = reinterpret_cast<RenderDriver::Vulkan::CPipelineState*>(renderPassDesc.mpPipelineState);
-            VkRenderPass& renderPass = *(static_cast<VkRenderPass*>(pPipelineState->getNativeRenderPass()));
-
-            auto const& depthStencilState = renderPassDesc.mpPipelineState->getGraphicsDesc().mDepthStencilState;
-            VkFramebuffer* pNativeFrameBuffer = nullptr;
-            std::vector<VkClearValue> aClearValues;
-            if(renderPassDesc.mpRenderJobInfo->mPassType == Render::Common::PassType::SwapChain)
-            {
-                aClearValues.resize(2);
-                pNativeFrameBuffer = static_cast<RenderDriver::Vulkan::CSwapChain*>(mpSwapChain.get())->getNativeFramebuffer(renderPassDesc.miSwapChainFrameBufferindex);
-
-                VkClearValue clearValue = {};
-                memcpy(&clearValue.color, &renderPassDesc.mClearValue, sizeof(float) * 4);
-                aClearValues[1].depthStencil.depth = 1.0f;
-                aClearValues[1].depthStencil.stencil = 0;
-            }
-            else
-            {
-                RenderDriver::Vulkan::CFrameBuffer* pFrameBufferVulkan = static_cast<RenderDriver::Vulkan::CFrameBuffer*>(
-                    mpSerializer->getFrameBuffer(renderPassDesc.mpRenderJobInfo->mFrameBuffer).get());
-                pNativeFrameBuffer = static_cast<VkFramebuffer*>(pFrameBufferVulkan->getNativeFrameBuffer());
-
-                for(uint32_t i = 0; i < static_cast<uint32_t>(renderPassDesc.mpRenderJobInfo->maAttachmentInfo.size()); i++)
-                {
-                    VkClearValue clearValue;
-                    memcpy(&clearValue.color, &renderPassDesc.mClearValue, sizeof(float) * 4);
-                    aClearValues.push_back(clearValue);
-                }
-
-                RenderDriver::Common::GraphicsPipelineStateDescriptor& graphicsPipelineStateDesc = pPipelineState->getGraphicsDesc();
-
-                if(graphicsPipelineStateDesc.mDepthStencilState.mbDepthEnabled)
-                {
-                    VkClearValue clearValue;
-                    clearValue.depthStencil.depth = 1.0f;
-                    clearValue.depthStencil.stencil = 0;
-                    aClearValues.push_back(clearValue);
-                }
-            }
-            
-
-            WTFASSERT(pNativeFrameBuffer, "no frame buffer given for pass: %s", renderPassDesc.mpRenderJobInfo->mName.c_str());
-
-            VkRenderPassBeginInfo renderPassBeginInfo = {};
-            renderPassBeginInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-            renderPassBeginInfo.renderPass = renderPass;
-            renderPassBeginInfo.renderArea.offset.x = renderPassDesc.miOffsetX;
-            renderPassBeginInfo.renderArea.offset.y = renderPassDesc.miOffsetY;
-            renderPassBeginInfo.renderArea.extent.width = renderPassDesc.miOutputWidth;
-            renderPassBeginInfo.renderArea.extent.height = renderPassDesc.miOutputHeight;
-            renderPassBeginInfo.clearValueCount = static_cast<uint32_t>(aClearValues.size());
-            renderPassBeginInfo.pClearValues = aClearValues.data();
-            renderPassBeginInfo.framebuffer = *pNativeFrameBuffer;
-
-            VkCommandBuffer& nativeCommandBuffer = *(static_cast<VkCommandBuffer*>(renderPassDesc.mpCommandBuffer->getNativeCommandList()));
-            vkCmdBeginRenderPass(
-                nativeCommandBuffer,
-                &renderPassBeginInfo,
-                VK_SUBPASS_CONTENTS_INLINE);
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformEndRenderPass(Render::Common::RenderPassDescriptor& renderPassDesc)
-        {
-            VkCommandBuffer& nativeCommandBuffer = *(static_cast<VkCommandBuffer*>(renderPassDesc.mpCommandBuffer->getNativeCommandList()));
-            vkCmdEndRenderPass(nativeCommandBuffer);
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformCreateVertexIndexBufferViews(uint32_t iVertexBufferSize, uint32_t iIndexBufferSize)
-        {
-            //char szOutput[256];
-            //sprintf(szOutput, "create vertex and index buffer views vertex size: %d index size: %d\n",
-            //    iVertexBufferSize,
-            //    iVertexBufferSize);
-            //
-            //// d3d12 vertex buffer view
-            //mTotalVertexBufferInputView.BufferLocation = static_cast<ID3D12Resource*>(mpTotalMeshesVertexBuffer->getNativeBuffer())->GetGPUVirtualAddress();
-            //mTotalVertexBufferInputView.SizeInBytes = static_cast<uint32_t>(iVertexBufferSize);
-            //mTotalVertexBufferInputView.StrideInBytes = sizeof(Render::Common::VertexFormat);
-            //
-            //// d3d12 index buffer view
-            //mTotalIndexBufferView.BufferLocation = static_cast<ID3D12Resource*>(mpTotalMeshesIndexBuffer->getNativeBuffer())->GetGPUVirtualAddress();
-            //mTotalIndexBufferView.SizeInBytes = static_cast<uint32_t>(iIndexBufferSize);
-            //mTotalIndexBufferView.Format = DXGI_FORMAT_R32_UINT;
-
-        }
 
         /*
         **
@@ -970,45 +844,6 @@ namespace Render
                 0,
                 static_cast<uint32_t>(iDestDataOffset),
                 static_cast<uint32_t>(iDataSize));
-
-            //mpUploadCommandBuffer->close();
-            //mpCopyCommandQueue->execCommandBuffer(*mpUploadCommandBuffer, *mpDevice);
-            //
-            //VkResult ret = vkQueueWaitIdle(*(static_cast<VkQueue*>(mpCopyCommandQueue->getNativeCommandQueue())));
-            //WTFASSERT(ret == VK_SUCCESS, "Error waiting on copy queue: %d", ret);
-            //
-            //mpUploadCommandAllocator->reset();
-            //mpUploadCommandBuffer->reset();
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformUploadResourceDataImmediate(
-            RenderDriver::Common::CBuffer& buffer,
-            void* pRawSrcData,
-            uint64_t iDataSize,
-            uint64_t iDestDataOffset)
-        {
-            WTFASSERT(0, "Implement me");
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformUpdateMeshDataFromGPUBuffer(Render::Common::MeshDataUpdateFromGPUDescriptor const& desc)
-        {
-            WTFASSERT(0, "Implement me");
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformSetPipelineState(
-            RenderDriver::Common::CPipelineState& pipelineState,
-            RenderDriver::Common::CCommandBuffer& commandBuffer)
-        {
-            WTFASSERT(0, "Implement me");
         }
 
         /*
@@ -1207,57 +1042,6 @@ namespace Render
         /*
         **
         */
-        void CRenderer::platformSwapChainClear(
-            RenderDriver::Common::CSwapChain* pSwapChain,
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            uint32_t iTripleBufferIndex,
-            float const* afClearColor)
-        {
-            WTFASSERT(0, "Implement me");
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformSetVertexAndIndexBuffers(
-            RenderDriver::Common::CCommandBuffer& commandBuffer)
-        {
-            VkCommandBuffer& nativeCommandBuffer = *(static_cast<VkCommandBuffer*>(commandBuffer.getNativeCommandList()));
-            VkBuffer& nativeVertexBuffer = *(static_cast<VkBuffer*>(mpTotalMeshesVertexBuffer->getNativeBuffer()));
-            VkBuffer& nativeIndexBuffer = *(static_cast<VkBuffer*>(mpTotalMeshesIndexBuffer->getNativeBuffer()));
-
-            VkDeviceSize aOffsets[1] = { 0 };
-            vkCmdBindVertexBuffers(
-                nativeCommandBuffer,
-                0,
-                1,
-                &nativeVertexBuffer,
-                aOffsets);
-
-            vkCmdBindIndexBuffer(
-                nativeCommandBuffer,
-                nativeIndexBuffer,
-                0,
-                VK_INDEX_TYPE_UINT32);
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformSetRenderTargetAndClear(
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            std::vector<RenderDriver::Common::CDescriptorHeap*>& apRenderTargetDescriptorHeaps,
-            std::vector<RenderDriver::Common::CDescriptorHeap*>& apDepthStencilDescriptorHeaps,
-            uint32_t iNumRenderTargetAttachments,
-            float const* afClearColor,
-            std::vector<bool> const& abClear)
-        {
-            WTFASSERT(0, "Implement me");
-        }
-
-        /*
-        **
-        */
         void CRenderer::platformSetRenderTargetAndClear2(
             RenderDriver::Common::CCommandBuffer& commandBuffer,
             std::vector<RenderDriver::Common::CDescriptorHeap*>& apRenderTargetDescriptorHeaps,
@@ -1267,32 +1051,6 @@ namespace Render
             std::vector<bool> const& abClear)
         {
             //WTFASSERT(0, "Implement me");
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformExecuteIndirectDrawMeshInstances(
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            uint32_t iDrawListAddress,
-            uint32_t iDrawCountBufferOffset,
-            Render::Common::PassType passType,
-            RenderDriver::Common::CBuffer* pIndirectDrawMeshList,
-            std::string const& renderJobName)
-        {
-            WTFASSERT(0, "Implement me");
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformExecuteIndirectCompute(
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            uint32_t iRenderJobIndirectCommandAddress,
-            RenderDriver::Common::CBuffer* pIndirectComputeList,
-            std::string const& renderJobName)
-        {
-            WTFASSERT(0, "Implement me");
         }
 
         /*
@@ -1384,19 +1142,6 @@ namespace Render
                 *pNativeMemorySrc);
 
             mpUploadCommandBuffer->reset();
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformCopyBufferToCPUMemory2(
-            RenderDriver::Common::CBuffer* pGPUBuffer,
-            void* pCPUBuffer,
-            uint64_t iSrcOffset,
-            uint64_t iDataSize,
-            RenderDriver::Common::CBuffer* pTempBuffer)
-        {
-            WTFASSERT(0, "Implement me");
         }
 
         /*
@@ -1546,18 +1291,6 @@ namespace Render
             mpUploadCommandBuffer->reset();
 
             miCopyCommandFenceValue = iCopyCommandFenceValue;
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformCopyImage(
-            RenderDriver::Common::CImage& destImage,
-            RenderDriver::Common::CImage& srcImage,
-            bool bSrcWritable)
-        {
-            WTFASSERT(0, "Implement me");
-
         }
 
         /*
@@ -1717,54 +1450,6 @@ namespace Render
         /*
         **
         */
-        void CRenderer::platformCopyImageToBuffer(
-            RenderDriver::Common::CBuffer& destBuffer,
-            RenderDriver::Common::CImage& srcImage,
-            uint32_t iDestOffset)
-        {
-            WTFASSERT(0, "Implement me");
-
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformCopyImageToBuffer2(
-            RenderDriver::Common::CBuffer& destBuffer,
-            RenderDriver::Common::CImage& srcImage,
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            uint32_t iDestOffset)
-        {
-            WTFASSERT(0, "Implement me");
-
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformCopyBufferToImage(
-            RenderDriver::Common::CImage& destImage,
-            RenderDriver::Common::CBuffer& srcBuffer,
-            uint32_t iSrcOffset)
-        {
-            WTFASSERT(0, "Implement me");
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformCopyBufferToImage2(
-            RenderDriver::Common::CImage& destImage,
-            RenderDriver::Common::CBuffer& srcBuffer,
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            uint32_t iSrcOffset)
-        {
-            WTFASSERT(0, "Implement me");
-        }
-
-        /*
-        **
-        */
         void CRenderer::platformCopyBufferToBuffer(
             RenderDriver::Common::CBuffer* pDestBuffer,
             RenderDriver::Common::CBuffer* pSrcBuffer,
@@ -1774,44 +1459,6 @@ namespace Render
         {
             WTFASSERT(0, "Implement me");
 
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformCopyBufferToBuffer3(
-            RenderDriver::Common::CBuffer* pDestBuffer,
-            RenderDriver::Common::CBuffer* pSrcBuffer,
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            RenderDriver::Common::CCommandAllocator& commandAllocator,
-            uint32_t iSrcOffset,
-            uint32_t iDestOffset,
-            uint64_t iDataSize,
-            bool bCloseAndExecute)
-        {
-            WTFASSERT(0, "Implement me");
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformCopyBufferToBufferNoWait(
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            RenderDriver::Common::CBuffer* pDestBuffer,
-            RenderDriver::Common::CBuffer* pSrcBuffer,
-            uint32_t iSrcOffset,
-            uint32_t iDestOffset,
-            uint64_t iDataSize)
-        {
-            WTFASSERT(0, "Implement me");
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformCopyBufferToBuffer2(Render::Common::CopyBufferDescriptor const& desc)
-        {
-            WTFASSERT(0, "Implement me");
         }
 
         /*
@@ -1828,36 +1475,6 @@ namespace Render
 
             float3 ret(0.0f, 0.0f, 0.0f);
             return ret;
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformResetUploadBuffers(bool bCloseAndResetUploadCommandBuffer)
-        {
-            if(bCloseAndResetUploadCommandBuffer)
-            {
-                mpUploadCommandBuffer->close();
-                mpCopyCommandQueue->execCommandBuffer(*mpUploadCommandBuffer, *mpDevice);
-                
-                VkQueue& nativeQueue = *(static_cast<VkQueue*>(mpCopyCommandQueue->getNativeCommandQueue()));
-                VkResult ret = vkQueueWaitIdle(nativeQueue);
-                WTFASSERT(ret == VK_SUCCESS, "Error waiting for copy command queue after upload: %d", ret);
-
-                mpUploadCommandAllocator->reset();
-                mpUploadCommandBuffer->reset();
-                int iDebug = 1;
-            }
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformInitBuffers(
-            std::vector<std::shared_ptr<RenderDriver::Common::CBuffer>>& aBuffers,
-            uint32_t iNumBuffers)
-        {
-            WTFASSERT(0, "Implement me");
         }
 
         /*
@@ -1897,12 +1514,6 @@ namespace Render
                 (int)captureFilePath.size(), 
                 &buffer[0], 
                 static_cast<int32_t>(buffer.size()));
-
-            //PIXCaptureParameters captureParameters;
-            //std::wstring captureFilePathWS = std::wstring(&buffer[0], charsConverted);
-            //captureParameters.GpuCaptureParameters.FileName = captureFilePathWS.c_str();
-            //HRESULT hr = PIXBeginCapture(PIX_CAPTURE_GPU, &captureParameters);
-            //WTFASSERT(hr == S_OK, "gpu capture error %d\n", hr);
         }
 
         /*
@@ -1937,22 +1548,6 @@ namespace Render
         /*
         **
         */
-        void CRenderer::platformBeginRenderJobDebugEventMark(std::string const& renderJobName)
-        {
-            WTFASSERT(0, "Implement me");
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformEndRenderJobDebugEventMark(std::string const& renderJobName)
-        {
-            WTFASSERT(0, "Implement me");
-        }
-
-        /*
-        **
-        */
         void CRenderer::platformTransitionBarriers(
             RenderDriver::Common::Utils::TransitionBarrierInfo const* aBarrierInfo,
             RenderDriver::Common::CCommandBuffer& commandBuffer,
@@ -1960,198 +1555,6 @@ namespace Render
             bool bReverseState,
             void* pUserData)
         {
-            Render::Common::RenderJobInfo* pRenderJob = static_cast<Render::Common::RenderJobInfo*>(pUserData);
-
-            std::vector<VkMemoryBarrier> aBarriersVulkan(iNumBarrierInfo);
-            VkCommandBuffer* pCommandBuffer = static_cast<VkCommandBuffer*>(commandBuffer.getNativeCommandList());
-
-            uint32_t iQueueType = static_cast<uint32_t>(RenderDriver::Common::CCommandQueue::Type::Copy);
-            if(pUserData)
-            {
-                if(pRenderJob->mType == Render::Common::JobType::Compute)
-                {
-                    iQueueType = static_cast<uint32_t>(RenderDriver::Common::CCommandQueue::Type::Compute);
-                }
-                else if(pRenderJob->mType == Render::Common::JobType::Graphics)
-                {
-                    iQueueType = static_cast<uint32_t>(RenderDriver::Common::CCommandQueue::Type::Graphics);
-                }
-            }
-
-            // memory transitions
-            uint32_t iNumMemoryBarriers = 0;
-            std::vector<VkMemoryBarrier> aMemoryBarriers(iNumBarrierInfo);
-            for(uint32_t i = 0; i < iNumBarrierInfo; i++)
-            {
-                RenderDriver::Common::Utils::TransitionBarrierInfo const& barrierInfo = aBarrierInfo[i];
-                if(barrierInfo.mpBuffer && barrierInfo.mAfter == RenderDriver::Common::ResourceStateFlagBits::CopyDestination)
-                {
-                    VkMemoryBarrier memoryBarrier = {};
-                    memoryBarrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
-                    memoryBarrier.pNext = nullptr;
-                    memoryBarrier.srcAccessMask = VK_ACCESS_NONE;
-                    memoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-                    aMemoryBarriers[iNumMemoryBarriers++] = memoryBarrier;
-                }
-            }
-
-            aMemoryBarriers.resize(iNumMemoryBarriers);
-
-            if(iNumMemoryBarriers > 0)
-            {
-                vkCmdPipelineBarrier(
-                    *pCommandBuffer,
-                    VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-                    VK_PIPELINE_STAGE_TRANSFER_BIT,
-                    0,
-                    iNumMemoryBarriers,
-                    aMemoryBarriers.data(),
-                    0,
-                    nullptr,
-                    0,
-                    nullptr);
-            }
-
-            // image transitions
-            uint32_t iNumImageTransitions = 0;
-            std::vector<VkImageMemoryBarrier> aImageMemoryBarriers(iNumBarrierInfo);
-            for(uint32_t i = 0; i < iNumBarrierInfo; i++)
-            {
-                RenderDriver::Common::Utils::TransitionBarrierInfo const& barrierInfo = aBarrierInfo[i];
-                if(barrierInfo.mpImage && 
-                    barrierInfo.mAfter != RenderDriver::Common::ResourceStateFlagBits::CopyDestination &&
-                    barrierInfo.mAfter != RenderDriver::Common::ResourceStateFlagBits::CopySource)
-                {
-                    VkImage* pNativeImage = static_cast<VkImage*>(barrierInfo.mpImage->getNativeImage());
-                    RenderDriver::Vulkan::CImage* pImageVulkan = static_cast<RenderDriver::Vulkan::CImage*>(barrierInfo.mpImage);
-                    RenderDriver::Common::ImageLayout oldImageLayout = pImageVulkan->getImageLayout(iQueueType);
-                    
-                    VkImageLayout oldLayoutVulkan = SerializeUtils::Vulkan::convert(pImageVulkan->getImageLayout(iQueueType));
-                    VkImageLayout newLayoutVulkan = VK_IMAGE_LAYOUT_GENERAL; // SerializeUtils::Vulkan::convert(barrierInfo.mAfter);
-
-                    if(oldImageLayout == RenderDriver::Common::ImageLayout::UNDEFINED)
-                    {
-                        // memory barrier for image to transfer layout
-                        VkImageMemoryBarrier imageMemoryBarrier = {};
-                        imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-                        imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                        imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                        imageMemoryBarrier.srcAccessMask = (barrierInfo.mBefore == RenderDriver::Common::ResourceStateFlagBits::UnorderedAccess) ? VK_ACCESS_SHADER_WRITE_BIT : VK_ACCESS_SHADER_READ_BIT;
-                        imageMemoryBarrier.dstAccessMask = (barrierInfo.mAfter == RenderDriver::Common::ResourceStateFlagBits::UnorderedAccess || barrierInfo.mAfter == RenderDriver::Common::ResourceStateFlagBits::RenderTarget) ? VK_ACCESS_SHADER_WRITE_BIT : VK_ACCESS_SHADER_READ_BIT;
-                        imageMemoryBarrier.oldLayout = SerializeUtils::Vulkan::convert(pImageVulkan->getImageLayout(iQueueType));
-                        imageMemoryBarrier.newLayout = newLayoutVulkan;
-                        imageMemoryBarrier.image = *pNativeImage;
-                        imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
-
-                        pImageVulkan->setImageLayout(SerializeUtils::Vulkan::convert(imageMemoryBarrier.newLayout), iQueueType);
-
-                        aImageMemoryBarriers[iNumImageTransitions++] = imageMemoryBarrier;
-                    }
-                }
-            }
-
-            aImageMemoryBarriers.resize(iNumImageTransitions);
-
-            // buffer transitions
-            uint32_t iNumBufferTransitions = 0;
-            std::vector<VkBufferMemoryBarrier> aBufferMemoryBarriers(iNumBarrierInfo);
-            for(uint32_t i = 0; i < iNumBarrierInfo; i++)
-            {
-                RenderDriver::Common::Utils::TransitionBarrierInfo const& barrierInfo = aBarrierInfo[i];
-                if(barrierInfo.mpBuffer && barrierInfo.mAfter != RenderDriver::Common::ResourceStateFlagBits::CopyDestination)
-                {
-                    VkBuffer* pNativeBuffer = static_cast<VkBuffer*>(barrierInfo.mpBuffer->getNativeBuffer());
-
-                    VkBufferMemoryBarrier bufferMemoryBarrier = {};
-                    bufferMemoryBarrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
-                    bufferMemoryBarrier.pNext = nullptr;
-                    bufferMemoryBarrier.srcAccessMask = (barrierInfo.mBefore == RenderDriver::Common::ResourceStateFlagBits::UnorderedAccess) ? VK_ACCESS_SHADER_WRITE_BIT : VK_ACCESS_SHADER_READ_BIT;
-                    bufferMemoryBarrier.dstAccessMask = (barrierInfo.mAfter == RenderDriver::Common::ResourceStateFlagBits::UnorderedAccess) ? VK_ACCESS_SHADER_WRITE_BIT : VK_ACCESS_SHADER_READ_BIT;
-                    bufferMemoryBarrier.dstQueueFamilyIndex = 0;
-                    bufferMemoryBarrier.buffer = *pNativeBuffer;
-                    bufferMemoryBarrier.offset = 0;
-                    bufferMemoryBarrier.size = barrierInfo.mpBuffer->getDescriptor().miSize;
-                    
-                    aBufferMemoryBarriers[iNumBufferTransitions++] = bufferMemoryBarrier;
-                }
-            }
-
-            aBufferMemoryBarriers.resize(iNumBufferTransitions);
-
-            if(iNumImageTransitions > 0 || iNumBufferTransitions > 0)
-            {
-                vkCmdPipelineBarrier(
-                    *pCommandBuffer,
-                    VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-                    VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-                    0,
-                    0,
-                    nullptr,
-                    iNumBufferTransitions,
-                    aBufferMemoryBarriers.data(),
-                    iNumImageTransitions,
-                    aImageMemoryBarriers.data());
-            }
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformRenderImgui(
-            uint32_t iFrameIndex)
-        {
-            WTFASSERT(0, "Implement me");
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformRenderImgui2(
-            uint32_t iFrameIndex,
-            RenderDriver::Common::CCommandBuffer& commandBuffer)
-        {
-#if defined(USE_IMGUI)
-            platformBeginDebugMarker2("Imgui Pass", &commandBuffer);
-
-            auto& renderJob = mpSerializer->getRenderJob("Imgui Pass Graphics");
-            auto const& renderTarget = mpSerializer->getRenderTarget(renderJob.maOutputRenderTargetAttachments[0]);
-
-            ImGui::Render();
-
-            if(ImGui::GetDrawData() == nullptr)
-            {
-                return;
-            }
-
-            VkCommandBuffer& nativeCommandBuffer = *(reinterpret_cast<VkCommandBuffer*>(commandBuffer.getNativeCommandList()));
-
-            VkClearValue aClearValue[2];
-            memset(&aClearValue[0].color, 0, sizeof(float) * 4);
-            aClearValue[1].depthStencil.depth = 1.0f;
-            aClearValue[1].depthStencil.stencil = 0;
-
-            RenderDriver::Vulkan::CFrameBuffer* pFrameBuffer = static_cast<RenderDriver::Vulkan::CFrameBuffer*>(mpSerializer->getFrameBuffer(mImguiFrameBufferHandle).get());
-
-            VkRenderPassBeginInfo info = {};
-            info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-            info.renderPass = mImguiRenderPass;
-            info.framebuffer = *(static_cast<VkFramebuffer*>(pFrameBuffer->getNativeFrameBuffer()));
-            info.renderArea.extent.width = mDesc.miScreenWidth;
-            info.renderArea.extent.height = mDesc.miScreenHeight;
-            info.clearValueCount = 2;
-            info.pClearValues = aClearValue;
-            vkCmdBeginRenderPass(nativeCommandBuffer, &info, VK_SUBPASS_CONTENTS_INLINE);
-            
-            ImGui_ImplVulkan_RenderDrawData(
-                ImGui::GetDrawData(),
-                nativeCommandBuffer);
-
-            vkCmdEndRenderPass(nativeCommandBuffer);
-
-            platformEndDebugMarker2(&commandBuffer);
-
-#endif // USE_IMGUI
         }
 
         /*
@@ -2384,9 +1787,6 @@ namespace Render
         */
         void CRenderer::platformSwapChainMoveToNextFrame()
         {
-            //miCopyCommandFenceValue = 0;
-            //mpUploadFence->reset(mpCopyCommandQueue.get());
-            //mpUploadFence->signal(mpCopyCommandQueue.get(), 0);
         }
 
         /*
@@ -2570,206 +1970,6 @@ namespace Render
         /*
         **
         */
-        void CRenderer::platformAllocateCopyCommandBuffers(
-            std::vector<std::shared_ptr<RenderDriver::Common::CCommandBuffer>>& aCopyCommandBuffers,
-            std::vector<std::shared_ptr<RenderDriver::Common::CCommandAllocator>>& aCopyCommandAllocators,
-            uint32_t iNumCopyCommandBuffers)
-        {
-            aCopyCommandBuffers.resize(iNumCopyCommandBuffers);
-            aCopyCommandAllocators.resize(iNumCopyCommandBuffers);
-            for(uint32_t i = 0; i < iNumCopyCommandBuffers; i++)
-            {
-                aCopyCommandAllocators[i] = std::make_shared<RenderDriver::Vulkan::CCommandAllocator>();
-                aCopyCommandBuffers[i] = std::make_shared<RenderDriver::Vulkan::CCommandBuffer>();
-
-                RenderDriver::Common::CommandAllocatorDescriptor commandAllocatorDesc = {};
-                commandAllocatorDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
-                aCopyCommandAllocators[i]->create(commandAllocatorDesc, *mpDevice);
-                aCopyCommandAllocators[i]->reset();
-
-                RenderDriver::Common::CommandBufferDescriptor commandBufferDesc = {};
-                commandBufferDesc.mpCommandAllocator = aCopyCommandAllocators[i].get();
-                commandBufferDesc.mpPipelineState = nullptr;
-                commandBufferDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
-                aCopyCommandBuffers[i]->create(commandBufferDesc, *mpDevice);
-                aCopyCommandBuffers[i]->reset();
-            }
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformUploadResourceDataWithCommandBufferAndUploadBuffer(
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            RenderDriver::Common::CCommandAllocator& commandAllocator,
-            RenderDriver::Common::CBuffer& uploadBuffer,
-            RenderDriver::Common::CBuffer& buffer,
-            void* pRawSrcData,
-            uint64_t iDataSize,
-            uint64_t iDestDataOffset)
-        {
-            char szOutput[256];
-            sprintf(szOutput, "Upload Resource %s (%lld bytes)\n",
-                buffer.getID().c_str(),
-                iDataSize);
-
-            WTFASSERT(0, "Implement me");
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformAllocateUploadBuffer(
-            std::shared_ptr<RenderDriver::Common::CBuffer>& buffer,
-            uint32_t iSize)
-        {
-            buffer = std::make_shared<RenderDriver::Vulkan::CBuffer>();
-
-            RenderDriver::Common::BufferDescriptor createBufferDesc;
-            createBufferDesc.miSize = iSize;
-            createBufferDesc.mFormat = RenderDriver::Common::Format::R32_FLOAT;
-            createBufferDesc.mHeapType = RenderDriver::Common::HeapType::Upload;
-            createBufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferDest;
-            buffer->create(createBufferDesc, *mpDevice);
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformSignalUploadFenceValue(uint64_t iFenceValue)
-        {
-            WTFASSERT(0, "Implement me");
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformEncodeUploadBufferCommand(
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            RenderDriver::Common::CCommandAllocator& commandAllocator,
-            RenderDriver::Common::CBuffer& uploadBuffer,
-            RenderDriver::Common::CBuffer& buffer,
-            void* pRawSrcData,
-            uint64_t iDataSize,
-            uint64_t iDestDataOffset)
-        {
-            char szOutput[256];
-            sprintf(szOutput, "Upload Resource %s (%lld bytes)\n",
-                buffer.getID().c_str(),
-                iDataSize);
-            
-            platformBeginDebugMarker2(szOutput, &commandBuffer);
-            platformCopyCPUToGPUBuffer(
-                commandBuffer,
-                &buffer,
-                &uploadBuffer,
-                pRawSrcData,
-                0,
-                static_cast<uint32_t>(iDestDataOffset),
-                static_cast<uint32_t>(iDataSize));
-            platformEndDebugMarker2(&commandBuffer);
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformExecuteCopyCommandBuffers(
-            RenderDriver::Common::CCommandBuffer* const* apCommandBuffers,
-            uint32_t iNumCommandBuffers)
-        {
-            VkCommandBuffer aCommandBuffers[64];
-            for(uint32_t i = 0; i < iNumCommandBuffers; i++)
-            {
-                apCommandBuffers[i]->close();
-                aCommandBuffers[i] = *(static_cast<VkCommandBuffer*>(apCommandBuffers[i]->getNativeCommandList()));
-            }
-
-            VkQueue* pNativeCommandQueue = static_cast<VkQueue*>(mpCopyCommandQueue->getNativeCommandQueue());
-            VkSubmitInfo submitInfo = {};
-            submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-            submitInfo.pNext = nullptr;
-            submitInfo.waitSemaphoreCount = 0;
-            submitInfo.pWaitSemaphores = nullptr;
-            submitInfo.pWaitDstStageMask = nullptr;
-            submitInfo.commandBufferCount = iNumCommandBuffers;
-            submitInfo.pCommandBuffers = aCommandBuffers;
-            submitInfo.signalSemaphoreCount = 0;
-            submitInfo.pSignalSemaphores = nullptr;
-
-            VkFence* pNativeFence = static_cast<VkFence*>(mpUploadFence->getNativeFence());
-            VkResult ret = vkQueueSubmit(
-                *pNativeCommandQueue,
-                1,
-                &submitInfo,
-                nullptr);
-            WTFASSERT(ret == VK_SUCCESS, "Error submitting copy command buffers: %d", ret);
-
-            vkQueueWaitIdle(*pNativeCommandQueue);
-
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformCreateTotalVertexAndIndexBuffer(
-            Render::Common::InitializeVertexAndIndexBufferDescriptor const& desc)
-        {
-            // create vertex buffer 
-            RenderDriver::Common::BufferDescriptor vertexBufferDesc = {};
-            vertexBufferDesc.mFormat = RenderDriver::Common::Format::UNKNOWN;
-            vertexBufferDesc.miSize = static_cast<uint32_t>(desc.miVertexDataSize);
-            vertexBufferDesc.mBufferUsage = static_cast<RenderDriver::Common::BufferUsage>(
-                static_cast<uint32_t>(RenderDriver::Common::BufferUsage::VertexBuffer) | 
-                static_cast<uint32_t>(RenderDriver::Common::BufferUsage::TransferDest));
-            mpTotalMeshesVertexBuffer->create(vertexBufferDesc, *mpDevice);
-            mpTotalMeshesVertexBuffer->setID("Total Meshes Vertex Buffer");
-
-            // create index buffer
-            RenderDriver::Common::BufferDescriptor indexBufferDesc = {};
-            indexBufferDesc.mFormat = RenderDriver::Common::Format::R32_UINT;
-            indexBufferDesc.miSize = static_cast<uint32_t>(desc.miIndexDataSize);
-            indexBufferDesc.mBufferUsage = static_cast<RenderDriver::Common::BufferUsage>(
-                static_cast<uint32_t>(RenderDriver::Common::BufferUsage::IndexBuffer) |
-                static_cast<uint32_t>(RenderDriver::Common::BufferUsage::TransferDest));
-            mpTotalMeshesIndexBuffer->create(indexBufferDesc, *mpDevice);
-            mpTotalMeshesIndexBuffer->setID("Total Meshes Index Buffer");
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformPreFenceSignal(
-            RenderDriver::Common::CFence* pFence,
-            RenderDriver::Common::CCommandQueue* pCommandQueue,
-            uint32_t iQueueType,
-            uint64_t iSignalValue)
-        {
-            platformBeginDebugMarker("Signal");
-
-            // fence signal value for next render job on this command queue
-            ++maiRenderJobFenceValues[iQueueType];
-            mapCommandQueueFences[iQueueType]->signal(
-                pCommandQueue,
-                maiRenderJobFenceValues[iQueueType]);
-
-            platformEndDebugMarker();    // Signal
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformPostFenceSignal(
-            RenderDriver::Common::CFence* pFence,
-            RenderDriver::Common::CCommandQueue* pCommandQueue,
-            uint32_t iQueueType,
-            uint64_t iSignalValue)
-        {
-            
-        }
-
-        /*
-        **
-        */
         void CRenderer::platformInitializeRenderJobs(
             std::vector<std::string> const& aRenderJobNames)
         {
@@ -2781,71 +1981,6 @@ namespace Render
             for(auto const& name : aRenderJobNames)
             {
                 mapRenderJobs[name] = maRenderJobs[name].get();
-            }
-        }
-
-        /*
-        **
-        */
-        void CRenderer::platformTransitionImageLayouts(
-            Render::Common::RenderJobInfo const& renderJob,
-            RenderDriver::Common::CCommandBuffer& commandBuffer)
-        {
-            std::vector<VkImageMemoryBarrier> aImageBarriers;
-
-            auto const& pipeline = mpSerializer->getPipelineInfo(renderJob.miPipelineIndex);
-            RenderDriver::Vulkan::CDescriptorSet* pDescriptorSet = static_cast<RenderDriver::Vulkan::CDescriptorSet*>(mpSerializer->getDescriptorSet(pipeline.mDescriptorHandle).get());
-
-            auto const& aImageLayouts = pDescriptorSet->getImageLayouts();
-            for(auto keyValue : aImageLayouts)
-            {
-                uint32_t iShaderResourceIndex = keyValue.first;
-                RenderDriver::Common::ImageLayout imageLayout = keyValue.second;
-
-                RenderDriver::Vulkan::CImage* pImage = static_cast<RenderDriver::Vulkan::CImage*>(renderJob.maShaderResourceInfo[iShaderResourceIndex].mExternalResource.mpImage);
-                VkImageLayout oldLayout = (imageLayout == RenderDriver::Common::ImageLayout::SHADER_READ_ONLY_OPTIMAL) ? VK_IMAGE_LAYOUT_GENERAL : VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                VkImageLayout newLayout = (imageLayout == RenderDriver::Common::ImageLayout::SHADER_READ_ONLY_OPTIMAL) ? VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL : VK_IMAGE_LAYOUT_GENERAL;
-                VkImage* pNativeImage = static_cast<VkImage*>(pImage->getNativeImage());
-
-                VkImageMemoryBarrier imageMemoryBarrier = {};
-                imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-                imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                imageMemoryBarrier.srcAccessMask = VK_ACCESS_SHADER_READ_BIT;
-                imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_WRITE_BIT;
-                imageMemoryBarrier.oldLayout = oldLayout;
-                imageMemoryBarrier.newLayout = newLayout;
-                imageMemoryBarrier.image = *pNativeImage;
-                imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{ VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1 };
-
-                aImageBarriers.push_back(imageMemoryBarrier);
-
-                char const* szOldLayout = (oldLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) ? "SHADER_READ_ONLY_OPTIMAL" : "GENERAL";
-                char const* szNewLayout = (newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) ? "SHADER_READ_ONLY_OPTIMAL" : "GENERAL";
-                DEBUG_PRINTF("%s render job: %s output image: %s old layout: %s new layout: %s\n",
-                    commandBuffer.getID().c_str(),
-                    renderJob.mName.c_str(),
-                    pImage->getID().c_str(),
-                    szOldLayout,
-                    szNewLayout);
-                
-            }
-
-            if(aImageBarriers.size() > 0)
-            {
-                VkCommandBuffer* pCommandBuffer = static_cast<VkCommandBuffer*>(commandBuffer.getNativeCommandList());
-
-                vkCmdPipelineBarrier(
-                    *pCommandBuffer,
-                    VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT | VK_PIPELINE_STAGE_VERTEX_SHADER_BIT,
-                    VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT | VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-                    0,
-                    0,
-                    nullptr,
-                    0,
-                    nullptr,
-                    static_cast<uint32_t>(aImageBarriers.size()),
-                    aImageBarriers.data());
             }
         }
 
@@ -2897,154 +2032,6 @@ namespace Render
             }
         }
     
-        /*
-        **
-        */
-        void CRenderer::platformTransitionBarriers2(
-            RenderDriver::Common::Utils::TransitionBarrierInfo const* aBarrierInfo,
-            RenderDriver::Common::CCommandBuffer& commandBuffer,
-            uint32_t iNumBarrierInfo,
-            bool bReverseState,
-            RenderDriver::Common::CCommandQueue::Type const& queueType
-        )
-        {
-            std::vector<VkMemoryBarrier> aBarriersVulkan(iNumBarrierInfo);
-            VkCommandBuffer* pCommandBuffer = static_cast<VkCommandBuffer*>(commandBuffer.getNativeCommandList());
-
-            uint32_t iQueueType = static_cast<uint32_t>(RenderDriver::Common::CCommandQueue::Type::Copy);
-            if(queueType == RenderDriver::Common::CCommandQueue::Type::Compute)
-            {
-                iQueueType = static_cast<uint32_t>(RenderDriver::Common::CCommandQueue::Type::Compute);
-            }
-            else if(queueType == RenderDriver::Common::CCommandQueue::Type::Graphics)
-            {
-                iQueueType = static_cast<uint32_t>(RenderDriver::Common::CCommandQueue::Type::Graphics);
-            }
-            
-
-            // memory transitions
-            uint32_t iNumMemoryBarriers = 0;
-            std::vector<VkMemoryBarrier> aMemoryBarriers(iNumBarrierInfo);
-            for(uint32_t i = 0; i < iNumBarrierInfo; i++)
-            {
-                RenderDriver::Common::Utils::TransitionBarrierInfo const& barrierInfo = aBarrierInfo[i];
-                if(barrierInfo.mpBuffer && barrierInfo.mAfter == RenderDriver::Common::ResourceStateFlagBits::CopyDestination)
-                {
-                    VkMemoryBarrier memoryBarrier = {};
-                    memoryBarrier.sType = VK_STRUCTURE_TYPE_MEMORY_BARRIER;
-                    memoryBarrier.pNext = nullptr;
-                    memoryBarrier.srcAccessMask = VK_ACCESS_NONE;
-                    memoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-                    aMemoryBarriers[iNumMemoryBarriers++] = memoryBarrier;
-                }
-            }
-
-            aMemoryBarriers.resize(iNumMemoryBarriers);
-
-            if(iNumMemoryBarriers > 0)
-            {
-                vkCmdPipelineBarrier(
-                    *pCommandBuffer,
-                    VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
-                    VK_PIPELINE_STAGE_TRANSFER_BIT,
-                    0,
-                    iNumMemoryBarriers,
-                    aMemoryBarriers.data(),
-                    0,
-                    nullptr,
-                    0,
-                    nullptr);
-            }
-
-            // image transitions
-            uint32_t iNumImageTransitions = 0;
-            std::vector<VkImageMemoryBarrier> aImageMemoryBarriers(iNumBarrierInfo);
-            for(uint32_t i = 0; i < iNumBarrierInfo; i++)
-            {
-                RenderDriver::Common::Utils::TransitionBarrierInfo const& barrierInfo = aBarrierInfo[i];
-                if(barrierInfo.mpImage &&
-                    barrierInfo.mAfter != RenderDriver::Common::ResourceStateFlagBits::CopyDestination &&
-                    barrierInfo.mAfter != RenderDriver::Common::ResourceStateFlagBits::CopySource)
-                {
-                    VkImage* pNativeImage = static_cast<VkImage*>(barrierInfo.mpImage->getNativeImage());
-                    RenderDriver::Vulkan::CImage* pImageVulkan = static_cast<RenderDriver::Vulkan::CImage*>(barrierInfo.mpImage);
-                    RenderDriver::Common::ImageLayout oldImageLayout = pImageVulkan->getImageLayout(iQueueType);
-
-                    VkImageLayout oldLayoutVulkan = SerializeUtils::Vulkan::convert(pImageVulkan->getImageLayout(iQueueType));
-                    VkImageLayout newLayoutVulkan = VK_IMAGE_LAYOUT_GENERAL; // SerializeUtils::Vulkan::convert(barrierInfo.mAfter);
-
-                    //if(oldImageLayout == RenderDriver::Common::ImageLayout::UNDEFINED)
-                    {
-                        // memory barrier for image to transfer layout
-                        VkImageMemoryBarrier imageMemoryBarrier = {};
-                        imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-                        imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                        imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                        imageMemoryBarrier.srcAccessMask = (barrierInfo.mBefore == RenderDriver::Common::ResourceStateFlagBits::UnorderedAccess) ? VK_ACCESS_SHADER_WRITE_BIT : VK_ACCESS_SHADER_READ_BIT;
-                        imageMemoryBarrier.dstAccessMask = (barrierInfo.mAfter == RenderDriver::Common::ResourceStateFlagBits::UnorderedAccess || barrierInfo.mAfter == RenderDriver::Common::ResourceStateFlagBits::RenderTarget) ? VK_ACCESS_SHADER_WRITE_BIT : VK_ACCESS_SHADER_READ_BIT;
-                        imageMemoryBarrier.oldLayout = SerializeUtils::Vulkan::convert(pImageVulkan->getImageLayout(iQueueType));
-                        imageMemoryBarrier.newLayout = newLayoutVulkan;
-                        imageMemoryBarrier.image = *pNativeImage;
-                        imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
-
-                        if(barrierInfo.mpImage->getDescriptor().mFormat == RenderDriver::Common::Format::D32_FLOAT_S8X24_UINT)
-                        {
-                            imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1};
-                            imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-                        }
-
-                        pImageVulkan->setImageLayout(SerializeUtils::Vulkan::convert(imageMemoryBarrier.newLayout), iQueueType);
-
-                        aImageMemoryBarriers[iNumImageTransitions++] = imageMemoryBarrier;
-                    }
-                }
-            }
-
-            aImageMemoryBarriers.resize(iNumImageTransitions);
-
-            // buffer transitions
-            uint32_t iNumBufferTransitions = 0;
-            std::vector<VkBufferMemoryBarrier> aBufferMemoryBarriers(iNumBarrierInfo);
-            for(uint32_t i = 0; i < iNumBarrierInfo; i++)
-            {
-                RenderDriver::Common::Utils::TransitionBarrierInfo const& barrierInfo = aBarrierInfo[i];
-                if(barrierInfo.mpBuffer && barrierInfo.mAfter != RenderDriver::Common::ResourceStateFlagBits::CopyDestination)
-                {
-                    VkBuffer* pNativeBuffer = static_cast<VkBuffer*>(barrierInfo.mpBuffer->getNativeBuffer());
-
-                    VkBufferMemoryBarrier bufferMemoryBarrier = {};
-                    bufferMemoryBarrier.sType = VK_STRUCTURE_TYPE_BUFFER_MEMORY_BARRIER;
-                    bufferMemoryBarrier.pNext = nullptr;
-                    bufferMemoryBarrier.srcAccessMask = (barrierInfo.mBefore == RenderDriver::Common::ResourceStateFlagBits::UnorderedAccess) ? VK_ACCESS_SHADER_WRITE_BIT : VK_ACCESS_SHADER_READ_BIT;
-                    bufferMemoryBarrier.dstAccessMask = (barrierInfo.mAfter == RenderDriver::Common::ResourceStateFlagBits::UnorderedAccess) ? VK_ACCESS_SHADER_WRITE_BIT : VK_ACCESS_SHADER_READ_BIT;
-                    bufferMemoryBarrier.dstQueueFamilyIndex = 0;
-                    bufferMemoryBarrier.buffer = *pNativeBuffer;
-                    bufferMemoryBarrier.offset = 0;
-                    bufferMemoryBarrier.size = barrierInfo.mpBuffer->getDescriptor().miSize;
-
-                    aBufferMemoryBarriers[iNumBufferTransitions++] = bufferMemoryBarrier;
-                }
-            }
-
-            aBufferMemoryBarriers.resize(iNumBufferTransitions);
-
-            if(iNumImageTransitions > 0 || iNumBufferTransitions > 0)
-            {
-                vkCmdPipelineBarrier(
-                    *pCommandBuffer,
-                    VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT,
-                    VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT,
-                    0,
-                    0,
-                    nullptr,
-                    iNumBufferTransitions,
-                    aBufferMemoryBarriers.data(),
-                    iNumImageTransitions,
-                    aImageMemoryBarriers.data());
-            }
-        }
-
         /*
         **
         */
@@ -3296,30 +2283,8 @@ namespace Render
                     imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1};
                 }
 
-                //{
-                //    VkImage nativeImage = *((VkImage*)aBarriers[0].mpImage->getNativeImage());
-                //    DEBUG_PRINTF("OLD Image: \"%s\" 0x%llX layout 0: %d layout 1: %d\n",
-                //        pImageVulkan->getID().c_str(),
-                //        uint64_t(nativeImage),
-                //        uint32_t(pImageVulkan->getImageLayout(0)),
-                //        uint32_t(pImageVulkan->getImageLayout(1))
-                //    );
-                //    int iDebug = 1;
-                //}
-
                 pImageVulkan->setImageLayout(SerializeUtils::Vulkan::convert(imageMemoryBarrier.newLayout), 0);
                 aImageMemoryBarriers.push_back(imageMemoryBarrier);
-
-                //{
-                //    VkImage nativeImage = *((VkImage *)aBarriers[0].mpImage->getNativeImage());
-                //    DEBUG_PRINTF("NEW Image: \"%s\" 0x%llX layout 0: %d layout 1: %d\n\n",
-                //        pImageVulkan->getID().c_str(),
-                //        uint64_t(nativeImage),
-                //        uint32_t(pImageVulkan->getImageLayout(0)),
-                //        uint32_t(pImageVulkan->getImageLayout(1))
-                //    );
-                //    int iDebug = 1;
-                //}
             }
 
             if(aImageMemoryBarriers.size() > 0)

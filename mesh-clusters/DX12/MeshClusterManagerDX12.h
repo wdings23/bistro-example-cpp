@@ -18,10 +18,12 @@ namespace Render
                 Render::Common::CRenderer& renderer,
                 RenderDriver::Common::CDevice& device);
 
+#if 0
             virtual void execIndirectDrawCommands(
                 RenderDriver::Common::CCommandBuffer& commandBuffer,
                 RenderDriver::Common::Utils::TransitionBarrierInfo& barrierInfo,
                 Render::Common::RenderJobInfo const& renderJobInfo);
+#endif // #if 0
 
         protected:
             std::map<uint64_t, std::vector<D3D12_VERTEX_BUFFER_VIEW>>                                    maaVertexBufferView;

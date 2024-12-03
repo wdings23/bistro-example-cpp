@@ -115,13 +115,10 @@
     <ClInclude Include="mesh-clusters\mesh_cluster.h" />
     <ClInclude Include="render\Camera.h" />
     <ClInclude Include="render\DX12\RendererDX12.h" />
-    <ClInclude Include="render\DX12\RenderJobSerializerDX12.h" />
     <ClInclude Include="render\Renderer.h" />
     <ClInclude Include="render\RenderJob.h" />
-    <ClInclude Include="render\RenderJobSerializer.h" />
     <ClInclude Include="render\VertexFormat.h" />
     <ClInclude Include="render\Vulkan\RendererVulkan.h" />
-    <ClInclude Include="render\Vulkan\RenderJobSerializerVulkan.h" />
     <ClInclude Include="render\Vulkan\RenderJobVulkan.h" />
     <ClInclude Include="skeletal-animation\AnimationManager.h" />
     <ClInclude Include="skeletal-animation\Joint.h" />
@@ -155,12 +152,9 @@
     <ClCompile Include="mesh-clusters\mesh_cluster.cpp" />
     <ClCompile Include="render\Camera.cpp" />
     <ClCompile Include="render\DX12\RendererDX12.cpp" />
-    <ClCompile Include="render\DX12\RenderJobSerializerDX12.cpp" />
     <ClCompile Include="render\Renderer.cpp" />
     <ClCompile Include="render\RenderJob.cpp" />
-    <ClCompile Include="render\RenderJobSerializer.cpp" />
     <ClCompile Include="render\Vulkan\RendererVulkan.cpp" />
-    <ClCompile Include="render\Vulkan\RenderJobSerializerVulkan.cpp" />
     <ClCompile Include="render\Vulkan\RenderJobVulkan.cpp" />
     <ClCompile Include="skeletal-animation\AnimationManager.cpp" />
     <ClCompile Include="skeletal-animation\SkeletalAnimation.cpp" />
