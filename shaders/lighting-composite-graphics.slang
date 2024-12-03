@@ -151,6 +151,9 @@ float4 PSMain(
         octahedronUV
     ) .xyz;
 
-    float3 ret = (shadow * sunLight + totalAmbient) * ao;
+    // float3 lightDirection = normalize(float3(-0.5f, 1.0f, 0.0f));
+    float fDP = max(dot(normal.xyz, defaultUniformData.mLightDirection.xyz), 0.0f); 
+
+    float3 ret = (shadow * sunLight * fDP + totalAmbient) * ao;
     return float4(ret.xyz, 1.0f); 
 }

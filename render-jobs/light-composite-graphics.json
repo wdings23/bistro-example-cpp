@@ -27,7 +27,7 @@
             "ParentJobName": "Ray Traced Shadow"
         },
         {
-            "Name" : "Sky Output",
+            "Name" : "Diffuse Sky Light Output",
             "Type": "TextureInput",
             "ParentJobName": "Atmosphere Graphics"
         },

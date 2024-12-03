@@ -1630,8 +1630,8 @@ namespace Render
             *pFloat4Data++ = float4(Render::Common::gaCameras[0].getPosition(), 1.0f);
             *pFloat4Data++ = float4(Render::Common::gaCameras[0].getLookAt(), 1.0f);
             
-            *pFloat4Data++ = float4(5.0f, 5.0f, 5.0f, 1.0f);
-            *pFloat4Data++ = float4(normalize(vec3(1.0f, 1.0f, 0.3f)), 1.0f);
+            *pFloat4Data++ = float4(2.0f, 2.0f, 2.0f, 1.0f);
+            *pFloat4Data++ = float4(normalize(vec3(-0.5f, 1.0f, 0.0f)), 1.0f);
             *pFloat4Data++ = 1.0f;
 
             // copy data to registered gpu buffers

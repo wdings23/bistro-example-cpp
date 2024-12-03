@@ -18,7 +18,7 @@
 #define EXPOSURE 20.0f;
 
 
-cbuffer DefaultUniforms
+struct DefaultUniforms
 {
     uint        miScreenWidth;
     uint        miScreenHeight;
@@ -57,6 +57,7 @@ struct Fragment
 {
     float4 mSkyRadiance : SV_TARGET0;
     float4 mSunLightRadiance : SV_TARGET1;
+    float4 mDiffuseSkyRadiance : SV_TARGET2;
 };
 
 // Vertex  Shader
@@ -66,6 +67,9 @@ struct VertexStageOutput
     float4          sv_position     : SV_Position;
     float4          texcoord;
 };
+
+
+[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniforms> defaultUniformData;
 
 [shader("vertex")]
 VertexStageOutput VSMain(
@@ -93,8 +97,10 @@ Fragment PSMain(
     float3 direction = decodeOctahedronMap(input.texcoord.xy).xyz;
     float3 transmittance = float3(0.0f, 0.0f, 0.0f);
 
-    float3 lightDirection = normalize(float3(-0.5f, 1.0f, 0.0f));
-    float3 lightRadiance = float3(1.0f, 1.0f, 1.0f);
+    //float3 lightDirection = normalize(float3(-0.5f, 1.0f, 0.0f));
+    //float3 lightRadiance = float3(1.0f, 1.0f, 1.0f);
+    float3 lightDirection = normalize(defaultUniformData.mLightDirection.xyz);
+    float3 lightRadiance = defaultUniformData.mLightRadiance.xyz;
 
     ScatteringResult sky = IntegrateScattering(
         float3(0.0f, 0.0f, 0.0f),
@@ -114,6 +120,15 @@ Fragment PSMain(
 
     ret.mSkyRadiance = float4(sky.radiance * sky.transmittance, 1.0f);
     ret.mSunLightRadiance = float4(sun.radiance * sun.transmittance, 1.0f);
+
+    ret.mDiffuseSkyRadiance = float4(
+        convolve(
+            input.texcoord.xy,
+            lightDirection,
+            lightRadiance,
+            16), 
+        1.0f
+    );
 
     return ret;
 }
@@ -328,4 +343,60 @@ float3 decodeOctahedronMap(float2 uv)
     v.y *= -1.0f;
 
     return v;
+}
+
+/*
+**
+*/
+float3 convolve(
+    in float2 uv,
+    in float3 lightDirection,
+    in float3 lightRadiance,
+    in uint32_t iNumLoops)
+{
+    float3 normal = decodeOctahedronMap(uv).xyz;
+    float3 transmittance = float3(0.0f, 0.0f, 0.0f);
+
+    float3 up = float3(0.0f, 1.0f, 0.0f);
+    if (abs(normal.y) > 0.999f)
+    {
+        up = float3(1.0f, 0.0f, 0.0f);
+    }
+    float3 tangent = normalize(cross(up, normal));
+    float3 binormal = normalize(cross(normal, tangent));
+
+    float3 totalRadiance = float3(0.0f, 0.0f, 0.0f);
+    float fCount = 0.0f;
+
+    for (uint32_t iY = 0; iY < iNumLoops; iY++)
+    {
+        float fPctY = float(iY) / float(iNumLoops);
+        for (uint32_t iX = 0; iX < iNumLoops; iX++)
+        {
+            float fPctX = float(iX) / float(iNumLoops);
+            float fPhi = 2.0f * PI * fPctY;
+            float fCosTheta = 1.0f - fPctX;
+            float fSinTheta = sqrt(1.0f - fCosTheta * fCosTheta);
+            float3 h = float3(
+                cos(fPhi) * fSinTheta,
+                sin(fPhi) * fSinTheta,
+                fCosTheta);
+
+            float3 rayDirection = normalize(tangent * h.x + binormal * h.y + normal * h.z);
+            ScatteringResult sky = IntegrateScattering(
+                float3(0.0f, 0.0f, 0.0f),
+                rayDirection,
+                PLANET_RADIUS,
+                lightDirection,
+                lightRadiance,
+                transmittance);
+
+            totalRadiance += sky.radiance * sky.transmittance;
+            fCount += 1.0f;
+        }
+    }
+
+    return totalRadiance / fCount;
+
+    
 }
