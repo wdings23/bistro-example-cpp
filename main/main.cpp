@@ -49,12 +49,21 @@ LRESULT CALLBACK _windowProc(
 //static float3 sCameraPosition(6.8f, 2.3f, 4.8f);
 //static float3 sCameraLookAt(0.0f, 0.0f, 0.0f);
 
-static float3 sCameraPosition(6.84940624f, 2.14940548f, 2.78894353f);
-static float3 sCameraLookAt(-1.10439420f, -1.12259507f, 2.04294419f);
-
+//static float3 sCameraLookAt(-3.44f, 1.53f, 0.625f);
+//static float3 sCameraPosition(-7.08f, 1.62f, 0.675f);
+//static float3 sInitialCameraPosition(1.0f, 1.0f, 0.0f);
+//static float3 sInitialCameraLookAt(0.0f, 1.0f, 0.0f);
+static float3 sInitialCameraPosition(-6.623f, 1.35f, -0.1312f);
+static float3 sInitialCameraLookAt(-5.695f, 1.35f, 0.2434f);
+static float3 sCameraPosition(1.0f, 1.0f, 0.0f);
+static float3 sCameraLookAt(0.0f, 0.0f, 0.0f);
 
 static float3 sCameraUp(0.0f, 1.0f, 0.0f);
 static float4 sBallPosition(0.0f, -0.2f, 0.0f, 1.0f);
+
+float2 sCameraAngle(0.0f, 0.0f);
+int32_t siLastX = -1;
+int32_t siLastY = -1;
 
 static float3 sUpperEyeTranslation(0.0f, 0.0f, 0.0f);
 static float sfHeading = 0.0f;
@@ -177,6 +186,11 @@ int CALLBACK WinMain(
     pDesc->mRenderJobsFilePath = "d:\\test\\bistro-example-cpp\\render-jobs\\bistro-example-render-jobs.json";
     pRenderer->setup(*pDesc);
     
+    float3 diff = normalize(sInitialCameraLookAt - sInitialCameraPosition);
+    sInitialCameraLookAt = diff * 0.25f + sInitialCameraPosition;
+
+    sCameraPosition = sInitialCameraPosition;
+    sCameraLookAt = sInitialCameraLookAt;
 
     if(strstr(pCommandLine, "--render=vulkan"))
     {
@@ -251,6 +265,23 @@ auto start = std::chrono::high_resolution_clock::now();
 #endif // USE_IMGUI
 uint64_t iElapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
         
+        float3 up = float3(0.0f, 1.0f, 0.0f);
+        float3 diff = normalize(sCameraLookAt - sCameraPosition);
+        if(fabs(diff.y) > 0.98f)
+        {
+            up = float3(1.0f, 0.0f, 0.0f);
+        }
+
+        Render::Common::UpdateCameraDescriptor cameraDesc = {};
+        cameraDesc.mfFar = 100.0f;
+        cameraDesc.mfNear = 0.4f;
+        cameraDesc.miCameraIndex = 0;
+        cameraDesc.mUp = up;
+        cameraDesc.mPosition = sCameraPosition;
+        cameraDesc.mLookAt = sCameraLookAt;
+        cameraDesc.mfFov = 3.14159f * 0.5f;
+
+        pRenderer->updateCamera(cameraDesc);
         pRenderer->updateRenderJobData();
         pRenderer->draw();
     }
@@ -342,18 +373,59 @@ void handleCameraMouseRotate(
     int32_t iLastX,
     int32_t iLastY)
 {
-    float fDiffX = float(iX - iLastX);
-    float fDiffY = float(iY - iLastY);
+    if(siLastX < 0)
+    {
+        siLastX = iX;
+    }
 
-    float3 viewDir = sCameraLookAt - sCameraPosition;
-    float fViewDistance = length(viewDir);
-    float3 normalizedViewDir = normalize(viewDir);
+    if(siLastY < 0)
+    {
+        siLastY = iY;
+    }
 
-    float3 tangent = cross(sCameraUp, normalizedViewDir);
-    float3 binormal = cross(tangent, normalizedViewDir);
+    float fDiffX = float(iX - siLastX);
+    float fDiffY = float(iY - siLastY);
 
-    float const fSpeed = 0.01f;
-    sCameraPosition = sCameraLookAt + normalize(normalizedViewDir + tangent * fDiffX * fSpeed + binormal * fDiffY * fSpeed) * -fViewDistance;
+    float fRotationSpeed = 0.3f;
+    float fDeltaX = (2.0f * 3.14159f) / 512.0f;
+    float fDeltaY = (2.0f * 3.14159f) / 512.0f;
+
+    sCameraAngle.y += fDiffX * fRotationSpeed * fDeltaY;
+    sCameraAngle.x += fDiffY * fRotationSpeed * fDeltaX;
+
+    if(sCameraAngle.y < 0.0f)
+    {
+        sCameraAngle.y = 2.0f * 3.14159f + sCameraAngle.y;
+    }
+    if(sCameraAngle.y > 2.0f * 3.14159f)
+    {
+        sCameraAngle.y = sCameraAngle.y - 2.0f * 3.14159f;
+    }
+
+    if(sCameraAngle.x < 0.0f)
+    {
+        sCameraAngle.x = 2.0f * 3.14159f + sCameraAngle.x;
+    }
+    if(sCameraAngle.x > 2.0f * 3.14159f)
+    {
+        sCameraAngle.x = sCameraAngle.x - 2.0f * 3.14159f;
+    }
+
+
+    float4x4 rotateX = rotateMatrixX(sCameraAngle.x);
+    float4x4 rotateY = rotateMatrixY(sCameraAngle.y);
+    float4x4 totalMatrix = rotateY * rotateX;
+
+    float3 diff = sInitialCameraPosition - sInitialCameraLookAt;
+    
+    float4 xformEyePosition = totalMatrix * float4(diff, 1.0f);
+    xformEyePosition.x += sCameraLookAt.x;
+    xformEyePosition.y += sCameraLookAt.y;
+    xformEyePosition.z += sCameraLookAt.z;
+    sCameraPosition = xformEyePosition;
+
+    siLastX = iX;
+    siLastY = iY;
 }
 
 static float3 sSunDirection(0.0f, 1.0f, 0.0f);
@@ -440,8 +512,8 @@ LRESULT CALLBACK _windowProc(
 
     case WM_LBUTTONUP:
         sbLeftMouseDown = false;
-        //sLastTangent = float3(0.0f, 0.0f, 0.0f);
-        //sLastBinormal = float3(0.0f, 0.0f, 0.0f);
+        siLastX = -1;
+        siLastY = -1;
         break;
 
     case WM_MBUTTONUP:
@@ -483,7 +555,7 @@ LRESULT CALLBACK _windowProc(
             POINT pt;
             GetCursorPos(&pt);
             ScreenToClient(windowHandle, &pt);
-            handleCameraMouseRotate(pt.x, pt.y, sLastPt.x, sLastPt.y);
+            
             sLastPt = pt;
         }
         else if(sbRightMouseDown)
@@ -499,7 +571,8 @@ LRESULT CALLBACK _windowProc(
             POINT pt;
             GetCursorPos(&pt);
             ScreenToClient(windowHandle, &pt);
-            handleRotateSunDirection(pt.x, pt.y, sLastLeftMousePt.x, sLastLeftMousePt.y);
+            //handleRotateSunDirection(pt.x, pt.y, sLastLeftMousePt.x, sLastLeftMousePt.y);
+            handleCameraMouseRotate(pt.x, pt.y, sLastPt.x, sLastPt.y);
             sLastLeftMousePt = pt;
         }
         break;

@@ -2234,15 +2234,7 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
         void CRenderer::platformInitializeRenderJobs(
             std::vector<std::string> const& aRenderJobNames)
         {
-            //for(auto const& name : aRenderJobNames)
-            //{
-            //    maRenderJobs[name] = std::make_unique<Render::DX12::CRenderJob>();
-            //}
-            //
-            //for(auto const& name : aRenderJobNames)
-            //{
-            //    mapRenderJobs[name] = maRenderJobs[name].get();
-            //}
+            WTFASSERT(0, "Implement me");
         }
 
         /*
@@ -2252,7 +2244,7 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
             std::vector<std::string> const& aRenderJobNames
         )
         {
-
+            WTFASSERT(0, "Implement me");
         }
 
         /*
@@ -2262,7 +2254,7 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
             Render::Common::RenderPassDescriptor2 const& desc
         )
         {
-
+            WTFASSERT(0, "Implement me");
         }
 
         /*
@@ -2272,7 +2264,7 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
             Render::Common::RenderPassDescriptor2 const& desc
         )
         {
-
+            WTFASSERT(0, "Implement me");
         }
 
         /*
@@ -2284,7 +2276,7 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
             uint32_t iIndexBufferSize
         )
         {
-
+            WTFASSERT(0, "Implement me");
         }
 
         /*
@@ -2294,6 +2286,7 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
             RenderDriver::Common::CCommandBuffer& commandBuffer,
             std::string const& meshName)
         {
+            WTFASSERT(0, "Implement me");
         }
 
         /*
@@ -2301,6 +2294,7 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
         */
         void CRenderer::platformCreateSwapChainCommandBuffer()
         {
+            WTFASSERT(0, "Implement me");
         }
 
         /*
@@ -2313,6 +2307,7 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
             RenderDriver::Common::CCommandQueue::Type const& queueType
         )
         {
+            WTFASSERT(0, "Implement me");
         }
 
         /*
@@ -2320,6 +2315,7 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
         */
         void CRenderer::platformTransitionOutputAttachments()
         {
+            WTFASSERT(0, "Implement me");
         }
 
         /*
@@ -2332,6 +2328,7 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
             uint32_t iNumMeshes
         )
         {
+            WTFASSERT(0, "Implement me");
         }
 
         /*
@@ -2344,6 +2341,7 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
             uint32_t iScreenHeight
         )
         {
+            WTFASSERT(0, "Implement me");
         }
 
         /*
@@ -2353,6 +2351,7 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
             Render::Common::CRenderJob* pRenderJob
         )
         {
+            WTFASSERT(0, "Implement me");
         }
 
     }   // DX12
