@@ -33,6 +33,8 @@ std::mutex gMutex;
 #define WINDOW_WIDTH    512
 #define WINDOW_HEIGHT   512
 
+#define PI 3.14159f
+
 HWND _initWindow(
     HINSTANCE hInstance,
     WNDPROC windowProc,
@@ -383,7 +385,7 @@ void handleCameraMouseRotate(
         siLastY = iY;
     }
 
-    float fDiffX = float(iX - siLastX);
+    float fDiffX = float(iX - siLastX) * -1.0f;
     float fDiffY = float(iY - siLastY);
 
     float fRotationSpeed = 0.3f;
@@ -402,13 +404,13 @@ void handleCameraMouseRotate(
         sCameraAngle.y = sCameraAngle.y - 2.0f * 3.14159f;
     }
 
-    if(sCameraAngle.x < 0.0f)
+    if(sCameraAngle.x < -PI * 0.5f)
     {
-        sCameraAngle.x = 2.0f * 3.14159f + sCameraAngle.x;
+        sCameraAngle.x = -PI * 0.5f;
     }
-    if(sCameraAngle.x > 2.0f * 3.14159f)
+    if(sCameraAngle.x > PI * 0.5f)
     {
-        sCameraAngle.x = sCameraAngle.x - 2.0f * 3.14159f;
+        sCameraAngle.x = PI * 0.5f;
     }
 
 
@@ -552,6 +554,8 @@ LRESULT CALLBACK _windowProc(
     {
         if(sbMiddleMouseDown)
         {
+            SetCapture(windowHandle);
+
             POINT pt;
             GetCursorPos(&pt);
             ScreenToClient(windowHandle, &pt);
@@ -560,6 +564,8 @@ LRESULT CALLBACK _windowProc(
         }
         else if(sbRightMouseDown)
         {
+            SetCapture(windowHandle);
+
             POINT pt;
             GetCursorPos(&pt);
             ScreenToClient(windowHandle, &pt);
@@ -568,6 +574,8 @@ LRESULT CALLBACK _windowProc(
         }
         else if(sbLeftMouseDown)
         {
+            SetCapture(windowHandle);
+
             POINT pt;
             GetCursorPos(&pt);
             ScreenToClient(windowHandle, &pt);
