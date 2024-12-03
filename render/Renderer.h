@@ -23,6 +23,7 @@ namespace Render
     namespace Common
     {
         extern std::vector<CCamera>                 gaCameras;
+        extern float3                               gLightDirection;
 
         enum RenderDriverType
         {

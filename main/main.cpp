@@ -185,6 +185,8 @@ int CALLBACK WinMain(
         pRenderer = dx12Renderer.get();
     }
 
+    Render::Common::gLightDirection = normalize(float3(0.5f, 1.0f, 0.0f));
+
     pDesc->mRenderJobsFilePath = "d:\\test\\bistro-example-cpp\\render-jobs\\bistro-example-render-jobs.json";
     pRenderer->setup(*pDesc);
     
@@ -433,6 +435,10 @@ void handleCameraMouseRotate(
 static float3 sSunDirection(0.0f, 1.0f, 0.0f);
 static float3 sSunRotation(0.0f, 0.0f, 0.0f);
 
+static float2 sSunAngle(0.0f, 0.0f);
+static int32_t siLastSunDirectionX = -1;
+static int32_t siLastSunDirectionY = -1;
+
 /*
 **
 */
@@ -443,21 +449,48 @@ void handleRotateSunDirection(
     int32_t iLastY)
 {
     float const fSpeed = 0.01f;
-    
-    float fDiffX = float(iX - iLastX);
-    float fDiffY = float(iY - iLastY);
 
-    sSunRotation.x += fDiffY * fSpeed;
-    sSunRotation.y += fDiffX * fSpeed;
+    if(siLastSunDirectionX < 0)
+    {
+        siLastSunDirectionX = iX;
+    }
+    if(siLastSunDirectionY < 0)
+    {
+        siLastSunDirectionY = iY;
+    }
 
-    //sSunRotation.y = 0.0f;
+    float fDiffX = float(iX - siLastSunDirectionX);
+    float fDiffY = float(iY - siLastSunDirectionY);
 
-    sSunRotation.x = clamp(sSunRotation.x, -3.14159f * 0.5f, 3.14159f * 0.5f);
+    sSunAngle.x += fDiffY * fSpeed;
+    sSunAngle.y += fDiffX * fSpeed;
 
-    float4x4 rotateX = rotateMatrixX(-sSunRotation.x);
-    float4x4 rotateY = rotateMatrixY(-sSunRotation.y);
+    if(sSunAngle.y < -PI * 0.5f)
+    {
+        sSunAngle.y = -PI * 0.5f;
+    }
+    if(sSunAngle.y > PI * 0.5f)
+    {
+        sSunAngle.y = PI * 0.5f;
+    }
+
+    if(sSunAngle.x < -PI * 0.5f)
+    {
+        sSunAngle.x = -PI * 0.5f;
+    }
+    if(sSunAngle.x > PI * 0.5f)
+    {
+        sSunAngle.x = PI * 0.5f;
+    }
+
+    float4x4 rotateX = rotateMatrixX(sSunAngle.x);
+    float4x4 rotateY = rotateMatrixY(sSunAngle.y);
     float4x4 rotationMatrix = rotateY * rotateX;
-    sSunDirection = mul(float4(0.0f, 1.0f, 0.0f, 1.0f), rotationMatrix);
+    Render::Common::gLightDirection = normalize(mul(float4(0.0f, 1.0f, 0.0f, 1.0f), rotationMatrix));
+
+    siLastSunDirectionX = iX;
+    siLastSunDirectionY = iY;
+
 }
 
 #if defined(USE_IMGUI)
@@ -520,6 +553,8 @@ LRESULT CALLBACK _windowProc(
 
     case WM_MBUTTONUP:
         sbMiddleMouseDown = false;
+        siLastSunDirectionX = -1;
+        siLastSunDirectionY = -1;
         break;
 
     case WM_RBUTTONUP:
@@ -559,7 +594,8 @@ LRESULT CALLBACK _windowProc(
             POINT pt;
             GetCursorPos(&pt);
             ScreenToClient(windowHandle, &pt);
-            
+            handleRotateSunDirection(pt.x, pt.y, sLastLeftMousePt.x, sLastLeftMousePt.y);
+
             sLastPt = pt;
         }
         else if(sbRightMouseDown)
@@ -579,7 +615,6 @@ LRESULT CALLBACK _windowProc(
             POINT pt;
             GetCursorPos(&pt);
             ScreenToClient(windowHandle, &pt);
-            //handleRotateSunDirection(pt.x, pt.y, sLastLeftMousePt.x, sLastLeftMousePt.y);
             handleCameraMouseRotate(pt.x, pt.y, sLastPt.x, sLastPt.y);
             sLastLeftMousePt = pt;
         }
