@@ -1,8 +1,38 @@
 #define PI 3.14159f
 
+struct DefaultUniforms
+{
+    uint miScreenWidth;
+    uint miScreenHeight;
+    int miFrame;
+    uint miNumMeshes;
+
+    float mfRand0;
+    float mfRand1;
+    float mfRand2;
+    float mfRand3;
+
+    float4x4 mViewProjectionMatrix;
+    float4x4 mPrevViewProjectionMatrix;
+    float4x4 mViewMatrix;
+    float4x4 mProjectionMatrix;
+    float4x4 mJitteredViewProjectionMatrix;
+    float4x4 mPrevJitteredViewProjectionMatrix;
+
+    float4 mCameraPosition;
+    float4 mCameraLookDir;
+
+    float4 mLightRadiance;
+    float4 mLightDirection;
+
+    float4 mPrevLightRadiance;
+    float4 mPrevLightDirection;
+};
+
 [[vk::binding(0, 0)]] RaytracingAccelerationStructure scene;
 [[vk::binding(1, 0)]] RWTexture2D<float4> renderTarget;
 [[vk::binding(2, 0)]] Texture2D<float4> worldPositionTexture;
+[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniforms> defaultUniformData; 
 
 struct RayPayload
 {
@@ -30,7 +60,7 @@ void rayGen()
         RayDesc ray;
         float3 origin = float3(worldPosition.xyz);
         ray.Origin = origin;
-        ray.Direction = lightDirection; 
+        ray.Direction = normalize(defaultUniformData.mLightDirection.xyz); 
         ray.TMin = 0.01f;
         ray.TMax = 1000.0f;
         RayPayload payload = { 

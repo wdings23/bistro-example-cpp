@@ -26,7 +26,9 @@ struct DefaultUniforms
 
     float4      mLightRadiance;
     float4      mLightDirection;
-	float4      mfAmbientOcclusionDistanceThreshold;
+
+    float4 mPrevLightRadiance;
+    float4 mPrevLightDirection;
 };
 
 // Per-vertex attributes to be assembled from bound vertex buffers.

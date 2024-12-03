@@ -42,7 +42,9 @@ struct DefaultUniforms
 
     float4      mLightRadiance;
     float4      mLightDirection;
-	float4      mfAmbientOcclusionDistanceThreshold;
+
+    float4      mPrevLightRadiance;
+    float4      mPrevLightDirection;
 };
 
 // Per-vertex attributes to be assembled from bound vertex buffers.
@@ -68,8 +70,13 @@ struct VertexStageOutput
     float4          texcoord;
 };
 
+[[vk::binding(0, 0)]] Texture2D<float4> prevDiffuseSkyTexture;
+[[vk::binding(1, 0)]] Texture2D<float4> prevSkyTexture;
+[[vk::binding(2, 0)]] Texture2D<float4> prevSunRadianceTexture;
+[[vk::binding(3, 0)]] SamplerState textureSampler;
 
 [[vk::binding(0, 1)]] ConstantBuffer<DefaultUniforms> defaultUniformData;
+
 
 [shader("vertex")]
 VertexStageOutput VSMain(
@@ -93,6 +100,37 @@ Fragment PSMain(
     VertexStageOutput input) : SV_Target
 {
     Fragment ret;
+
+    float3 directionDiff = defaultUniformData.mLightDirection.xyz - defaultUniformData.mPrevLightDirection.xyz;
+    float fLengthSquared = dot(directionDiff, directionDiff);
+
+    if(defaultUniformData.miFrame > 0 && fLengthSquared <= 0.00001f)
+    {
+        float2 uv = float2(
+            input.texcoord.x,
+            1.0f - input.texcoord.y 
+        );
+        float4 prevDiffuseSkyRadiance = prevDiffuseSkyTexture.Sample(
+            textureSampler,
+            uv
+        );
+
+        float4 prevSkyRadiance = prevSkyTexture.Sample(
+            textureSampler,
+            uv
+        );
+
+        float4 prevSunRadiance = prevSunRadianceTexture.Sample(
+            textureSampler,
+            uv
+        );
+
+        ret.mDiffuseSkyRadiance = prevDiffuseSkyRadiance;
+        ret.mSkyRadiance = prevSkyRadiance;
+        ret.mSunLightRadiance = prevSunRadiance;
+
+        return ret;
+    }
 
     float3 direction = decodeOctahedronMap(input.texcoord.xy).xyz;
     float3 transmittance = float3(0.0f, 0.0f, 0.0f);
@@ -126,7 +164,7 @@ Fragment PSMain(
             input.texcoord.xy,
             lightDirection,
             lightRadiance,
-            16), 
+            64), 
         1.0f
     );
 

@@ -37,6 +37,7 @@ namespace Render
     {
         std::vector<CCamera>                 gaCameras;
         float3                               gLightDirection;
+        float3                               gPrevLightDirection;
 
         /*
         **
@@ -1274,6 +1275,13 @@ namespace Render
                 }
                 else if(pRenderJob->mType == Render::Common::JobType::Copy)
                 {
+                    platformBeginDebugMarker3(
+                        pRenderJob->mName.c_str(),
+                        float4(0.0f, 1.0f, 0.0f, 1.0f),
+                        &commandBuffer
+                    );
+
+                    commandBuffer.reset();
                     for(auto& copyAttachment : pRenderJob->maCopyAttachmentMapping)
                     {
                         std::string destAttachmentName = copyAttachment.second.second + "-" + copyAttachment.second.first;
@@ -1290,13 +1298,14 @@ namespace Render
                         RenderDriver::Common::CImage* pDestImage = pRenderJob->mapOutputImageAttachments[copyAttachment.first];
 
                         RenderDriver::Common::CCommandBuffer& commandBuffer = *mapRenderJobCommandBuffers["Copy Render Targets"];
-                        commandBuffer.reset();
                         platformCopyImage2(
                             *pDestImage,
                             *pSrcImage,
                             commandBuffer
                         );
                     }
+
+                    platformEndDebugMarker3(&commandBuffer);
                 }
                 else if(pRenderJob->mType == Render::Common::JobType::RayTrace)
                 {
@@ -1631,10 +1640,22 @@ namespace Render
             *pFloat4Data++ = float4(Render::Common::gaCameras[0].getPosition(), 1.0f);
             *pFloat4Data++ = float4(Render::Common::gaCameras[0].getLookAt(), 1.0f);
             
+            float3 diff = gLightDirection - gPrevLightDirection;
+            float fLengthSquared = dot(diff, diff);
+            float fRebuildSkyProbe = (fLengthSquared >= 0.1f) ? 1.0f : 0.0f;
+            if(fRebuildSkyProbe > 0.0f)
+            {
+                int iDebug = 1;
+            }
+
             *pFloat4Data++ = float4(2.0f, 2.0f, 2.0f, 1.0f);
             //*pFloat4Data++ = float4(normalize(vec3(-0.5f, 1.0f, 0.0f)), 1.0f);
             *pFloat4Data++ = float4(gLightDirection, 1.0f);
-            *pFloat4Data++ = 1.0f;
+
+            *pFloat4Data++ = float4(2.0f, 2.0f, 2.0f, 1.0f);
+            *pFloat4Data++ = float4(gPrevLightDirection, 1.0f);
+
+            gPrevLightDirection = gLightDirection;
 
             // copy data to registered gpu buffers
             uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);

@@ -631,6 +631,15 @@ namespace Render
                         }
                         else
                         {
+                            RenderDriver::Common::LoadOp loadOp = RenderDriver::Common::LoadOp::Clear;
+                            if(maAttachmentLoadOps.count(keyValue.first) > 0)
+                            {
+                                if(maAttachmentLoadOps[keyValue.first] == LoadStoreOp::Load)
+                                {
+                                    loadOp = RenderDriver::Common::LoadOp::Load;
+                                }
+                            }
+
                             pDesc->maLoadOps[iIndex] = RenderDriver::Common::LoadOp::Clear;
                         }
 
