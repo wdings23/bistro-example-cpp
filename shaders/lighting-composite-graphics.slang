@@ -2,34 +2,7 @@
 
 #include "octahedron-map-headers.slang"
 
-struct DefaultUniforms
-{
-    uint        miScreenWidth;
-    uint        miScreenHeight;
-    int         miFrame;
-    uint        miNumMeshes;
-
-    float       mfRand0;
-    float       mfRand1;
-    float       mfRand2;
-    float       mfRand3;
-
-    float4x4    mViewProjectionMatrix;
-    float4x4    mPrevViewProjectionMatrix;
-    float4x4    mViewMatrix;
-    float4x4    mProjectionMatrix;
-    float4x4    mJitteredViewProjectionMatrix;
-    float4x4    mPrevJitteredViewProjectionMatrix;
-
-    float4      mCameraPosition;
-    float4      mCameraLookDir;
-
-    float4      mLightRadiance;
-    float4      mLightDirection;
-
-    float4 mPrevLightRadiance;
-    float4 mPrevLightDirection;
-};
+#include "default-uniform-headers.slang"
 
 // Per-vertex attributes to be assembled from bound vertex buffers.
 struct AssembledVertex
@@ -52,13 +25,15 @@ struct VertexStageOutput
     float4          texcoord;
 };
 
-[[vk::binding(0, 0)]] Texture2D<float4> normalTexture;
-[[vk::binding(1, 0)]] Texture2D<float4> aoTexture;
-[[vk::binding(2, 0)]] Texture2D<float4> shadowTexture;
-[[vk::binding(3, 0)]] Texture2D<float4> skyTexture;
-[[vk::binding(4, 0)]] Texture2D<float4> sunLightTexture;
-[[vk::binding(5, 0)]] SamplerState sampler;
-[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniforms> defaultUniformData;
+[[vk::binding(0, 0)]] Texture2D<float4> diffuseRadianceTexture;
+[[vk::binding(1, 0)]] Texture2D<float4> shadowTexture;
+[[vk::binding(2, 0)]] Texture2D<float4> skyTexture;
+[[vk::binding(3, 0)]] Texture2D<float4> albedoTexture;
+[[vk::binding(4, 0)]] Texture2D<float4> texCoordTexture;
+[[vk::binding(5, 0)]] Texture2D<float4> reservoirTexture;
+[[vk::binding(6, 0)]] SamplerState sampler;
+
+[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData;
 
 [shader("vertex")]
 VertexStageOutput VSMain(
@@ -83,79 +58,39 @@ float4 PSMain(
     VertexStageOutput input) : SV_Target
 {
     float2 texCoord = input.texcoord.xy;
-
-    float3 normal = normalTexture.Sample(
+    float4 sampleTexCoord = texCoordTexture.Sample(
         sampler,
-        texCoord
-    ).xyz;
-
-    float3 ao = aoTexture.Sample(
-        sampler,
-        texCoord
-    ).xyz;
-
-    float3 shadow = shadowTexture.Sample(
-        sampler,
-        texCoord
-    ).xyz;
-
-    float3 up = float3(0.0f, 1.0f, 0.0f);
-    if (abs(normal.y) > 0.999f)
-    {
-        up = float3(1.0f, 0.0f, 0.0f);
-    }
-    float3 tangent = normalize(cross(up, normal));
-    float3 binormal = normalize(cross(normal, tangent));
-
-    float3 totalAmbient = float3(0.0f, 0.0f, 0.0f);
-    uint32_t iNumLoops = 6;
-    float fCount = 0.0f;
-    for (uint32_t iY = 0; iY < iNumLoops; iY++)
-    {
-        float fPctY = float(iY) / float(iNumLoops);
-        for (uint32_t iX = 0; iX < iNumLoops; iX++)
-        {
-            float fPctX = float(iX) / float(iNumLoops);
-
-            float fPhi = 2.0f * PI * fPctY;
-            float fCosTheta = 1.0f - fPctX;
-            float fSinTheta = sqrt(1.0f - fCosTheta * fCosTheta);
-            float3 h = float3(
-                cos(fPhi) * fSinTheta,
-                sin(fPhi) * fSinTheta,
-                fCosTheta);
-            float3 direction = normalize(tangent * h.x + binormal * h.y + normal * h.z);
-
-            float2 octahedronUV = octahedronMap2(
-                direction
-            );
-
-            totalAmbient += skyTexture.Sample(
-                sampler,
-                octahedronUV
-            ).xyz;
-
-            fCount += 1.0f;
-        }
-    }
-
-    totalAmbient /= fCount;
-    //if(shadow.x <= 0.0f)
-    //{
-    //    totalAmbient *= 0.4f;
-    //}
-
-    float2 octahedronUV = octahedronMap2(
-        normal
+        float2(input.texcoord.x, input.texcoord.y)
     );
-    float3 sunLight = sunLightTexture.Sample(
+
+    float3 albedo = albedoTexture.Sample(
         sampler,
-        octahedronUV
+        texCoord
     ) .xyz;
 
-    // float3 lightDirection = normalize(float3(-0.5f, 1.0f, 0.0f));
-    float fDP = max(dot(normal.xyz, defaultUniformData.mLightDirection.xyz), 0.0f); 
+    float3 ret = float3(0.0f, 0.0f, 0.0f);
+    if (sampleTexCoord.w <= 0.0f)
+    {
+        ret = albedo.xyz;
+    }
+    else
+    {
+        float fReservoirWeight = reservoirTexture.Sample(
+            sampler,
+            texCoord
+        ) .w;
 
-    float3 ret = (shadow * sunLight * fDP + totalAmbient) * ao;
+        float3 diffuseRadiance = diffuseRadianceTexture.Sample(
+            sampler,
+            texCoord
+        ).xyz;
+
+        float3 shadow = shadowTexture.Sample(
+            sampler,
+            texCoord
+        ).xyz;
+
+        ret = (shadow + diffuseRadiance) * albedo;
+    }
     return float4(ret.xyz, 1.0f); 
 }

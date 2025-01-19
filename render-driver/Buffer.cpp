@@ -87,6 +87,13 @@ namespace RenderDriver
 
         }
 
+        /*
+        **
+        */
+        void* CBuffer::getMemoryOpen(uint32_t iDataSize)
+        {
+            return nullptr;
+        }
         
 
     }   // Common

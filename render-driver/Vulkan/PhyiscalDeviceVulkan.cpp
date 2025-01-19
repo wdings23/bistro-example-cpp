@@ -87,7 +87,7 @@ namespace RenderDriver
 
                     VkPhysicalDeviceFeatures2 deviceFeatures = {};
                     deviceFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_FEATURES_2;
-                    deviceFeatures.pNext = &indexingFeatures;
+                    deviceFeatures.pNext = &mutableDescriptorTypeFeatures; // &indexingFeatures;
                     vkGetPhysicalDeviceFeatures2(physicalDevice, &deviceFeatures);
 
                     uint32_t iIndex = 0;

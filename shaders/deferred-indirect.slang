@@ -1,3 +1,4 @@
+#include "default-uniform-headers.slang"
 #include "mesh-culling-headers.slang"
 #include "vertex-format-headers.slang"
 
@@ -23,6 +24,7 @@ struct PSOutput
     float4 mWorldPosition : SV_TARGET0;
     float4 mTexCoord : SV_TARGET1;
     float4 mNormal : SV_TARGET2;
+    float4 mMotionVector : SV_TARGET3;
 };
 
 struct VertexStageOutput
@@ -31,6 +33,8 @@ struct VertexStageOutput
     float4 worldPosition;
     float4 texCoord;
     float4 normal;
+    float4 currClipSpace;
+    float4 prevClipSpace;
 };
 
 [shader("vertex")]
@@ -43,7 +47,7 @@ VertexStageOutput VSMain(
     float4x4 projectionMatrix = defaultUniformData.mProjectionMatrix;
 
     projectionMatrix._22 *= -1.0f;
-
+    
     float4x4 viewProjectionMatrix = mul(
         projectionMatrix,
         viewMatrix
@@ -60,6 +64,15 @@ VertexStageOutput VSMain(
     output.worldPosition = assembledVertex.position;
     output.texCoord = assembledVertex.texCoord;
     output.normal = assembledVertex.normal;
+
+    output.currClipSpace = mul(
+        defaultUniformData.mViewProjectionMatrix,
+        float4(assembledVertex.position.xyz, 1.0f)
+    );
+    output.prevClipSpace = mul(
+        defaultUniformData.mPrevViewProjectionMatrix,
+        float4(assembledVertex.position.xyz, 1.0f)
+    );
 
     return output;
 }
@@ -97,7 +110,7 @@ PSOutput PSMain(VertexStageOutput in)
         texCoord.y = fract(texCoord.y);
     }
 
-    out.mTexCoord = float4(texCoord.x, texCoord.y, float(iMesh), 1.0f);
+    out.mTexCoord = float4(texCoord.x, 1.0f - texCoord.y, float(iMesh), 1.0f);
 
     out.mWorldPosition.x = in.worldPosition.x;
     out.mWorldPosition.y = in.worldPosition.y;
@@ -106,6 +119,51 @@ PSOutput PSMain(VertexStageOutput in)
 
     // store depth and mesh id in worldPosition.w
     //out.mWorldPosition.w = clamp(in.worldPosition.z, 0.0f, 0.999f) + floor(in.worldPosition.w + 0.5f);
+
+    float4 currClipSpacePos = mul(float4(in.worldPosition.xyz, 1.0f), transpose(defaultUniformData.mViewProjectionMatrix));
+    float4 prevClipSpacePos = mul(float4(in.worldPosition.xyz, 1.0f), transpose(defaultUniformData.mPrevViewProjectionMatrix));
+
+    float fOneOverW = 1.0f / currClipSpacePos.w;
+    currClipSpacePos.x *= fOneOverW;
+    currClipSpacePos.y *= fOneOverW;
+    currClipSpacePos.z *= fOneOverW;
+    currClipSpacePos.x = currClipSpacePos.x * 0.5f + 0.5f;
+    currClipSpacePos.y = 1.0f - (currClipSpacePos.y * 0.5f + 0.5f);
+
+    fOneOverW = 1.0f / prevClipSpacePos.w;
+    prevClipSpacePos.x *= fOneOverW;
+    prevClipSpacePos.y *= fOneOverW;
+    prevClipSpacePos.z *= fOneOverW;
+    prevClipSpacePos.x = prevClipSpacePos.x * 0.5f + 0.5f;
+    prevClipSpacePos.y = 1.0f - (prevClipSpacePos.y * 0.5f + 0.5f);
+
+#if 0
+    float3 currClipSpacePos = float3(
+        in.currClipSpace.x / in.currClipSpace.w,
+        in.currClipSpace.y / in.currClipSpace.w,
+        in.currClipSpace.z / in.currClipSpace.w
+    ) * 
+    0.5f +
+    float3(0.5f, 0.5f, 0.5f);
+    currClipSpacePos.y = 1.0f - currClipSpacePos.y;
+
+    float3 prevClipSpacePos = float3(
+        in.prevClipSpace.x / in.prevClipSpace.w,
+        in.prevClipSpace.y / in.prevClipSpace.w,
+        in.prevClipSpace.z / in.prevClipSpace.w
+    ) *
+    0.5f +
+    float3(0.5f, 0.5f, 0.5f);
+    prevClipSpacePos.y = 1.0f - prevClipSpacePos.y;
+#endif // #if 0
+
+    float fDepth = clamp(currClipSpacePos.z, 0.0f, 0.99999f);
+    out.mMotionVector = float4(
+        (currClipSpacePos.x - prevClipSpacePos.x) * 0.5f + 0.5f,
+        (currClipSpacePos.y - prevClipSpacePos.y) * 0.5f + 0.5f,
+        float(iMesh) + fDepth,
+        1.0f
+    );
 
     return out;
 }

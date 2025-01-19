@@ -1,5 +1,6 @@
 #include <render-driver/Vulkan/PipelineStateVulkan.h>
 #include <render-driver/Vulkan/DeviceVulkan.h>
+#include <render-driver/Vulkan/UtilsVulkan.h>
 
 #include <serialize_utils.h>
 
@@ -30,13 +31,13 @@ namespace RenderDriver
 			createInfo.codeSize = desc.miVertexShaderSize;
 			createInfo.pCode = reinterpret_cast<const uint32_t*>(desc.mpVertexShader);
 			VkResult ret = vkCreateShaderModule(*mpNativeDevice, &createInfo, nullptr, &mVertexNativeShaderModule);
-			WTFASSERT(ret == VK_SUCCESS, "Error creating vertex shader: %d", ret);
+			WTFASSERT(ret == VK_SUCCESS, "Error creating vertex shader: %s", Utils::getErrorCode(ret));
 
 			// fragment shader
 			createInfo.codeSize = desc.miPixelShaderSize;
 			createInfo.pCode = reinterpret_cast<const uint32_t*>(desc.mpPixelShader);
 			ret = vkCreateShaderModule(*mpNativeDevice, &createInfo, nullptr, &mFragmentNativeShaderModule);
-			WTFASSERT(ret == VK_SUCCESS, "Error creating vertex shader: %d", ret);
+			WTFASSERT(ret == VK_SUCCESS, "Error creating vertex shader: %s", Utils::getErrorCode(ret));
 
 			// vertex stage
 			VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
@@ -176,7 +177,7 @@ namespace RenderDriver
 				&pipelineLayoutInfo, 
 				nullptr, 
 				&mNativePipelineLayout);
-			WTFASSERT(ret == VK_SUCCESS, "Error creating pipeline layout: %d", ret);
+			WTFASSERT(ret == VK_SUCCESS, "Error creating pipeline layout: %s", Utils::getErrorCode(ret));
 
 			uint32_t iNumTotalAttachments = (desc.mDepthStencilState.mbDepthEnabled || desc.mbOutputPresent) ? desc.miNumRenderTarget + 1 : desc.miNumRenderTarget;
 
@@ -265,7 +266,7 @@ namespace RenderDriver
 				&renderPassInfo, 
 				nullptr, 
 				&mNativeRenderPass);
-			WTFASSERT(ret == VK_SUCCESS, "Error creating render pass: %d", ret);
+			WTFASSERT(ret == VK_SUCCESS, "Error creating render pass: %s", Utils::getErrorCode(ret));
 
 			// depth stencil
 			VkPipelineDepthStencilStateCreateInfo depthStencilStateInfo = {};
@@ -352,7 +353,7 @@ namespace RenderDriver
 				&pipelineInfo, 
 				nullptr, 
 				&mNativePipelineState);
-			WTFASSERT(ret == VK_SUCCESS, "Error creating graphics pipeline: %d", ret);
+			WTFASSERT(ret == VK_SUCCESS, "Error creating graphics pipeline: %s", Utils::getErrorCode(ret));
 
 			//vkDestroyShaderModule(*pNativeDevice, mVertexNativeShaderModule, nullptr);
 			//vkDestroyShaderModeul(*pNativeDevice, mFragmentNativeShaderModule, nullptr);
@@ -381,7 +382,7 @@ namespace RenderDriver
 			createInfo.codeSize = desc.miComputeShaderSize;
 			createInfo.pCode = reinterpret_cast<const uint32_t*>(desc.mpComputeShader);
 			VkResult ret = vkCreateShaderModule(*mpNativeDevice, &createInfo, nullptr, &mComputeNativeShaderModule);
-			WTFASSERT(ret == VK_SUCCESS, "Error creating vertex shader: %d", ret);
+			WTFASSERT(ret == VK_SUCCESS, "Error creating vertex shader: %s", Utils::getErrorCode(ret));
 
 			// compute stage
 			VkPipelineShaderStageCreateInfo computeShaderStageInfo = {};
@@ -410,7 +411,7 @@ namespace RenderDriver
 				&pipelineLayoutInfo,
 				nullptr,
 				&mNativePipelineLayout);
-			WTFASSERT(ret == VK_SUCCESS, "Error creating compute pipeline layout: %d", ret);
+			WTFASSERT(ret == VK_SUCCESS, "Error creating compute pipeline layout: %s", Utils::getErrorCode(ret));
 
 			// pipeline
 			VkComputePipelineCreateInfo computePipelineCreateInfo = {};
@@ -426,7 +427,7 @@ namespace RenderDriver
 				&computePipelineCreateInfo,
 				nullptr,
 				&mNativePipelineState);
-			WTFASSERT(ret == VK_SUCCESS, "Error creating compute pipeline: %d", ret);
+			WTFASSERT(ret == VK_SUCCESS, "Error creating compute pipeline: %s", Utils::getErrorCode(ret));
 
 			return mHandle;
 		}
@@ -454,6 +455,8 @@ namespace RenderDriver
 			RenderDriver::Vulkan::CDevice& deviceVulkan = static_cast<RenderDriver::Vulkan::CDevice&>(device);
 			VkDevice& nativeDevice = *(static_cast<VkDevice*>(deviceVulkan.getNativeDevice()));
 
+			mpNativeDevice = static_cast<VkDevice*>(deviceVulkan.getNativeDevice());
+
 			std::vector<VkPipelineShaderStageCreateInfo> aShaderStages;
 			std::vector<VkRayTracingShaderGroupCreateInfoKHR> aShaderGroups;
 
@@ -471,8 +474,8 @@ namespace RenderDriver
 				nullptr,
 				&mRayGenShaderModule
 			);
-			WTFASSERT(ret == VK_SUCCESS, "Error %d creating ray gen shader module",
-				ret
+			WTFASSERT(ret == VK_SUCCESS, "Error %s creating ray gen shader module",
+				Utils::getErrorCode(ret)
 			);
 			shaderStage.module = mRayGenShaderModule;
 			shaderStage.pName = "rayGen";
@@ -497,8 +500,8 @@ namespace RenderDriver
 				nullptr,
 				&mMissShaderModule
 			);
-			WTFASSERT(ret == VK_SUCCESS, "Error %d creating miss shader module",
-				ret
+			WTFASSERT(ret == VK_SUCCESS, "Error %s creating miss shader module",
+				Utils::getErrorCode(ret)
 			);
 			shaderStage.module = mMissShaderModule;
 			shaderStage.pName = "missShader";
@@ -521,8 +524,8 @@ namespace RenderDriver
 				nullptr,
 				&mClosestHitShaderModule
 			);
-			WTFASSERT(ret == VK_SUCCESS, "Error %d creating hit shader module",
-				ret
+			WTFASSERT(ret == VK_SUCCESS, "Error %s creating hit shader module",
+				Utils::getErrorCode(ret)
 			);
 			shaderStage.module = mClosestHitShaderModule;
 			shaderStage.pName = "hitTriangle";
@@ -550,7 +553,7 @@ namespace RenderDriver
 				&pipelineLayoutInfo,
 				nullptr,
 				&mNativePipelineLayout);
-			WTFASSERT(ret == VK_SUCCESS, "Error creating compute pipeline layout: %d", ret);
+			WTFASSERT(ret == VK_SUCCESS, "Error creating compute pipeline layout: %s", Utils::getErrorCode(ret));
 
 			VkRayTracingPipelineCreateInfoKHR rayTracingPipelineCI{};
 			rayTracingPipelineCI.sType = VK_STRUCTURE_TYPE_RAY_TRACING_PIPELINE_CREATE_INFO_KHR;
@@ -570,8 +573,9 @@ namespace RenderDriver
 				nullptr,
 				&mNativePipelineState);
 
-			WTFASSERT(ret == VK_SUCCESS, "Error creating ray trace pipeline \"%s\"",
-				mID.c_str()
+			WTFASSERT(ret == VK_SUCCESS, "Error creating ray trace pipeline \"%s\" error: \"%s\"",
+				mID.c_str(),
+				Utils::getErrorCode(ret)
 			);
 
 			return mHandle;

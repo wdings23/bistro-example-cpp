@@ -1314,6 +1314,20 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
         /*
         **
         */
+        void CRenderer::platformCopyBufferToCPUMemory2(
+            RenderDriver::Common::CBuffer* pGPUBuffer,
+            void* pCPUBuffer,
+            uint64_t iSrcOffset,
+            uint64_t iDataSize,
+            RenderDriver::Common::CCommandBuffer& commandBuffer,
+            RenderDriver::Common::CCommandQueue& commandQueue)
+        {
+            WTFASSERT(0, "Implement me");
+        }
+
+        /*
+        **
+        */
         void CRenderer::platformUpdateTextureInArray(
             RenderDriver::Common::CImage& image,
             void const* pRawSrcData,
@@ -2047,6 +2061,22 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
         /*
         **
         */
+        void CRenderer::platformCopyCPUToGPUBuffer3(
+            RenderDriver::Common::CCommandBuffer& commandBuffer,
+            RenderDriver::Common::CCommandQueue& commandQueue,
+            RenderDriver::Common::CBuffer* pDestBuffer,
+            void* pCPUData,
+            uint32_t iSrcOffset,
+            uint32_t iDestOffset,
+            uint32_t iDataSize,
+            RenderDriver::Common::CBuffer& uploadBuffer)
+        {
+            WTFASSERT(0, "Implement me");
+        }
+
+        /*
+        **
+        */
         void CRenderer::platformExecuteCopyCommandBuffer(
             RenderDriver::Common::CCommandBuffer& commandBuffer,
             uint32_t iFlag)
@@ -2350,6 +2380,103 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
         void CRenderer::platformRayTraceShaderSetup(
             Render::Common::CRenderJob* pRenderJob
         )
+        {
+            WTFASSERT(0, "Implement me");
+        }
+
+        /*
+        **
+        */
+        void CRenderer::platformCopyTexturePageToAtlas(
+            char const* pImageData,
+            RenderDriver::Common::CImage* pDestImage,
+            uint2 const& pageCoord,
+            uint32_t iTexturePageDimension)
+        {
+            WTFASSERT(0, "Implement me");
+        }
+
+        /*
+        **
+        */
+        void CRenderer::platformCopyTexturePageToAtlas2(
+            char const* pImageData,
+            RenderDriver::Common::CImage* pDestImage,
+            uint2 const& pageCoord,
+            uint32_t iTexturePageDimension,
+            RenderDriver::Common::CCommandBuffer& commandBuffer,
+            RenderDriver::Common::CCommandQueue& commandQueue,
+            RenderDriver::Common::CBuffer& uploadBuffer)
+        {
+            WTFASSERT(0, "Implement me");
+        }
+
+        /*
+        **
+        */
+        void CRenderer::platformCreateCommandBuffer(
+            std::unique_ptr<RenderDriver::Common::CCommandAllocator>& threadCommandAllocator,
+            std::unique_ptr<RenderDriver::Common::CCommandBuffer>& threadCommandBuffer)
+        {
+            threadCommandAllocator = std::make_unique<RenderDriver::DX12::CCommandAllocator>();
+            threadCommandBuffer = std::make_unique<RenderDriver::DX12::CCommandBuffer>();
+        }
+
+        /*
+        **
+        */
+        void CRenderer::platformCreateBuffer(
+            std::unique_ptr<RenderDriver::Common::CBuffer>& buffer,
+            uint32_t iSize)
+        {
+            buffer = std::make_unique<RenderDriver::DX12::CBuffer>();
+            RenderDriver::Common::BufferDescriptor desc = {};
+            desc.miSize = iSize;
+            buffer->create(
+                desc,
+                *mpDevice);
+        }
+
+        /*
+        **
+        */
+        void CRenderer::platformCreateCommandQueue(
+            std::unique_ptr<RenderDriver::Common::CCommandQueue>& commandQueue,
+            RenderDriver::Common::CCommandQueue::Type const& type)
+        {
+            commandQueue = std::make_unique<RenderDriver::DX12::CCommandQueue>();
+        }
+
+        /*
+        **
+        */
+        void CRenderer::platformTransitionInputImageAttachments(
+            Render::Common::CRenderJob* pRenderJob,
+            std::vector<char>& acPlatformAttachmentInfo,
+            RenderDriver::Common::CCommandBuffer& commandBuffer,
+            bool bReverse)
+        {
+            WTFASSERT(0, "Implement me");
+        }
+
+        /*
+        **
+        */
+        void CRenderer::platformTransitionOutputAttachmentsRayTrace(
+            Render::Common::CRenderJob* pRenderJob,
+            RenderDriver::Common::CCommandBuffer& commandBuffer)
+        {
+            WTFASSERT(0, "Implement me");
+        }
+
+        /*
+        **
+        */
+        void CRenderer::setAttachmentImage(
+            std::string const& dstRenderJobName,
+            std::string const& dstAttachmentName,
+            std::string const& srcRenderJobName,
+            std::string const& srcAttachmentName)
         {
             WTFASSERT(0, "Implement me");
         }

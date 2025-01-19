@@ -39,6 +39,11 @@ namespace RenderDriver
                 RenderDriver::Common::CCommandBuffer& commandBuffer,
                 RenderDriver::Common::CDevice& device);
 
+            virtual void execCommandBufferSynchronized(
+                RenderDriver::Common::CCommandBuffer& commandBuffer,
+                RenderDriver::Common::CDevice& device,
+                bool bWait = true);
+
             virtual void setID(std::string const& id);
 
             virtual void* getNativeCommandQueue();

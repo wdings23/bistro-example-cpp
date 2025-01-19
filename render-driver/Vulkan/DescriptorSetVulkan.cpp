@@ -88,7 +88,13 @@ namespace RenderDriver
 						VkDescriptorSetLayoutBinding layoutBinding = {};
 						layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 						layoutBinding.descriptorCount = 1;
-						layoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT;
+						layoutBinding.stageFlags =
+							VK_SHADER_STAGE_VERTEX_BIT |
+							VK_SHADER_STAGE_FRAGMENT_BIT |
+							VK_SHADER_STAGE_COMPUTE_BIT |
+							VK_SHADER_STAGE_RAYGEN_BIT_KHR |
+							VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR |
+							VK_SHADER_STAGE_MISS_BIT_KHR;
 
 						// set layout binding and layout set based on the shader type
 						switch(shaderResource.mShaderType)
@@ -153,8 +159,14 @@ namespace RenderDriver
 						VkDescriptorSetLayoutBinding layoutBinding = {};
 						layoutBinding.descriptorType = (bFillerResource) ? VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE : VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 						layoutBinding.descriptorCount = 1;
-						layoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT;
-						
+						layoutBinding.stageFlags = 
+							VK_SHADER_STAGE_VERTEX_BIT |
+							VK_SHADER_STAGE_FRAGMENT_BIT |
+							VK_SHADER_STAGE_COMPUTE_BIT |
+							VK_SHADER_STAGE_RAYGEN_BIT_KHR |
+							VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR |
+							VK_SHADER_STAGE_MISS_BIT_KHR;
+
 						// set layout binding and layout set based on the shader type
 						switch(shaderResource.mShaderType)
 						{
@@ -222,7 +234,13 @@ namespace RenderDriver
 						VkDescriptorSetLayoutBinding layoutBinding = {};
 						layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 						layoutBinding.descriptorCount = 1;
-						layoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT;
+						layoutBinding.stageFlags = 
+							VK_SHADER_STAGE_VERTEX_BIT |
+							VK_SHADER_STAGE_FRAGMENT_BIT |
+							VK_SHADER_STAGE_COMPUTE_BIT |
+							VK_SHADER_STAGE_RAYGEN_BIT_KHR |
+							VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR |
+							VK_SHADER_STAGE_MISS_BIT_KHR;
 						
 						// set binding and layout set
 						switch(shaderResource.mShaderType)
@@ -318,8 +336,14 @@ namespace RenderDriver
 							VK_DESCRIPTOR_TYPE_STORAGE_BUFFER : 
 							VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 						layoutBinding.descriptorCount = 1;
-						layoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT;
-						
+						layoutBinding.stageFlags = 
+							VK_SHADER_STAGE_VERTEX_BIT |
+							VK_SHADER_STAGE_FRAGMENT_BIT |
+							VK_SHADER_STAGE_COMPUTE_BIT |
+							VK_SHADER_STAGE_RAYGEN_BIT_KHR |
+							VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR |
+							VK_SHADER_STAGE_MISS_BIT_KHR;
+
 						// binding index and layout set 
 						switch(shaderResource.mShaderType)
 						{
@@ -406,13 +430,21 @@ namespace RenderDriver
 			}
 
 			// add samplers at the end of the set if it's a graphics pipeline
-			if((iNumWriteTextures > 0 || iNumReadTextures > 0) && shaderType != RenderDriver::Common::ShaderType::Compute)
+			if((iNumWriteTextures > 0 || iNumReadTextures > 0) && 
+				shaderType != RenderDriver::Common::ShaderType::Compute && 
+				shaderType != RenderDriver::Common::ShaderType::RayTrace)
 			{
 				VkDescriptorSetLayoutBinding layoutBinding = {};
 				layoutBinding.binding = static_cast<uint32_t>(aFragmentShaderLayoutBindings.size());
 				layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
 				layoutBinding.descriptorCount = 1;
-				layoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT;
+				layoutBinding.stageFlags = 
+					VK_SHADER_STAGE_VERTEX_BIT |
+					VK_SHADER_STAGE_FRAGMENT_BIT |
+					VK_SHADER_STAGE_COMPUTE_BIT |
+					VK_SHADER_STAGE_RAYGEN_BIT_KHR |
+					VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR |
+					VK_SHADER_STAGE_MISS_BIT_KHR;
 				aFragmentShaderLayoutBindings.push_back(layoutBinding);
 
 				DEBUG_PRINTF("\tset 1 binding %d sampler\n",
@@ -421,7 +453,13 @@ namespace RenderDriver
 				layoutBinding.binding = static_cast<uint32_t>(aFragmentShaderLayoutBindings.size());
 				layoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLER;
 				layoutBinding.descriptorCount = 1;
-				layoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT;
+				layoutBinding.stageFlags = 
+					VK_SHADER_STAGE_VERTEX_BIT |
+					VK_SHADER_STAGE_FRAGMENT_BIT |
+					VK_SHADER_STAGE_COMPUTE_BIT |
+					VK_SHADER_STAGE_RAYGEN_BIT_KHR |
+					VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR |
+					VK_SHADER_STAGE_MISS_BIT_KHR;
 				aFragmentShaderLayoutBindings.push_back(layoutBinding);
 
 				DEBUG_PRINTF("\tset 1 binding %d sampler\n",
@@ -474,7 +512,7 @@ namespace RenderDriver
 					&layoutCreateInfo, 
 					nullptr, 
 					&maNativeLayoutSets[iSet]);
-				WTFASSERT(ret == VK_SUCCESS, "Error creating descriptor set layout: %d", ret);
+				WTFASSERT(ret == VK_SUCCESS, "Error creating descriptor set layout: %s", Utils::getErrorCode(ret));
 			}
 
 			// pool sizes for textures and buffers
@@ -525,7 +563,7 @@ namespace RenderDriver
 			poolInfo.pPoolSizes = aPoolSizes.data();
 			poolInfo.maxSets = 3;
 			VkResult ret = vkCreateDescriptorPool(*mpNativeDevice, &poolInfo, nullptr, &mNativeDescriptorPool);
-			WTFASSERT(ret == VK_SUCCESS, "Error creating descriptor pool: %d", ret);
+			WTFASSERT(ret == VK_SUCCESS, "Error creating descriptor pool: %s", Utils::getErrorCode(ret));
 
 			maNativeDescriptorSets.resize(miNumLayoutSets);
 			VkDescriptorSetAllocateInfo allocInfo = {};
@@ -534,7 +572,7 @@ namespace RenderDriver
 			allocInfo.descriptorSetCount = miNumLayoutSets;
 			allocInfo.pSetLayouts = maNativeLayoutSets.data();
 			ret = vkAllocateDescriptorSets(*mpNativeDevice, &allocInfo, maNativeDescriptorSets.data());
-			WTFASSERT(ret == VK_SUCCESS, "Error creating descriptor set: %d", ret);
+			WTFASSERT(ret == VK_SUCCESS, "Error creating descriptor set: %s", Utils::getErrorCode(ret));
 
 			// update buffer descriptors and fill descriptors, textures will be updated later on
 			for(uint32_t i = 0; i < static_cast<uint32_t>(aDescriptorBufferInfo.size()); i++)
@@ -755,7 +793,13 @@ namespace RenderDriver
 
 			maaLayoutBindings[iGroup][iBindingIndex].descriptorType = (bReadOnly ? VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER : VK_DESCRIPTOR_TYPE_STORAGE_BUFFER);
 			maaLayoutBindings[iGroup][iBindingIndex].descriptorCount = 1;
-			maaLayoutBindings[iGroup][iBindingIndex].stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_COMPUTE_BIT | VK_SHADER_STAGE_RAYGEN_BIT_KHR;
+			maaLayoutBindings[iGroup][iBindingIndex].stageFlags = 
+				VK_SHADER_STAGE_VERTEX_BIT |
+				VK_SHADER_STAGE_FRAGMENT_BIT |
+				VK_SHADER_STAGE_COMPUTE_BIT |
+				VK_SHADER_STAGE_RAYGEN_BIT_KHR |
+				VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR |
+				VK_SHADER_STAGE_MISS_BIT_KHR;
 			maaLayoutBindings[iGroup][iBindingIndex].binding = iBindingIndex;
 
 			if(maapBuffers.size() <= iGroup)
@@ -927,6 +971,15 @@ namespace RenderDriver
 				layoutBinding.stageFlags = (mDesc.mPipelineType == PipelineType::COMPUTE_PIPELINE_TYPE) ? 
 					VK_SHADER_STAGE_COMPUTE_BIT : 
 					VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT;
+				if(mDesc.mPipelineType == PipelineType::RAY_TRACE_PIPELINE_TYPE)
+				{
+					layoutBinding.stageFlags =
+						VK_SHADER_STAGE_RAYGEN_BIT_KHR |
+						VK_SHADER_STAGE_ANY_HIT_BIT_KHR |
+						VK_SHADER_STAGE_CLOSEST_HIT_BIT_KHR |
+						VK_SHADER_STAGE_MISS_BIT_KHR;
+				}
+
 				maaLayoutBindings[0].push_back(layoutBinding);
 
 				DEBUG_PRINTF("\tset 0 binding %d sampler\n",
@@ -963,7 +1016,7 @@ namespace RenderDriver
 					&layoutCreateInfo,
 					nullptr,
 					&maNativeLayoutSets[iGroup]);
-				WTFASSERT(ret == VK_SUCCESS, "Error creating descriptor set layout: %d", ret);
+				WTFASSERT(ret == VK_SUCCESS, "Error creating descriptor set layout: %s", Utils::getErrorCode(ret));
 			}
 
 			// pool sizes for textures and buffers
@@ -1023,7 +1076,7 @@ namespace RenderDriver
 			poolInfo.pPoolSizes = aPoolSizes.data();
 			poolInfo.maxSets = 3;
 			VkResult ret = vkCreateDescriptorPool(*mpNativeDevice, &poolInfo, nullptr, &mNativeDescriptorPool);
-			WTFASSERT(ret == VK_SUCCESS, "Error creating descriptor pool: %d", ret);
+			WTFASSERT(ret == VK_SUCCESS, "Error creating descriptor pool: %s", Utils::getErrorCode(ret));
 
 			// descriptor set
 			maNativeDescriptorSets.resize(iNumBindingGroups);
@@ -1033,19 +1086,8 @@ namespace RenderDriver
 			allocInfo.descriptorSetCount = miNumLayoutSets;
 			allocInfo.pSetLayouts = maNativeLayoutSets.data();
 
-			//VkDescriptorSetVariableDescriptorCountAllocateInfoEXT variableDescriptorCountAllocInfo = {};
-			//if(iNumAccelerationStructures > 0)
-			//{
-			//	uint32_t variableDescCounts[] = { 1 };
-			//	variableDescriptorCountAllocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_VARIABLE_DESCRIPTOR_COUNT_ALLOCATE_INFO_EXT;
-			//	variableDescriptorCountAllocInfo.descriptorSetCount = miNumLayoutSets;
-			//	variableDescriptorCountAllocInfo.pDescriptorCounts = variableDescCounts;
-			//
-			//	allocInfo.pNext = &variableDescriptorCountAllocInfo;
-			//}
-			
 			ret = vkAllocateDescriptorSets(*mpNativeDevice, &allocInfo, maNativeDescriptorSets.data());
-			WTFASSERT(ret == VK_SUCCESS, "Error creating descriptor set: %d", ret);
+			WTFASSERT(ret == VK_SUCCESS, "Error creating descriptor set: %s", Utils::getErrorCode(ret));
 
 			// update image and buffer descriptors
 			for(uint32_t i = 0; i < (uint32_t)maapBuffers.size(); i++)
@@ -1058,6 +1100,12 @@ namespace RenderDriver
 						bufferInfo.buffer = *((VkBuffer *)maapBuffers[i][j]->getNativeBuffer());
 						bufferInfo.offset = 0;
 						bufferInfo.range = VK_WHOLE_SIZE;
+
+if(maapBuffers[i][j]->getID().find("Vertex Buffer") != std::string::npos || 
+	maapBuffers[i][j]->getID().find("Index Buffer") != std::string::npos)
+{
+	int iDebug = 1;
+}
 					}
 
 					VkDescriptorImageInfo imageInfo;
@@ -1065,7 +1113,6 @@ namespace RenderDriver
 					{
 						imageInfo.imageView = ((RenderDriver::Vulkan::CImageView*)maapImageViews[i][j])->getNativeImageView();;
 						imageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
-						//imageInfo.sampler = *((VkSampler*)aSamplers);
 					}
 					
 					VkWriteDescriptorSet descriptorWrite = {};
@@ -1118,7 +1165,12 @@ namespace RenderDriver
 						}
 						else
 						{
-							WTFASSERT(0, "Should not be here");
+							WTFASSERT(0, "Should not be here: nullptr for descriptor: \"%s\" at set %d binding index %d",
+								mID.c_str(),
+								i,
+								j
+							);
+
 						}
 					}
 				}

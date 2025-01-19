@@ -83,16 +83,41 @@
             "Dispatch": [10, 1, 1]
         },
         {
+            "Name": "Test Graphics",
+            "Pipeline": "test-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Texture Page Queue Compute",
+            "Pipeline": "texture-page-queue-compute.json",
+            "Type": "Compute",
+            "PassType": "Compute",
+            "Dispatch": [8, 1, 1]
+        },
+        {
+            "Name": "Texture Atlas Graphics",
+            "Pipeline": "texture-atlas-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Temporal Restir Diffuse Ray Trace",
+            "Pipeline": "temporal-restir-diffuse-ray-trace.json",
+            "Type": "Ray Trace",
+            "PassType": "Ray Trace"
+        },
+        {
             "Name": "Ray Traced Ambient Occlusion",
             "Pipeline": "ray-traced-ambient-occlusion.json",
-            "Type": "RayTrace",
-            "PassType": "RayTrace"
+            "Type": "Ray Trace",
+            "PassType": "Ray Trace"
         },
         {
             "Name": "Ray Traced Shadow",
             "Pipeline": "ray-traced-shadow.json",
-            "Type": "RayTrace",
-            "PassType": "RayTrace"
+            "Type": "Ray Trace",
+            "PassType": "Ray Trace"
         },
         {
             "Name": "Light Composite Graphics",
@@ -101,16 +126,29 @@
             "PassType": "Full Triangle"
         },
         {
-            "Name": "Copy Render Targets",
-            "Pipeline": "copy-render-targets.json",
-            "Type": "Copy",
-            "PassType": "Copy"
+            "Name": "Build Irradiance Cache Ray Trace",
+            "Pipeline": "build-irradiance-cache.json",
+            "Type": "Ray Trace",
+            "PassType": "Ray Trace"
+        },
+        {
+            "Name": "Test Compute",
+            "Pipeline": "test-compute.json",
+            "Type": "Compute",
+            "PassType": "Compute",
+            "Dispatch": [1024, 1, 1]
         },
         {
             "Name": "Swap Chain Graphics",
             "Pipeline": "swap-chain-bistro-example.json",
             "Type": "Graphics",
             "PassType": "Swap Chain"
+        },
+        {
+            "Name": "Copy Render Targets",
+            "Pipeline": "copy-render-targets.json",
+            "Type": "Copy",
+            "PassType": "Copy"
         }
     ]
 }

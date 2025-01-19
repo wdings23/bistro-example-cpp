@@ -13,6 +13,7 @@
 
 #include <math/vec.h>
 
+#include <functional>
 #include <vector>
 
 namespace Render
@@ -49,6 +50,11 @@ namespace Render
 				void*												maSamplers;
 				void*												mpPlatformInstance;		// for getting function ptr, ie. vulkan
 				std::map<std::string, RenderDriver::Common::CAccelerationStructure*>* mpapAccelerationStructures;
+
+				RenderDriver::Common::CCommandQueue*				mpGraphicsCommandQueue;
+				RenderDriver::Common::CCommandQueue*				mpComputeCommandQueue;
+
+				std::function<void(Render::Common::CRenderJob*)>*	mpfnInitExternalDataFunc = nullptr;
 			};
 
         public:
@@ -112,6 +118,8 @@ namespace Render
 
 			std::vector<std::pair<std::string, std::pair<std::string, std::string>>>			maCopyAttachmentMapping;
 
+			std::unique_ptr<std::function<void(Render::Common::CRenderJob*)>> mpfnInitExternalData = nullptr;
+
         protected:
             RenderDriver::Common::CDevice*							mpDevice;
 			RenderDriver::Common::CCommandQueue*					mpCommandQueue;
@@ -148,6 +156,8 @@ namespace Render
 
 			bool														mbInputOutputDepth = false;
 
+			
+
 		protected:
 			void createAttachments(
 				rapidjson::Document const& doc,
@@ -159,7 +169,8 @@ namespace Render
 
 			void createPipelineData(
 				rapidjson::Document const& doc,
-				std::vector<CRenderJob*>* apRenderJobs
+				std::vector<CRenderJob*>* apRenderJobs,
+				RenderDriver::Common::CCommandQueue* pCommandQueue
 			);
 
 			void initPipelineLayout(
@@ -182,6 +193,8 @@ namespace Render
 			void processDepthAttachment(
 				std::vector<CRenderJob*>* apRenderJobs
 			);
+
+			void initAttachmentBarriers(CreateInfo const& createInfo);
 
 			void handleTextureOutput(
 				rapidjson::Value const& attachmentJSON,
@@ -222,7 +235,8 @@ namespace Render
 
 			void handleUniformTexture(
 				rapidjson::Value const& shaderResource,
-				std::vector<CRenderJob*>* apRenderJobs
+				std::vector<CRenderJob*>* apRenderJobs,
+				RenderDriver::Common::CCommandQueue* pCommandQueue
 			);
 
 			void computeSemaphoreValues(
@@ -258,7 +272,8 @@ namespace Render
 				unsigned char const* pImageData,
 				uint32_t iTextureWidth,
 				uint32_t iTextureHeight,
-				RenderDriver::Common::Format const& format
+				RenderDriver::Common::Format const& format,
+				RenderDriver::Common::CCommandQueue* pCommandQueue
 			) = 0;
 
 			virtual void platformInitDescriptorSet() = 0;
@@ -294,11 +309,20 @@ namespace Render
 				uint32_t iHeight
 			) = 0;
 
+			virtual void platformCreateImageView(
+				std::string const& name,
+				RenderDriver::Common::ImageViewDescriptor const& imageViewDesc
+			) = 0;
+
 			virtual void platformCreateFrameBuffer(
 				RenderDriver::Common::CSwapChain* pSwapChain
 			) = 0;
 
 			virtual void platformCreateSemaphore() = 0;
+
+			virtual void platformInitAttachmentBarriers(
+				CreateInfo const& createInfo
+			) = 0;
 		};
     
     }   // Common

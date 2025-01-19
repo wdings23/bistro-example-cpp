@@ -1,6 +1,6 @@
 {
-    "Type": "RayTrace",
-    "PassType": "RayTrace",
+    "Type": "Ray Trace",
+    "PassType": "Ray Trace",
     "Shader": "ray-trace.shader",
     "Attachments": [
         {
@@ -21,7 +21,41 @@
             "Name" : "Normal Output",
             "Type": "TextureInput",
             "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name": "Previous Hit Count",
+            "Type": "TextureInput",
+            "ParentJobName": "Copy Render Targets"
+        },
+        {
+            "Name": "Motion Vector Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name": "Previous World Position Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Copy Render Targets"
+        },
+        {
+            "Name": "Previous Normal Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Copy Render Targets"
+        },
+        {
+            "Name": "Previous Motion Vector Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Copy Render Targets"
         }
     ],
-    "ShaderResources": []
+    "ShaderResources": [
+        {
+            "name": "blue noise texture",
+            "type": "texture2d",
+            "shader_stage": "fragment",
+            "format": "rgb8unorm",
+            "usage": "uniform",
+            "file_path": "D:\\projects\\free-blue-noise-textures\\512_512\\LDR_RGB1_0.png"
+        }
+    ]
 }

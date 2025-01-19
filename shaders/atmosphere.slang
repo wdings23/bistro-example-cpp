@@ -18,34 +18,7 @@
 #define EXPOSURE 20.0f;
 
 
-struct DefaultUniforms
-{
-    uint        miScreenWidth;
-    uint        miScreenHeight;
-    int         miFrame;
-    uint        miNumMeshes;
-
-    float       mfRand0;
-    float       mfRand1;
-    float       mfRand2;
-    float       mfRand3;
-
-    float4x4    mViewProjectionMatrix;
-    float4x4    mPrevViewProjectionMatrix;
-    float4x4    mViewMatrix;
-    float4x4    mProjectionMatrix;
-    float4x4    mJitteredViewProjectionMatrix;
-    float4x4    mPrevJitteredViewProjectionMatrix;
-
-    float4      mCameraPosition;
-    float4      mCameraLookDir;
-
-    float4      mLightRadiance;
-    float4      mLightDirection;
-
-    float4      mPrevLightRadiance;
-    float4      mPrevLightDirection;
-};
+#include  "default-uniform-headers.slang"
 
 // Per-vertex attributes to be assembled from bound vertex buffers.
 struct AssembledVertex
@@ -75,7 +48,7 @@ struct VertexStageOutput
 [[vk::binding(2, 0)]] Texture2D<float4> prevSunRadianceTexture;
 [[vk::binding(3, 0)]] SamplerState textureSampler;
 
-[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniforms> defaultUniformData;
+[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData;
 
 
 [shader("vertex")]
@@ -104,7 +77,7 @@ Fragment PSMain(
     float3 directionDiff = defaultUniformData.mLightDirection.xyz - defaultUniformData.mPrevLightDirection.xyz;
     float fLengthSquared = dot(directionDiff, directionDiff);
 
-    if(defaultUniformData.miFrame > 0 && fLengthSquared <= 0.00001f)
+    if(defaultUniformData.miFrame > 1 && fLengthSquared <= 0.00001f)
     {
         float2 uv = float2(
             input.texcoord.x,

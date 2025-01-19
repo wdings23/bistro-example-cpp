@@ -656,7 +656,8 @@ namespace RenderDriver
 			None = 0,
 			Vertex = 1,
 			Fragment,
-			Compute
+			Compute,
+			RayTrace,
 		};
 
 		class CImage;

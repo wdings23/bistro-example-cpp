@@ -48,6 +48,6 @@ namespace RenderDriver
             RenderDriver::Vulkan::CPhysicalDevice*          mpPhysicalDevice;
         };
 
-    }   // DX12
+    }   // Vulkan
 
 }   // RenderDriver

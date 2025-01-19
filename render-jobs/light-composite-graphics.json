@@ -12,14 +12,9 @@
 
 
         {
-            "Name" : "Normal Output",
+            "Name" : "Decoded Spherical Harmonics Output",
             "Type": "TextureInput",
-            "ParentJobName": "Deferred Indirect Graphics"
-        },
-        {
-            "Name" : "Output",
-            "Type": "TextureInput",
-            "ParentJobName": "Ray Traced Ambient Occlusion"
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
         },
         {
             "Name" : "Output",
@@ -27,14 +22,24 @@
             "ParentJobName": "Ray Traced Shadow"
         },
         {
-            "Name" : "Diffuse Sky Light Output",
+            "Name" : "Sky Output",
             "Type": "TextureInput",
             "ParentJobName": "Atmosphere Graphics"
         },
         {
-            "Name" : "Sun Light Output",
+            "Name" : "Albedo Output",
             "Type": "TextureInput",
-            "ParentJobName": "Atmosphere Graphics"
+            "ParentJobName": "Texture Atlas Graphics"
+        },
+        {
+            "Name": "Texture Coordinate Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name": "Reservoir Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
         }
     ],
     "ShaderResources": [   

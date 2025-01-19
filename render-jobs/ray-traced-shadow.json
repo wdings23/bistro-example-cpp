@@ -1,6 +1,6 @@
 {
-    "Type": "RayTrace",
-    "PassType": "RayTrace",
+    "Type": "Ray Trace",
+    "PassType": "Ray Trace",
     "Shader": "ray-trace-shadow.shader",
     "Attachments": [
         {

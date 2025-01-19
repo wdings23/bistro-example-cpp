@@ -20,6 +20,7 @@ namespace RenderDriver
             ResourceFlagBits            mResourceFlags;
             uint32_t                    miNumImages;
             float const*                mafClearColor;
+            ImageLayout                 mImageLayout;
         };
 
         class CImage : public CObject

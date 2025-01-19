@@ -2,6 +2,7 @@
 #include <render-driver/Vulkan/CommandBufferVulkan.h>
 #include <render-driver/Vulkan/CommandAllocatorVulkan.h>
 #include <render-driver/Vulkan/DescriptorSetVulkan.h>
+#include <render-driver/Vulkan/UtilsVulkan.h>
 
 #include <wtfassert.h>
 
@@ -28,7 +29,7 @@ namespace RenderDriver
             allocInfo.commandBufferCount = 1;
 
             VkResult ret = vkAllocateCommandBuffers(nativeDeviceVulkan, &allocInfo, &mNativeCommandBuffer);
-            WTFASSERT(ret == VK_SUCCESS, "Error creating command buffer: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error creating command buffer: %s", Utils::getErrorCode(ret));
 
 #if defined(_DEBUG)
             miNumCommands = 0;
@@ -299,7 +300,7 @@ namespace RenderDriver
         {
             mState = RenderDriver::Common::CommandBufferState::Initialized;
             VkResult ret = vkResetCommandBuffer(mNativeCommandBuffer, 0);
-            WTFASSERT(ret == VK_SUCCESS, "Error resetting command buffer: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error resetting command buffer: %s", Utils::getErrorCode(ret));
 
 if(mID == "Upload Command Buffer")
 {
@@ -312,7 +313,7 @@ if(mID == "Upload Command Buffer")
             beginInfo.pInheritanceInfo = nullptr; // Optional
 
             ret = vkBeginCommandBuffer(mNativeCommandBuffer, &beginInfo);
-            WTFASSERT(ret == VK_SUCCESS, "Error starting command buffer: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error starting command buffer: %s", Utils::getErrorCode(ret));
 
 #if defined(_DEBUG)
             miNumCommands = 0;
@@ -327,7 +328,7 @@ if(mID == "Upload Command Buffer")
         {
             mState = RenderDriver::Common::CommandBufferState::Closed;
             VkResult ret = vkEndCommandBuffer(mNativeCommandBuffer);
-            WTFASSERT(ret == VK_SUCCESS, "Error closing command buffer: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error closing command buffer: %s", Utils::getErrorCode(ret));
         }
 
         /*

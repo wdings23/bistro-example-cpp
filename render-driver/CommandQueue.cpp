@@ -34,6 +34,14 @@ namespace RenderDriver
 
         }
 
+        void CCommandQueue::execCommandBufferSynchronized(
+            CCommandBuffer& commandBuffer,
+            CDevice& device,
+            bool bWait)
+        {
+
+        }
+
         /*
         **
         */

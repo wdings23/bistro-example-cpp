@@ -174,6 +174,15 @@ namespace RenderDriver
         /*
         **
         */
+        void* CBuffer::getMemoryOpen(uint32_t iDataSize)
+        {
+            assert(!"Implement me");
+            return nullptr;
+        }
+
+        /*
+        **
+        */
         void CBuffer::releaseNativeBuffer()
         {
             mNativeBuffer.Reset();

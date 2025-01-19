@@ -38,6 +38,8 @@ namespace Render
 			std::map<std::string, std::unique_ptr<RenderDriver::Vulkan::CImage>>				mapImages;
 			std::map<std::string, std::unique_ptr<RenderDriver::Vulkan::CImageView>>			mapImageViews;
 
+			std::map<std::string, std::unique_ptr<RenderDriver::Vulkan::CImageView>>			maUniformImageViews;
+
 			std::unique_ptr<RenderDriver::Vulkan::CDescriptorSet>								mDescriptorSet;
 			std::unique_ptr<RenderDriver::Vulkan::CPipelineState>								mPipelineState;
 
@@ -83,8 +85,13 @@ namespace Render
 				unsigned char const* pImageData,
 				uint32_t iTextureWidth,
 				uint32_t iTextureHeight,
-				RenderDriver::Common::Format const& format
+				RenderDriver::Common::Format const& format,
+				RenderDriver::Common::CCommandQueue* pCommandQueue
 			);
+
+			virtual void platformCreateImageView(
+				std::string const& name,
+				RenderDriver::Common::ImageViewDescriptor const& imageViewDesc);
 
 			virtual void platformInitDescriptorSet();
 			virtual void platformInitPipelineState();
@@ -124,6 +131,10 @@ namespace Render
 			);
 
 			virtual void platformCreateSemaphore();
+
+			virtual void platformInitAttachmentBarriers(
+				CreateInfo const& createInfo
+			);
 		};
 
 	}   // Common

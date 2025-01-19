@@ -23,7 +23,8 @@ namespace RenderDriver
                 VkMemoryPropertyFlags properties,
                 VkPhysicalDevice& physicalDevice);
 
-            
+            char const* getErrorCode(
+                VkResult result);
 
         }   // Utils
 

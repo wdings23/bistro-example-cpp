@@ -34,7 +34,7 @@ namespace RenderDriver
                 &bufferViewCreateInfo, 
                 nullptr, 
                 &mNativeBufferView);
-            WTFASSERT(ret == VK_SUCCESS, "Error creating buffer view: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error creating buffer view: %s", Utils::getErrorCode(ret));
 
             return mHandle;
         }

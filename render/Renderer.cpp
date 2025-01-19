@@ -22,6 +22,7 @@
 
 #include <chrono>
 
+#include <render-driver/Vulkan/ImageVulkan.h>
 
 #if defined(RUN_TEST_LOCALLY)
 std::vector<char> gaReadOnlyBufferCopy(1 << 27);
@@ -30,6 +31,7 @@ std::unique_ptr<RenderDriver::Common::CBuffer> gpCopyBuffer;
 #endif // TEST_HLSL_LOCALLY
 
 std::mutex sMutex;
+std::mutex sPresentMutex;
 
 namespace Render
 {
@@ -131,7 +133,7 @@ namespace Render
                 std::string passType = job["PassType"].GetString();
 
 #if !defined(USE_RAY_TRACING)
-                if(type == "RayTrace")
+                if(type == "Ray Trace")
                 {
                     continue;
                 }
@@ -169,7 +171,7 @@ namespace Render
                 std::string passType = job["PassType"].GetString();
 
 #if !defined(USE_RAY_TRACING)
-                if(type == "RayTrace")
+                if(type == "Ray Trace")
                 {
                     continue;
                 }
@@ -196,7 +198,8 @@ namespace Render
                     mpSwapChain.get(),
                     maSamplers,
                     mpPlatformInstance, 
-                    &mapAccelerationStructures
+                    &mapAccelerationStructures,
+                    
                 };
                 mapRenderJobs[name]->mName = name;
                 mapRenderJobs[name]->createOutputAttachments(createInfo);
@@ -208,7 +211,7 @@ namespace Render
                 aRenderJobNames
             );
 
-            platformTransitionOutputAttachments();
+            //platformTransitionOutputAttachments();
 
             // create the rest
             iJob = 0;
@@ -221,7 +224,13 @@ namespace Render
                 std::string passType = job["PassType"].GetString();
 
 #if !defined(USE_RAY_TRACING)
-                if(type == "RayTrace")
+                if(type == "Ray Trace")
+                {
+                    mapRenderJobs[name]->mType = Render::Common::JobType::RayTrace;
+                    continue;
+                }
+
+                if(name.find("Light Composite") != std::string::npos)
                 {
                     continue;
                 }
@@ -238,6 +247,13 @@ namespace Render
                         dispatchArray[1].GetInt(),
                         dispatchArray[2].GetInt()
                     );
+                }
+
+                // initialize external data
+                std::function<void(Render::Common::CRenderJob*)>* pfnInitDataFunc = nullptr;
+                if(mapfnRenderJobData.find(name) != mapfnRenderJobData.end())
+                {
+                    pfnInitDataFunc = mapfnRenderJobData[name];
                 }
 
                 Render::Common::CRenderJob::CreateInfo createInfo
@@ -259,6 +275,9 @@ namespace Render
                     maSamplers,
                     mpPlatformInstance,
                     &mapAccelerationStructures,
+                    mpGraphicsCommandQueue.get(),
+                    mpComputeCommandQueue.get(),
+                    pfnInitDataFunc,
                 };
                 mapRenderJobs[name]->create(createInfo);
 
@@ -293,7 +312,6 @@ namespace Render
             execRenderJobs3();
             miTotalExecRenderJobTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
 
-            
             RenderDriver::Common::SwapChainPresentDescriptor desc;
             desc.miSyncInterval = 0;
             desc.miFlags = 0x200;
@@ -303,9 +321,12 @@ namespace Render
             //desc.miSyncInterval = 1;
             //desc.miFlags = 0;
 
-            beginDebugMarker("Present");
-            mpSwapChain->present(desc);
-            endDebugMarker();
+            {
+                std::lock_guard lock(sPresentMutex);
+                beginDebugMarker("Present");
+                mpSwapChain->present(desc);
+                endDebugMarker();
+            }
 
             if(mbCapturingRenderDebuggerFrame)
             {
@@ -330,6 +351,92 @@ namespace Render
             WTFASSERT(mpUploadCommandBuffer->getNumCommands() <= 0, "There are still un-executed copy commands left in the upload command buffer (%d)\n",
                 mpUploadCommandBuffer->getNumCommands());
 #endif // _DEBUG 
+        }
+
+        /*
+        **
+        */
+        void CRenderer::postDraw()
+        {
+            if(mpfnPostDraw != nullptr)
+            {
+                (*mpfnPostDraw)(this);
+            }
+
+            for(auto& uploadBuffer : mapUploadBuffers)
+            {
+                uploadBuffer->releaseNativeBuffer();
+            }
+
+            mapUploadBuffers.clear();
+
+#if 0
+            // get the texture pages needed
+            auto& pTexturePageQueueBuffer = mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Texture Page Queue MIP"];
+            uint32_t iBufferSize = (uint32_t)pTexturePageQueueBuffer->getDescriptor().miSize;
+            std::vector<char> acTexturePageQueueData(iBufferSize);
+            platformCopyBufferToCPUMemory(
+                pTexturePageQueueBuffer,
+                acTexturePageQueueData.data(),
+                0,
+                iBufferSize
+            );
+
+            // get the number of pages
+            auto& pTexturePageCountBuffer = mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Counters"];
+            std::vector<char> acCounter(256);
+            platformCopyBufferToCPUMemory(
+                pTexturePageCountBuffer,
+                acCounter.data(),
+                0,
+                256
+            );
+
+            uint32_t const iTexturePageSize = 64;
+
+            // texture page info
+            struct TexturePage
+            {
+                int32_t miPageUV;
+                int32_t miTextureID;
+                int32_t miHashIndex;
+
+                int32_t miMIP;
+            };
+            uint32_t iNumRequests = *((uint32_t*)acCounter.data());
+            for(uint32_t i = 0; i < iNumRequests; i++)
+            {
+                char* acData = acTexturePageQueueData.data() + i * sizeof(TexturePage);
+                TexturePage& texturePage = *((TexturePage*)acData);
+                if(texturePage.miTextureID >= 65536)
+                {
+                    continue;
+                }
+
+                uint32_t iY = (texturePage.miPageUV >> 16);
+                uint32_t iX = (texturePage.miPageUV & 0x0000ffff);
+                
+                uint32_t iMipDenom = (uint32_t)pow(2, texturePage.miMIP);
+                uint2 const& textureDimension = maAlbedoTextureDimensions[texturePage.miTextureID];
+                uint2 mipTextureDimension(
+                    textureDimension.x / iMipDenom,
+                    textureDimension.y / iMipDenom
+                );
+
+                uint2 numDivs(
+                    max(1, mipTextureDimension.x / iTexturePageSize),
+                    max(1, mipTextureDimension.y / iTexturePageSize)
+                );
+
+                // texture page coordinate
+                uint2 pageCoord(
+                    (uint32_t)abs((int32_t)iX) % numDivs.x,
+                    (uint32_t)abs((int32_t)iY) % numDivs.y
+                );
+            }
+#endif // #if 0
+
+            
         }
 
         /*
@@ -389,6 +496,50 @@ namespace Render
         /*
         **
         */
+        void CRenderer::copyTexturePageToAtlas(
+            const char* acTexturePageImageData,
+            RenderDriver::Common::CImage* pDestImage,
+            uint2 const& pageCoord,
+            uint32_t iTexturePageDimension)
+        {
+            std::lock_guard lock(sPresentMutex);
+
+            platformCopyTexturePageToAtlas(
+                acTexturePageImageData,
+                pDestImage,
+                pageCoord,
+                iTexturePageDimension
+            );
+        }
+
+        /*
+        **
+        */
+        void CRenderer::copyTexturePageToAtlas2(
+            const char* acTexturePageImageData,
+            RenderDriver::Common::CImage* pDestImage,
+            uint2 const& pageCoord,
+            uint32_t iTexturePageDimension,
+            RenderDriver::Common::CCommandBuffer& commandBuffer,
+            RenderDriver::Common::CCommandQueue& commandQueue,
+            RenderDriver::Common::CBuffer& uploadBuffer)
+        {
+            std::lock_guard lock(sPresentMutex);
+
+            platformCopyTexturePageToAtlas2(
+                acTexturePageImageData,
+                pDestImage,
+                pageCoord,
+                iTexturePageDimension,
+                commandBuffer,
+                commandQueue,
+                uploadBuffer
+            );
+        }
+
+        /*
+        **
+        */
         void CRenderer::copyCPUToBuffer2(
             RenderDriver::Common::CCommandBuffer* pCommandBuffer,
             RenderDriver::Common::CBuffer* pGPUBuffer,
@@ -399,6 +550,8 @@ namespace Render
             uint32_t iDataSize,
             uint32_t iFlag)
         {
+            std::lock_guard lock(sPresentMutex);
+
             platformCopyCPUToGPUBuffer(
                 *pCommandBuffer,
                 pGPUBuffer,
@@ -445,6 +598,30 @@ namespace Render
             {
                 platformExecuteCopyCommandBuffer(*pCommandBuffer, iFlag);
             }
+        }
+
+        /*
+        **
+        */
+        void CRenderer::copyCPUToBuffer4(
+            RenderDriver::Common::CBuffer* pGPUBuffer,
+            void* pData,
+            uint32_t iDestOffset,
+            uint32_t iDataSize,
+            RenderDriver::Common::CCommandBuffer& commandBuffer,
+            RenderDriver::Common::CCommandQueue& commandQueue,
+            RenderDriver::Common::CBuffer& uploadBuffer)
+        {
+            platformCopyCPUToGPUBuffer3(
+                commandBuffer,
+                commandQueue,
+                pGPUBuffer,
+                pData,
+                0,
+                iDestOffset,
+                iDataSize,
+                uploadBuffer
+            );
         }
 
         /*
@@ -566,6 +743,26 @@ namespace Render
                 pCPUBuffer,
                 iSrcOffset,
                 iDataSize);
+        }
+
+        /*
+        **
+        */
+        void CRenderer::copyBufferToCPUMemory2(
+            RenderDriver::Common::CBuffer* pGPUBuffer,
+            void* pCPUBuffer,
+            uint64_t iSrcOffset,
+            uint64_t iDataSize,
+            RenderDriver::Common::CCommandBuffer& commandBuffer,
+            RenderDriver::Common::CCommandQueue& commandQueue)
+        {
+            platformCopyBufferToCPUMemory2(
+                pGPUBuffer,
+                pCPUBuffer,
+                iSrcOffset,
+                iDataSize,
+                commandBuffer,
+                commandQueue);
         }
 
         /*
@@ -708,6 +905,8 @@ namespace Render
             RenderDriver::Common::CCommandBuffer& commandBuffer
         )
         {
+            RenderDriver::Common::Utils::TransitionBarrierInfo aBarriers[32];
+            uint32_t iNumBarriers = 0;
             for(auto const& inputAttachmentKeyValue : pRenderJob->mapInputImageAttachments)
             {
                 //DEBUG_PRINTF("*** INPUT ATTACHMENT ***\n");
@@ -720,33 +919,34 @@ namespace Render
 
                 if(bDepthStencil)
                 {
-                    RenderDriver::Common::Utils::TransitionBarrierInfo aBarriers[1];
-                    aBarriers[0].mpImage = pRenderJob->mapInputImageAttachments[attachmentName];
-                    aBarriers[0].mBefore = RenderDriver::Common::ResourceStateFlagBits::None;
-                    aBarriers[0].mAfter = RenderDriver::Common::ResourceStateFlagBits::RenderTarget;
-
-                    platformTransitionBarrier3(
-                        aBarriers,
-                        commandBuffer,
-                        1,
-                        RenderDriver::Common::CCommandQueue::Type::Graphics
-                    );
+                    RenderDriver::Common::Utils::TransitionBarrierInfo barrier;
+                    aBarriers[iNumBarriers].mpImage = pRenderJob->mapInputImageAttachments[attachmentName];
+                    aBarriers[iNumBarriers].mBefore = RenderDriver::Common::ResourceStateFlagBits::DepthStencilAttachment;
+                    aBarriers[iNumBarriers].mAfter = RenderDriver::Common::ResourceStateFlagBits::Common;
+                    aBarriers[iNumBarriers].mbWriteableBefore = true;
+                    aBarriers[iNumBarriers].mbWriteableAfter = false;
+                    aBarriers[iNumBarriers].mCommandBufferType = RenderDriver::Common::CommandBufferType::Graphics;
+                    ++iNumBarriers;
                 }
                 else
                 {
-                    RenderDriver::Common::Utils::TransitionBarrierInfo aBarriers[1];
-                    aBarriers[0].mpImage = pRenderJob->mapInputImageAttachments[attachmentName];
-                    aBarriers[0].mBefore = RenderDriver::Common::ResourceStateFlagBits::None;
-                    aBarriers[0].mAfter = RenderDriver::Common::ResourceStateFlagBits::RenderTarget;
-
-                    platformTransitionBarrier3(
-                        aBarriers,
-                        commandBuffer,
-                        1,
-                        RenderDriver::Common::CCommandQueue::Type::Graphics
-                    );
+                    RenderDriver::Common::Utils::TransitionBarrierInfo barrier;
+                    aBarriers[iNumBarriers].mpImage = pRenderJob->mapInputImageAttachments[attachmentName];
+                    aBarriers[iNumBarriers].mBefore = RenderDriver::Common::ResourceStateFlagBits::ColorAttachment;
+                    aBarriers[iNumBarriers].mAfter = RenderDriver::Common::ResourceStateFlagBits::Common;
+                    aBarriers[iNumBarriers].mbWriteableBefore = true;
+                    aBarriers[iNumBarriers].mbWriteableAfter = false;
+                    aBarriers[iNumBarriers].mCommandBufferType = RenderDriver::Common::CommandBufferType::Graphics;
+                    ++iNumBarriers;
                 }
             }
+
+            platformTransitionBarrier3(
+                aBarriers,
+                commandBuffer,
+                iNumBarriers,
+                RenderDriver::Common::CCommandQueue::Type::Graphics
+            );
         }
 
         /*
@@ -838,65 +1038,15 @@ namespace Render
                 mpSwapChain->clear(clearDesc);
             }
 
-            // transition to pixel shader resource for attachment in swap chain pass
-            if(pRenderJob->mPassType == PassType::SwapChain)
-            {
-                for(auto const& imageKeyValue : pRenderJob->mapInputImageAttachments)
-                {
-                    RenderDriver::Common::Utils::TransitionBarrierInfo aBarriers[1];
-                    aBarriers[0].mpImage = pRenderJob->mapInputImageAttachments[imageKeyValue.first];
-                    aBarriers[0].mBefore = RenderDriver::Common::ResourceStateFlagBits::None;
-                    aBarriers[0].mAfter = RenderDriver::Common::ResourceStateFlagBits::RenderTarget;
-                
-                    platformTransitionBarrier3(
-                        aBarriers,
-                        commandBuffer,
-                        1,
-                        queueType
-                    );
-                }
-            }
-            else
-            {
-                transitionInputAttachmentsStart(
-                    pRenderJob,
-                    commandBuffer
-                );
-            }
-
-            // set the coorect output image layout for drawing
-            for(auto& attachmentKeyValue : pRenderJob->mapOutputImageAttachments)
-            {
-                //DEBUG_PRINTF("*** OUTPUT ATTACHMENT ***\n");
-                RenderDriver::Common::Utils::TransitionBarrierInfo aBarriers[1];
-                aBarriers[0].mpImage = pRenderJob->mapOutputImageAttachments[attachmentKeyValue.first];
-                aBarriers[0].mBefore = RenderDriver::Common::ResourceStateFlagBits::None;
-                aBarriers[0].mAfter = RenderDriver::Common::ResourceStateFlagBits::ColorAttachment;
+            // transition barriers to read state
+            std::vector<char> acPlatformAttachmentInfo;
+            platformTransitionInputImageAttachments(
+                pRenderJob,
+                acPlatformAttachmentInfo,
+                commandBuffer,
+                false
+            );
             
-                platformTransitionBarrier3(
-                    aBarriers,
-                    commandBuffer,
-                    1,
-                    queueType
-                );
-            }
-
-            if(pRenderJob->mpDepthImage)
-            {
-                RenderDriver::Common::Utils::TransitionBarrierInfo aBarriers[1];
-                aBarriers[0].mpImage = pRenderJob->mpDepthImage;
-                aBarriers[0].mBefore = RenderDriver::Common::ResourceStateFlagBits::None;
-                aBarriers[0].mAfter = RenderDriver::Common::ResourceStateFlagBits::DepthStencilAttachment;
-
-                platformTransitionBarrier3(
-                    aBarriers,
-                    commandBuffer,
-                    1,
-                    queueType
-                );
-            }
-            
-
             // begin render pass
             RenderPassDescriptor2 renderPassDesc = {};
             renderPassDesc.mpCommandBuffer = &commandBuffer;
@@ -1028,6 +1178,14 @@ namespace Render
 
             platformEndRenderPass2(renderPassDesc);
 
+            // transition barriers back to original
+            platformTransitionInputImageAttachments(
+                pRenderJob,
+                acPlatformAttachmentInfo,
+                commandBuffer,
+                true
+            );
+
             platformEndDebugMarker3(&commandBuffer);
         }
 
@@ -1087,54 +1245,13 @@ namespace Render
                 Render::Common::JobType::Compute
             );
 
-            // transition barriers for shader resources
-            uint32_t iNumBarriers = 0;
-            std::vector<RenderDriver::Common::Utils::TransitionBarrierInfo> aBarriers(pRenderJob->maShaderResourceInfo.size());
-            for(auto& shaderKeyValue : pRenderJob->maShaderResourceInfo)
-            {
-                auto& shaderResourceName = shaderKeyValue.first;
-                auto& shaderResourceMap = shaderKeyValue.second;
-                std::string const& type = shaderResourceMap["type"];
-                std::string const& usage = shaderResourceMap["usage"];
-                if(type == "buffer" && usage == "write")
-                {
-                    aBarriers[iNumBarriers].mpBuffer = pRenderJob->mapUniformBuffers[shaderResourceName];
-                    aBarriers[iNumBarriers].mBefore = RenderDriver::Common::ResourceStateFlagBits::Common;
-                    aBarriers[iNumBarriers].mAfter = RenderDriver::Common::ResourceStateFlagBits::UnorderedAccess;
-
-                    WTFASSERT(aBarriers[iNumBarriers].mpBuffer, "no buffer");
-                }
-                else if(type == "texture" && usage == "write")
-                {
-                    aBarriers[iNumBarriers].mpImage = pRenderJob->mapUniformImages[shaderResourceName];
-                    aBarriers[iNumBarriers].mBefore = RenderDriver::Common::ResourceStateFlagBits::Common;
-                    aBarriers[iNumBarriers].mAfter = RenderDriver::Common::ResourceStateFlagBits::UnorderedAccess;
-
-                    WTFASSERT(aBarriers[iNumBarriers].mpImage, "no image");
-                }
-                else if(type == "buffer" && usage == "uniform")
-                {
-                    aBarriers[iNumBarriers].mpBuffer = pRenderJob->mapUniformBuffers[shaderResourceName];
-                    aBarriers[iNumBarriers].mBefore = RenderDriver::Common::ResourceStateFlagBits::Common;
-                    aBarriers[iNumBarriers].mAfter = RenderDriver::Common::ResourceStateFlagBits::NonPixelShaderResource;
-
-                    WTFASSERT(aBarriers[iNumBarriers].mpBuffer, "no buffer");
-                }
-                else if(type == "texture")
-                {
-                    aBarriers[iNumBarriers].mpImage = pRenderJob->mapUniformImages[shaderResourceName];
-                    aBarriers[iNumBarriers].mBefore = RenderDriver::Common::ResourceStateFlagBits::Common;
-                    aBarriers[iNumBarriers].mAfter = RenderDriver::Common::ResourceStateFlagBits::NonPixelShaderResource;
-
-                    WTFASSERT(aBarriers[iNumBarriers].mpImage, "no image");
-                }
-
-                ++iNumBarriers;
-            }
-            RenderDriver::Common::CCommandQueue::Type queueType = RenderDriver::Common::CCommandQueue::Type::Compute;
-            transitionInputAttachmentsStart(
+            // transition barriers to read state
+            std::vector<char> acPlatformAttachmentInfo;
+            platformTransitionInputImageAttachments(
                 pRenderJob,
-                commandBuffer
+                acPlatformAttachmentInfo,
+                commandBuffer,
+                false
             );
 
             commandBuffer.setPipelineState(
@@ -1146,6 +1263,14 @@ namespace Render
                 iNumDispatchX, 
                 iNumDispatchY, 
                 iNumDispatchZ
+            );
+
+            // transition barrier back to original
+            platformTransitionInputImageAttachments(
+                pRenderJob,
+                acPlatformAttachmentInfo,
+                commandBuffer,
+                true
             );
 
             platformEndDebugMarker3(&commandBuffer);
@@ -1165,10 +1290,19 @@ namespace Render
                 &commandBuffer
             );
 
-            transitionInputAttachmentsStart(
+            // transition barriers to read state
+            std::vector<char> acPlatformAttachmentInfo;
+            platformTransitionInputImageAttachments(
                 pRenderJob,
-                commandBuffer
+                acPlatformAttachmentInfo,
+                commandBuffer,
+                false
             );
+
+            //transitionInputAttachmentsStart(
+            //    pRenderJob,
+            //    commandBuffer
+            //);
 
             for(auto const& outputAttachmentKeyValue : pRenderJob->mapOutputImageAttachments)
             {
@@ -1210,6 +1344,20 @@ namespace Render
                 mDesc.miScreenHeight
             );
 
+            platformTransitionInputImageAttachments(
+                pRenderJob,
+                acPlatformAttachmentInfo,
+                commandBuffer,
+                true
+            );
+
+            platformTransitionOutputAttachmentsRayTrace(
+                pRenderJob,
+                commandBuffer
+            );
+
+            
+
             platformEndDebugMarker3(
                 &commandBuffer
             );
@@ -1226,11 +1374,22 @@ namespace Render
             RenderDriver::Common::CCommandQueue* pCopyCommandQueue = mpCopyCommandQueue.get();
             RenderDriver::Common::CCommandQueue* pGPUCopyCommandQueue = mpGPUCopyCommandQueue.get();
 
+auto startExecJobs = std::chrono::high_resolution_clock::now();
+
             uint32_t iJobIndex = 0;
             bool bHasSwapChainPass = false;
             uint32_t iTripleBufferIndex = miFrameIndex % 3;
             for(auto const& renderJobName : maRenderJobNames)
             {
+auto start0 = std::chrono::high_resolution_clock::now();
+
+#if !defined(USE_RAY_TRACING)
+                if(renderJobName.find("Light Composite") != std::string::npos)
+                {
+                    continue;
+                }
+#endif // USE_RAY_TRACING
+
                 Render::Common::CRenderJob* pRenderJob = mapRenderJobs[renderJobName];
                 RenderDriver::Common::CCommandBuffer& commandBuffer = *mapRenderJobCommandBuffers[renderJobName];
                 
@@ -1281,9 +1440,16 @@ namespace Render
                         &commandBuffer
                     );
 
-                    commandBuffer.reset();
                     for(auto& copyAttachment : pRenderJob->maCopyAttachmentMapping)
                     {
+#if !defined(USE_RAY_TRACING)
+                        Render::Common::CRenderJob* pParentJob = mapRenderJobs[copyAttachment.second.second];
+                        if(pParentJob->mType == Render::Common::JobType::RayTrace)
+                        {
+                            continue;
+                        }
+#endif // USE_RAY_TRACING
+
                         std::string destAttachmentName = copyAttachment.second.second + "-" + copyAttachment.second.first;
 
                         WTFASSERT(pRenderJob->mapInputImageAttachments.count(destAttachmentName) > 0,
@@ -1315,7 +1481,12 @@ namespace Render
                     );
                 }
 
+auto elapsed0 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start0).count();
+//DEBUG_PRINTF("\"%s\" 0 %d micro-seconds\n", pRenderJob->mName.c_str(), elapsed0);
+
                 commandBuffer.close();
+
+auto start1 = std::chrono::high_resolution_clock::now();
 
                 // execute the command buffer
                 if(pRenderJob->mType == Render::Common::JobType::Graphics)
@@ -1360,7 +1531,13 @@ namespace Render
                 }
 
                 ++iJobIndex;
+
+auto elapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start1).count();
+//DEBUG_PRINTF("\"%s\" 1 %d micro-seconds\n", pRenderJob->mName.c_str(), elapsed1);
             }
+
+auto totalElapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - startExecJobs).count();
+
 
             // transition swap chain image to present if no swap chain pass is listed
             if(!bHasSwapChainPass)
@@ -1405,6 +1582,13 @@ namespace Render
             // reset all render job fences
             for(auto const& renderJobName : maRenderJobNames)
             {
+#if !defined(USE_RAY_TRACING)
+                if(renderJobName.find("Light Composite") != std::string::npos)
+                {
+                    continue;
+                }
+#endif // USE_RAY_TRACING
+
                 Render::Common::CRenderJob* pRenderJob = mapRenderJobs[renderJobName];
                 pRenderJob->mpSignalFence->reset2();
                 if(pRenderJob->mpWaitFence != nullptr)
@@ -1572,6 +1756,13 @@ namespace Render
         */
         void CRenderer::prepareRenderJobData()
         {
+            //if(mpfnPrepareRenderJobData)
+            //{
+            //    (*mpfnPrepareRenderJobData)(this);
+            //}
+
+            uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
+
             // upload mesh index ranges and bounding boxes
             auto& pMeshIndexRangeBuffer = mapRenderJobs["Mesh Culling Compute"]->mapUniformBuffers["meshIndexRanges"];
             auto& pMeshBoundingBoxBuffer = mapRenderJobs["Mesh Culling Compute"]->mapUniformBuffers["meshBoundingBoxes"];
@@ -1592,8 +1783,216 @@ namespace Render
                 pUniformDataBuffer,
                 &miNumMeshes,
                 0,
-                sizeof(uint32_t)
+                sizeof(uint32_t),
+                iFlags
             );
+
+            // material id for texture atlas pages
+            {
+                auto& pMaterialIDBuffer = mapRenderJobs["Texture Page Queue Compute"]->mapUniformBuffers["meshMaterialIDs"];
+                FILE* fp = fopen("d:\\downloads\\Bistro_v4\\bistro2.mid", "rb");
+                fseek(fp, 0, SEEK_END);
+                size_t iFileSize = ftell(fp);
+                fseek(fp, 0, SEEK_SET);
+                std::vector<char> acBuffer(iFileSize);
+                fread(acBuffer.data(), sizeof(char), iFileSize, fp);
+                fclose(fp);
+                copyCPUToBuffer(
+                    pMaterialIDBuffer,
+                    acBuffer.data(),
+                    0,
+                    (uint32_t)iFileSize
+                );
+            }
+
+#if 0
+            // material
+            std::vector<std::string> aAlbedoTextureNames;
+            std::vector<std::string> aNormalTextureNames;
+            //std::vector<uint2> aAlbedoTextureDimensions;
+            std::vector<uint2> aNormalTextureDimensions;
+            {
+                auto& pMaterialBuffer = mapRenderJobs["Texture Page Queue Compute"]->mapUniformBuffers["materials"];
+                FILE* fp = fopen("d:\\downloads\\Bistro_v4\\bistro2.mat", "rb");
+                fseek(fp, 0, SEEK_END);
+                size_t iFileSize = ftell(fp);
+                fseek(fp, 0, SEEK_SET);
+                std::vector<char> acBuffer(iFileSize);
+                fread(acBuffer.data(), sizeof(char), iFileSize, fp);
+                fclose(fp);
+
+                // material id
+                char* pacBuffer = acBuffer.data();
+                uint32_t iCurrPos = 0;
+                uint32_t iNumMaterials = 0;
+                for(;;)
+                {
+                    uint32_t iMaterialID = *((uint32_t*)(pacBuffer + iCurrPos + 16 * 3));
+                    if(iMaterialID >= 99999)
+                    {
+                        break;
+                    }
+
+                    iCurrPos += 16 * 4;
+                    iNumMaterials += 1;
+                }
+                iCurrPos += 16 * 4;
+                copyCPUToBuffer(
+                    pMaterialBuffer,
+                    acBuffer.data(),
+                    0,
+                    (uint32_t)iCurrPos
+                );
+
+                // albedo textures
+                uint32_t iNumAlbedoTextures = *((uint32_t*)(pacBuffer + iCurrPos));
+                iCurrPos += 4;
+                for(uint32_t i = 0; i < iNumAlbedoTextures; i++)
+                {
+                    std::string albedoTextureName = "";
+                    for(;;)
+                    {
+                        char cChar = *(pacBuffer + iCurrPos);
+                        if(cChar == '\n')
+                        {
+                            aAlbedoTextureNames.push_back(albedoTextureName);
+                            break;
+                        }
+                        albedoTextureName += cChar;
+                        iCurrPos += 1;
+                    }
+                    iCurrPos += 1;
+                }
+
+                // normal texture
+                uint32_t iNumNormalTextures = *((uint32_t*)(pacBuffer + iCurrPos));
+                iCurrPos += 4;
+                for(uint32_t i = 0; i < iNumNormalTextures; i++)
+                {
+                    std::string normalTextureName = "";
+                    for(;;)
+                    {
+                        char cChar = *(pacBuffer + iCurrPos);
+                        if(cChar == '\n')
+                        {
+                            aNormalTextureNames.push_back(normalTextureName);
+                            break;
+                        }
+                        normalTextureName += cChar;
+                        iCurrPos += 1;
+                    }
+                    iCurrPos += 1;
+                }
+
+                maAlbedoTextureDimensions.resize(iNumAlbedoTextures);
+                fp = fopen("d:\\Downloads\\Bistro_v4\\converted-dds\\albedo-dimensions.txt", "rb");
+                fread(maAlbedoTextureDimensions.data(), sizeof(uint2), iNumAlbedoTextures, fp);
+                fclose(fp);
+
+                aNormalTextureDimensions.resize(iNumNormalTextures);
+                fp = fopen("d:\\Downloads\\Bistro_v4\\converted-dds\\normal-dimensions.txt", "rb");
+                fread(aNormalTextureDimensions.data(), sizeof(uint2), iNumNormalTextures, fp);
+                fclose(fp);
+            }
+#endif // #if 0
+
+#if 0
+            auto getBaseName = [](std::string const& name)
+            {
+                auto extensionStart = name.find('.');
+                auto baseNameStart = name.find_last_of("\\");
+                if(baseNameStart == std::string::npos)
+                {
+                    baseNameStart = name.find_last_of("/");
+                }
+                if(baseNameStart == std::string::npos)
+                {
+                    baseNameStart = 0;
+                }
+                else
+                {
+                    baseNameStart += 1;
+                }
+
+                std::string baseName = name.substr(baseNameStart, extensionStart - baseNameStart);
+                return baseName;
+            };
+
+            auto getDirectory = [](std::string const& name)
+            {
+                auto baseNameStart = name.find_last_of("\\");
+                if(baseNameStart == std::string::npos)
+                {
+                    baseNameStart = name.find_last_of("/");
+                }
+                if(baseNameStart == std::string::npos)
+                {
+                    baseNameStart = 0;
+                }
+                
+
+                std::string directory = name.substr(0, baseNameStart);
+                return directory;
+            };
+
+            // albedo texture dimensions
+            for(auto const& albedoTexture : aAlbedoTextureNames)
+            {
+                std::string baseName = getBaseName(albedoTexture);
+                std::string directory = getDirectory(albedoTexture);
+
+                std::string fullPath = "d:\\Downloads\\Bistro_v4\\converted-dds\\" + baseName + ".png";
+                int32_t iImageWidth = 0, iImageHeight = 0, iNumChannels = 0;
+                stbi_uc* pImageData = stbi_load(fullPath.c_str(), &iImageWidth, &iImageHeight, &iNumChannels, 4);
+                stbi_image_free(pImageData);
+                aAlbedoTextureDimensions.push_back(uint2(iImageWidth, iImageHeight));
+            }
+
+            FILE* fp = fopen("d:\\Downloads\\Bistro_v4\\converted-dds\\albedo-dimensions.txt", "wb");
+            fwrite(aAlbedoTextureDimensions.data(), sizeof(uint2), aAlbedoTextureDimensions.size(), fp);
+            fclose(fp);
+
+            // normal texture dimensions
+            for(auto const& normalTexture : aNormalTextureNames)
+            {
+                std::string baseName = getBaseName(normalTexture);
+                std::string directory = getDirectory(normalTexture);
+
+                std::string fullPath = "d:\\Downloads\\Bistro_v4\\converted-dds\\" + baseName + ".png";
+                int32_t iImageWidth = 0, iImageHeight = 0, iNumChannels = 0;
+                stbi_uc* pImageData = stbi_load(fullPath.c_str(), &iImageWidth, &iImageHeight, &iNumChannels, 4);
+                stbi_image_free(pImageData);
+                aNormalTextureDimensions.push_back(uint2(iImageWidth, iImageHeight));
+            }
+
+            fp = fopen("d:\\Downloads\\Bistro_v4\\converted-dds\\normal-dimensions.txt", "wb");
+            fwrite(aNormalTextureDimensions.data(), sizeof(uint2), aAlbedoTextureDimensions.size(), fp);
+            fclose(fp);
+#endif // #if 0
+
+#if 0
+            auto& pTextureDimensionBuffer = mapRenderJobs["Texture Page Queue Compute"]->mapUniformBuffers["Texture Sizes"];
+            copyCPUToBuffer(
+                pTextureDimensionBuffer,
+                maAlbedoTextureDimensions.data(),
+                0,
+                uint32_t(maAlbedoTextureDimensions.size() * sizeof(uint2))
+            );
+
+            auto& pNormalTextureDimensionBuffer = mapRenderJobs["Texture Page Queue Compute"]->mapUniformBuffers["Normal Texture Sizes"];
+            copyCPUToBuffer(
+                pNormalTextureDimensionBuffer,
+                aNormalTextureDimensions.data(),
+                0,
+                uint32_t(aNormalTextureDimensions.size() * sizeof(uint2)),
+                iFlags
+            );
+#endif // #if 0
+
+            if(mpfnInitData != nullptr)
+            {
+                (*mpfnInitData)(this);
+            }
         }
 
         /*
@@ -1618,12 +2017,16 @@ namespace Render
             if(mRenderDriverType == RenderDriverType::Vulkan)
             {
                 *pfMatrixData++ = transpose(Render::Common::gaCameras[0].getViewProjectionMatrix());
-                *pfMatrixData++ = transpose(mPrevViewProjectionMatrix);
+                *pfMatrixData++ = mPrevViewProjectionMatrix;
                 *pfMatrixData++ = transpose(Render::Common::gaCameras[0].getViewMatrix());
                 *pfMatrixData++ = transpose(Render::Common::gaCameras[0].getProjectionMatrix());
 
                 *pfMatrixData++ = transpose(Render::Common::gaCameras[0].getViewProjectionMatrix());
                 *pfMatrixData++ = transpose(mPrevViewProjectionMatrix);
+                
+                *pfMatrixData++ = invert(Render::Common::gaCameras[0].getViewProjectionMatrix());
+                    
+                mPrevViewProjectionMatrix = transpose(Render::Common::gaCameras[0].getViewProjectionMatrix());
             }
             else
             {
@@ -1634,6 +2037,9 @@ namespace Render
 
                 *pfMatrixData++ = Render::Common::gaCameras[0].getViewProjectionMatrix();
                 *pfMatrixData++ = mPrevViewProjectionMatrix;
+                *pfMatrixData++ = invert(Render::Common::gaCameras[0].getViewProjectionMatrix());
+
+                mPrevViewProjectionMatrix = Render::Common::gaCameras[0].getViewProjectionMatrix();
             }
 
             float4* pFloat4Data = (float4*)pfMatrixData;
@@ -1643,17 +2049,15 @@ namespace Render
             float3 diff = gLightDirection - gPrevLightDirection;
             float fLengthSquared = dot(diff, diff);
             float fRebuildSkyProbe = (fLengthSquared >= 0.1f) ? 1.0f : 0.0f;
-            if(fRebuildSkyProbe > 0.0f)
-            {
-                int iDebug = 1;
-            }
-
+            
             *pFloat4Data++ = float4(2.0f, 2.0f, 2.0f, 1.0f);
-            //*pFloat4Data++ = float4(normalize(vec3(-0.5f, 1.0f, 0.0f)), 1.0f);
             *pFloat4Data++ = float4(gLightDirection, 1.0f);
 
             *pFloat4Data++ = float4(2.0f, 2.0f, 2.0f, 1.0f);
             *pFloat4Data++ = float4(gPrevLightDirection, 1.0f);
+
+            pfData = (float*)pFloat4Data;
+            *pfData++ = 1.0f;
 
             gPrevLightDirection = gLightDirection;
 
@@ -1663,8 +2067,7 @@ namespace Render
                 mpDefaultUniformBuffer,
                 acData.data(),
                 0,
-                (uint32_t)acData.size(),
-                iFlags
+                (uint32_t)acData.size()
             );
 
             // clear number of draw calls for mesh culling pass
@@ -1679,6 +2082,56 @@ namespace Render
                 iFlags
             );
 
+#if defined(USE_RAY_TRACING)
+            auto& pCounterBuffer = mapRenderJobs["Build Irradiance Cache Ray Trace"]->mapOutputBufferAttachments["Counters"];
+            copyCPUToBuffer(
+                pCounterBuffer,
+                aiResetData.data(),
+                0,
+                (uint32_t)(aiResetData.size() * sizeof(uint32_t)),
+                iFlags
+            );
+#endif // USE_RAY_TRACING
+
+        }
+
+        /*
+        **
+        */
+        void CRenderer::createCommandBuffer(
+            std::unique_ptr<RenderDriver::Common::CCommandAllocator>& commandAllocator,
+            std::unique_ptr<RenderDriver::Common::CCommandBuffer>& commandBuffer)
+        {
+            platformCreateCommandBuffer(
+                commandAllocator,
+                commandBuffer
+            );
+        }
+
+        /*
+        **
+        */
+        void CRenderer::createBuffer(
+            std::unique_ptr<RenderDriver::Common::CBuffer>& buffer,
+            uint32_t iSize)
+        {
+            platformCreateBuffer(
+                buffer,
+                iSize
+            );
+        }
+
+        /*
+        **
+        */
+        void CRenderer::createCommandQueue(
+            std::unique_ptr<RenderDriver::Common::CCommandQueue>& commandQueue,
+            RenderDriver::Common::CCommandQueue::Type const& type)
+        {
+            platformCreateCommandQueue(
+                commandQueue,
+                type
+            );
         }
 
     }   // Common

@@ -98,6 +98,7 @@
     <ClInclude Include="..\render-driver\PhysicalDevice.h" />
     <ClInclude Include="..\render-driver\PipelineInfo.h" />
     <ClInclude Include="..\render-driver\PipelineState.h" />
+    <ClInclude Include="..\render-driver\RayTrace.h" />
     <ClInclude Include="..\render-driver\RenderTarget.h" />
     <ClInclude Include="..\render-driver\SwapChain.h" />
     <ClInclude Include="..\render-driver\Utils.h" />

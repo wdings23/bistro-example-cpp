@@ -19,8 +19,7 @@
         {
             "Name" : "Output",
             "Type": "TextureInput",
-            "ParentJobName": "Light Composite Graphics",
-            "ParentName": "Output"
+            "ParentJobName": "Light Composite Graphics"
         }
     ],
     "ShaderResources": [

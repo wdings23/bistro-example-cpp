@@ -67,6 +67,8 @@ namespace RenderDriver
 
             virtual void releaseNativeBuffer();
 
+            virtual void* getMemoryOpen(uint32_t iDataSize);
+
         protected:
             BufferDescriptor                                    mDesc;
 

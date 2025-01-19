@@ -55,7 +55,7 @@ namespace RenderDriver
             imageInfo.pQueueFamilyIndices = nullptr;
             
             VkResult ret = vkCreateImage(*mpNativeDevice, &imageInfo, nullptr, &mNativeImage);
-            WTFASSERT(ret == VK_SUCCESS, "Error creating image: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error creating image: %s", Utils::getErrorCode(ret));
 
             VkMemoryRequirements memRequirements;
             vkGetImageMemoryRequirements(*mpNativeDevice, mNativeImage, &memRequirements);
@@ -73,7 +73,7 @@ namespace RenderDriver
             allocInfo.memoryTypeIndex = iMemoryTypeIndex;
 
             ret = vkAllocateMemory(*mpNativeDevice, &allocInfo, nullptr, &mNativeMemory);
-            WTFASSERT(ret == VK_SUCCESS, "Error allocating memory for image: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error allocating memory for image: %s", Utils::getErrorCode(ret));
 
             vkBindImageMemory(*mpNativeDevice, mNativeImage, mNativeMemory, 0);
 

@@ -20,6 +20,11 @@ namespace RenderDriver
                bool                                                 mbEndOnly = false;
            
                std::string                                          mParentJobName;
+
+               bool                                                 mbWriteableBefore = false;
+               bool                                                 mbWriteableAfter = false;
+
+               RenderDriver::Common::CommandBufferType              mCommandBufferType = RenderDriver::Common::CommandBufferType::Graphics;
            };
 
            void transitionBarrier(

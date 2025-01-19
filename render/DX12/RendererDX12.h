@@ -45,6 +45,13 @@ namespace Render
             virtual uint64_t getTotalIndexBufferGPUAddress();
             virtual void platformSetup(Render::Common::RendererDescriptor const& desc);
 
+            virtual void setAttachmentImage(
+                std::string const& dstRenderJobName,
+                std::string const& dstAttachmentName,
+                std::string const& srcRenderJobName,
+                std::string const& srcAttachmentName
+            );
+
         protected:
             uint32_t                                      miDescriptorHeapOffset;
 
@@ -141,6 +148,15 @@ namespace Render
                 uint64_t iSrcOffset,
                 uint64_t iDataSize);
 
+            virtual void platformCopyBufferToCPUMemory2(
+                RenderDriver::Common::CBuffer* pGPUBuffer,
+                void* pCPUBuffer,
+                uint64_t iSrcOffset,
+                uint64_t iDataSize,
+                RenderDriver::Common::CCommandBuffer& commandBuffer,
+                RenderDriver::Common::CCommandQueue& commandQueue
+            );
+
             virtual void platformCopyImageToCPUMemory(
                 RenderDriver::Common::CImage* pGPUMemory,
                 std::vector<float>& afImageData);
@@ -212,6 +228,16 @@ namespace Render
                 uint32_t iDestDataSize,
                 uint32_t iTotalDataSize,
                 uint32_t iFlag = 0);
+
+            virtual void platformCopyCPUToGPUBuffer3(
+                RenderDriver::Common::CCommandBuffer& commandBuffer,
+                RenderDriver::Common::CCommandQueue& commandQueue,
+                RenderDriver::Common::CBuffer* pDestBuffer,
+                void* pCPUData,
+                uint32_t iSrcOffset,
+                uint32_t iDestOffset,
+                uint32_t iDataSize,
+                RenderDriver::Common::CBuffer& uploadBuffer);
 
             virtual void platformExecuteCopyCommandBuffer(
                 RenderDriver::Common::CCommandBuffer& commandBuffer,
@@ -289,6 +315,50 @@ namespace Render
 
             virtual void platformRayTraceShaderSetup(
                 Render::Common::CRenderJob* pRenderJob
+            );
+
+            virtual void platformCopyTexturePageToAtlas(
+                char const* pImageData,
+                RenderDriver::Common::CImage* pDestImage,
+                uint2 const& pageCoord,
+                uint32_t iTexturePageDimension
+            );
+
+            virtual void platformCopyTexturePageToAtlas2(
+                char const* pImageData,
+                RenderDriver::Common::CImage* pDestImage,
+                uint2 const& pageCoord,
+                uint32_t iTexturePageDimension,
+                RenderDriver::Common::CCommandBuffer& commandBuffer,
+                RenderDriver::Common::CCommandQueue& commandQueue,
+                RenderDriver::Common::CBuffer& uploadBuffer
+            );
+
+            virtual void platformCreateCommandBuffer(
+                std::unique_ptr<RenderDriver::Common::CCommandAllocator>& threadCommandAllocator,
+                std::unique_ptr<RenderDriver::Common::CCommandBuffer>& threadCommandBuffer
+            );
+
+            virtual void platformCreateBuffer(
+                std::unique_ptr<RenderDriver::Common::CBuffer>& buffer,
+                uint32_t iSize
+            );
+
+            virtual void platformCreateCommandQueue(
+                std::unique_ptr<RenderDriver::Common::CCommandQueue>& commandQueue,
+                RenderDriver::Common::CCommandQueue::Type const& type
+            );
+
+            virtual void platformTransitionInputImageAttachments(
+                Render::Common::CRenderJob* pRenderJob,
+                std::vector<char>& acPlatformAttachmentInfo,
+                RenderDriver::Common::CCommandBuffer& commandBuffer,
+                bool bReverse
+            );
+
+            virtual void platformTransitionOutputAttachmentsRayTrace(
+                Render::Common::CRenderJob* pRenderJob,
+                RenderDriver::Common::CCommandBuffer& commandBuffer
             );
 
             protected:

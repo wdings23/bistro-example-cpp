@@ -1,8 +1,11 @@
+#include <render-driver/RayTrace.h>
 #include <render/RenderJob.h>
 #include <rapidjson/document.h>
 
 #include <render-driver/Image.h>
 #include <render-driver/ImageView.h>
+
+#include <render-driver/Utils.h>
 
 #include <wtfassert.h>
 #include <LogPrint.h>
@@ -69,7 +72,7 @@ namespace Render
             {
                 mType = JobType::Copy;
             }
-            else if(typeStr == "RayTrace")
+            else if(typeStr == "Ray Trace")
             {
                 mType = JobType::RayTrace;
             }
@@ -102,7 +105,7 @@ namespace Render
             {
                 mPassType = Render::Common::PassType::Imgui;
             }
-            else if(passStr == "RayTrace")
+            else if(passStr == "Ray Trace")
             {
                 mPassType = Render::Common::PassType::RayTrace;
             }
@@ -119,7 +122,8 @@ namespace Render
 
                 createPipelineData(
                     doc,
-                    createInfo.mpaRenderJobs
+                    createInfo.mpaRenderJobs,
+                    createInfo.mpGraphicsCommandQueue
                 );
 
                 initPipelineLayout(
@@ -179,6 +183,7 @@ namespace Render
                 );
             }
 
+            initAttachmentBarriers(createInfo);
         }
 
         /*
@@ -340,7 +345,8 @@ namespace Render
         */
         void CRenderJob::createPipelineData(
             rapidjson::Document const& doc,
-            std::vector<CRenderJob*>* apRenderJobs
+            std::vector<CRenderJob*>* apRenderJobs,
+            RenderDriver::Common::CCommandQueue* pCommandQueue
         )
         {
             auto aShaderResources = doc["ShaderResources"].GetArray();
@@ -376,11 +382,12 @@ namespace Render
                     maUniformMappings.push_back(std::make_pair(name, "buffer"));
 
                 }  
-                else if(type == "texture")
+                else if(type == "texture2d")
                 {
                     handleUniformTexture(
                         shaderResource,
-                        apRenderJobs
+                        apRenderJobs,
+                        pCommandQueue
                     );
 
                     maUniformMappings.push_back(std::make_pair(name, "texture"));
@@ -399,11 +406,18 @@ namespace Render
         )
         {
             platformInitDescriptorSet();
+            mpDescriptorSet->setID(mName + " Descriptor Set");
 
             PrintOptions opt = {false};
             DEBUG_PRINTF_SET_OPTIONS(opt);
 
             DEBUG_PRINTF("render job: \"%s\"\n", mName.c_str());
+
+            // initialize any external buffers
+            if(createInfo.mpfnInitExternalDataFunc)
+            {
+                (*createInfo.mpfnInitExternalDataFunc)(this);
+            }
 
             // attachments at set 0
             uint32_t iBinding = 0;
@@ -477,7 +491,7 @@ namespace Render
                 }
                 else if(maAttachmentMappings[i].second == "texture-output")
                 {
-                    if(mType == JobType::RayTrace)
+                    if(mType == JobType::RayTrace || mType == JobType::Compute)
                     {
                         RenderDriver::Common::CImage* pImage = mapImageAttachments[name];
                         RenderDriver::Common::CImageView* pImageView = mapImageAttachmentViews[name];
@@ -501,7 +515,7 @@ namespace Render
 
             // shader resource at set 1
             iBinding = 0;
-            for(uint32_t i = 0; i < (uint32_t)mapUniformBuffers.size(); i++)
+            for(uint32_t i = 0; i < (uint32_t)maUniformMappings.size(); i++)
             {
                 std::string name = maUniformMappings[i].first;
                 if(maUniformMappings[i].second == "texture")
@@ -554,19 +568,21 @@ namespace Render
 
             mpDescriptorSet->addBuffer(
                 mpDefaultUniformBuffer,
-                (uint32_t)mapUniformBuffers.size(),
+                iBinding,
                 1,
                 true
             );
             DEBUG_PRINTF("\tbuffer \"%s\" set %d binding %d read-only\n",
                 mpDefaultUniformBuffer->getID().c_str(),
                 1,
-                (uint32_t)mapUniformBuffers.size());
+                iBinding);
 
             // create the descriptor set and update the buffers
             mpDescriptorSet->finishLayout(
                 createInfo.maSamplers
             );
+
+            mpDescriptorSet->setID(mName + " Descriptor Set");
             
             DEBUG_PRINTF("\n");
 
@@ -658,7 +674,17 @@ namespace Render
                     pDesc->maRenderTargetFormats[i] = aAttachmentFormats[i];
                 }
 
-                pDesc->miNumRenderTarget = (bHasDepthInput) ? (uint32_t)mapOutputImageAttachments.size() - 1 : (uint32_t)mapOutputImageAttachments.size();
+                // get the number of valid output image attachments
+                uint32_t iNumRenderTargets = 0;
+                for(auto const& keyValue : mapOutputImageAttachments)
+                {
+                    if(keyValue.second != nullptr)
+                    {
+                        ++iNumRenderTargets;
+                    }
+                }
+
+                pDesc->miNumRenderTarget = (bHasDepthInput) ? iNumRenderTargets - 1 : iNumRenderTargets;
                 pDesc->miNumVertexMembers = (uint32_t)aInputFormat.size();
                 pDesc->mSample.miCount = 1;
                 pDesc->mSample.miQuality = 0;
@@ -742,6 +768,8 @@ namespace Render
                     *mpDevice
                 );
             }
+
+            mpPipelineState->setID(mName);
 
         }
 
@@ -847,6 +875,15 @@ namespace Render
                     );
 
                     std::string parentJobName = attachmentJSON["ParentJobName"].GetString();
+
+#if !defined(USE_RAY_TRACING)
+                    if(mName == "Swap Chain Graphics")
+                    {
+                        parentJobName = "Texture Atlas Graphics";
+                        name = "Albedo Output";
+                    }
+#endif // USE_RAY_TRACING
+
                     std::string newAttachnmentName = parentJobName + "-" + name;
                     maAttachmentMappings.push_back(std::make_pair(newAttachnmentName, "texture-input"));
 
@@ -947,15 +984,6 @@ namespace Render
             else if(attachmentFormatStr == "rg16float")
                 attachmentFormat = RenderDriver::Common::Format::R16G16_FLOAT;
 
-            if(mType == JobType::Copy)
-            {
-                imageLayout = RenderDriver::Common::ImageLayout::TRANSFER_DST_OPTIMAL;
-            }
-            else if(mType == JobType::Compute)
-            {
-                imageLayout = RenderDriver::Common::ImageLayout::ATTACHMENT_OPTIMAL;
-            }
-
             platformCreateAttachmentImage(
                 attachmentName,
                 iImageWidth,
@@ -995,10 +1023,20 @@ namespace Render
             std::string name = attachmentJSON["Name"].GetString();
             std::string parentJobName = attachmentJSON["ParentJobName"].GetString();
             std::string parentName = name;
+
             if(attachmentJSON.HasMember("ParentName"))
             {
                 parentName = attachmentJSON["ParentName"].GetString();
             }
+
+#if !defined(USE_RAY_TRACING)
+            if(mName == "Swap Chain Graphics")
+            {
+                name = "Albedo Output";
+                parentJobName = "Texture Atlas Graphics";
+                parentName = name;
+            }
+#endif // USE_RAY_TRACING
 
             CRenderJob* pParentJob = nullptr;
             for(auto& pJob : *apRenderJobs)
@@ -1034,7 +1072,7 @@ namespace Render
                 }
                 else
                 {
-                    WTFASSERT(0, "should not be here");
+                    WTFASSERT(0, "should not be here, no parent name \"%s\" parent job \"%s\"", parentName.c_str(), parentJobName.c_str());
                 }
                
             }
@@ -1081,11 +1119,15 @@ namespace Render
         {
             // get parent job
             std::string parentJobName = attachmentJSON["ParentJobName"].GetString();
-            std::string parentName = attachmentJSON["ParentName"].GetString();
+            std::string parentName = attachmentJSON["Name"].GetString(); 
+            if(attachmentJSON.HasMember("ParentName"))
+            {
+                parentName = attachmentJSON["ParentName"].GetString();
+            }
             CRenderJob* pParentJob = nullptr;
             for(auto& pJob : *apRenderJobs)
             {
-                if(pJob->mName == parentName)
+                if(pJob->mName == parentJobName)
                 {
                     pParentJob = pJob;
                     break;
@@ -1339,7 +1381,8 @@ namespace Render
         */
         void CRenderJob::handleUniformTexture(
             rapidjson::Value const& shaderResource,
-            std::vector<CRenderJob*>* apRenderJobs
+            std::vector<CRenderJob*>* apRenderJobs,
+            RenderDriver::Common::CCommandQueue* pCommandQueue
         )
         {
             std::string name = shaderResource["name"].GetString();
@@ -1363,7 +1406,8 @@ namespace Render
                     (unsigned char const*)pImageData,
                     iTextureWidth,
                     iTextureHeight,
-                    format
+                    format,
+                    pCommandQueue
                 );
 
                 mapUniformImages[name] = pImage;
@@ -1375,8 +1419,11 @@ namespace Render
                 imageViewDesc.mDimension = RenderDriver::Common::Dimension::Texture2D;
                 imageViewDesc.mpImage = pImage;
                 imageViewDesc.mViewType = RenderDriver::Common::ResourceViewType::RenderTargetView;
-                mapUniformImageViews[name]->create(imageViewDesc, *mpDevice);
-                mapUniformImageViews[name]->setID(name + " Image View");
+                platformCreateImageView(
+                    name, 
+                    imageViewDesc);
+
+                
             }
         }
 
@@ -1468,6 +1515,14 @@ namespace Render
                     *createInfo.mpiSemaphoreValue = miSignalSemaphoreValue;
                 }
             }
+        }
+
+        /*
+        **
+        */
+        void CRenderJob::initAttachmentBarriers(CreateInfo const& createInfo)
+        {
+            platformInitAttachmentBarriers(createInfo);
         }
 
     }   // Common

@@ -38,6 +38,11 @@ namespace RenderDriver
                 return maInitialLayouts[iQueueType];
             }
 
+            inline VkDeviceMemory& getNativeMemory()
+            {
+                return mNativeMemory;
+            }
+
             void setImageLayout(
                 RenderDriver::Common::ImageLayout const& layout,
                 uint32_t iQueueType);
@@ -46,6 +51,21 @@ namespace RenderDriver
                 RenderDriver::Common::ImageLayout const& layout,
                 uint32_t iQueueType);
 
+            inline void setImageTransitionInfo(
+                VkImageLayout imageLayout,
+                VkAccessFlags imageAccessFlags,
+                VkPipelineStageFlags pipelineStageFlags
+            )
+            {
+                mImageLayout = imageLayout;
+                mImageAccessFlags = imageAccessFlags;
+                mPipelineStageFlags = pipelineStageFlags;
+            }
+
+            VkImageLayout               mImageLayout;
+            VkAccessFlags               mImageAccessFlags;
+            VkPipelineStageFlags        mPipelineStageFlags;
+
         protected:
             VkImage                                             mNativeImage;
             VkDevice*                                           mpNativeDevice;
@@ -53,6 +73,8 @@ namespace RenderDriver
 
             RenderDriver::Common::ImageLayout                   maCurrImageLayout[3];
             RenderDriver::Common::ImageLayout                   maInitialLayouts[3];
+
+            
         };
 
     }   // Vulkan

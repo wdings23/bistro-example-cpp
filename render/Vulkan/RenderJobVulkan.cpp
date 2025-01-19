@@ -2,6 +2,7 @@
 #include <render-driver/Vulkan/CommandAllocatorVulkan.h>
 #include <render-driver/Vulkan/CommandBufferVulkan.h>
 #include <render-driver/Vulkan/FrameBufferVulkan.h>
+#include <render-driver/Vulkan/ImageViewVulkan.h>
 #include <render-driver/Vulkan/PipelineStateVulkan.h>
 #include <render-driver/Vulkan/SwapChainVulkan.h>
 #include <render-driver/Vulkan/UtilsVulkan.h>
@@ -44,6 +45,7 @@ namespace Render
 			desc.mFormat = format;
 			desc.mResourceFlags = RenderDriver::Common::ResourceFlagBits::AllowSimultaneousAccess;
 			desc.mafClearColor = afDefaultClearColor;
+			desc.mImageLayout = RenderDriver::Common::ImageLayout::ATTACHMENT_OPTIMAL;
 			pImage->create(
 				desc, 
 				*mpDevice
@@ -60,6 +62,12 @@ namespace Render
 			pImage->setInitialImageLayout(RenderDriver::Common::ImageLayout::COLOR_ATTACHMENT_OPTIMAL, 1);
 			mapImageAttachments[name] = pImage;
 			
+			pImage->setImageTransitionInfo(
+				VK_IMAGE_LAYOUT_UNDEFINED,
+				VK_ACCESS_NONE,
+				VK_PIPELINE_STAGE_NONE
+			);
+
 			RenderDriver::Common::ImageViewDescriptor imageViewDesc = {};
 			imageViewDesc.mFormat = desc.mFormat;
 			imageViewDesc.mDimension = RenderDriver::Common::Dimension::Texture2D;
@@ -198,7 +206,8 @@ namespace Render
 			unsigned char const* pImageData,
 			uint32_t iTextureWidth,
 			uint32_t iTextureHeight,
-			RenderDriver::Common::Format const& format
+			RenderDriver::Common::Format const& format,
+			RenderDriver::Common::CCommandQueue* pCommandQueue
 		)
 		{
 			mapImages[name] = std::make_unique<RenderDriver::Vulkan::CImage>();
@@ -257,7 +266,7 @@ namespace Render
 			);
 
 			// execute command 
-			mpCommandQueue->execCommandBuffer(
+			pCommandQueue->execCommandBuffer(
 				commandBuffer,
 				*mpDevice
 			);
@@ -695,6 +704,246 @@ namespace Render
 				desc,
 				*mpDevice);
 			mpSignalFence = mSignalFence.get();
+		}
+
+		/*
+		**
+		*/
+		void CRenderJob::platformCreateImageView(
+			std::string const& name,
+			RenderDriver::Common::ImageViewDescriptor const& imageViewDesc)
+		{
+			maUniformImageViews[name] = std::make_unique<RenderDriver::Vulkan::CImageView>();
+			mapUniformImageViews[name] = maUniformImageViews[name].get();
+			mapUniformImageViews[name]->create(imageViewDesc, *mpDevice);
+			mapUniformImageViews[name]->setID(name + " Image View");
+		}
+
+		/*
+		**
+		*/
+		void CRenderJob::platformInitAttachmentBarriers(
+			CreateInfo const& createInfo
+		)
+		{
+			RenderDriver::Common::CCommandQueue::Type jobType = createInfo.mpCommandQueue->getType();
+
+			VkPipelineStageFlags srcStageMask = VK_PIPELINE_STAGE_NONE;
+			VkPipelineStageFlags dstStageMask = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT | VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			if(mType == Render::Common::JobType::Copy)
+			{
+				srcStageMask = VK_PIPELINE_STAGE_NONE;
+				dstStageMask = VK_PIPELINE_STAGE_TRANSFER_BIT;
+			}
+
+			std::vector<VkImageMemoryBarrier> aImageMemoryBarriers;
+			for(auto& outputAttachment : mapOutputImageAttachments)
+			{
+				if(outputAttachment.second == nullptr)
+				{
+					continue;
+				}
+
+				RenderDriver::Vulkan::CImage* pImageVulkan = (RenderDriver::Vulkan::CImage*)outputAttachment.second;
+				VkImage& nativeImage = *((VkImage *)pImageVulkan->getNativeImage());
+				bool bIsDepthStencil = (
+					pImageVulkan->getInitialImageLayout(0) == RenderDriver::Common::ImageLayout::DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+				);
+
+				VkImageLayout oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+				VkImageLayout newLayout = (bIsDepthStencil) ? VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				
+				VkImageMemoryBarrier imageMemoryBarrier = {};
+				imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+				imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+
+				imageMemoryBarrier.srcAccessMask = VK_ACCESS_NONE;
+				imageMemoryBarrier.dstAccessMask = (bIsDepthStencil) ?
+					(VK_ACCESS_SHADER_WRITE_BIT | VK_ACCESS_SHADER_READ_BIT) :
+					(VK_ACCESS_COLOR_ATTACHMENT_READ_BIT | VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT);
+				
+				if(mType == Render::Common::JobType::Compute)
+				{
+					imageMemoryBarrier.dstAccessMask = (VK_ACCESS_SHADER_WRITE_BIT | VK_ACCESS_SHADER_READ_BIT);
+					newLayout = VK_IMAGE_LAYOUT_GENERAL;
+				}
+				else if(mType == Render::Common::JobType::Copy)
+				{
+					newLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+					imageMemoryBarrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+				}
+
+				imageMemoryBarrier.oldLayout = oldLayout;
+				imageMemoryBarrier.newLayout = newLayout;
+				imageMemoryBarrier.image = nativeImage;
+				imageMemoryBarrier.subresourceRange = (bIsDepthStencil) ?
+					VkImageSubresourceRange{VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1} :
+					VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+
+				pImageVulkan->setImageLayout(
+					(bIsDepthStencil) ? 
+					RenderDriver::Common::ImageLayout::DEPTH_ATTACHMENT_OPTIMAL :
+					RenderDriver::Common::ImageLayout::COLOR_ATTACHMENT_OPTIMAL,
+					0
+				);
+
+				if(jobType == RenderDriver::Common::CCommandQueue::Type::Copy)
+				{
+					DEBUG_PRINTF("\"%s\"\n\told layout: %d src access: %d srcStage: %d\n\tnew layout: %d dst access: %d dstStage: %d\n",
+						outputAttachment.first.c_str(),
+						oldLayout,
+						imageMemoryBarrier.srcAccessMask,
+						srcStageMask,
+						newLayout,
+						imageMemoryBarrier.dstAccessMask,
+						dstStageMask
+					);
+				}
+
+				if(mType == Render::Common::JobType::Copy)
+				{
+					pImageVulkan->setInitialImageLayout(
+						RenderDriver::Common::ImageLayout::TRANSFER_DST_OPTIMAL,
+						0
+					);
+				
+					pImageVulkan->setImageLayout(
+						RenderDriver::Common::ImageLayout::TRANSFER_DST_OPTIMAL,
+						0
+					);
+
+				}
+
+				pImageVulkan->setImageTransitionInfo(
+					newLayout,
+					imageMemoryBarrier.dstAccessMask,
+					dstStageMask
+				);
+
+				aImageMemoryBarriers.push_back(imageMemoryBarrier);
+			}
+
+			if(aImageMemoryBarriers.size() > 0)
+			{
+				// upload command buffer allocator
+				RenderDriver::Common::CommandAllocatorDescriptor commandAllocatorDesc = {};
+				commandAllocatorDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
+				RenderDriver::Vulkan::CCommandAllocator commandAllocator;
+				commandAllocator.create(commandAllocatorDesc, *mpDevice);
+
+				// upload command buffer
+				RenderDriver::Common::CommandBufferDescriptor commandBufferDesc = {};
+				commandBufferDesc.mpCommandAllocator = &commandAllocator;
+				commandBufferDesc.mpPipelineState = nullptr;
+				commandBufferDesc.mType = RenderDriver::Common::CommandBufferType::Graphics;
+				RenderDriver::Vulkan::CCommandBuffer commandBuffer;
+				commandBuffer.create(commandBufferDesc, *mpDevice);
+				commandBuffer.reset();
+
+				VkCommandBuffer* pNativeCommandBuffer = static_cast<VkCommandBuffer*>(commandBuffer.getNativeCommandList());
+				vkCmdPipelineBarrier(
+					*pNativeCommandBuffer,
+					srcStageMask,
+					dstStageMask,
+					0,
+					0,
+					nullptr,
+					0,
+					nullptr,
+					(uint32_t)aImageMemoryBarriers.size(),
+					aImageMemoryBarriers.data());
+
+				commandBuffer.close();
+				
+				RenderDriver::Common::CCommandQueue* pCommandQueue = (mType == Render::Common::JobType::Compute) ?
+					createInfo.mpComputeCommandQueue :
+					createInfo.mpGraphicsCommandQueue;
+				
+				pCommandQueue->execCommandBufferSynchronized(
+					commandBuffer,
+					*mpDevice
+				);
+			}
+
+			if(mDepthImage != nullptr)
+			{
+				// upload command buffer allocator
+				RenderDriver::Common::CommandAllocatorDescriptor commandAllocatorDesc = {};
+				commandAllocatorDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
+				RenderDriver::Vulkan::CCommandAllocator commandAllocator;
+				commandAllocator.create(commandAllocatorDesc, *mpDevice);
+
+				// upload command buffer
+				RenderDriver::Common::CommandBufferDescriptor commandBufferDesc = {};
+				commandBufferDesc.mpCommandAllocator = &commandAllocator;
+				commandBufferDesc.mpPipelineState = nullptr;
+				commandBufferDesc.mType = RenderDriver::Common::CommandBufferType::Graphics;
+				RenderDriver::Vulkan::CCommandBuffer commandBuffer;
+				commandBuffer.create(commandBufferDesc, *mpDevice);
+				commandBuffer.reset();
+
+				VkImage nativeImage = *(VkImage*)mDepthImage->getNativeImage();
+
+				VkImageMemoryBarrier imageMemoryBarrier = {};
+				imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+				imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+				imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+
+				imageMemoryBarrier.srcAccessMask = VK_ACCESS_NONE;
+				imageMemoryBarrier.dstAccessMask = (VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_READ_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT);
+
+				imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+				imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_OPTIMAL;
+
+				imageMemoryBarrier.image = nativeImage;
+				imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1};
+
+				mDepthImage->setImageLayout(
+					RenderDriver::Common::ImageLayout::DEPTH_ATTACHMENT_OPTIMAL,
+					0
+				);
+
+				VkPipelineStageFlags srcStageMask = (mType == Render::Common::JobType::Compute) ?
+					VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT :
+					VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+
+				VkPipelineStageFlags dstStageMask = (mType == Render::Common::JobType::Compute) ?
+					VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT :
+					VK_PIPELINE_STAGE_2_EARLY_FRAGMENT_TESTS_BIT;
+
+				VkCommandBuffer* pNativeCommandBuffer = static_cast<VkCommandBuffer*>(commandBuffer.getNativeCommandList());
+				vkCmdPipelineBarrier(
+					*pNativeCommandBuffer,
+					srcStageMask,
+					dstStageMask,
+					0,
+					0,
+					nullptr,
+					0,
+					nullptr,
+					1,
+					&imageMemoryBarrier
+				);
+
+				commandBuffer.close();
+
+				RenderDriver::Common::CCommandQueue* pCommandQueue = (mType == Render::Common::JobType::Compute) ?
+					createInfo.mpComputeCommandQueue :
+					createInfo.mpGraphicsCommandQueue;
+
+				pCommandQueue->execCommandBufferSynchronized(
+					commandBuffer,
+					*mpDevice
+				);
+
+				mDepthImage->setImageTransitionInfo(
+					imageMemoryBarrier.newLayout,
+					imageMemoryBarrier.dstAccessMask,
+					dstStageMask
+				);
+			}
+
 		}
 
     }	// Vulkan

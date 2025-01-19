@@ -1,5 +1,6 @@
 #include <render-driver/Vulkan/CommandAllocatorVulkan.h>
 #include <render-driver/Vulkan/DeviceVulkan.h>
+#include <render-driver/Vulkan/UtilsVulkan.h>
 
 #include <wtfassert.h>
 
@@ -38,7 +39,7 @@ namespace RenderDriver
             poolInfo.queueFamilyIndex = iQueueFamilyIndex;
 
             VkResult ret = vkCreateCommandPool(nativeDevice, &poolInfo, nullptr, &mNativeCommandAllocator);
-            WTFASSERT(ret == VK_SUCCESS, "Error creating allocator: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error creating allocator: %s", Utils::getErrorCode(ret));
 
             return mHandle;
         }

@@ -1,12 +1,17 @@
 #include <render-driver/Vulkan/SwapChainVulkan.h>
 #include <render-driver/Vulkan/PhysicalDeviceVulkan.h>
 #include <render-driver/Vulkan/DeviceVulkan.h>
+#include <render-driver/Vulkan/UtilsVulkan.h>
 
 #include <vulkan/vulkan.h>
 #include <vulkan/vulkan_win32.h>
 
 #include <wtfassert.h>
 #include <sstream>
+
+#include <mutex>
+
+extern std::mutex gSubmitMutex;
 
 namespace RenderDriver
 {
@@ -26,7 +31,7 @@ namespace RenderDriver
             win32CreateInfo.hwnd = vulkanDesc.mHWND;
             win32CreateInfo.hinstance = GetModuleHandle(nullptr);
             VkResult ret = vkCreateWin32SurfaceKHR(*vulkanDesc.mpInstance, &win32CreateInfo, nullptr, &mSurface);
-            WTFASSERT(ret == VK_SUCCESS, "error creating surface: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "error creating surface: %s", Utils::getErrorCode(ret));
 
             VkBool32 presentSupport = false;
             vkGetPhysicalDeviceSurfaceSupportKHR(*pNativePhysicalDevice, iGraphicsQueueFamilyIndex, mSurface, &presentSupport);
@@ -81,7 +86,7 @@ namespace RenderDriver
             VkDevice& nativeDevice = *pNativeDevice;
 
             ret = vkCreateSwapchainKHR(nativeDevice, &swapChainCreateInfo, nullptr, &mNativeSwapChain);
-            WTFASSERT(ret == VK_SUCCESS, "Error creating swap chain, result: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error creating swap chain, result: %s", Utils::getErrorCode(ret));
 
             uint32_t iNumImages = 0;
             vkGetSwapchainImagesKHR(nativeDevice, mNativeSwapChain, &iNumImages, nullptr);
@@ -116,7 +121,7 @@ namespace RenderDriver
                 createInfo.subresourceRange.layerCount = 1;
 
                 VkResult ret = vkCreateImageView(nativeDevice, &createInfo, nullptr, &maColorImageViews[i]);
-                WTFASSERT(ret == VK_SUCCESS, "Error creating image view %d: %d", i, ret);
+                WTFASSERT(ret == VK_SUCCESS, "Error creating image view %d: %s", i, Utils::getErrorCode(ret));
             }
 
             // depth images
@@ -141,7 +146,7 @@ namespace RenderDriver
                         &imageCreateInfo,
                         nullptr, 
                         &maDepthImages[i]);
-                    WTFASSERT(ret == VK_SUCCESS, "Error creating depth image: %d", ret);
+                    WTFASSERT(ret == VK_SUCCESS, "Error creating depth image: %s", Utils::getErrorCode(ret));
 
                     VkMemoryRequirements memReqs = {};
                     vkGetImageMemoryRequirements(
@@ -157,13 +162,13 @@ namespace RenderDriver
                         &memAllloc, 
                         nullptr, 
                         &maDepthImageMemory[i]);
-                    WTFASSERT(ret == VK_SUCCESS, "Error allocating memory for depth image: %d", ret);
+                    WTFASSERT(ret == VK_SUCCESS, "Error allocating memory for depth image: %s", Utils::getErrorCode(ret));
                     ret = vkBindImageMemory(
                         nativeDevice, 
                         maDepthImages[i], 
                         maDepthImageMemory[i], 
                         0);
-                    WTFASSERT(ret == VK_SUCCESS, "Error binding memory for depth image: %d", ret);
+                    WTFASSERT(ret == VK_SUCCESS, "Error binding memory for depth image: %s", Utils::getErrorCode(ret));
                 }
             }
             
@@ -186,7 +191,7 @@ namespace RenderDriver
                     &createInfo, 
                     nullptr, 
                     &maDepthImageViews[i]);
-                WTFASSERT(ret == VK_SUCCESS, "Error creating image view %d: %d", i, ret);
+                WTFASSERT(ret == VK_SUCCESS, "Error creating image view %d: %s", i, Utils::getErrorCode(ret));
             }
 
             VkSemaphoreCreateInfo semaphoreInfo = {};
@@ -199,7 +204,7 @@ namespace RenderDriver
                 &semaphoreInfo,
                 nullptr,
                 &mImageAvailableSemaphore);
-            WTFASSERT(ret == VK_SUCCESS, "Error creating image creation semaphore: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error creating image creation semaphore: %s", Utils::getErrorCode(ret));
 
             ret = vkAcquireNextImageKHR(
                 nativeDevice,
@@ -208,7 +213,7 @@ namespace RenderDriver
                 mImageAvailableSemaphore,
                 VK_NULL_HANDLE,
                 &miFrameIndex);
-            WTFASSERT(ret == VK_SUCCESS, "Error acquiring next swap chain image: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error acquiring next swap chain image: %s", Utils::getErrorCode(ret));
 
             VkFenceCreateInfo fenceCreateInfo = {};
             fenceCreateInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
@@ -218,7 +223,7 @@ namespace RenderDriver
                 &fenceCreateInfo,
                 nullptr,
                 &mWaitFence);
-            WTFASSERT(ret == VK_SUCCESS, "Error creating swap chain wait fence: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error creating swap chain wait fence: %s", Utils::getErrorCode(ret));
 
             return mHandle;
 
@@ -250,8 +255,14 @@ namespace RenderDriver
             presentInfo.pSwapchains = &aSwapChains[0];
             presentInfo.pImageIndices = &miFrameIndex;
 
-            VkResult ret = vkQueuePresentKHR(nativeQueue, &presentInfo);
-            WTFASSERT(ret == VK_SUCCESS, "Error presenting swap chain: %d", ret);
+            VkResult ret;
+            {
+                //std::lock_guard<std::mutex> lock(gSubmitMutex);
+                ret = vkQueuePresentKHR(nativeQueue, &presentInfo);
+                WTFASSERT(ret == VK_SUCCESS, "Error presenting swap chain: %s", Utils::getErrorCode(ret));
+            
+                vkQueueWaitIdle(nativeQueue);
+            }
 
             //VkSemaphoreWaitInfo waitInfo;
             //waitInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO;
@@ -267,15 +278,16 @@ namespace RenderDriver
             //    &mWaitFence,
             //    VK_TRUE,
             //    UINT64_MAX);
-            //WTFASSERT(ret == VK_SUCCESS, "Error waiting for fence: %d", ret);
+            //WTFASSERT(ret == VK_SUCCESS, "Error waiting for fence: %s", Utils::getErrorCode(ret));
             //
             //ret = vkResetFences(
             //    nativeDevice,
             //    1,
             //    &mWaitFence);
-            //WTFASSERT(ret == VK_SUCCESS, "Error resetting fence: %d", ret);
+            //WTFASSERT(ret == VK_SUCCESS, "Error resetting fence: %s", Utils::getErrorCode(ret));
 
-            vkQueueWaitIdle(nativeQueue);
+            
+            
 
             // next frame image
             ret = vkAcquireNextImageKHR(
@@ -285,7 +297,7 @@ namespace RenderDriver
                 mImageAvailableSemaphore,
                 VK_NULL_HANDLE,
                 &miFrameIndex);
-            WTFASSERT(ret == VK_SUCCESS, "Error acquiring next swap chain image: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error acquiring next swap chain image: %s", Utils::getErrorCode(ret));
         }
 
         /*
@@ -331,7 +343,7 @@ namespace RenderDriver
                 framebufferInfo.layers = 1;
 
                 VkResult ret = vkCreateFramebuffer(device, &framebufferInfo, nullptr, &maFrameBuffers[i]);
-                WTFASSERT(ret == VK_SUCCESS, "Error creating frame buffer %d: %d", i, ret);
+                WTFASSERT(ret == VK_SUCCESS, "Error creating frame buffer %d: %s", i, Utils::getErrorCode(ret));
 
                 std::ostringstream oss;
                 oss << "Swap Chain Frame Buffer " << i;

@@ -2,8 +2,12 @@
 #include <render-driver/Vulkan/DeviceVulkan.h>
 #include <render-driver/Vulkan/FenceVulkan.h>
 #include <render-driver/Vulkan/CommandBufferVulkan.h>
+#include <render-driver/Vulkan/UtilsVulkan.h>
 
 #include <wtfassert.h>
+
+#include <mutex>
+std::mutex gSubmitMutex;
 
 namespace RenderDriver
 {
@@ -76,7 +80,7 @@ namespace RenderDriver
                 &semaphoreInfo,
                 nullptr,
                 &mNativeSignalSemaphores);
-            WTFASSERT(ret == VK_SUCCESS, "Error creating signal semaphore: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error creating signal semaphore: %s", Utils::getErrorCode(ret));
 #endif // #if 0
 
             miSignalValue = UINT64_MAX;
@@ -129,12 +133,15 @@ namespace RenderDriver
             submitInfo.signalSemaphoreCount = (miSignalValue != UINT64_MAX) ? miNumSignalSemaphores.load() : 0;
             submitInfo.pSignalSemaphores = (miSignalValue != UINT64_MAX) ? maNativeSignalSemaphores : nullptr;
             
-            VkResult ret = vkQueueSubmit(
-                mNativeQueue, 
-                1, 
-                &submitInfo, 
-                VK_NULL_HANDLE);
-            WTFASSERT(ret == VK_SUCCESS, "Error submitting command buffer: %d", ret);
+            {
+                //std::lock_guard<std::mutex> lock(gSubmitMutex);
+                VkResult ret = vkQueueSubmit(
+                    mNativeQueue,
+                    1,
+                    &submitInfo,
+                    VK_NULL_HANDLE);
+                WTFASSERT(ret == VK_SUCCESS, "Error submitting command buffer: %s", Utils::getErrorCode(ret));
+            }
 
             miSignalValue = UINT64_MAX;
             miSemaphorePlaceIndex = 0;
@@ -164,12 +171,15 @@ namespace RenderDriver
             submitInfo.pCommandBuffers = &nativeCommandBuffer;
             submitInfo.signalSemaphoreCount = 0;
             submitInfo.pSignalSemaphores = nullptr;
-            VkResult ret = vkQueueSubmit(
-                mNativeQueue, 
-                1, 
-                &submitInfo, 
-                nativeFence);
-            WTFASSERT(ret == VK_SUCCESS, "Error submitting command buffer: %d", ret);
+            {
+                std::lock_guard<std::mutex> lock(gSubmitMutex);
+                VkResult ret = vkQueueSubmit(
+                    mNativeQueue,
+                    1,
+                    &submitInfo,
+                    nativeFence);
+                WTFASSERT(ret == VK_SUCCESS, "Error submitting command buffer: %s", Utils::getErrorCode(ret));
+            }
 
             miSignalValue = UINT64_MAX;
             miSemaphorePlaceIndex = 0;
@@ -214,12 +224,51 @@ namespace RenderDriver
             submitInfo.pCommandBuffers = &nativeCommandBuffer;
             submitInfo.signalSemaphoreCount = (pSignalFenceVulkan != nullptr) ? 1 : 0;
             submitInfo.pSignalSemaphores = (pSignalFenceVulkan != nullptr) ? pSignalFenceVulkan->getNativeSemaphore() : VK_NULL_HANDLE;
+            
             VkResult ret = vkQueueSubmit(
                 mNativeQueue,
                 1,
                 &submitInfo,
                 VK_NULL_HANDLE);
-            WTFASSERT(ret == VK_SUCCESS, "Error submitting command buffer: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error submitting command buffer: %s", Utils::getErrorCode(ret));
+
+                
+        }
+
+        /*
+        **
+        */
+        void CCommandQueue::execCommandBufferSynchronized(
+            RenderDriver::Common::CCommandBuffer& commandBuffer,
+            RenderDriver::Common::CDevice& device,
+            bool bWait)
+        {
+            VkCommandBuffer* pNativeCommandBuffer = static_cast<VkCommandBuffer*>(static_cast<RenderDriver::Vulkan::CCommandBuffer&>(commandBuffer).getNativeCommandList());
+
+            VkSubmitInfo submitInfo = {};
+            submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+            submitInfo.pNext = nullptr;
+            submitInfo.commandBufferCount = 1;
+            submitInfo.pCommandBuffers = pNativeCommandBuffer;
+            submitInfo.waitSemaphoreCount = 0;
+            submitInfo.pWaitSemaphores = nullptr;
+            submitInfo.pWaitDstStageMask = nullptr;
+            submitInfo.signalSemaphoreCount = 0;
+            submitInfo.pSignalSemaphores = nullptr;
+            {
+                std::lock_guard<std::mutex> lock(gSubmitMutex);
+                VkResult ret = vkQueueSubmit(
+                    mNativeQueue,
+                    1,
+                    &submitInfo,
+                    VK_NULL_HANDLE);
+                WTFASSERT(ret == VK_SUCCESS, "Error submitting command buffer: %s", Utils::getErrorCode(ret));
+
+                if(bWait)
+                {
+                    vkQueueWaitIdle(mNativeQueue);
+                }
+            }
         }
 
         /*

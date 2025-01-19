@@ -10,6 +10,7 @@
 #include <render-driver/Vulkan/UtilsVulkan.h>
 #include <render-driver/Vulkan/DescriptorHeapVulkan.h>
 #include <render-driver/Vulkan/AccelerationStructureVulkan.h>
+#include <render-driver/Vulkan/UtilsVulkan.h>
 
 #include <imgui/backends/imgui_impl_vulkan.h>
 
@@ -111,7 +112,7 @@ namespace Render
             }
             
             std::vector<std::string> aEnableLayerKeywords;
-            aEnableLayerKeywords.push_back("validation");
+            //aEnableLayerKeywords.push_back("validation");
 #if defined(_DEBUG)
             aEnableLayerKeywords.push_back("api_dump");
 #endif // _DEBUG
@@ -172,7 +173,7 @@ namespace Render
             createInfo.flags = (bRenderDoc) ? 0 : VK_INSTANCE_CREATE_ENUMERATE_PORTABILITY_BIT_KHR;
             createInfo.pNext = &debugUtilCreateInfo;
             VkResult ret = vkCreateInstance(&createInfo, nullptr, &mInstance);
-            WTFASSERT(ret == VK_SUCCESS, "%d error creating vulkan instance", ret);
+            WTFASSERT(ret == VK_SUCCESS, "%s error creating vulkan instance", RenderDriver::Vulkan::Utils::getErrorCode(ret));
 
             mpPlatformInstance = &mInstance;
 
@@ -188,10 +189,10 @@ namespace Render
             aDeviceExtensions.push_back(VK_EXT_DESCRIPTOR_INDEXING_EXTENSION_NAME);
             aDeviceExtensions.push_back(VK_KHR_SHADER_NON_SEMANTIC_INFO_EXTENSION_NAME);
             aDeviceExtensions.push_back(VK_KHR_PUSH_DESCRIPTOR_EXTENSION_NAME);
+            aDeviceExtensions.push_back(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
 #if defined(USE_RAY_TRACING)
             aDeviceExtensions.push_back(VK_KHR_ACCELERATION_STRUCTURE_EXTENSION_NAME);
             aDeviceExtensions.push_back(VK_KHR_RAY_TRACING_PIPELINE_EXTENSION_NAME);
-            aDeviceExtensions.push_back(VK_KHR_BUFFER_DEVICE_ADDRESS_EXTENSION_NAME);
             aDeviceExtensions.push_back(VK_KHR_DEFERRED_HOST_OPERATIONS_EXTENSION_NAME);
             aDeviceExtensions.push_back(VK_KHR_SHADER_FLOAT_CONTROLS_EXTENSION_NAME);
 #endif // USE_RAY_TRACING
@@ -336,7 +337,7 @@ namespace Render
                 &samplerCreateInfo, 
                 nullptr, 
                 &mNativeLinearSampler);
-            WTFASSERT(ret == VK_SUCCESS, "Error creating linear sampler: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error creating linear sampler: %s", RenderDriver::Vulkan::Utils::getErrorCode(ret));
 
             samplerCreateInfo.magFilter = VK_FILTER_NEAREST;
             samplerCreateInfo.minFilter = VK_FILTER_NEAREST;
@@ -345,7 +346,7 @@ namespace Render
                 &samplerCreateInfo,
                 nullptr,
                 &mNativePointSampler);
-            WTFASSERT(ret == VK_SUCCESS, "Error creating linear sampler: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error creating linear sampler: %s", RenderDriver::Vulkan::Utils::getErrorCode(ret));
 
             maSamplers[0] = mNativePointSampler;
             maSamplers[1] = mNativeLinearSampler;
@@ -756,7 +757,7 @@ namespace Render
                 &renderPassInfo,
                 nullptr,
                 &mImguiRenderPass);
-            WTFASSERT(ret == VK_SUCCESS, "Error creating render pass: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error creating render pass: %s", RenderDriver::Vulkan::Utils::getErrorCode(ret));
 
             ImGui_ImplVulkan_InitInfo init_info = {};
             init_info.Instance = mInstance;
@@ -779,7 +780,7 @@ namespace Render
             pool_info.poolSizeCount = (uint32_t)IM_ARRAYSIZE(pool_sizes);
             pool_info.pPoolSizes = pool_sizes;
             ret = vkCreateDescriptorPool(init_info.Device, &pool_info, nullptr, &mImguiDescriptorPool);
-            WTFASSERT(ret == VK_SUCCESS, "Error creating imgui descriptor pool: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error creating imgui descriptor pool: %s", RenderDriver::Vulkan::Utils::getErrorCode(ret));
 
             init_info.DescriptorPool = mImguiDescriptorPool;
 
@@ -1074,6 +1075,19 @@ namespace Render
             uint64_t iSrcOffset,
             uint64_t iDataSize)
         {
+            if(mpReadBackBuffer == nullptr)
+            {
+                mpReadBackBuffer = std::make_unique<RenderDriver::Vulkan::CBuffer>();
+                RenderDriver::Common::BufferDescriptor desc;
+                desc.miSize = iDataSize;
+                desc.mFormat = RenderDriver::Common::Format::R32_FLOAT;
+                desc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferDest;
+                mpReadBackBuffer->create(
+                    desc,
+                    *mpDevice
+                );
+            }
+
             VkCommandBuffer* pNativeUploadCommandBuffer = static_cast<VkCommandBuffer*>(mpUploadCommandBuffer->getNativeCommandList());
             VkBuffer* pNativeBufferSrc = static_cast<VkBuffer*>(pGPUBuffer->getNativeBuffer());
             VkBuffer* pNativeBufferDest = static_cast<VkBuffer*>(mpReadBackBuffer->getNativeBuffer());
@@ -1108,25 +1122,29 @@ namespace Render
             vkEndCommandBuffer(*pNativeUploadCommandBuffer);
 
             VkQueue* pNativeCommandQueue = static_cast<VkQueue*>(mpCopyCommandQueue->getNativeCommandQueue());
-            VkSubmitInfo submitInfo = {};
-            submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-            submitInfo.pNext = nullptr;
-            submitInfo.waitSemaphoreCount = 0;
-            submitInfo.pWaitSemaphores = nullptr;
-            submitInfo.pWaitDstStageMask = nullptr;
-            submitInfo.commandBufferCount = 1;
-            submitInfo.pCommandBuffers = pNativeUploadCommandBuffer;
-            submitInfo.signalSemaphoreCount = 0;
-            submitInfo.pSignalSemaphores = nullptr;
+            //VkSubmitInfo submitInfo = {};
+            //submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+            //submitInfo.pNext = nullptr;
+            //submitInfo.waitSemaphoreCount = 0;
+            //submitInfo.pWaitSemaphores = nullptr;
+            //submitInfo.pWaitDstStageMask = nullptr;
+            //submitInfo.commandBufferCount = 1;
+            //submitInfo.pCommandBuffers = pNativeUploadCommandBuffer;
+            //submitInfo.signalSemaphoreCount = 0;
+            //submitInfo.pSignalSemaphores = nullptr;
+            //
+            //vkQueueSubmit(
+            //    *pNativeCommandQueue,
+            //    1,
+            //    &submitInfo,
+            //    nullptr);
 
-            VkFence* pNativeFence = static_cast<VkFence*>(mpUploadFence->getNativeFence());
-            vkQueueSubmit(
-                *pNativeCommandQueue,
-                1,
-                &submitInfo,
-                nullptr);
+            mpCopyCommandQueue->execCommandBufferSynchronized(
+                *mpUploadCommandBuffer, 
+                *mpDevice,
+                true);
 
-            vkQueueWaitIdle(*pNativeCommandQueue);
+            //vkQueueWaitIdle(*pNativeCommandQueue);
 
             void* pData = nullptr;
             vkMapMemory(
@@ -1142,6 +1160,90 @@ namespace Render
                 *pNativeMemorySrc);
 
             mpUploadCommandBuffer->reset();
+        
+            mpReadBackBuffer->releaseNativeBuffer();
+            mpReadBackBuffer.reset();
+            mpReadBackBuffer = nullptr;
+        }
+
+        /*
+        **
+        */
+        void CRenderer::platformCopyBufferToCPUMemory2(
+            RenderDriver::Common::CBuffer* pGPUBuffer,
+            void* pCPUBuffer,
+            uint64_t iSrcOffset,
+            uint64_t iDataSize,
+            RenderDriver::Common::CCommandBuffer& commandBuffer,
+            RenderDriver::Common::CCommandQueue& commandQueue)
+        {
+            // native stuff
+            VkCommandBuffer* pNativeUploadCommandBuffer = static_cast<VkCommandBuffer*>(commandBuffer.getNativeCommandList());
+            VkBuffer* pNativeBufferSrc = static_cast<VkBuffer*>(pGPUBuffer->getNativeBuffer());
+            
+            VkDevice* pNativeDevice = static_cast<VkDevice*>(mpDevice->getNativeDevice());
+            VkQueue* pNativeCommandQueue = static_cast<VkQueue*>(mpCopyCommandQueue->getNativeCommandQueue());
+
+            RenderDriver::Vulkan::CBuffer* pVulkanBuffer = (RenderDriver::Vulkan::CBuffer*)pGPUBuffer;
+            VkDeviceMemory* pNativeMemorySrc = static_cast<VkDeviceMemory*>(pVulkanBuffer->getNativeDeviceMemory());
+
+
+#if 0
+            // allocate memory for buffer
+            std::unique_ptr<RenderDriver::Vulkan::CBuffer> readBackBuffer = std::make_unique<RenderDriver::Vulkan::CBuffer>();
+            RenderDriver::Common::BufferDescriptor bufferDesc = {};
+            bufferDesc.miSize = iDataSize;
+            bufferDesc.mFormat = RenderDriver::Common::Format::R32_FLOAT;
+            bufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferDest;
+            readBackBuffer->create(bufferDesc, *mpDevice);
+
+            commandBuffer.reset();
+
+            VkBuffer* pNativeBufferDest = static_cast<VkBuffer*>(readBackBuffer->getNativeBuffer());
+            VkDeviceMemory* pNativeMemorySrc = static_cast<VkDeviceMemory*>(readBackBuffer->getNativeDeviceMemory());
+
+            // copy 
+            VkBufferCopy region;
+            region.srcOffset = iSrcOffset;
+            region.dstOffset = 0;
+            region.size = iDataSize;
+            vkCmdCopyBuffer(
+                *pNativeUploadCommandBuffer,
+                *pNativeBufferSrc,
+                *pNativeBufferDest,
+                1,
+                &region);
+
+            commandBuffer.close();
+
+            commandQueue.execCommandBufferSynchronized(
+                commandBuffer,
+                *mpDevice
+            );
+#endif // #if 0
+
+            // memcpy from the buffer
+            void* pData = nullptr;
+            vkMapMemory(
+                *pNativeDevice,
+                *pNativeMemorySrc,
+                0,
+                iDataSize,
+                0,
+                &pData);
+            memcpy(pCPUBuffer, pData, iDataSize);
+            vkUnmapMemory(
+                *pNativeDevice,
+                *pNativeMemorySrc);
+
+#if 0
+            commandBuffer.reset();
+
+            // cleanup
+            readBackBuffer->releaseNativeBuffer();
+            readBackBuffer.reset();
+            readBackBuffer = nullptr;
+#endif // #if 0
         }
 
         /*
@@ -1285,7 +1387,7 @@ namespace Render
                 *pNativeDevice,
                 &waitInfo,
                 UINT64_MAX);
-            WTFASSERT(ret == VK_SUCCESS, "Error waiting on signaled semaphore: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error waiting on signaled semaphore: %s", RenderDriver::Vulkan::Utils::getErrorCode(ret));
 
             mpUploadCommandAllocator->reset();
             mpUploadCommandBuffer->reset();
@@ -1531,8 +1633,10 @@ namespace Render
         */
         void CRenderer::platformBeginRenderDocCapture(std::string const& filePath)
         {
+            VkInstance& instance = *(VkInstance*)mpPlatformInstance;
+
             mpRenderDocAPI->SetCaptureFilePathTemplate(filePath.c_str());
-            mpRenderDocAPI->StartFrameCapture(nullptr, nullptr);
+            mpRenderDocAPI->StartFrameCapture(RENDERDOC_DEVICEPOINTER_FROM_VKINSTANCE(instance), mHWND);
 
             miStartCaptureFrame = miFrameIndex;
         }
@@ -1542,7 +1646,11 @@ namespace Render
         */
         void CRenderer::platformEndRenderDocCapture()
         {
-            mpRenderDocAPI->EndFrameCapture(nullptr, nullptr);
+            VkInstance& instance = *(VkInstance*)mpPlatformInstance;
+            mpRenderDocAPI->EndFrameCapture(RENDERDOC_DEVICEPOINTER_FROM_VKINSTANCE(instance), mHWND);
+
+            uint32_t iNumCaptures = mpRenderDocAPI->GetNumCaptures();
+            DEBUG_PRINTF("captured %d frames\n", iNumCaptures);
         }
 
         /*
@@ -1693,6 +1801,7 @@ namespace Render
                 }
             }
 
+#if 0
             for(auto& renderJobKeyValue : maRenderJobs)
             {
                 RenderDriver::Common::CCommandQueue* pGraphicsCommandQueue = mpGraphicsCommandQueue.get();
@@ -1707,14 +1816,14 @@ namespace Render
                     }
 
                     VkResult ret = vkResetCommandBuffer(*pNativeCommandBuffer, 0);
-                    WTFASSERT(ret == VK_SUCCESS, "Error resetting command buffer: %d", ret);
+                    WTFASSERT(ret == VK_SUCCESS, "Error resetting command buffer: %s", RenderDriver::Vulkan::Utils::getErrorCode(ret));
 
                     VkCommandBufferBeginInfo beginInfo{};
                     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
                     beginInfo.flags = 0;
                     beginInfo.pInheritanceInfo = nullptr;
                     ret = vkBeginCommandBuffer(*pNativeCommandBuffer, &beginInfo);
-                    WTFASSERT(ret == VK_SUCCESS, "Error starting command buffer: %d", ret);
+                    WTFASSERT(ret == VK_SUCCESS, "Error starting command buffer: %s", RenderDriver::Vulkan::Utils::getErrorCode(ret));
 
                     RenderDriver::Vulkan::CImage* pImageVulkan = (RenderDriver::Vulkan::CImage*)outputAttachmentKeyValue.second;
                     VkImage& nativeImage = *((VkImage*)outputAttachmentKeyValue.second->getNativeImage());
@@ -1756,30 +1865,35 @@ namespace Render
                         &imageMemoryBarrier);
 
                     ret = vkEndCommandBuffer(*pNativeCommandBuffer);
-                    WTFASSERT(ret == VK_SUCCESS, "Error closing command buffer: %d", ret);
-
-                    VkSubmitInfo submitInfo = {};
-                    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-                    submitInfo.pNext = nullptr;
-                    submitInfo.commandBufferCount = 1;
-                    submitInfo.pCommandBuffers = pNativeCommandBuffer;
-                    submitInfo.waitSemaphoreCount = 0;
-                    submitInfo.pWaitSemaphores = nullptr;
-                    submitInfo.pWaitDstStageMask = nullptr;
-                    submitInfo.signalSemaphoreCount = 0;
-                    submitInfo.pSignalSemaphores = nullptr;
+                    WTFASSERT(ret == VK_SUCCESS, "Error closing command buffer: %s", RenderDriver::Vulkan::Utils::getErrorCode(ret));
 
                     VkQueue& nativeQueue = *((VkQueue*)mpGraphicsCommandQueue->getNativeCommandQueue());
-                    ret = vkQueueSubmit(
-                        nativeQueue,
-                        1,
-                        &submitInfo,
-                        VK_NULL_HANDLE);
-                    WTFASSERT(ret == VK_SUCCESS, "Error submitting command buffer: %d", ret);
+                    // VkSubmitInfo submitInfo = {};
+                    // submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+                    // submitInfo.pNext = nullptr;
+                    // submitInfo.commandBufferCount = 1;
+                    // submitInfo.pCommandBuffers = pNativeCommandBuffer;
+                    // submitInfo.waitSemaphoreCount = 0;
+                    // submitInfo.pWaitSemaphores = nullptr;
+                    // submitInfo.pWaitDstStageMask = nullptr;
+                    // submitInfo.signalSemaphoreCount = 0;
+                    // submitInfo.pSignalSemaphores = nullptr;
+                    // ret = vkQueueSubmit(
+                    //    nativeQueue,
+                    //    1,
+                    //    &submitInfo,
+                    //    VK_NULL_HANDLE);
+                    //WTFASSERT(ret == VK_SUCCESS, "Error submitting command buffer: %s", RenderDriver::Vulkan::Utils::getErrorCode(ret));
                     
-                    vkQueueWaitIdle(nativeQueue);
+                    mpGraphicsCommandQueue->execCommandBufferSynchronized(
+                        *mapRenderJobCommandBuffers[renderJobKeyValue.first],
+                        *mpDevice
+                    );
+
+                    //vkQueueWaitIdle(nativeQueue);
                 }
             }
+#endif // #if 0
         }
 
         /*
@@ -1831,6 +1945,60 @@ namespace Render
         /*
         **
         */
+        void CRenderer::platformCopyCPUToGPUBuffer3(
+            RenderDriver::Common::CCommandBuffer& commandBuffer,
+            RenderDriver::Common::CCommandQueue& commandQueue,
+            RenderDriver::Common::CBuffer* pDestBuffer,
+            void* pCPUData,
+            uint32_t iSrcOffset,
+            uint32_t iDestOffset,
+            uint32_t iDataSize,
+            RenderDriver::Common::CBuffer& uploadBuffer)
+        {
+            //std::unique_ptr<RenderDriver::Vulkan::CBuffer> uploadBuffer = std::make_unique<RenderDriver::Vulkan::CBuffer>();
+            //RenderDriver::Common::BufferDescriptor bufferDesc = {};
+            //bufferDesc.miSize = iDataSize;
+            //bufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferSrc;
+            //uploadBuffer->create(
+            //    bufferDesc, 
+            //    *mpDevice);
+            //
+            
+            WTFASSERT(iDataSize < uploadBuffer.getDescriptor().miSize, "Copy size exceeds %d", uploadBuffer.getDescriptor().miSize);
+            
+            commandBuffer.reset();
+            uploadBuffer.setData(pCPUData, iDataSize);
+            
+           
+            VkCommandBuffer& nativeCommandBuffer = *(static_cast<VkCommandBuffer*>(commandBuffer.getNativeCommandList()));
+            VkBuffer& nativeSrcBuffer = *(static_cast<VkBuffer*>(uploadBuffer.getNativeBuffer()));
+
+            VkBufferCopy region;
+            region.dstOffset = iDestOffset;
+            region.size = iDataSize;
+            region.srcOffset = iSrcOffset;
+            vkCmdCopyBuffer(
+                nativeCommandBuffer,
+                nativeSrcBuffer,
+                *((VkBuffer *)pDestBuffer->getNativeBuffer()),
+                1,
+                &region);
+
+            commandBuffer.close();
+
+            commandQueue.execCommandBufferSynchronized(
+                commandBuffer,
+                *mpDevice
+            );
+
+            //uploadBuffer->releaseNativeBuffer();
+            //uploadBuffer.reset();
+            //uploadBuffer = nullptr;
+        }
+
+        /*
+        **
+        */
         void CRenderer::platformExecuteCopyCommandBuffer(
             RenderDriver::Common::CCommandBuffer& commandBuffer,
             uint32_t iFlag)
@@ -1866,19 +2034,23 @@ namespace Render
             {
                 //vkQueueWaitIdle(*(static_cast<VkQueue*>(mpCopyCommandQueue->getNativeCommandQueue())));
 
-                VkSemaphoreWaitInfo waitInfo;
-                waitInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO;
-                waitInfo.pNext = NULL;
-                waitInfo.flags = 0;
-                waitInfo.semaphoreCount = iNumSignalSemaphores;
-                waitInfo.pSemaphores = aQueueSemaphores;
-                waitInfo.pValues = aiWaitValues;
+                VkQueue& nativeCommandQueue = *(VkQueue*)pCopyCommandQueueVulkan->getNativeCommandQueue();
 
-                VkResult ret = vkWaitSemaphores(
-                    *pNativeDevice,
-                    &waitInfo,
-                    UINT64_MAX);
-                WTFASSERT(ret == VK_SUCCESS, "Error waiting on signaled semaphore: %d", ret);
+                //VkSemaphoreWaitInfo waitInfo;
+                //waitInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_WAIT_INFO;
+                //waitInfo.pNext = NULL;
+                //waitInfo.flags = 0;
+                //waitInfo.semaphoreCount = iNumSignalSemaphores;
+                //waitInfo.pSemaphores = aQueueSemaphores;
+                //waitInfo.pValues = aiWaitValues;
+                //
+                //VkResult ret = vkWaitSemaphores(
+                //    *pNativeDevice,
+                //    &waitInfo,
+                //    UINT64_MAX);
+                //WTFASSERT(ret == VK_SUCCESS, "Error waiting on signaled semaphore: %s", RenderDriver::Vulkan::Utils::getErrorCode(ret));
+
+                vkQueueWaitIdle(nativeCommandQueue);
 
                 miCopyCommandFenceValue = iCopyCommandFenceValue;
             }
@@ -2028,7 +2200,7 @@ namespace Render
                 );
                 maRenderJobCommandBuffers[renderJobName]->reset();
                 mapRenderJobCommandBuffers[renderJobName] = maRenderJobCommandBuffers[renderJobName].get();
-                
+                mapRenderJobCommandBuffers[renderJobName]->setID(renderJobName + " Command Buffer");
             }
         }
     
@@ -2130,7 +2302,8 @@ namespace Render
             vertexBufferCreateInfo.mBufferUsage = static_cast<RenderDriver::Common::BufferUsage>(
                 static_cast<uint32_t>(RenderDriver::Common::BufferUsage::VertexBuffer) |
                 static_cast<uint32_t>(RenderDriver::Common::BufferUsage::TransferDest) |
-                static_cast<uint32_t>(RenderDriver::Common::BufferUsage::ShaderDeviceAddress)
+                static_cast<uint32_t>(RenderDriver::Common::BufferUsage::ShaderDeviceAddress) |
+                static_cast<uint32_t>(RenderDriver::Common::BufferUsage::StorageBuffer)
             );
             maVertexBuffers[name]->create(
                 vertexBufferCreateInfo,
@@ -2145,6 +2318,7 @@ namespace Render
                 static_cast<uint32_t>(RenderDriver::Common::BufferUsage::IndexBuffer) |
                 static_cast<uint32_t>(RenderDriver::Common::BufferUsage::TransferDest) | 
                 static_cast<uint32_t>(RenderDriver::Common::BufferUsage::ShaderDeviceAddress) |
+                static_cast<uint32_t>(RenderDriver::Common::BufferUsage::StorageBuffer) |
                 uint32_t(RenderDriver::Common::BufferUsage::AccelerationStructureBuildInputReadOnly)
             );
             maIndexBuffers[name]->create(
@@ -2236,55 +2410,80 @@ namespace Render
             std::vector<VkImageMemoryBarrier> aImageMemoryBarriers;
             for(uint32_t i = 0; i < iNumBarriers; i++)
             {
+                if(aBarriers[i].mpImage == nullptr)
+                {
+                    continue;
+                }
+
                 RenderDriver::Common::Utils::TransitionBarrierInfo const& barrierInfo = aBarriers[i];
                 RenderDriver::Vulkan::CImage* pImageVulkan = (RenderDriver::Vulkan::CImage*)barrierInfo.mpImage;
                 VkImage* pNativeImage = static_cast<VkImage*>(barrierInfo.mpImage->getNativeImage());
-             
                 bool bIsDepthStencil = (
                     pImageVulkan->getInitialImageLayout(0) == RenderDriver::Common::ImageLayout::DEPTH_STENCIL_ATTACHMENT_OPTIMAL
                 );
 
-                VkImageLayout oldLayoutVulkan = SerializeUtils::Vulkan::convert(barrierInfo.mBefore);
-                VkImageLayout newLayoutVulkan = SerializeUtils::Vulkan::convert(barrierInfo.mAfter);
-
-                if(pImageVulkan->getImageLayout((uint32_t)queueType) == RenderDriver::Common::ImageLayout::UNDEFINED)
-                {
-                    oldLayoutVulkan = SerializeUtils::Vulkan::convert(RenderDriver::Common::ImageLayout::UNDEFINED);
-                }
-                else if(barrierInfo.mBefore == RenderDriver::Common::ResourceStateFlagBits::None)
-                {
-                    oldLayoutVulkan = SerializeUtils::Vulkan::convert(
-                        pImageVulkan->getImageLayout((uint32_t)queueType)
-                    );
-                }
-
-                if(barrierInfo.mAfter == RenderDriver::Common::ResourceStateFlagBits::None)
-                {
-                    newLayoutVulkan = SerializeUtils::Vulkan::convert(
-                        pImageVulkan->getInitialImageLayout((uint32_t)queueType)
-                    );
-                }
-
-                // memory barrier for image to transfer layout
                 VkImageMemoryBarrier imageMemoryBarrier = {};
                 imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
                 imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
                 imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-                imageMemoryBarrier.srcAccessMask = (barrierInfo.mBefore == RenderDriver::Common::ResourceStateFlagBits::UnorderedAccess) ? VK_ACCESS_SHADER_WRITE_BIT : VK_ACCESS_SHADER_READ_BIT;
-                imageMemoryBarrier.dstAccessMask = (barrierInfo.mAfter == RenderDriver::Common::ResourceStateFlagBits::UnorderedAccess || barrierInfo.mAfter == RenderDriver::Common::ResourceStateFlagBits::RenderTarget) ? VK_ACCESS_SHADER_WRITE_BIT : VK_ACCESS_SHADER_READ_BIT;
-                imageMemoryBarrier.oldLayout = oldLayoutVulkan;
-                imageMemoryBarrier.newLayout = newLayoutVulkan;
                 imageMemoryBarrier.image = *pNativeImage;
-                imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
-                if(oldLayoutVulkan == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL || 
-                   newLayoutVulkan == VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL || 
-                    bIsDepthStencil)
+                imageMemoryBarrier.subresourceRange = (bIsDepthStencil == true) ? 
+                    VkImageSubresourceRange{VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1} : 
+                    VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+                
+                VkImageLayout oldLayoutVulkan = SerializeUtils::Vulkan::convert(barrierInfo.mBefore);
+                VkImageLayout newLayoutVulkan = SerializeUtils::Vulkan::convert(barrierInfo.mAfter);
+
+                VkAccessFlags srcAccessMask = (barrierInfo.mbWriteableBefore == true) ? VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT : VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+                VkAccessFlags dstAccessMask = (barrierInfo.mbWriteableAfter == true) ? VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT : VK_ACCESS_COLOR_ATTACHMENT_READ_BIT;
+
+                VkPipelineStageFlags srcStageFlags = (barrierInfo.mbWriteableBefore == true) ? 
+                    (VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_TRANSFER_BIT) :
+                    VK_PIPELINE_STAGE_2_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+
+                VkPipelineStageFlags dstStageFlags = (barrierInfo.mbWriteableAfter == true) ?
+                    VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT :
+                    VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT | VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+
+                //if(pImageVulkan->getInitialImageLayout(0) == RenderDriver::Common::ImageLayout::TRANSFER_DST_OPTIMAL)
+                //{
+                //    oldLayoutVulkan = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+                //    srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+                //    srcStageFlags = VK_PIPELINE_STAGE_TRANSFER_BIT;
+                //}
+
+                if(barrierInfo.mCommandBufferType == RenderDriver::Common::CommandBufferType::Compute)
                 {
-                    imageMemoryBarrier.subresourceRange = VkImageSubresourceRange{VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1};
+                    dstStageFlags = VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT;
+                    dstAccessMask = (barrierInfo.mbWriteableAfter == true) ? VK_ACCESS_SHADER_WRITE_BIT : VK_ACCESS_SHADER_READ_BIT;
                 }
 
+                imageMemoryBarrier.srcAccessMask = srcAccessMask;
+                imageMemoryBarrier.dstAccessMask = dstAccessMask;
+                imageMemoryBarrier.oldLayout = oldLayoutVulkan;
+                imageMemoryBarrier.newLayout = newLayoutVulkan;
+                
                 pImageVulkan->setImageLayout(SerializeUtils::Vulkan::convert(imageMemoryBarrier.newLayout), 0);
-                aImageMemoryBarriers.push_back(imageMemoryBarrier);
+                
+                //pImageVulkan->setImageTransitionInfo(
+                //    newLayoutVulkan,
+                //    dstAccessMask,
+                //    dstStageFlags
+                //);
+
+                VkCommandBuffer* pNativeCommandBuffer = static_cast<VkCommandBuffer*>(commandBuffer.getNativeCommandList());
+                vkCmdPipelineBarrier(
+                    *pNativeCommandBuffer,
+                    srcStageFlags,
+                    dstStageFlags,
+                    0,
+                    0,
+                    nullptr,
+                    0,
+                    nullptr,
+                    1,
+                    &imageMemoryBarrier
+                );
             }
 
             if(aImageMemoryBarriers.size() > 0)
@@ -2323,14 +2522,14 @@ namespace Render
                     }
 
                     VkResult ret = vkResetCommandBuffer(*pNativeCommandBuffer, 0);
-                    WTFASSERT(ret == VK_SUCCESS, "Error resetting command buffer: %d", ret);
+                    WTFASSERT(ret == VK_SUCCESS, "Error resetting command buffer: %s", RenderDriver::Vulkan::Utils::getErrorCode(ret));
 
                     VkCommandBufferBeginInfo beginInfo{};
                     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
                     beginInfo.flags = 0;
                     beginInfo.pInheritanceInfo = nullptr;
                     ret = vkBeginCommandBuffer(*pNativeCommandBuffer, &beginInfo);
-                    WTFASSERT(ret == VK_SUCCESS, "Error starting command buffer: %d", ret);
+                    WTFASSERT(ret == VK_SUCCESS, "Error starting command buffer: %s", RenderDriver::Vulkan::Utils::getErrorCode(ret));
 
                     RenderDriver::Vulkan::CImage* pImageVulkan = (RenderDriver::Vulkan::CImage*)outputAttachmentKeyValue.second;
                     VkImage& nativeImage = *((VkImage*)outputAttachmentKeyValue.second->getNativeImage());
@@ -2372,28 +2571,31 @@ namespace Render
                         &imageMemoryBarrier);
 
                     ret = vkEndCommandBuffer(*pNativeCommandBuffer);
-                    WTFASSERT(ret == VK_SUCCESS, "Error closing command buffer: %d", ret);
-
-                    VkSubmitInfo submitInfo = {};
-                    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-                    submitInfo.pNext = nullptr;
-                    submitInfo.commandBufferCount = 1;
-                    submitInfo.pCommandBuffers = pNativeCommandBuffer;
-                    submitInfo.waitSemaphoreCount = 0;
-                    submitInfo.pWaitSemaphores = nullptr;
-                    submitInfo.pWaitDstStageMask = nullptr;
-                    submitInfo.signalSemaphoreCount = 0;
-                    submitInfo.pSignalSemaphores = nullptr;
+                    WTFASSERT(ret == VK_SUCCESS, "Error closing command buffer: %s", RenderDriver::Vulkan::Utils::getErrorCode(ret));
 
                     VkQueue& nativeQueue = *((VkQueue*)mpGraphicsCommandQueue->getNativeCommandQueue());
-                    ret = vkQueueSubmit(
-                        nativeQueue,
-                        1,
-                        &submitInfo,
-                        VK_NULL_HANDLE);
-                    WTFASSERT(ret == VK_SUCCESS, "Error submitting command buffer: %d", ret);
+                    // VkSubmitInfo submitInfo = {};
+                    // submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+                    // submitInfo.pNext = nullptr;
+                    // submitInfo.commandBufferCount = 1;
+                    // submitInfo.pCommandBuffers = pNativeCommandBuffer;
+                    // submitInfo.waitSemaphoreCount = 0;
+                    // submitInfo.pWaitSemaphores = nullptr;
+                    // submitInfo.pWaitDstStageMask = nullptr;
+                    // submitInfo.signalSemaphoreCount = 0;
+                    // submitInfo.pSignalSemaphores = nullptr;
+                    // ret = vkQueueSubmit(
+                    //    nativeQueue,
+                    //    1,
+                    //    &submitInfo,
+                    //    VK_NULL_HANDLE);
+                    //WTFASSERT(ret == VK_SUCCESS, "Error submitting command buffer: %s", RenderDriver::Vulkan::Utils::getErrorCode(ret));
+                    mpGraphicsCommandQueue->execCommandBufferSynchronized(
+                        *mapRenderJobCommandBuffers[renderJobKeyValue.first],
+                        *mpDevice
+                    );
 
-                    vkQueueWaitIdle(nativeQueue);
+                    //vkQueueWaitIdle(nativeQueue);
                 }
             }
         }
@@ -2935,7 +3137,7 @@ namespace Render
                 3 * iAlignSize,
                 aShaderHandles.data()
             );
-            WTFASSERT(ret == VK_SUCCESS, "Error getting ray tracing shader group handles: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error getting ray tracing shader group handles: %s", RenderDriver::Vulkan::Utils::getErrorCode(ret));
 
             VkBufferDeviceAddressInfoKHR bufferAddressInfoDesc = {};
             bufferAddressInfoDesc.sType = VK_STRUCTURE_TYPE_BUFFER_DEVICE_ADDRESS_INFO;
@@ -2988,6 +3190,449 @@ namespace Render
             }   // for shader type = 0 to 3
 #endif // USE_RAY_TRACING
 
+        }
+
+        /*
+        **
+        */
+        void CRenderer::platformCopyTexturePageToAtlas(
+            char const* pImageData,
+            RenderDriver::Common::CImage* pDestImage,
+            uint2 const& pageCoord,
+            uint32_t iTexturePageDimension)
+        {
+            RenderDriver::Vulkan::CDevice* pDeviceVulkan = static_cast<RenderDriver::Vulkan::CDevice*>(mpDevice.get());
+
+            mapUploadBuffers.emplace_back(std::make_unique<RenderDriver::Vulkan::CBuffer>());
+            RenderDriver::Vulkan::CBuffer& uploadBuffer = static_cast<RenderDriver::Vulkan::CBuffer&>(*mapUploadBuffers.back());
+
+            uint32_t iImageSize = iTexturePageDimension * iTexturePageDimension * 4;
+            RenderDriver::Common::BufferDescriptor uploadBufferDesc =
+            {
+                /* .miSize          */      iImageSize,
+                /* .mFormat         */      RenderDriver::Common::Format::UNKNOWN,
+                /* .mFlags          */      RenderDriver::Common::ResourceFlagBits::None,
+                /* .mHeapType       */      RenderDriver::Common::HeapType::Upload,
+                /* .mOverrideState  */      RenderDriver::Common::ResourceStateFlagBits::None,
+                /* .mpCounterBuffer */      nullptr,
+            };
+            uploadBufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferSrc;
+            uploadBuffer.create(uploadBufferDesc, *mpDevice);
+            uploadBuffer.setID("Upload Image Buffer");
+
+            uploadBuffer.setData((void*)pImageData, iImageSize);
+
+            // set copy region
+            VkBufferImageCopy bufferCopyRegion = {};
+            bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            bufferCopyRegion.imageSubresource.mipLevel = 0;
+            bufferCopyRegion.imageSubresource.baseArrayLayer = 0; 
+            bufferCopyRegion.imageSubresource.layerCount = 1;
+            bufferCopyRegion.imageOffset.x = pageCoord.x * iTexturePageDimension;
+            bufferCopyRegion.imageOffset.y = pageCoord.y * iTexturePageDimension;
+            bufferCopyRegion.imageOffset.z = 0;
+            bufferCopyRegion.imageExtent.width = iTexturePageDimension;
+            bufferCopyRegion.imageExtent.height = iTexturePageDimension;
+            bufferCopyRegion.imageExtent.depth = 1;
+            bufferCopyRegion.bufferOffset = 0;
+
+            // native buffer and image
+            RenderDriver::Vulkan::CImage* pImageVulkan = (RenderDriver::Vulkan::CImage*)pDestImage;
+            VkCommandBuffer& nativeUploadCommandBufferVulkan = *(static_cast<VkCommandBuffer*>(mpUploadCommandBuffer->getNativeCommandList()));
+            VkBuffer& nativeUploadBufferVulkan = *(static_cast<VkBuffer*>(uploadBuffer.getNativeBuffer()));
+            VkImage& nativeImage = *(static_cast<VkImage*>(pDestImage->getNativeImage()));
+            
+            // prepare command buffer
+            RenderDriver::Common::CommandBufferState const& commandBufferState = mpUploadCommandBuffer->getState();
+            if(commandBufferState == RenderDriver::Common::CommandBufferState::Closed)
+            {
+                mpUploadCommandBuffer->reset();
+            }
+
+            // previous layout
+            //VkImageLayout prevLayout = SerializeUtils::Vulkan::convert(((RenderDriver::Vulkan::CImage*)pDestImage)->getImageLayout(0));
+            VkImageLayout prevLayout = pImageVulkan->mImageLayout;
+
+            // transition to dest optimal
+            VkImageMemoryBarrier barrier = {};
+            barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+            barrier.oldLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+            barrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
+            barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+            barrier.image = nativeImage;
+            barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            barrier.subresourceRange.baseMipLevel = 0;
+            barrier.subresourceRange.levelCount = 1;
+            barrier.subresourceRange.baseArrayLayer = 0;
+            barrier.subresourceRange.layerCount = 1;
+            barrier.srcAccessMask = 0;
+            barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            vkCmdPipelineBarrier(
+                nativeUploadCommandBufferVulkan,
+                VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                VK_PIPELINE_STAGE_TRANSFER_BIT,
+                0,
+                0,
+                nullptr,
+                0,
+                nullptr,
+                1,
+                &barrier);
+
+            //pImageVulkan->setImageTransitionInfo(
+            //    barrier.newLayout,
+            //    barrier.dstAccessMask,
+            //    VK_PIPELINE_STAGE_TRANSFER_BIT
+            //);
+
+            // do the copy
+            vkCmdCopyBufferToImage(
+                nativeUploadCommandBufferVulkan,
+                nativeUploadBufferVulkan,
+                nativeImage,
+                VK_IMAGE_LAYOUT_GENERAL, // VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                1,
+                &bufferCopyRegion);
+
+            barrier.oldLayout = VK_IMAGE_LAYOUT_GENERAL;
+            barrier.newLayout = prevLayout;
+            barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+            barrier.dstAccessMask = 0;
+            vkCmdPipelineBarrier(
+                nativeUploadCommandBufferVulkan,
+                VK_PIPELINE_STAGE_TRANSFER_BIT,
+                VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+                0,
+                0,
+                nullptr,
+                0,
+                nullptr,
+                1,
+                &barrier);
+
+            //pImageVulkan->setImageTransitionInfo(
+            //    barrier.newLayout,
+            //    barrier.dstAccessMask,
+            //    VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT
+            //);
+
+            mpUploadCommandBuffer->close();
+
+            VkDevice* pNativeDevice = static_cast<VkDevice*>(mpDevice->getNativeDevice());
+            mpCopyCommandQueue->execCommandBufferSynchronized(
+                *mpUploadCommandBuffer,
+                *mpDevice);
+
+            RenderDriver::Vulkan::CCommandQueue* pCopyCommandQueueVulkan = static_cast<RenderDriver::Vulkan::CCommandQueue*>(mpCopyCommandQueue.get());
+            VkQueue* pNativeQueue = static_cast<VkQueue*>(pCopyCommandQueueVulkan->getNativeCommandQueue());
+            //vkQueueWaitIdle(*pNativeQueue);
+
+            mpUploadCommandAllocator->reset();
+            mpUploadCommandBuffer->reset();
+        }
+
+        /*
+        **
+        */
+        void CRenderer::platformCopyTexturePageToAtlas2(
+            char const* pImageData,
+            RenderDriver::Common::CImage* pDestImage,
+            uint2 const& pageCoord,
+            uint32_t iTexturePageDimension,
+            RenderDriver::Common::CCommandBuffer& commandBuffer,
+            RenderDriver::Common::CCommandQueue& commandQueue,
+            RenderDriver::Common::CBuffer& uploadBuffer)
+        {
+            RenderDriver::Vulkan::CDevice* pDeviceVulkan = static_cast<RenderDriver::Vulkan::CDevice*>(mpDevice.get());
+
+            // native buffer and image
+            VkCommandBuffer& nativeUploadCommandBufferVulkan = *(static_cast<VkCommandBuffer*>(commandBuffer.getNativeCommandList()));
+            VkBuffer& nativeUploadBufferVulkan = *(static_cast<VkBuffer*>(uploadBuffer.getNativeBuffer()));
+            VkImage& nativeImage = *(static_cast<VkImage*>(pDestImage->getNativeImage()));
+
+            // recording
+            commandBuffer.reset();
+
+            // set copy region
+            VkBufferImageCopy bufferCopyRegion = {};
+            bufferCopyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            bufferCopyRegion.imageSubresource.mipLevel = 0;
+            bufferCopyRegion.imageSubresource.baseArrayLayer = 0;
+            bufferCopyRegion.imageSubresource.layerCount = 1;
+            bufferCopyRegion.imageOffset.x = pageCoord.x * iTexturePageDimension;
+            bufferCopyRegion.imageOffset.y = pageCoord.y * iTexturePageDimension;
+            bufferCopyRegion.imageOffset.z = 0;
+            bufferCopyRegion.imageExtent.width = iTexturePageDimension;
+            bufferCopyRegion.imageExtent.height = iTexturePageDimension;
+            bufferCopyRegion.imageExtent.depth = 1;
+            bufferCopyRegion.bufferOffset = 0;
+
+            // do the copy
+            vkCmdCopyBufferToImage(
+                nativeUploadCommandBufferVulkan,
+                nativeUploadBufferVulkan,
+                nativeImage,
+                VK_IMAGE_LAYOUT_GENERAL, // VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+                1,
+                &bufferCopyRegion);
+
+            // close and execute
+            commandBuffer.close();
+            commandQueue.execCommandBufferSynchronized(
+                commandBuffer,
+                *mpDevice);
+
+            commandBuffer.reset();
+
+        }
+
+        /*
+        **
+        */
+        void CRenderer::platformCreateCommandBuffer(
+            std::unique_ptr<RenderDriver::Common::CCommandAllocator>& threadCommandAllocator,
+            std::unique_ptr<RenderDriver::Common::CCommandBuffer>& threadCommandBuffer)
+        {
+            threadCommandAllocator = std::make_unique<RenderDriver::Vulkan::CCommandAllocator>();
+            threadCommandBuffer = std::make_unique<RenderDriver::Vulkan::CCommandBuffer>();
+        }
+
+        /*
+        **
+        */
+        void CRenderer::platformCreateBuffer(
+            std::unique_ptr<RenderDriver::Common::CBuffer>& buffer,
+            uint32_t iSize)
+        {
+            buffer = std::make_unique<RenderDriver::Vulkan::CBuffer>();
+            RenderDriver::Common::BufferDescriptor bufferDesc = {};
+            bufferDesc.miSize = 64 * 64 * 4;
+            bufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferDest;
+            bufferDesc.mHeapType = RenderDriver::Common::HeapType::Upload;
+            buffer->create(
+                bufferDesc,
+                *mpDevice);
+        }
+
+        /*
+        **
+        */
+        void CRenderer::platformCreateCommandQueue(
+            std::unique_ptr<RenderDriver::Common::CCommandQueue>& commandQueue,
+            RenderDriver::Common::CCommandQueue::Type const& type)
+        {
+            commandQueue = std::make_unique<RenderDriver::Vulkan::CCommandQueue>();
+            RenderDriver::Common::CCommandQueue::CreateDesc commandQueueDesc = {};
+            commandQueueDesc.mpDevice = mpDevice.get();
+            commandQueueDesc.mType = type;
+            commandQueue->create(commandQueueDesc);
+        }
+
+        /*
+        **
+        */
+        void CRenderer::platformTransitionInputImageAttachments(
+            Render::Common::CRenderJob* pRenderJob,
+            std::vector<char>& acPlatformAttachmentInfo,
+            RenderDriver::Common::CCommandBuffer& commandBuffer,
+            bool bReverse)
+        {
+            struct TransitionInfo
+            {
+                VkImageMemoryBarrier        mBarrier;
+                VkPipelineStageFlags        mSrcStageFlags;
+                VkPipelineStageFlags        mDstStageFlags;
+            };
+
+            uint32_t iNumAttachments = (uint32_t)pRenderJob->mapInputImageAttachments.size();
+            uint32_t iVectorSize = iNumAttachments * sizeof(TransitionInfo);
+            TransitionInfo* aInfoData = (TransitionInfo*)acPlatformAttachmentInfo.data();
+
+            VkCommandBuffer& nativeCommandBuffer = *(VkCommandBuffer*)commandBuffer.getNativeCommandList();
+            if(!bReverse)
+            {
+                acPlatformAttachmentInfo.resize(iVectorSize);
+                aInfoData = (TransitionInfo*)acPlatformAttachmentInfo.data();
+            }
+             
+            for(uint32_t iAttachment = 0; iAttachment < iNumAttachments; iAttachment++)
+            {
+                // transition info for the attachment
+                auto iter = pRenderJob->mapInputImageAttachments.begin();
+                std::advance(iter, iAttachment);
+                TransitionInfo& infoData = aInfoData[iAttachment];
+
+                RenderDriver::Vulkan::CImage* pImageVulkan = (RenderDriver::Vulkan::CImage*)iter->second;
+                VkImage& nativeImage = *(VkImage*)pImageVulkan->getNativeImage();
+                bool bIsDepthStencil = (
+                    pImageVulkan->getInitialImageLayout(0) == RenderDriver::Common::ImageLayout::DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+                );
+
+                VkImageMemoryBarrier imageMemoryBarrier = {};
+                imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+                imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+                imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+                imageMemoryBarrier.subresourceRange = (bIsDepthStencil == true) ?
+                    VkImageSubresourceRange{VK_IMAGE_ASPECT_DEPTH_BIT, 0, 1, 0, 1} :
+                    VkImageSubresourceRange{VK_IMAGE_ASPECT_COLOR_BIT, 0, 1, 0, 1};
+                imageMemoryBarrier.image = nativeImage;
+
+                // access and layout
+                if(bReverse)
+                {
+                    imageMemoryBarrier.srcAccessMask = infoData.mBarrier.dstAccessMask;
+                    imageMemoryBarrier.dstAccessMask = infoData.mBarrier.srcAccessMask;
+
+                    imageMemoryBarrier.oldLayout = infoData.mBarrier.newLayout;
+                    imageMemoryBarrier.newLayout = infoData.mBarrier.oldLayout;
+                }
+                else
+                {
+                    imageMemoryBarrier.srcAccessMask = pImageVulkan->mImageAccessFlags;
+                    imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+                    imageMemoryBarrier.oldLayout = pImageVulkan->mImageLayout;
+                    imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
+                }
+
+                // pipeline stage 
+                VkPipelineStageFlags srcPipelineStage = pImageVulkan->mPipelineStageFlags;
+                VkPipelineStageFlags dstPipelineStage = (pRenderJob->mType == Render::Common::JobType::Compute) ?
+                    VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT : 
+                    VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+                if(bReverse)
+                {
+                    srcPipelineStage = infoData.mDstStageFlags;
+                    dstPipelineStage = infoData.mSrcStageFlags;
+                }
+                else
+                {
+                    aInfoData[iAttachment].mBarrier = imageMemoryBarrier;
+                    aInfoData[iAttachment].mSrcStageFlags = srcPipelineStage;
+                    aInfoData[iAttachment].mDstStageFlags = dstPipelineStage;
+                }
+
+                vkCmdPipelineBarrier(
+                    nativeCommandBuffer,
+                    srcPipelineStage,
+                    dstPipelineStage,
+                    0,
+                    0,
+                    nullptr,
+                    0,
+                    nullptr,
+                    1,
+                    &imageMemoryBarrier);
+            }
+        }
+
+        /*
+        **
+        */
+        void CRenderer::platformTransitionOutputAttachmentsRayTrace(
+            Render::Common::CRenderJob* pRenderJob,
+            RenderDriver::Common::CCommandBuffer& commandBuffer)
+        {
+            VkCommandBuffer& nativeCommandBuffer = *(VkCommandBuffer*)commandBuffer.getNativeCommandList();
+            for(auto& outputAttachmentKeyValue : pRenderJob->mapOutputImageAttachments)
+            {
+                if(outputAttachmentKeyValue.second == nullptr)
+                {
+                    continue;
+                }
+
+                RenderDriver::Vulkan::CImage* pImageVulkan = (RenderDriver::Vulkan::CImage*)outputAttachmentKeyValue.second;
+                VkImage& nativeImage = *(VkImage*)pImageVulkan->getNativeImage();
+
+                VkImageMemoryBarrier imageMemoryBarrier = {};
+                imageMemoryBarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+                imageMemoryBarrier.image = nativeImage;
+                imageMemoryBarrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+                imageMemoryBarrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+                imageMemoryBarrier.subresourceRange =
+                {
+                    VK_IMAGE_ASPECT_COLOR_BIT,
+                    0,
+                    1,
+                    0,
+                    1
+                };
+
+                imageMemoryBarrier.oldLayout = VK_IMAGE_LAYOUT_GENERAL;
+                imageMemoryBarrier.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+                VkPipelineStageFlags srcPipelineStage = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+
+                imageMemoryBarrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
+                imageMemoryBarrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+                VkPipelineStageFlags dstPipelineStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+
+                vkCmdPipelineBarrier(
+                    nativeCommandBuffer,
+                    srcPipelineStage,
+                    dstPipelineStage,
+                    0,
+                    0,
+                    nullptr,
+                    0,
+                    nullptr,
+                    1,
+                    &imageMemoryBarrier
+                );
+
+                pImageVulkan->setImageTransitionInfo(
+                    imageMemoryBarrier.newLayout,
+                    imageMemoryBarrier.dstAccessMask,
+                    dstPipelineStage
+                );
+            }
+        }
+
+        /*
+        **
+        */
+        void CRenderer::setAttachmentImage(
+            std::string const& dstRenderJobName,
+            std::string const& dstAttachmentName,
+            std::string const& srcRenderJobName,
+            std::string const& srcAttachmentName)
+        {
+            Render::Common::CRenderJob* pDstRenderJob = mapRenderJobs[dstRenderJobName];
+
+            Render::Common::CRenderJob* pSrcRenderJob = mapRenderJobs[srcRenderJobName];
+            RenderDriver::Common::CImage* pSrcImage = pSrcRenderJob->mapOutputImageAttachments[srcAttachmentName];
+            RenderDriver::Vulkan::CImage* pSrcImageVulkan = (RenderDriver::Vulkan::CImage*)pSrcImage;
+            RenderDriver::Common::CImageView* pSrcImageView = pSrcRenderJob->mapOutputImageAttachmentViews[srcAttachmentName];
+            RenderDriver::Vulkan::CImageView* pSrcImageViewVulkan = (RenderDriver::Vulkan::CImageView*)pSrcImageView;
+
+            pDstRenderJob->mapOutputImageAttachments[dstAttachmentName] = pSrcImage;
+            pDstRenderJob->mapOutputImageAttachmentViews[dstAttachmentName] = pSrcImageView;
+
+            VkDescriptorImageInfo imageInfo = {};
+            imageInfo.imageView = pSrcImageViewVulkan->getNativeImageView();
+            imageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+            imageInfo.sampler = VK_NULL_HANDLE;
+
+            RenderDriver::Vulkan::CDescriptorSet* pDescriptorSetVulkan = (RenderDriver::Vulkan::CDescriptorSet*)pDstRenderJob->mpDescriptorSet;
+            std::vector<VkDescriptorSet> const& aDescriptorSets = pDescriptorSetVulkan->getNativeDescriptorSets();
+
+            VkWriteDescriptorSet descriptorWrite = {};
+            descriptorWrite.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrite.dstSet = aDescriptorSets[0];
+            descriptorWrite.dstBinding = 1;
+            descriptorWrite.dstArrayElement = 0;
+            descriptorWrite.descriptorType = VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE;
+            descriptorWrite.descriptorCount = 1;
+            descriptorWrite.pImageInfo = &imageInfo;
+
+            VkDevice& nativeDevice = *(VkDevice*)mpDevice->getNativeDevice();
+            vkUpdateDescriptorSets(
+                nativeDevice,
+                1,
+                &descriptorWrite,
+                0,
+                nullptr
+            );
         }
 
     }   // Vulkan

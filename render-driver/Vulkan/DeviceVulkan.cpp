@@ -7,7 +7,8 @@
 
 #include <vector>
 
-#define USE_RAY_TRACING 1
+#include "render-driver/RayTrace.h"
+#include "render-driver/Vulkan/UtilsVulkan.h"
 
 namespace RenderDriver
 {
@@ -28,15 +29,15 @@ namespace RenderDriver
             uint32_t iQueueFamilyIndex = mpPhysicalDevice->getGraphicsQueueFamilyIndex();
 
 #if defined(USE_RAY_TRACING)
-            VkPhysicalDeviceBufferDeviceAddressFeatures enabledBufferDeviceAddresFeatures = {};
-            enabledBufferDeviceAddresFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
-            enabledBufferDeviceAddresFeatures.bufferDeviceAddress = VK_TRUE;
-            enabledBufferDeviceAddresFeatures.pNext = nullptr;
+            //VkPhysicalDeviceBufferDeviceAddressFeatures enabledBufferDeviceAddressFeatures = {};
+            //enabledBufferDeviceAddressFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_BUFFER_DEVICE_ADDRESS_FEATURES;
+            //enabledBufferDeviceAddressFeatures.bufferDeviceAddress = VK_TRUE;
+            //enabledBufferDeviceAddressFeatures.pNext = nullptr;
 
             VkPhysicalDeviceRayTracingPipelineFeaturesKHR enabledRayTracingPipelineFeatures = {};
             enabledRayTracingPipelineFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_RAY_TRACING_PIPELINE_FEATURES_KHR;
             enabledRayTracingPipelineFeatures.rayTracingPipeline = VK_TRUE;
-            enabledRayTracingPipelineFeatures.pNext = nullptr;
+            enabledRayTracingPipelineFeatures.pNext = nullptr; //&enabledBufferDeviceAddressFeatures;
 
             VkPhysicalDeviceAccelerationStructureFeaturesKHR enabledAccelerationStructureFeatures = {};
             enabledAccelerationStructureFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_ACCELERATION_STRUCTURE_FEATURES_KHR;
@@ -59,20 +60,6 @@ namespace RenderDriver
             robustness2.pNext = &vulkan12Features;
             robustness2.nullDescriptor = VK_TRUE;
             robustness2.robustImageAccess2 = VK_TRUE;
-
-            // disabled due to VkPhysicalDeviceVulkan12Features
-            // descriptor indexing extension
-            //VkPhysicalDeviceDescriptorIndexingFeaturesEXT indexingFeatures = {};
-            //indexingFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_DESCRIPTOR_INDEXING_FEATURES_EXT;
-            //indexingFeatures.pNext = &robustness2;
-            //indexingFeatures.descriptorBindingPartiallyBound = VK_TRUE;
-            //indexingFeatures.runtimeDescriptorArray = VK_TRUE;
-            //
-            // timeline semaphore
-            //VkPhysicalDeviceTimelineSemaphoreFeatures timelineSemaphoreFeatures = {};
-            //timelineSemaphoreFeatures.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_TIMELINE_SEMAPHORE_FEATURES_KHR;
-            //timelineSemaphoreFeatures.pNext = &sync2Features;
-            //timelineSemaphoreFeatures.timelineSemaphore = VK_TRUE;
 
             VkPhysicalDeviceSynchronization2Features sync2Features = {};
             sync2Features.sType = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SYNCHRONIZATION_2_FEATURES_KHR;
@@ -112,7 +99,7 @@ namespace RenderDriver
             createDeviceInfo.pNext = &deviceFeatures2;
 
             VkResult ret = vkCreateDevice(*pNativePhysicalDevice, &createDeviceInfo, nullptr, &mDevice);
-            WTFASSERT(ret == VK_SUCCESS, "error creating logical device: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "error creating logical device: \"%s\"", Utils::getErrorCode(ret));
 
             mHandle = 2;
 

@@ -1,0 +1,100 @@
+{
+    "Type": "Ray Trace",
+    "PassType": "Ray Trace",
+    "Shader": "build-irradiance-cache.shader",
+    "Dispatch": [4, 4, 1],
+    "Attachments": [
+        {
+            "Name" : "Irradiance Cache",
+            "Type": "BufferOutput",
+            "ShaderResourceName": "irradianceCache",
+            "ParentJobName": "This",
+            "Size": 8388608
+        },
+        {
+            "Name" : "Irradiance Cache Queue",
+            "Type": "BufferOutput",
+            "ShaderResourceName": "irradianceCacheQueue",
+            "ParentJobName": "This",
+            "Size": 1048576
+        },
+        {
+            "Name" : "Counters",
+            "Type": "BufferOutput",
+            "ShaderResourceName": "irradianceCacheQueue",
+            "ParentJobName": "This",
+            "Size": 256
+        },
+
+        {
+            "Name": "Scene",
+            "Type": "AccelerationStructure"
+        },
+        {
+            "Name" : "Sky Output",
+            "ParentJobName": "Atmosphere Graphics",
+            "Type": "TextureInput"
+        },
+        {
+            "Name" : "World Position Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name": "Hit Position Output",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace",
+            "Type": "TextureInput"
+        },
+        {
+            "Name": "Hit Normal Output",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace",
+            "Type": "TextureInput"
+        },
+
+
+        {
+            "Name" : "Debug",
+            "Type": "TextureOutput",
+            "Format": "rgba32float",
+            "ScaleWidth": 1.0,
+            "ScaleHeight": 1.0
+        }
+    ],
+    "ShaderResources": [
+        { 
+            "name" : "vertexBuffer",
+            "type" : "buffer",
+            "size": 0,
+            "usage": "read_write_storage",
+            "shader_stage" : "ray trace"
+        },
+        { 
+            "name" : "indexBuffer",
+            "type" : "buffer",
+            "size": 0,
+            "usage": "read_write_storage",
+            "shader_stage" : "ray trace"
+        },
+        { 
+            "name" : "materialData",
+            "type" : "buffer",
+            "size" : 0,
+            "shader_stage" : "ray trace",
+            "usage": "read_write_storage"
+        },
+        { 
+            "name" : "materialID",
+            "type" : "buffer",
+            "size" : 0,
+            "shader_stage" : "ray trace",
+            "usage": "read_write_storage"
+        },
+        { 
+            "name" : "meshTriangleRangeData",
+            "type" : "buffer",
+            "size" : 0,
+            "shader_stage" : "ray trace",
+            "usage": "read_write_storage"
+        }
+    ]
+}

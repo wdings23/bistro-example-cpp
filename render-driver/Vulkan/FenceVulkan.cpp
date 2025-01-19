@@ -29,7 +29,7 @@ namespace RenderDriver
             fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
 
             VkResult ret = vkCreateFence(*mpNativeDevice, &fenceInfo, nullptr, &mNativeFence);
-            WTFASSERT(ret == VK_SUCCESS, "Error creating fence: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error creating fence: %s", Utils::getErrorCode(ret));
 
             VkSemaphoreTypeCreateInfo timelineSemaphoreCreateInfo = {};
             timelineSemaphoreCreateInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_TYPE_CREATE_INFO;
@@ -42,7 +42,7 @@ namespace RenderDriver
             semaphoreInfo.pNext = &timelineSemaphoreCreateInfo;
             semaphoreInfo.flags = 0;
             ret = vkCreateSemaphore(*mpNativeDevice, &semaphoreInfo, nullptr, &mNativeSemaphore);
-            WTFASSERT(ret == VK_SUCCESS, "Error creating semaphore: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error creating semaphore: %s", Utils::getErrorCode(ret));
 
             return mHandle;
         }
@@ -74,7 +74,7 @@ namespace RenderDriver
             VkQueue* pNativeCommandQueue = static_cast<VkQueue*>(pCommandQueueVulkan->getNativeCommandQueue());
 
             VkResult ret = vkQueueWaitIdle(*pNativeCommandQueue);
-            WTFASSERT(ret == VK_SUCCESS, "Error waiting for fence: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error waiting for fence: %s", Utils::getErrorCode(ret));
 
             //vkWaitForFences(*mpNativeDevice, 1, &mNativeFence, VK_TRUE, UINT64_MAX);
             //vkResetFences(*mpNativeDevice, 1, &mNativeFence);
@@ -99,7 +99,7 @@ namespace RenderDriver
                 *mpNativeDevice,
                 *pSignalSemaphore,
                 &iSignalValue);
-            WTFASSERT(ret == VK_SUCCESS, "Error getting semaphore counter value: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error getting semaphore counter value: %s", Utils::getErrorCode(ret));
             
             if(iSignalValue < iWaitValue)
             {
@@ -115,7 +115,7 @@ namespace RenderDriver
                     *mpNativeDevice,
                     &waitInfo,
                     UINT64_MAX);
-                WTFASSERT(ret == VK_SUCCESS, "Error waiting for queue to be idle: %d", ret);
+                WTFASSERT(ret == VK_SUCCESS, "Error waiting for queue to be idle: %s", Utils::getErrorCode(ret));
             }
 #endif // #if 0
         }
@@ -157,7 +157,7 @@ namespace RenderDriver
                 nullptr, 
                 &mNativeSemaphore
             );
-            WTFASSERT(ret == VK_SUCCESS, "Error creating semaphore: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error creating semaphore: %s", Utils::getErrorCode(ret));
         }
 
         /*

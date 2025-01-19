@@ -16,7 +16,7 @@
 #include <functional>
 #include <atomic>
 
-#define USE_RAY_TRACING 1
+#include <render-driver/RayTrace.h>
 
 namespace Render
 {
@@ -173,6 +173,7 @@ namespace Render
 
             virtual void setup(RendererDescriptor const& desc);
             virtual void draw();
+            virtual void postDraw();
 
             void loadRenderJobInfo(std::string const& renderJobFilePath);
 
@@ -236,12 +237,48 @@ namespace Render
                 uint32_t iTotalDataSize,
                 uint32_t iFlag);
 
+            void copyCPUToBuffer4(
+                RenderDriver::Common::CBuffer* pGPUBuffer,
+                void* pData,
+                uint32_t iDestOffset,
+                uint32_t iDataSize,
+                RenderDriver::Common::CCommandBuffer& commandBuffer,
+                RenderDriver::Common::CCommandQueue& commandQueue,
+                RenderDriver::Common::CBuffer& uploadBuffer
+            );
+
             void copyBufferToBuffer(
                 RenderDriver::Common::CBuffer* pDestBuffer,
                 RenderDriver::Common::CBuffer* pSrcBuffer,
                 uint32_t iSrcOffset,
                 uint32_t iDestOffset,
                 uint64_t iDataSize);
+
+            void copyTexturePageToAtlas(
+                char const* pImageData,
+                RenderDriver::Common::CImage* pDestImage,
+                uint2 const& pageCoord,
+                uint32_t iTexturePageDimension
+            );
+
+            void copyTexturePageToAtlas2(
+                char const* pImageData,
+                RenderDriver::Common::CImage* pDestImage,
+                uint2 const& pageCoord,
+                uint32_t iTexturePageDimension,
+                RenderDriver::Common::CCommandBuffer& commandBuffer,
+                RenderDriver::Common::CCommandQueue& commandQueue,
+                RenderDriver::Common::CBuffer& uploadBuffer
+            );
+
+            void copyBufferToCPUMemory2(
+                RenderDriver::Common::CBuffer* pGPUBuffer,
+                void* pCPUBuffer,
+                uint64_t iSrcOffset,
+                uint64_t iDataSize,
+                RenderDriver::Common::CCommandBuffer& commandBuffer,
+                RenderDriver::Common::CCommandQueue& commandQueue
+            );
 
             virtual inline RenderDriver::Common::CDevice* getDevice()
             {
@@ -341,12 +378,44 @@ namespace Render
                 return mRenderDriverType;
             }
 
+            void createCommandBuffer(
+                std::unique_ptr<RenderDriver::Common::CCommandAllocator>& commandAllocator,
+                std::unique_ptr<RenderDriver::Common::CCommandBuffer>& commandBuffer
+            );
+
+            void createBuffer(
+                std::unique_ptr<RenderDriver::Common::CBuffer>& buffer,
+                uint32_t iSize
+            );
+
+            void createCommandQueue(
+                std::unique_ptr<RenderDriver::Common::CCommandQueue>& commandQueue,
+                RenderDriver::Common::CCommandQueue::Type const& type
+            );
+
+            virtual void setAttachmentImage(
+                std::string const& dstRenderJobName,
+                std::string const& dstAttachmentName,
+                std::string const& srcRenderJobName,
+                std::string const& srcAttachmentName
+            ) = 0;
+
         public:
             virtual void platformSetup(Render::Common::RendererDescriptor const& desc) = 0;
 
             uint64_t                                                            miCopyCommandFenceValue = 0;
 
+            void* mpPostDrawData = nullptr;
+
+            //std::unique_ptr<std::function<void(Render::Common::CRenderer*)>> mpfnPrepareRenderJobData = nullptr;
+            std::unique_ptr<std::function<void(Render::Common::CRenderer*)>> mpfnPostDraw = nullptr;
+            std::unique_ptr<std::function<void(Render::Common::CRenderer*)>> mpfnInitData = nullptr;
+
+            std::map<std::string, std::function<void(Render::Common::CRenderJob*)>*> mapfnRenderJobData;
+
         protected:
+
+            std::vector<uint2> maAlbedoTextureDimensions;
 
             RenderDriverType                                                    mRenderDriverType;
 
@@ -438,8 +507,10 @@ namespace Render
             void prepareRenderJobData();
             void updateRenderJobData();
 
-        protected:
             std::map<std::string, Render::Common::CRenderJob*> mapRenderJobs;
+
+        protected:
+            
             std::map<std::string, RenderDriver::Common::CCommandBuffer*> mapRenderJobCommandBuffers;
             std::map<std::string, RenderDriver::Common::CCommandAllocator*> mapRenderJobCommandAllocators;
             
@@ -570,6 +641,14 @@ namespace Render
                 uint64_t iSrcOffset,
                 uint64_t iDataSize) = 0;
 
+            virtual void platformCopyBufferToCPUMemory2(
+                RenderDriver::Common::CBuffer* pGPUBuffer,
+                void* pCPUBuffer,
+                uint64_t iSrcOffset,
+                uint64_t iDataSize,
+                RenderDriver::Common::CCommandBuffer& commandBuffer,
+                RenderDriver::Common::CCommandQueue& commandQueue) = 0;
+
             virtual void platformCopyBufferToBuffer(
                 RenderDriver::Common::CBuffer* pDestBuffer,
                 RenderDriver::Common::CBuffer* pSrcBuffer,
@@ -601,6 +680,16 @@ namespace Render
                 uint32_t iDestDataSize,
                 uint32_t iTotalDataSize,
                 uint32_t iFlag = 0) = 0;
+
+            virtual void platformCopyCPUToGPUBuffer3(
+                RenderDriver::Common::CCommandBuffer& commandBuffer,
+                RenderDriver::Common::CCommandQueue& commandQueue,
+                RenderDriver::Common::CBuffer* pDestBuffer,
+                void* pCPUData,
+                uint32_t iSrcOffset,
+                uint32_t iDestOffset,
+                uint32_t iDataSize,
+                RenderDriver::Common::CBuffer& uploadBuffer) = 0;
 
             virtual void platformUpdateTextureInArray(
                 RenderDriver::Common::CImage& image,
@@ -718,6 +807,50 @@ namespace Render
 
             virtual void platformRayTraceShaderSetup(
                 Render::Common::CRenderJob* pRenderJob
+            ) = 0;
+
+            virtual void platformCopyTexturePageToAtlas(
+                char const* pImageData,
+                RenderDriver::Common::CImage* pDestImage,
+                uint2 const& pageCoord,
+                uint32_t iTexturePageDimension
+            ) = 0;
+
+            virtual void platformCopyTexturePageToAtlas2(
+                char const* pImageData,
+                RenderDriver::Common::CImage* pDestImage,
+                uint2 const& pageCoord,
+                uint32_t iTexturePageDimension,
+                RenderDriver::Common::CCommandBuffer& commandBuffer,
+                RenderDriver::Common::CCommandQueue& commandQueue,
+                RenderDriver::Common::CBuffer& uploadBuffer
+            ) = 0;
+
+            virtual void platformCreateCommandBuffer(
+                std::unique_ptr<RenderDriver::Common::CCommandAllocator>& commandAllocator,
+                std::unique_ptr<RenderDriver::Common::CCommandBuffer>& commandBuffer
+            ) = 0;
+
+            virtual void platformCreateBuffer(
+                std::unique_ptr<RenderDriver::Common::CBuffer>& buffer,
+                uint32_t iSize
+            ) = 0;
+
+            virtual void platformCreateCommandQueue(
+                std::unique_ptr<RenderDriver::Common::CCommandQueue>& commandQueue,
+                RenderDriver::Common::CCommandQueue::Type const& type
+            ) = 0;
+
+            virtual void platformTransitionInputImageAttachments(
+                Render::Common::CRenderJob* pRenderJob,
+                std::vector<char>& acPlatformAttachmentInfo,
+                RenderDriver::Common::CCommandBuffer& commandBuffer,
+                bool bReverse
+            ) = 0;
+
+            virtual void platformTransitionOutputAttachmentsRayTrace(
+                Render::Common::CRenderJob* pRenderJob,
+                RenderDriver::Common::CCommandBuffer& commandBuffer
             ) = 0;
 
             protected:

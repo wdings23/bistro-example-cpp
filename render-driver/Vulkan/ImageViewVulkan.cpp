@@ -2,6 +2,7 @@
 #include <render-driver/Vulkan/DeviceVulkan.h>
 #include <render-driver/Vulkan/BufferVulkan.h>
 #include <render-driver/Vulkan/ImageVulkan.h>
+#include <render-driver/Vulkan/UtilsVulkan.h>
 
 #include <LogPrint.h>
 #include <wtfassert.h>
@@ -53,7 +54,7 @@ namespace RenderDriver
 			viewInfo.subresourceRange.layerCount = 1;
 
 			VkResult ret = vkCreateImageView(*pNativeDevice, &viewInfo, nullptr, &mNativeImageView);
-			WTFASSERT(ret == VK_SUCCESS, "Error creating image view: %d", ret);
+			WTFASSERT(ret == VK_SUCCESS, "Error creating image view: %s", Utils::getErrorCode(ret));
 
 			mImageHandle = desc.mpImage->getHandle();
 

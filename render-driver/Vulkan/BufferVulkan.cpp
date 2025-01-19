@@ -39,7 +39,7 @@ namespace RenderDriver
             bufferInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
             VkResult ret = vkCreateBuffer(*mpNativeDevice, &bufferInfo, nullptr, &mNativeBuffer);
-            WTFASSERT(ret == VK_SUCCESS, "Error creating buffer: %d\n", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error creating buffer: %s\n", Utils::getErrorCode(ret));
 
             VkMemoryRequirements memRequirements;
             vkGetBufferMemoryRequirements(*mpNativeDevice, mNativeBuffer, &memRequirements);
@@ -71,9 +71,9 @@ namespace RenderDriver
             allocInfo.memoryTypeIndex = iMemTypeIndex;
             allocInfo.pNext = &memoryAllocateFlagsInfo;
             ret = vkAllocateMemory(*mpNativeDevice, &allocInfo, nullptr, &mNativeDeviceMemory);
-            WTFASSERT(ret == VK_SUCCESS, "Error allocating memory for buffer: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error allocating memory for buffer: %s", Utils::getErrorCode(ret));
             ret = vkBindBufferMemory(*mpNativeDevice, mNativeBuffer, mNativeDeviceMemory, 0);
-            WTFASSERT(ret == VK_SUCCESS, "Error binding memory to buffer: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error binding memory to buffer: %s", Utils::getErrorCode(ret));
 
             return mHandle;
         }
@@ -172,6 +172,21 @@ namespace RenderDriver
                 1,
                 &bufferCopyRegion);
 
+            barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
+            barrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
+
+            vkCmdPipelineBarrier(
+                nativeUploadCommandBufferVulkan,
+                VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+                VK_PIPELINE_STAGE_TRANSFER_BIT,
+                0,
+                0,
+                nullptr,
+                0,
+                nullptr,
+                1,
+                &barrier);
+
             commandBuffer.close();
         }
 
@@ -210,6 +225,23 @@ namespace RenderDriver
                 &pDestData);
             memcpy(pDestData, pSrcData, iDataSize);
             vkUnmapMemory(*mpNativeDevice, mNativeDeviceMemory);
+        }
+
+        /*
+        **
+        */
+        void* CBuffer::getMemoryOpen(uint32_t iDataSize)
+        {
+            void* pDestData = nullptr;
+            vkMapMemory(
+                *mpNativeDevice,
+                mNativeDeviceMemory,
+                0,
+                iDataSize,
+                0,
+                &pDestData);
+
+            return pDestData;
         }
 
         /*

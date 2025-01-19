@@ -1,0 +1,62 @@
+{
+    "Type": "Compute",
+    "PassType": "Compute",
+    "Shader": "test-compute.shader",
+    "Attachments": [
+        {
+            "Name" : "Output",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
+        },
+
+
+
+        {
+            "Name" : "World Position Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name" : "Normal Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name": "Previous World Position Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Copy Render Targets"
+        },
+        {
+            "Name": "Previous Normal Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Copy Render Targets"
+        },
+        {
+            "Name": "Motion Vector Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name": "Previous Motion Vector Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Copy Render Targets"
+        }
+
+    ],
+    "ShaderResources": [
+        { 
+            "name" : "vertexBuffer",
+            "type" : "buffer",
+            "size": 0,
+            "usage": "read_write_storage",
+            "shader_stage" : "ray trace"
+        },
+        { 
+            "name" : "indexBuffer",
+            "type" : "buffer",
+            "size": 0,
+            "usage": "read_write_storage",
+            "shader_stage" : "ray trace"
+        }
+    ]
+}

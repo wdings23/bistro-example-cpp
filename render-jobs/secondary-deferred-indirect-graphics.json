@@ -19,6 +19,11 @@
             "ParentJobName": "Deferred Indirect Graphics"
         },
         {
+            "Name" : "Motion Vector Output",
+            "Type": "TextureInputOutput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
             "Name" : "Depth Output",
             "Type": "TextureInputOutput",
             "ParentJobName": "Deferred Indirect Graphics"

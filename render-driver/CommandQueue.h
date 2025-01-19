@@ -51,7 +51,17 @@ namespace RenderDriver
                 RenderDriver::Common::CFence* pSignalFence
             );
 
+            virtual void execCommandBufferSynchronized(
+                CCommandBuffer& commandBuffer,
+                CDevice& device,
+                bool bWait = true);
+
             virtual void* getNativeCommandQueue();
+
+            inline Type getType()
+            {
+                return mType;
+            }
 
         protected:
             Type                        mType;

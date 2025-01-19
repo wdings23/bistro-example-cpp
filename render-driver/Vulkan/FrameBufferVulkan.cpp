@@ -1,6 +1,7 @@
 #include <render-driver/Vulkan/FrameBufferVulkan.h>
 #include <render-driver/Vulkan/PipelineStateVulkan.h>
 #include <render-driver/Vulkan/RenderTargetVulkan.h>
+#include <render-driver/Vulkan/UtilsVulkan.h>
 
 #include <wtfassert.h>
 #include <LogPrint.h>
@@ -86,7 +87,7 @@ namespace RenderDriver
                 &frameBufferCreateInfo,
                 nullptr,
                 &mNativeFrameBuffer);
-            WTFASSERT(ret == VK_SUCCESS, "Error creating frame buffer: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error creating frame buffer: %s", Utils::getErrorCode(ret));
 
             return mHandle;
         }
@@ -149,7 +150,7 @@ namespace RenderDriver
                 &frameBufferCreateInfo,
                 nullptr,
                 &mNativeFrameBuffer);
-            WTFASSERT(ret == VK_SUCCESS, "Error creating frame buffer: %d", ret);
+            WTFASSERT(ret == VK_SUCCESS, "Error creating frame buffer: %s", Utils::getErrorCode(ret));
         }
 
         /*
