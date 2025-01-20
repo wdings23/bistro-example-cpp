@@ -1,15 +1,13 @@
 {
     "Type": "Graphics",
     "PassType": "Full Triangle",
-    "Shader": "lighting-composite-graphics.shader",
+    "Shader": "diffuse-filter-graphics.shader",
     "Attachments": [
         {
-            "Name" : "Output",
+            "Name" : "Filtered Output",
             "Type": "TextureOutput",
             "Format": "rgba32float"
         },
-
-
 
         {
             "Name" : "Diffuse Accumulated Output",
@@ -17,33 +15,25 @@
             "ParentJobName": "Temporal Accumulation Graphics"
         },
         {
-            "Name" : "Output",
-            "Type": "TextureInput",
-            "ParentJobName": "Ray Traced Shadow"
-        },
-        {
-            "Name" : "Sky Output",
-            "Type": "TextureInput",
-            "ParentJobName": "Atmosphere Graphics"
-        },
-        {
-            "Name" : "Albedo Output",
-            "Type": "TextureInput",
-            "ParentJobName": "Texture Atlas Graphics"
-        },
-        {
-            "Name": "Texture Coordinate Output",
+            "Name" : "World Position Output",
             "Type": "TextureInput",
             "ParentJobName": "Deferred Indirect Graphics"
         },
         {
-            "Name": "Reservoir Output",
+            "Name" : "Normal Output",
             "Type": "TextureInput",
-            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
+            "ParentJobName": "Deferred Indirect Graphics"
         }
     ],
     "ShaderResources": [   
-        
+        {
+            "name": "blue noise texture",
+            "type": "texture2d",
+            "shader_stage": "fragment",
+            "format": "rgb8unorm",
+            "usage": "uniform",
+            "file_path": "D:\\projects\\free-blue-noise-textures\\512_512\\LDR_RGBA_0.png"
+        }
     ],
     "BlendStates": [
         {

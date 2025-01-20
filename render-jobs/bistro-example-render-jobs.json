@@ -126,6 +126,18 @@
             "PassType": "Full Triangle"
         },
         {
+            "Name": "Temporal Accumulation Graphics",
+            "Pipeline": "temporal-accumulation-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Diffuse Filter Graphics",
+            "Pipeline": "diffuse-filter-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
             "Name": "Build Irradiance Cache Ray Trace",
             "Pipeline": "build-irradiance-cache.json",
             "Type": "Ray Trace",

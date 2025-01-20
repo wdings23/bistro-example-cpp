@@ -123,6 +123,14 @@
             "ParentJobName": "Temporal Restir Diffuse Ray Trace",
             "ParentName": "Spherical Harmonics 2 Output",
             "Format": "rgba32float"
+        },
+
+        {
+            "Name": "Previous Temporal Accumulated Diffuse",
+            "Type": "TextureOutput",
+            "ParentJobName": "Diffuse Filter Graphics",
+            "ParentName": "Filtered Output",
+            "Format": "rgba32float"
         }
 
     ]
