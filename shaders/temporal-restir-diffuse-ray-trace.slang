@@ -7,7 +7,10 @@
 #include "default-uniform-headers.slang"
 #include "murmur-hash-headers.slang"
 #include "octahedron-map-headers.slang"
-#include "irradiance-cache-headers.slang"
+//#include "irradiance-cache-headers.slang"
+//#include "motion-vector-headers.slang"
+
+#include "bounced-radiance-headers.slang"
 
 struct RayPayload
 {
@@ -57,8 +60,12 @@ struct IntersectBVHResult
 {
     float3 mHitPosition;
     float3 mHitNormal;
+    float2 mHitUV;
     uint32_t miHitTriangle;
     float3 mBarycentricCoordinate;
+
+    uint32_t miMaterialID;
+    uint32_t miMesh;
 };
 
 struct TemporalRestirResult
@@ -77,6 +84,10 @@ struct TemporalRestirResult
     float3 mCandidateRadiance;
     float4 mCandidateHitPosition;
     bool mbExchanged;
+
+    uint32_t miIntersectionType;
+
+    float2 mOnScreenUV;
 };
 
 struct ReservoirResult
@@ -117,6 +128,18 @@ struct Material
     uint32_t miEmissiveTextureID;
 };
 
+struct OnScreenRadianceResult
+{
+    float3              mRadiance;
+    bool                mbOnScreen;
+};
+
+struct MeshRange
+{
+    uint32_t miStart;
+    uint32_t miEnd;
+};
+
 [[vk::binding(0, 0)]] RWTexture2D<float4> radianceOutput;
 [[vk::binding(1, 0)]] RWTexture2D<float4> reservoirOutput;
 [[vk::binding(2, 0)]] RWTexture2D<float4> ambientOcclusionOutput;
@@ -131,64 +154,72 @@ struct Material
 [[vk::binding(10, 0)]] RWTexture2D<float4> sphericalHarmonicCoefficientTexture2;
 
 [[vk::binding(11, 0)]] RWTexture2D<float4> decodedSphericalHarmonicsOutput;
+[[vk::binding(12, 0)]] RWTexture2D<float4> sphericalHarmonicsCountOutput;
 
-[[vk::binding(12, 0)]] RaytracingAccelerationStructure scene;
-
-[[vk::binding(13, 0)]]
-Texture2D<float4> worldPositionTexture;
+[[vk::binding(13, 0)]] RaytracingAccelerationStructure scene;
 
 [[vk::binding(14, 0)]]
-Texture2D<float4> normalTexture;
+Texture2D<float4> worldPositionTexture;
 
 [[vk::binding(15, 0)]]
-Texture2D<float4> texCoordTexture;
+Texture2D<float4> normalTexture;
 
 [[vk::binding(16, 0)]]
-Texture2D<float4> skyTexture;
+Texture2D<float4> texCoordTexture;
 
 [[vk::binding(17, 0)]]
-Texture2D<float4> prevTemporalReservoirTexture;
+Texture2D<float4> skyTexture;
 
 [[vk::binding(18, 0)]]
-Texture2D<float4> prevTemporalRadianceTexture;
+Texture2D<float4> prevTemporalReservoirTexture;
 
 [[vk::binding(19, 0)]]
-Texture2D<float4> prevTemporalHitPositionTexture;
+Texture2D<float4> prevTemporalRadianceTexture;
 
 [[vk::binding(20, 0)]]
-Texture2D<float4> prevTemporalHitNormalTexture;
+Texture2D<float4> prevTemporalHitPositionTexture;
 
 [[vk::binding(21, 0)]]
-Texture2D<float4> prevWorldPositionTexture;
+Texture2D<float4> prevTemporalHitNormalTexture;
 
 [[vk::binding(22, 0)]]
-Texture2D<float4> prevNormalTexture;
+Texture2D<float4> prevWorldPositionTexture;
 
 [[vk::binding(23, 0)]]
-Texture2D<float4> motionVectorTexture;
+Texture2D<float4> prevNormalTexture;
 
 [[vk::binding(24, 0)]]
-Texture2D<float4> prevMotionVectorTexture;
+Texture2D<float4> motionVectorTexture;
 
 [[vk::binding(25, 0)]]
-Texture2D<float4> directSunOutputTexture;
+Texture2D<float4> prevMotionVectorTexture;
 
 [[vk::binding(26, 0)]]
-Texture2D<float4> previousAmbientOcclusionTexture;
+Texture2D<float4> directSunOutputTexture;
 
 [[vk::binding(27, 0)]]
+Texture2D<float4> previousAmbientOcclusionTexture;
+
+[[vk::binding(28, 0)]]
 Texture2D<float4> previousRayDirectionTexture;
 
-[[vk::binding(28, 0)]] Texture2D<float4> prevSphericalHarmonicCoefficientTexture0;
-[[vk::binding(29, 0)]] Texture2D<float4> prevSphericalHarmonicCoefficientTexture1;
-[[vk::binding(30, 0)]] Texture2D<float4> prevSphericalHarmonicCoefficientTexture2;
+[[vk::binding(29, 0)]] Texture2D<float4> prevSphericalHarmonicCoefficientTexture0;
+[[vk::binding(30, 0)]] Texture2D<float4> prevSphericalHarmonicCoefficientTexture1;
+[[vk::binding(31, 0)]] Texture2D<float4> prevSphericalHarmonicCoefficientTexture2;
 
-[[vk::binding(31, 0)]] StructuredBuffer<IrradianceCacheEntry> irradianceCache;
+[[vk::binding(32, 0)]] StructuredBuffer<IrradianceCacheEntry> irradianceCache;
 
-[[vk::binding(32, 0)]] Texture2D<float4> albedoTexture;
+[[vk::binding(33, 0)]] Texture2D<float4> albedoTexture;
 
-[[vk::binding(33, 0)]] RWTexture2D<float4> debugTexture0;
-[[vk::binding(34, 0)]] RWTexture2D<float4> debugTexture1;
+[[vk::binding(34, 0)]] Texture2D<float4> screenMotionVectorTexture;
+[[vk::binding(35, 0)]] Texture2D<float4> initialTextureAtlas;
+
+[[vk::binding(36, 0)]] RWTexture2D<float4> debugTexture0;
+[[vk::binding(37, 0)]] RWTexture2D<float4> debugTexture1;
+[[vk::binding(38, 0)]] RWTexture2D<float4> debugTexture2;
+[[vk::binding(39, 0)]] RWTexture2D<float4> debugTexture3;
+
+[[vk::binding(40, 0)]] SamplerState textureSampler;
 
 [[vk::binding(0, 1)]]
 ConstantBuffer<UniformData> uniformData;
@@ -200,9 +231,10 @@ Texture2D<float4> blueNoiseTexture;
 [[vk::binding(3, 1)]] StructuredBuffer<uint32_t> indexBuffer;
 [[vk::binding(4, 1)]] StructuredBuffer<Material> materialData;
 [[vk::binding(5, 1)]] StructuredBuffer<uint32_t> materialID;
+[[vk::binding(6, 1)]] StructuredBuffer<MeshRange> meshRanges;
 
-[[vk::binding(6, 1)]]
-ConstantBuffer<DefaultUniformData> defaultUniformData;
+[[vk::binding(7, 1)]]
+ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
 
 [shader("vertex")]
 VertexStageOutput VSMain(
@@ -226,7 +258,8 @@ void hitTriangle(
 
     float fT = RayTCurrent();
     float fPrimitiveIndex = float(PrimitiveIndex());
-    payload.mOutput = float4(fT, fPrimitiveIndex, 0.0f, 1.0f);
+    float fGeometry = float(GeometryIndex());
+    payload.mOutput = float4(fT, fPrimitiveIndex, fGeometry, 1.0f);
 }
 
 [shader("miss")]
@@ -241,11 +274,16 @@ void missShader(
 [shader("raygeneration")]
 void rayGen()
 {
-    float fReservoirSize = 8.0f;
+    float fReservoirSize = 10.0f;
 
     uint2 rayIndex = DispatchRaysIndex().xy;
 
-    if(defaultUniformData.miFrame < 1)
+    debugTexture0[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    debugTexture1[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    debugTexture2[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    debugTexture3[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+    if(defaultUniformBuffer.miFrame < 1)
     {
         radianceOutput[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
         reservoirOutput[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -268,14 +306,14 @@ void rayGen()
     );
 
     RandomResult randomResult = initRand(
-        uint32_t(uv.x * 100.0f + rayIndex.y * 200.0f) + uint32_t(defaultUniformData.mfRand0 * 100.0f),
-        uint32_t(uv.y * 10.0f + rayIndex.y * 20.0f) + uint32_t(defaultUniformData.mfRand1 * 100.0f),
+        uint32_t(uv.x * 100.0f + rayIndex.y * 200.0f) + uint32_t(defaultUniformBuffer.mfRand0 * 100.0f),
+        uint32_t(uv.y * 10.0f + rayIndex.y * 20.0f) + uint32_t(defaultUniformBuffer.mfRand1 * 100.0f),
         10u);
 
     float4 worldPosition = worldPositionTexture[rayIndex];
     float3 normal = normalTexture[rayIndex].xyz;
 
-    int32_t iFrame = defaultUniformData.miFrame;
+    int32_t iFrame = defaultUniformBuffer.miFrame;
 
     uint2 blueNoiseTextureSize;
     blueNoiseTexture.GetDimensions(
@@ -302,21 +340,25 @@ void rayGen()
     float2 motionVector = motionVectorTexture[rayIndex].xy;
     motionVector = motionVector * 2.0f - 1.0f;
 
+    int2 outputTextureSize;
+    radianceOutput.GetDimensions(outputTextureSize.x, outputTextureSize.y);
+    float fOneOverWidth = 1.0f / float(outputTextureSize.x);
+    float fOneOverHeight = 1.0f / float(outputTextureSize.y);
+
     // check for disocclusion for previous history pixel
-    float2 prevScreenUV = getPreviousScreenUV(uv, textureSize);
-    float fDisocclusion = (isPrevUVOutOfBounds(rayIndex) == true || isDisoccluded2(uv, prevScreenUV) == true) ? 1.0f : 0.0f;
+    float2 prevScreenUV = uv - motionVector;
+    bool bOutOfBounds = (
+        prevScreenUV.x < 0.0f || prevScreenUV.x > 1.0f ||
+        prevScreenUV.y < 0.0f || prevScreenUV.y > 1.0f
+    );
+    // bool bDisoccluded = isDisoccluded3(uv, prevScreenUV);
+    bool bDisoccluded = isDisoccluded(prevScreenUV, rayIndex);
+    float fDisocclusion = (bOutOfBounds || bDisoccluded) ? 1.0f : 0.0f;
     float fValidHistory = 1.0f - fDisocclusion;
 
-    //debugTexture0[rayIndex] = float4(fDisocclusion, 0.0f, 1.0f, 1.0f);
-
-    uint2 screenCoord = uint2(
-        uint32_t(uv.x * float(textureSize.x)),
-        uint32_t(uv.y * float(textureSize.y))
-    );
-
     uint2 prevScreenCoord = uint2(
-        uint32_t(prevScreenUV.x * float(textureSize.x)),
-        uint32_t(prevScreenUV.y * float(textureSize.y)),
+        uint32_t(floor(prevScreenUV.x * float(textureSize.x) + 0.5f)),
+        uint32_t(floor(prevScreenUV.y * float(textureSize.y) + 0.5f)),
     );
 
     TemporalRestirResult result;
@@ -329,17 +371,20 @@ void rayGen()
     result.mIntersectionResult.miHitTriangle = UINT32_MAX;
     result.mfNumValidSamples = 0.0f;
     result.mbExchanged = false;
+    result.mOnScreenUV = float2(0.0f, 0.0f);
+    result.miIntersectionType = 0;
 
-    if(result.mReservoir.z >= 6.0f && (defaultUniformData.miFrame % 3) == 1 && fDisocclusion <= 0.0f)
+    // update every 3 frames
+    if(result.mReservoir.z >= 6.0f && (defaultUniformBuffer.miFrame % 3) == 1 && fDisocclusion <= 0.0f)
     {
-        return;
+        //return;
     }
 
     // more samples for disoccluded pixel
     int32_t iNumCenterSamples = 1;
     if(fDisocclusion >= 1.0f || result.mReservoir.z <= 4.0f)
     {
-        iNumCenterSamples = 6;
+        iNumCenterSamples = 4;
     }
     
     float fNumValidSamples = 0.0f;
@@ -354,32 +399,35 @@ void rayGen()
     uint32_t iNumTilesPerRow = blueNoiseTextureSize.x / iTileSize;
     uint32_t iNumTotalTiles = iNumTilesPerRow * iNumTilesPerRow;
     
-    uint32_t iCurrIndex = uint32_t(defaultUniformData.miFrame) * uint32_t(iNumCenterSamples);
+    uint32_t iCurrIndex = uint32_t(defaultUniformBuffer.miFrame) * uint32_t(iNumCenterSamples);
 
     if(fDisocclusion > 0.0f)
     {
         result.mAmbientOcclusion = float4(0.0f, 0.0f, 0.0f, 0.0f);
+        sphericalHarmonicsCountOutput[rayIndex].x = 0.0f;
     }
 
     // center pixel sample
     float3 sampleRayDirection = float3(0.0f, 0.0f, 0.0f);
-    bool bDisoccluded = (fDisocclusion > 0.0f);
     bool bRayTrace = true;
     float2 prevScreenUVCopy = prevScreenUV;
     for(int32_t iSample = 0; iSample < iNumCenterSamples; iSample++)
     { 
         uint32_t iTileX = (iCurrIndex + uint32_t(iNumCenterSamples)) % iNumTilesPerRow;
         uint32_t iTileY = ((iCurrIndex + uint32_t(iNumCenterSamples)) / iNumTilesPerRow) % (iNumTilesPerRow * iNumTilesPerRow);
-
         uint32_t iTileOffsetX = (iCurrIndex + uint32_t(iNumCenterSamples)) % iTileSize;
         uint32_t iTileOffsetY = ((iCurrIndex + uint32_t(iNumCenterSamples)) / iTileSize) % (iTileSize * iTileSize);
-
         uint32_t iOffsetX = iTileOffsetX + iTileX * iTileSize;
         uint32_t iOffsetY = iTileOffsetY + iTileY * iTileSize;
-
         blueNoiseScreenCoord.x = (blueNoiseScreenCoord.x + iOffsetX) % blueNoiseTextureSize.x;
         blueNoiseScreenCoord.y = (blueNoiseScreenCoord.y + iOffsetY) % blueNoiseTextureSize.y;
-        
+
+        //uint32_t iTotalIndex = ((defaultUniformBuffer.miFrame * iNumCenterSamples) + iSample) % (blueNoiseTextureSize.x * blueNoiseTextureSize.y);
+        //uint32_t iSampleX = iTotalIndex % blueNoiseTextureSize.x;
+        //uint32_t iSampleY = iTotalIndex / blueNoiseTextureSize.y;
+        //blueNoiseScreenCoord.x = (blueNoiseScreenCoord.x + iSampleX) % blueNoiseTextureSize.x;
+        //blueNoiseScreenCoord.y = (blueNoiseScreenCoord.y + iSampleY) % blueNoiseTextureSize.y;
+
         float3 blueNoise = blueNoiseTexture[blueNoiseScreenCoord].xyz;
         Ray ray = uniformSampling(
             worldPosition.xyz,
@@ -397,7 +445,7 @@ void rayGen()
             worldPosition.xyz,
             normal,
             uv,
-            prevScreenUVCopy,
+            (iSample == 0) ? prevScreenUVCopy : uv,
             sampleRayDirection,
 
             fReservoirSize,
@@ -407,41 +455,15 @@ void rayGen()
             0.1f,
             bRayTrace,
             textureSize,
-            bDisoccluded
+            (fDisocclusion > 0.0f)
         );
-
-        if(iSample == 0)
-        {
-            encodeToSphericalHarmonicCoefficients(
-                result.mCandidateRadiance.xyz,
-                sampleRayDirection,
-                uv,
-                prevScreenUVCopy,
-                bDisoccluded,
-                result.mAmbientOcclusion.y
-            );
-        }
-        else
-        {
-            encodeToSphericalHarmonicCoefficients2(
-                result.mCandidateRadiance.xyz,
-                sampleRayDirection,
-                screenCoord,
-                sphericalHarmonicCoefficientTexture0[screenCoord],
-                sphericalHarmonicCoefficientTexture1[screenCoord],
-                sphericalHarmonicCoefficientTexture2[screenCoord]
-            );
-        }
-
-        bDisoccluded = false;
-        prevScreenUVCopy = uv;
     }
 
     result = permutationRestir(
         result,
         uv,
         prevScreenUV,
-        screenCoord,
+        rayIndex,
         prevScreenCoord,
         worldPosition.xyz,
         normal.xyz,
@@ -456,28 +478,14 @@ void rayGen()
     {
         result.mAmbientOcclusion.x += 1;
     }
-
-    if(result.mbExchanged)
-    {
-        //encodeToSphericalHarmonicCoefficients2(
-        //    result.mCandidateRadiance.xyz,
-        //    result.mRayDirection.xyz,
-        //    screenCoord,
-        //    prevSphericalHarmonicCoefficientTexture0[screenCoord],
-        //    prevSphericalHarmonicCoefficientTexture1[screenCoord],
-        //    prevSphericalHarmonicCoefficientTexture2[screenCoord]
-        //);
-    }
-
     result.mReservoir.w = clamp(result.mReservoir.x / max(result.mReservoir.z * result.mReservoir.y, 0.001f), 0.0f, 1.0f);
 
-    float fReservoirWeight = (result.mReservoir.z <= 1.0f) ? 1.0f : result.mReservoir.w;
-    radianceOutput[rayIndex] = result.mRadiance * fReservoirWeight;
-
+    float fReservoirWeight = (result.mReservoir.z <= 3.0f) ? 1.0f : result.mReservoir.w;
     float fAO = 1.0f - (result.mAmbientOcclusion.x / result.mAmbientOcclusion.y);
-    
-    // radianceOutput[rayIndex] = float4(fReservoirWeight, fReservoirWeight, fReservoirWeight, 1.0f);
-    //radianceOutput[rayIndex] = float4(fAO, fAO, fAO, 1.0f);
+    float fWeight = (fAO > fReservoirWeight) ? fAO : fReservoirWeight;
+
+    radianceOutput[rayIndex] = result.mRadiance * fWeight;
+
     reservoirOutput[rayIndex] = result.mReservoir;
     rayDirectionOutput[rayIndex] = result.mRayDirection;
     sampleRayDirectionOutput[rayIndex] = float4(sampleRayDirection, 1.0f);
@@ -491,12 +499,67 @@ void rayGen()
         normal.xyz,
         float3(10.0f, 10.0f, 10.0f),
         uv,
-        max(result.mAmbientOcclusion.y, 1.0f)
+        max(sphericalHarmonicsCountOutput[rayIndex].x, 5.0f)
     );
 
     decodedSphericalHarmonicsOutput[rayIndex] = float4(shOutput.xyz, 1.0f);
-    // decodedSphericalHarmonicsOutput[rayIndex] = radianceOutput[rayIndex] * fAO;
-    //decodedSphericalHarmonicsOutput[rayIndex] = float4(fAO, fAO, fAO, 1.0f);
+
+    if(result.miIntersectionType == 2)
+    {
+        float4x4 viewMatrix = defaultUniformBuffer.mViewMatrix;
+        float4x4 projectionMatrix = defaultUniformBuffer.mProjectionMatrix;
+        projectionMatrix._22 *= -1.0f;
+        float4x4 viewProjectionMatrix = mul(
+            projectionMatrix,
+            viewMatrix
+                );
+
+        // get on-screen radiance if there's any
+        float4 clipSpacePosition = mul(viewProjectionMatrix, float4(result.mHitPosition.xyz, 1.0));
+        clipSpacePosition.x /= clipSpacePosition.w;
+        clipSpacePosition.y /= clipSpacePosition.w;
+        clipSpacePosition.z /= clipSpacePosition.w;
+        clipSpacePosition.x = clipSpacePosition.x * 0.5f + 0.5f;
+        clipSpacePosition.y = (clipSpacePosition.y * 0.5f + 0.5f);
+        clipSpacePosition.z = clipSpacePosition.z * 0.5f + 0.5f;
+
+        float3 prevClipSpacePosition = float3(
+            clipSpacePosition.x - motionVector.x,
+            clipSpacePosition.y - motionVector.y,
+            clipSpacePosition.z);
+
+        uint2 clipSpaceCoord = uint2(
+            uint32_t(floor(clipSpacePosition.x * float(textureSize.x) + 0.5f)),
+            uint32_t(floor(clipSpacePosition.y * float(textureSize.y) + 0.5f))
+        );
+
+        uint2 prevClipSpaceCoord = uint2(
+            uint32_t(floor(prevClipSpacePosition.x * float(textureSize.x) + 0.5f)),
+            uint32_t(floor(prevClipSpacePosition.y * float(textureSize.y) + 0.5f))
+        );
+
+        //debugTexture0[rayIndex] = clipSpacePosition;
+        //debugTexture1[rayIndex] = float4(
+        //    float(clipSpaceCoord.x),
+        //    float(clipSpaceCoord.y),
+        //    clipSpacePosition.x,
+        //    clipSpacePosition.y
+        //);
+
+        //if (clipSpacePosition.x >= 0.0f && clipSpacePosition.x <= 1.0f &&
+        //    clipSpacePosition.y >= 0.0f && clipSpacePosition.y <= 1.0f &&
+        //    clipSpacePosition.z >= 0.0f && clipSpacePosition.z <= 1.0f)
+        {
+            //debugTexture2[rayIndex] = result.mHitPosition;
+            //debugTexture3[rayIndex].xyz = result.mCandidateRadiance.xyz;
+        }
+    }
+
+    //debugTexture3[rayIndex].xyz = 
+    //    radianceOutput[rayIndex].xyz + 
+    //    float3(float(bDisoccluded), 0.0f, 0.0f);
+
+    //debugTexture3[rayIndex].xyz = radianceOutput[rayIndex].xyz;
 }
 
 /////
@@ -518,15 +581,16 @@ TemporalRestirResult temporalRestir(
     in float fM,
     in bool bTraceRay,
     in uint2 textureSize,
-    in bool bDisoccluded)
+    bool bDisoccluded)
 {
-    float fOneOverPDF = 1.0f / PI;
+    float fOneOverPDF = 1.0f; // 1.0f / PI;
 
     TemporalRestirResult ret = prevResult;
+    ret.mOnScreenUV = float2(0.0f, 0.0f);
 
     uint2 screenCoord = uint2(
-        uint32_t(inputTexCoord.x * float(textureSize.x)),
-        uint32_t(inputTexCoord.y * float(textureSize.y))
+        uint32_t(floor(inputTexCoord.x * float(textureSize.x)) + 0.5f),
+        uint32_t(floor(inputTexCoord.y * float(textureSize.y)) + 0.5f)
     );
 
     ret.mRandomResult = randomResult;
@@ -557,7 +621,7 @@ TemporalRestirResult temporalRestir(
     ray.Origin = worldPosition + rayDirection * 0.01f;
     ray.Direction = rayDirection;
     ray.TMin = 0.001f;
-    ray.TMax = 10000.0f;
+    ray.TMax = 1000.0f;
     RayPayload payload = {
         float4(0.0f, 0.0f, 0.0f, 0.0f)
     };
@@ -565,7 +629,7 @@ TemporalRestirResult temporalRestir(
     {
         TraceRay(
             scene,
-            RAY_FLAG_FORCE_OPAQUE,
+            RAY_FLAG_NONE,
             0xff,
             0,
             0,
@@ -585,28 +649,37 @@ TemporalRestirResult temporalRestir(
                 ret.mAmbientOcclusion.x += 1.0f;
             }
 
-            uint32_t iTri0 = indexBuffer[intersectionInfo.miHitTriangle * 3];
-            uint32_t iTri1 = indexBuffer[intersectionInfo.miHitTriangle * 3 + 1];
-            uint32_t iTri2 = indexBuffer[intersectionInfo.miHitTriangle * 3 + 2];
+            uint32_t iMesh = uint32_t(payload.mOutput.z);
+            uint32_t iMeshOffset = meshRanges[iMesh].miStart;
+
+            uint32_t iTri0 = indexBuffer[iMeshOffset + intersectionInfo.miHitTriangle * 3];
+            uint32_t iTri1 = indexBuffer[iMeshOffset + intersectionInfo.miHitTriangle * 3 + 1];
+            uint32_t iTri2 = indexBuffer[iMeshOffset + intersectionInfo.miHitTriangle * 3 + 2];
 
             VertexFormat v0 = vertexBuffer[iTri0];
             VertexFormat v1 = vertexBuffer[iTri1];
             VertexFormat v2 = vertexBuffer[iTri2];
 
             intersectionInfo.mHitPosition =
-                v0.mPosition.xyz * intersectionInfo.mBarycentricCoordinate +
-                v1.mPosition.xyz * intersectionInfo.mBarycentricCoordinate +
-                v2.mPosition.xyz * intersectionInfo.mBarycentricCoordinate;
+                v0.mPosition.xyz * intersectionInfo.mBarycentricCoordinate.x +
+                v1.mPosition.xyz * intersectionInfo.mBarycentricCoordinate.y +
+                v2.mPosition.xyz * intersectionInfo.mBarycentricCoordinate.z;
 
             intersectionInfo.mHitNormal =
-                v0.mNormal.xyz * intersectionInfo.mBarycentricCoordinate +
-                v1.mNormal.xyz * intersectionInfo.mBarycentricCoordinate +
-                v2.mNormal.xyz * intersectionInfo.mBarycentricCoordinate;
+                v0.mNormal.xyz * intersectionInfo.mBarycentricCoordinate.x +
+                v1.mNormal.xyz * intersectionInfo.mBarycentricCoordinate.y +
+                v2.mNormal.xyz * intersectionInfo.mBarycentricCoordinate.z;
 
+            intersectionInfo.mHitUV =
+                v0.mTexCoord.xy * intersectionInfo.mBarycentricCoordinate.x +
+                v1.mTexCoord.xy * intersectionInfo.mBarycentricCoordinate.y +
+                v2.mTexCoord.xy * intersectionInfo.mBarycentricCoordinate.z;
+
+            intersectionInfo.miMesh = uint32_t(payload.mOutput.z);
+            intersectionInfo.miMaterialID = materialID[intersectionInfo.miMesh];
             candidateHitPosition.xyz = intersectionInfo.mHitPosition.xyz;
-            candidateHitNormal.xyz = intersectionInfo.mHitNormal.xyz;
-
             candidateHitPosition.w = payload.mOutput.y;
+            candidateHitNormal.xyz = intersectionInfo.mHitNormal.xyz;
         }
         else
         {
@@ -629,10 +702,13 @@ TemporalRestirResult temporalRestir(
         }
     }
 
+    float fReflectivity = 1.0f;
+
     float4 candidateRadiance = float4(0.0f, 0.0f, 0.0f, 1.0f);
     float4 candidateRayDirection = float4(rayDirection, 1.0f);
     float fRadianceDP = max(dot(normal, ray.Direction.xyz), 0.0f);
     float fDistanceAttenuation = 1.0f;
+    float3 onScreenRadiance = float3(0.0f, 0.0f, 0.0f);
     if(intersectionInfo.miHitTriangle == UINT32_MAX)
     {
         // didn't hit anything, use skylight
@@ -644,116 +720,228 @@ TemporalRestirResult temporalRestir(
             uint32_t(skyUV.y * float(skyTextureSize.y))
         );
 
-        candidateRadiance = skyTexture[skyCoord] * 10.0f;
+        candidateRadiance = skyTexture[skyCoord];
 
         candidateHitNormal = float4(-ray.Direction.x, -ray.Direction.y, -ray.Direction.z, 1.0f);
         candidateHitPosition.x = worldPosition.x + ray.Direction.x * 50000.0f;
         candidateHitPosition.y = worldPosition.y + ray.Direction.y * 50000.0f;
         candidateHitPosition.z = worldPosition.z + ray.Direction.z * 50000.0f;
+        
+        ret.miIntersectionType = 1;
     }
     else
     {
-        // distance for on-screen radiance and ambient occlusion
-        float fDistance = length(candidateHitPosition.xyz - worldPosition);
-        fDistanceAttenuation = 1.0f / max(fDistance * fDistance, 1.0f);
-        if(fDistance < 1.0f)
-        {
-            fDistanceAttenuation = fDistance;
-        }
+        fReflectivity = 0.5f;
 
+#if 0
+        float2 motionVector = motionVectorTexture[screenCoord].xy;
+        motionVector = motionVector * 2.0f - 1.0f;
+        
         // get on-screen radiance if there's any
-        float4 clipSpacePosition = mul(float4(candidateHitPosition.xyz, 1.0), defaultUniformData.mViewProjectionMatrix);
+        float4 clipSpacePosition = mul(defaultUniformBuffer.mViewProjectionMatrix, float4(candidateHitPosition.xyz, 1.0));
         clipSpacePosition.x /= clipSpacePosition.w;
         clipSpacePosition.y /= clipSpacePosition.w;
         clipSpacePosition.z /= clipSpacePosition.w;
+
+        float2 prevScreenUV = clipSpacePosition.xy - motionVector;
+        prevScreenUV.x = prevScreenUV.x * 0.5f + 0.5f;
+        prevScreenUV.y = (prevScreenUV.y * 0.5f + 0.5f);
+
         clipSpacePosition.x = clipSpacePosition.x * 0.5f + 0.5f;
         clipSpacePosition.y = 1.0f - (clipSpacePosition.y * 0.5f + 0.5f);
         clipSpacePosition.z = clipSpacePosition.z * 0.5f + 0.5f;
 
         uint2 clipSpaceCoord = uint2(
-            uint32_t(clipSpacePosition.x * float(textureSize.x)),
-            uint32_t(clipSpacePosition.y * float(textureSize.y))
+            uint32_t(floor(clipSpacePosition.x * float(textureSize.x) + 0.5f)),
+            uint32_t(floor(clipSpacePosition.y * float(textureSize.y) + 0.5f))
         );
 
-        float4 worldSpaceHitPosition = worldPositionTexture[clipSpaceCoord];
-        float4 hitPositionClipSpace = mul(float4(worldSpaceHitPosition.xyz, 1.0f), defaultUniformData.mViewProjectionMatrix);
-        hitPositionClipSpace.x /= hitPositionClipSpace.w;
-        hitPositionClipSpace.y /= hitPositionClipSpace.w;
-        hitPositionClipSpace.z /= hitPositionClipSpace.w;
-        hitPositionClipSpace.x = hitPositionClipSpace.x * 0.5f + 0.5f;
-        hitPositionClipSpace.y = 1.0f - (hitPositionClipSpace.y * 0.5f + 0.5f);
-        hitPositionClipSpace.z = hitPositionClipSpace.z * 0.5f + 0.5f;
-
-        float fDepthDiff = abs(hitPositionClipSpace.z - clipSpacePosition.z);
-
-        if(clipSpacePosition.x >= 0.0f && clipSpacePosition.x <= 1.0f &&
-           clipSpacePosition.y >= 0.0f && clipSpacePosition.y <= 1.0f && 
-           fDepthDiff <= 0.1f)
+        bool bOnScreen = false;
+        if (clipSpaceCoord.x >= 0 && clipSpaceCoord.x < textureSize.x &&
+            clipSpaceCoord.y >= 0 && clipSpaceCoord.y < textureSize.y &&
+            clipSpacePosition.z >= 0.0f && clipSpacePosition.z <= 1.0f)
         {
-            // on screen
+            candidateRadiance.xyz = albedoTexture[clipSpaceCoord.xy].xyz * directSunOutputTexture[clipSpaceCoord.xy].xyz;
+            debugTexture1[screenCoord] = float4(candidateRadiance.xyz, float(intersectionInfo.miHitTriangle));
+            debugTexture0[screenCoord] = float4(clipSpaceCoord.x, clipSpaceCoord.y, clipSpacePosition.x, clipSpacePosition.y);
 
-            float2 prevOnScreenUV = getPreviousScreenUV(
-                clipSpacePosition.xy,
-                textureSize);
-            uint2 prevOnScreenCoord = uint2(
-                uint32_t(prevOnScreenUV.x * float(textureSize.x)),
-                uint32_t(prevOnScreenUV.y * float(textureSize.y))
-            );
-            uint2 onScreenCoord = uint2(
-                uint32_t(clipSpacePosition.x * float(textureSize.x)),
-                uint32_t(clipSpacePosition.y * float(textureSize.y))
-            );
+            float3 checkHitPosition = worldPositionTexture[clipSpaceCoord.xy].xyz;
+            float3 diff = checkHitPosition - candidateHitPosition.xyz;
 
-            candidateRadiance = prevTemporalRadianceTexture[prevOnScreenCoord];
-            candidateRadiance.xyz += directSunOutputTexture[onScreenCoord].xyz * albedoTexture[onScreenCoord].xyz;
-            
-            //candidateRadiance = prevDirectSunRadianceTexture.Sample(
-            //    textureSampler,
-            //    prevOnScreenUV.xy);
-            //candidateRadiance += prevEmissiveRadianceTexture.Sample(
-            //    textureSampler,
-            //    prevOnScreenUV.xy);
+            debugTexture2[screenCoord].xyz = candidateHitPosition.xyz;
+            debugTexture3[screenCoord].xyz = checkHitPosition.xyz;
+            debugTexture2[screenCoord].w = float(intersectionInfo.miMesh);
 
-            // distance attenuation
-            float3 diff = candidateHitPosition.xyz - worldPosition.xyz;
-            float fDistanceAttenuation = 1.0f / max(dot(diff, diff), 1.0f);
-            candidateRadiance.xyz *= fDistanceAttenuation;
+            float3 direction = checkHitPosition - worldPosition.xyz;
+            float fDistance = length(direction);
+            if(dot(diff, diff) <= 0.1f && fDistance >= 1.0f)
+            {
+                float3 hitNormal = normalTexture[clipSpaceCoord.xy].xyz;
+                fDistanceAttenuation = 1.0f / max(dot(direction, direction), 1.0f);
+                fRadianceDP = max(dot(normalize(direction), normal), 0.0f);
+                fJacobian = 1.0f;
 
-            uint2 screenCoord = uint2(
-                uint32_t(inputTexCoord.x * float(textureSize.x)),
-                uint32_t(inputTexCoord.y * float(textureSize.y))
-            );
-            debugTexture0[screenCoord] = float4(candidateRadiance.xyz, 1.0f);
-            debugTexture1[screenCoord] = float4(candidateHitPosition.xyz, float(intersectionInfo.miHitTriangle));
+                bOnScreen = true;
+                ret.miIntersectionType = 2;
+            }
         }
-        else
+
+        if(bOnScreen == false)
         {
             // not on screen, check irradiance cache
             candidateRadiance.xyz = getIrradianceCacheRadiance(
                 candidateHitPosition.xyz,
                 worldPosition.xyz);
-            
-            uint2 screenCoord = uint2(
-                uint32_t(inputTexCoord.x * float(textureSize.x)),
-                uint32_t(inputTexCoord.y * float(textureSize.y))
+
+            Material material = materialData[intersectionInfo.miMaterialID];
+            uint32_t iInitialAtlasWidth = 1, iInitialAtlasHeight = 1;
+            initialTextureAtlas.GetDimensions(iInitialAtlasWidth, iInitialAtlasHeight);
+
+            int32_t iInitialPageSize = 16;
+            int32_t iNumInitialPagesPerRow = iInitialAtlasWidth / iInitialPageSize;
+            uint32_t iTextureID = materialData[intersectionInfo.miMaterialID].miAlbedoTextureID;
+
+            int2 pageOffset = int2(
+                int32_t(floor(intersectionInfo.mHitUV.x * float(iInitialPageSize) + 0.5f)),
+                int32_t(floor(intersectionInfo.mHitUV.x * float(iInitialPageSize) + 0.5f))
             );
-            debugTexture0[screenCoord] = float4(0.0f, 0.0f, 1.0f, 1.0f);
-            debugTexture1[screenCoord] = float4(candidateHitPosition.xyz, float(intersectionInfo.miHitTriangle));
+
+            int2 textureAtlasCoord = int2(
+                (iTextureID % iNumInitialPagesPerRow) * iInitialPageSize + pageOffset.x,
+                (iTextureID / iNumInitialPagesPerRow) * iInitialPageSize + pageOffset.y
+            );
+            float3 albedo = initialTextureAtlas[textureAtlasCoord].xyz;
+
+            float3 direction = candidateHitPosition.xyz - worldPosition.xyz;
+            fDistanceAttenuation = 1.0f / max(dot(direction, direction), 1.0f);
+            fRadianceDP = max(dot(normalize(direction), normal), 0.0f);
+            fJacobian = 1.0f;
+
+            candidateRadiance.xyz *= albedo.xyz;
+            ret.miIntersectionType = 3;
+
         }
-    }    
 
-    candidateRadiance.x = candidateRadiance.x * fJacobian * fRadianceDP * fDistanceAttenuation * fOneOverPDF;
-    candidateRadiance.y = candidateRadiance.y * fJacobian * fRadianceDP * fDistanceAttenuation * fOneOverPDF;
-    candidateRadiance.z = candidateRadiance.z * fJacobian * fRadianceDP * fDistanceAttenuation * fOneOverPDF;
+#endif // #if 0
+        float2 motionVector = motionVectorTexture[screenCoord].xy;
+        motionVector = motionVector * 2.0f - 1.0f;
+        BouncedRadianceInfo bounceRadianceInfo = getBouncedRadiance(
+            worldPosition,
+            normal,
+            candidateHitPosition.xyz,
+            candidateHitNormal.xyz,
+            intersectionInfo.mHitUV,
+            motionVector,
+            0.8f,
+            defaultUniformBuffer.mViewProjectionMatrix,
+            textureSize,
+            intersectionInfo.miMaterialID
+        );
+        candidateRadiance.xyz = bounceRadianceInfo.mRadiance;
+        fJacobian = 1.0f;
+        fRadianceDP = bounceRadianceInfo.mfAnglePct;
+        fDistanceAttenuation = bounceRadianceInfo.mfDistanceAttenuation;
+    }
 
-    debugTexture0[screenCoord] = float4(candidateRadiance.xyz, 1.0f);
+    candidateRadiance.xyz = 
+        candidateRadiance.xyz * 
+        fJacobian * 
+        fRadianceDP * 
+        fDistanceAttenuation * 
+        fOneOverPDF;
+    
+    sphericalHarmonicsCountOutput[screenCoord].x = sphericalHarmonicsCountOutput[screenCoord].x + 1.0f;
+    // encodeToSphericalHarmonicCoefficients(
+    //     candidateRadiance.xyz,
+    //     candidateRayDirection.xyz,
+    //     inputTexCoord,
+    //     prevInputTexCoord,
+    //     (ret.mReservoir.z <= 0.0f),
+    //     sphericalHarmonicsCountOutput[screenCoord].x
+    //);
+    float fMaxRayCount = 20.0f;
+    float fRayCount = min(sphericalHarmonicsCountOutput[screenCoord].x, fMaxRayCount);
+    if(bTraceRay)
+    {
+        float fDstPct = 1.5f;
+        float fSrcPct = 0.7f;
 
+#if 0
+        float fPct = min(fRayCount / fMaxRayCount, 1.0f);
+
+        float fDstPct = 1.0f;
+        float fSrcPct = 1.0f;
+
+        if(fRayCount < fMaxRayCount)
+        {
+            fDstPct = (1.0f - fPct) * 0.9f;
+            fSrcPct = fPct * 0.6f;
+        }
+#endif // #if 0
+
+        float4 SHCoefficent0 = prevSphericalHarmonicCoefficientTexture0[prevInputCoord] * fSrcPct;
+        float4 SHCoefficent1 = prevSphericalHarmonicCoefficientTexture1[prevInputCoord] * fSrcPct;
+        float4 SHCoefficent2 = prevSphericalHarmonicCoefficientTexture2[prevInputCoord] * fSrcPct;
+
+        //if(prevResult.mReservoir.z <= 0.0f)
+        //{
+        //    SHCoefficent0 = float4(0.0f, 0.0f, 0.0f, 0.0f);
+        //    SHCoefficent1 = float4(0.0f, 0.0f, 0.0f, 0.0f);
+        //    SHCoefficent2 = float4(0.0f, 0.0f, 0.0f, 0.0f);
+        //}
+
+        float4 afC = float4(
+            0.282095f,
+            0.488603f,
+            0.488603f,
+            0.488603f
+        );
+
+        float4 A = float4(
+            0.886227f,
+            1.023326f,
+            1.023326f,
+            1.023326f
+        );
+
+        // encode coefficients with direction
+        float4 coefficient = float4(
+            afC.x * A.x,
+            afC.y * candidateRayDirection.y * A.y,
+            afC.z * candidateRayDirection.z * A.z,
+            afC.w * candidateRayDirection.x * A.w
+        );
+
+        // encode with radiance
+        float3 aResults[4];
+        aResults[0] = candidateRadiance.xyz * coefficient.x * fDstPct;
+        aResults[1] = candidateRadiance.xyz * coefficient.y * fDstPct;
+        aResults[2] = candidateRadiance.xyz * coefficient.z * fDstPct;
+        aResults[3] = candidateRadiance.xyz * coefficient.w * fDstPct;
+        SHCoefficent0.x += aResults[0].x;
+        SHCoefficent0.y += aResults[0].y;
+        SHCoefficent0.z += aResults[0].z;
+        SHCoefficent0.w += aResults[1].x;
+
+        SHCoefficent1.x += aResults[1].y;
+        SHCoefficent1.y += aResults[1].z;
+        SHCoefficent1.z += aResults[2].x;
+        SHCoefficent1.w += aResults[2].y;
+
+        SHCoefficent2.x += aResults[2].z;
+        SHCoefficent2.y += aResults[3].x;
+        SHCoefficent2.z += aResults[3].y;
+        SHCoefficent2.w += aResults[3].z;
+
+        sphericalHarmonicCoefficientTexture0[screenCoord] = SHCoefficent0;
+        sphericalHarmonicCoefficientTexture1[screenCoord] = SHCoefficent1;
+        sphericalHarmonicCoefficientTexture2[screenCoord] = SHCoefficent2;
+    }
+    
+    
     // reservoir
     float fLuminance = computeLuminance(
-        ToneMapFilmic_Hejl2015(
-            candidateRadiance.xyz, 
-            max(max(defaultUniformData.mLightRadiance.x, defaultUniformData.mLightRadiance.y), defaultUniformData.mLightRadiance.z)
-        )
+        candidateRadiance.xyz
     );
 
     float fPHat = clamp(fLuminance, 0.0f, 1.0f);
@@ -770,6 +958,10 @@ TemporalRestirResult temporalRestir(
         ret.mHitNormal = candidateHitNormal;
         ret.mRayDirection = candidateRayDirection;
         ret.mbExchanged = true;
+    }
+    else
+    {
+        ret.miIntersectionType = 0;
     }
 
     // clamp reservoir
@@ -933,121 +1125,6 @@ float2 getPreviousScreenUV(
     float2 prevScreenUV = screenUVCopy - motionVector.xy;
 
     return prevScreenUV;
-
-#if 0
-    float3 worldPosition = worldPositionTexture[screenCoord].xyz;
-    float3 normal = normalTexture[screenCoord].xyz;
-
-    float fOneOverScreenWidth = 1.0f / float(textureSize.x);
-    float fOneOverScreenHeight = 1.0f / float(textureSize.y);
-
-    float fDepth = fract(motionVector.z);
-
-    float fShortestWorldDistance = FLT_MAX;
-    float fClosestDepth = FLT_MAX;
-    float2 closestScreenUV = prevScreenUV;
-    for(int32_t iY = -2; iY <= 2; iY++)
-    {
-        for(int32_t iX = -2; iX <= 2; iX++)
-        {
-            float2 sampleUV = prevScreenUV + float2(
-                float(iX) * fOneOverScreenWidth,
-                float(iY) * fOneOverScreenHeight 
-            );
-
-            sampleUV.x = clamp(sampleUV.x, 0.0f, 1.0f);
-            sampleUV.y = clamp(sampleUV.y, 0.0f, 1.0f);
-
-            uint2 sampleCoord = uint2(
-                uint32_t(sampleUV.x * float(textureSize.x)),
-                uint32_t(sampleUV.y * float(textureSize.y))
-            );
-
-            float3 checkWorldPosition = prevWorldPositionTexture[sampleCoord].xyz;
-            float3 checkNormal = prevNormalTexture[sampleCoord].xyz;
-            float fNormalDP = abs(dot(checkNormal, normal));
-
-            float fPrevDepth = fract(prevMotionVectorTexture[sampleCoord].z);
-
-            float fCheckDepth = abs(fDepth - fPrevDepth);
-
-            float3 worldPositionDiff = checkWorldPosition - worldPosition;
-            float fLengthSquared= dot(worldPositionDiff, worldPositionDiff);
-            if(fNormalDP >= 0.999f && fShortestWorldDistance > fLengthSquared && fClosestDepth > fCheckDepth)
-            {
-                fShortestWorldDistance = fLengthSquared;
-                closestScreenUV = sampleUV;
-            }
-        }
-    }
-
-    return closestScreenUV;
-#endif // #if 0
-}
-
-/////
-bool isDisoccluded2(
-    in float2 screenUV,
-    in float2 prevScreenUV
-)
-{
-    uint2 textureSize;
-    worldPositionTexture.GetDimensions(textureSize.x, textureSize.y);
-    uint2 screenCoord = uint2(
-        uint32_t(screenUV.x * float(textureSize.x)),
-        uint32_t(screenUV.y * float(textureSize.y))
-    );
-
-    uint2 prevScreenCoord = uint2(
-        uint32_t(prevScreenUV.x * float(textureSize.x)),
-        uint32_t(prevScreenUV.y * float(textureSize.y))
-    );
-
-    float3 worldPosition = worldPositionTexture[screenCoord].xyz;
-    float3 prevWorldPosition = prevWorldPositionTexture[prevScreenCoord].xyz;
-    float3 normal = normalTexture[screenCoord].xyz;
-    float3 prevNormal = prevNormalTexture[prevScreenCoord].xyz;
-    float4 motionVector = motionVectorTexture[screenCoord];
-    float4 prevMotionVectorAndMeshIDAndDepth = prevMotionVectorTexture[prevScreenCoord];
-
-    //uint32_t iMesh = uint32_t(ceil(motionVector.w - 0.5f)) - 1;
-    //float fDepth = motionVector.z;
-    //float fPrevDepth = prevMotionVectorAndMeshIDAndDepth.z;
-
-    float fDepth = fract(motionVector.z);
-    float fPrevDepth = fract(prevMotionVectorAndMeshIDAndDepth.z);
-
-    uint32_t iMesh = uint32_t(motionVector.z - fDepth);
-    uint32_t iPrevMesh = uint32_t(prevMotionVectorAndMeshIDAndDepth.z - fPrevDepth);
-
-    float fCheckDepth = abs(fDepth - fPrevDepth);
-    float3 worldPositionDiff = prevWorldPosition.xyz - worldPosition.xyz;
-    float fCheckDP = abs(dot(normalize(normal.xyz), normalize(prevNormal.xyz)));
-    //uint32_t iPrevMesh = uint32_t(ceil(prevMotionVectorAndMeshIDAndDepth.w - 0.5f)) - 1;
-    float fCheckWorldPositionDistance = dot(worldPositionDiff, worldPositionDiff);
-
-    //return !(fCheckDP >= 0.99f && fCheckWorldPositionDistance <= 0.0001f && iMesh == iPrevMesh);
-
-    return !(iMesh == iPrevMesh && fCheckDepth <= 0.001f && fCheckWorldPositionDistance <= 0.001f && fCheckDP >= 0.999f);
-}
-
-///// 
-bool isPrevUVOutOfBounds(
-    in uint2 inputTexCoord
-)
-{
-    uint2 textureSize;
-    worldPositionTexture.GetDimensions(textureSize.x, textureSize.y);
-
-    float2 inputTexUV = float2(
-        float(inputTexCoord.x) / float(textureSize.x),
-        float(inputTexCoord.y) / float(textureSize.y)
-    );
-    float4 motionVector = motionVectorTexture[inputTexCoord];
-    motionVector.xy = motionVector.xy * 2.0f - 1.0f;
-    float2 backProjectedScreenUV = inputTexUV - motionVector.xy;
-
-    return (backProjectedScreenUV.x < 0.0f || backProjectedScreenUV.x > 1.0 || backProjectedScreenUV.y < 0.0f || backProjectedScreenUV.y > 1.0f);
 }
 
 /////
@@ -1145,7 +1222,7 @@ void encodeToSphericalHarmonicCoefficients(
         SHCoefficent1 = float4(0.0f, 0.0f, 0.0f, 0.0f);
         SHCoefficent2 = float4(0.0f, 0.0f, 0.0f, 0.0f);
     }
-
+    
     float4 afC = float4(
         0.282095f,
         0.488603f,
@@ -1289,11 +1366,12 @@ float3 decodeFromSphericalHarmonicCoefficients(
     float4 SHCoefficent2 = sphericalHarmonicCoefficientTexture2[coord];
 
     float3 aTotalCoefficients[4];
-    float fFactor = (4.0f * 3.14159f) / max(fRayCount, 1.0f);
+    //float fFactor = (4.0f * 3.14159f) / max(fRayCount, 1.0f);
     //if (fRayCount < 10.0f)
     //{
-    //    fFactor = 1.0f;
+    //     fFactor = 1.0f;
     //}
+    float fFactor = 1.0f;
 
     aTotalCoefficients[0] = float3(SHCoefficent0.x, SHCoefficent0.y, SHCoefficent0.z) * fFactor;
     aTotalCoefficients[1] = float3(SHCoefficent0.w, SHCoefficent1.x, SHCoefficent1.y) * fFactor;
@@ -1335,7 +1413,7 @@ TemporalRestirResult permutationRestir(
     result.mRandomResult = randomResult;
 
     // permutation samples
-    int32_t iNumPermutations = 4;
+    int32_t iNumPermutations = 5;
     for (int32_t iSample = 1; iSample < iNumPermutations; iSample++)
     {
         uint2 aXOR[4];
@@ -1351,7 +1429,7 @@ TemporalRestirResult permutationRestir(
         aOffsets[3] = int2(1, -1);
 
         // apply permutation offset to screen coordinate, converting to uv after
-        int32_t iFrame = int32_t(defaultUniformData.miFrame);
+        int32_t iFrame = int32_t(defaultUniformBuffer.miFrame);
         int32_t iIndex0 = iFrame & 3;
         int32_t iIndex1 = (iSample + (iFrame ^ 1)) & 3;
         int2 offset = aOffsets[iIndex0] + aOffsets[iIndex1];
@@ -1362,8 +1440,8 @@ TemporalRestirResult permutationRestir(
 
         // permutation uv
         float2 sampleUV = float2(
-            ceil(float(screenCoord.x) + 0.5f) / float(defaultUniformData.miScreenWidth),
-            ceil(float(screenCoord.y) + 0.5f) / float(defaultUniformData.miScreenHeight));
+            ceil(float(screenCoord.x) + 0.5f) / float(defaultUniformBuffer.miScreenWidth),
+            ceil(float(screenCoord.y) + 0.5f) / float(defaultUniformBuffer.miScreenHeight));
 
         // get sample world position, normal, and ray direction
         float fJacobian = 1.0f;
@@ -1425,7 +1503,7 @@ TemporalRestirResult permutationRestir(
             fJacobian,
             randomResult,
             uint32_t(iSample),
-            1.0f,
+            0.1f,
             false,
             textureSize,
             false
@@ -1435,17 +1513,18 @@ TemporalRestirResult permutationRestir(
 
     } // for sample = 0 to num permutation samples
 
+
     RayDesc ray;
     ray.Origin = worldPosition + prevResult.mRayDirection.xyz * 0.01f;
     ray.Direction = prevResult.mRayDirection.xyz;
-    ray.TMin = 0.001f;
-    ray.TMax = 10000.0f;
+    ray.TMin = 0.01f;
+    ray.TMax = 1000.0f;
     RayPayload payload = {
         float4(0.0f, 0.0f, 0.0f, 0.0f)
     };
     TraceRay(
         scene,
-        RAY_FLAG_FORCE_OPAQUE,
+        RAY_FLAG_NONE,
         0xff,
         0,
         0,
@@ -1455,8 +1534,11 @@ TemporalRestirResult permutationRestir(
     );
 
     prevResult.mIntersectionResult.miHitTriangle = UINT32_MAX;
-    if (payload.mOutput.w > 0.0f)
+    if(payload.mOutput.w > 0.0f)
     {
+        prevResult = result;
+
+#if 0
         // hit
         prevResult.mRadiance = float4(0.0f, 0.0f, 0.0f, 0.0f);
         prevResult.mReservoir.x = max(prevResult.mReservoir.x - prevResult.mReservoir.y, 0.0f);
@@ -1464,6 +1546,9 @@ TemporalRestirResult permutationRestir(
         prevResult.mCandidateRadiance = float3(0.0f, 0.0f, 0.0f);
         prevResult.mIntersectionResult.miHitTriangle = 1;
         prevResult.mIntersectionResult.mBarycentricCoordinate = float3(1.0f, 0.0f, 0.0f);
+        prevResult.mHitPosition = float4(0.0f, 0.0f, 0.0f, 0.0f);
+        prevResult.mHitNormal = float4(0.0f, 0.0f, 0.0f, 0.0f);
+#endif // #if 0
     }
     else
     {
@@ -1484,6 +1569,7 @@ float4 getIrradianceCachePosition(
     return irradianceCache[iIrradianceCacheIndex].mPosition;
 }
 
+#if 0
 /*
 **
 */
@@ -1499,14 +1585,209 @@ float3 getIrradianceCacheRadiance(
     float4 irradianceCachePosition = irradianceCache[iHitIrradianceCacheIndex].mPosition;
     if (irradianceCachePosition.w > 0.0f)
     {
+        float3 diff = irradianceCachePosition.xyz - worldPosition;
         float3 positionToCacheDirection = normalize(irradianceCachePosition.xyz - worldPosition) * -1.0f;
         float3 irradianceCacheProbeRadiance = getRadianceFromIrradianceCacheProbe(
             positionToCacheDirection,
             iHitIrradianceCacheIndex);
-        ret.x = irradianceCacheProbeRadiance.x * fReflectivity;
-        ret.y = irradianceCacheProbeRadiance.y * fReflectivity;
-        ret.z = irradianceCacheProbeRadiance.z * fReflectivity;
+        float fLengthSquared = dot(diff, diff);
+        ret.xyz = (irradianceCacheProbeRadiance.xyz * fReflectivity) / max(fLengthSquared, 1.0f);
     }
+
+    return ret;
+}
+#endif // #if 0
+
+/*
+**
+*/
+bool isPrevUVOutOfBoundsRayTrace(
+    in uint2 inputScreenCoord,
+    in uint2 screenSize)
+{
+    float2 inputTexCoord = inputScreenCoord / float2(screenSize.x, screenSize.y);
+    float4 motionVector = motionVectorTexture[inputScreenCoord];
+    float2 backProjectedScreenUV = inputTexCoord - motionVector.xy;
+
+    return (backProjectedScreenUV.x < 0.0f || backProjectedScreenUV.x > 1.0 || backProjectedScreenUV.y < 0.0f || backProjectedScreenUV.y > 1.0f);
+}
+
+/*
+**
+*/
+float4 getPreviousScreenCoord2(
+    in float2 screenUV)
+{
+#if 0
+    float2 screenUVCopy = screenUV;
+
+    int2 textureSize;
+    worldPositionTexture.GetDimensions(textureSize.x, textureSize.y);
+
+    int2 screenCoord = uint2(
+        int32_t(screenUV.x * float(textureSize.x)),
+        int32_t(screenUV.y * float(textureSize.y)) 
+    );
+
+    float3 worldPosition = worldPositionTexture[screenCoord].xyz;
+    float3 normal = normalTexture[screenCoord].xyz;
+
+    float fOneOverScreenWidth = 1.0f / float(textureSize.x);
+    float fOneOverScreenHeight = 1.0f / float(textureSize.y);
+
+    float2 motionVector = screenMotionVectorTexture[screenCoord].xy;
+    int2 prevScreenCoord = screenCoord - int2(int32_t(motionVector.x), int32_t(motionVector.y));
+
+    return float4(float(prevScreenCoord.x), float(prevScreenCoord.y), 0.0f, 1.0f);
+#endif // #if 0
+
+    int2 textureSize;
+    worldPositionTexture.GetDimensions(textureSize.x, textureSize.y);
+    int2 screenCoord = uint2(
+        int32_t(screenUV.x * float(textureSize.x)),
+        int32_t(screenUV.y * float(textureSize.y)) 
+    );
+    float2 motionVector = screenMotionVectorTexture[screenCoord].xy; 
+    float2 prevScreenUV = screenUV - motionVector;
+
+    return float4(
+        float(floor(prevScreenUV.x * float(textureSize.x) + 0.5f)),
+        float(floor(prevScreenUV.y * float(textureSize.y) + 0.5f)), 
+        0.0f, 
+        1.0f);
+}
+
+/*
+**
+*/
+bool isDisoccluded(
+    in float2 prevScreenUV,
+    in int2 screenCoord
+)
+{
+    int2 textureSize;
+    worldPositionTexture.GetDimensions(textureSize.x, textureSize.y);
+    float3 worldPosition = worldPositionTexture[screenCoord].xyz;
+
+    int2 prevScreenCoord = int2(
+        int32_t(floor(prevScreenUV.x * textureSize.x + 0.5f)),
+        int32_t(floor(prevScreenUV.y * textureSize.y + 0.5f))
+    );
+    float3 prevWorldPosition = prevWorldPositionTexture[prevScreenCoord].xyz;
+    float3 worldPositionDiff = worldPosition.xyz - prevWorldPosition;
+
+    float3 normal = normalTexture[screenCoord].xyz;
+    float3 prevNormal = prevNormalTexture[prevScreenCoord].xyz;
+    float4 motionVector = motionVectorTexture[screenCoord];
+    float4 prevMotionVectorAndMeshIDAndDepth = prevMotionVectorTexture[prevScreenCoord];
+
+    float fDepth = fract(motionVector.z);
+    float fPrevDepth = fract(prevMotionVectorAndMeshIDAndDepth.z);
+
+    uint32_t iMesh = uint32_t(motionVector.z - fDepth);
+    uint32_t iPrevMesh = uint32_t(prevMotionVectorAndMeshIDAndDepth.z - fPrevDepth);
+
+    float fDP = max(dot(normal, prevNormal), 0.0f);
+    float fLength = dot(worldPositionDiff, worldPositionDiff);
+    bool bDisoccluded = (fLength > 0.01f || /*fDP < 0.8f || */iMesh != iPrevMesh);
+
+    return bDisoccluded;
+}
+
+/*
+**
+*/
+OnScreenRadianceResult getOnScreenRadiance(
+    in float3 hitPosition,
+    in float3 worldPosition,
+    in int2 screenCoord,
+    in float2 motionVector
+)
+{
+    OnScreenRadianceResult ret;
+    ret.mbOnScreen = false;
+    ret.mRadiance = float3(0.0f, 0.0f, 0.0f);
+
+    float3 diff = hitPosition - worldPosition;
+    if(length(diff) < 1.0f)
+    {
+        return ret;
+    }
+
+    int2 textureSize;
+    worldPositionTexture.GetDimensions(textureSize.x, textureSize.y);
+
+    // distance for on-screen radiance and ambient occlusion
+    float fDistance = length(hitPosition.xyz - worldPosition);
+    float fDistanceAttenuation = 1.0f / max(fDistance * fDistance, 1.0f);
+
+    float4x4 viewMatrix = defaultUniformBuffer.mViewMatrix;
+    float4x4 projectionMatrix = defaultUniformBuffer.mProjectionMatrix;
+    projectionMatrix._22 *= -1.0f;
+    float4x4 viewProjectionMatrix = mul(
+        projectionMatrix,
+        viewMatrix
+    );
+
+    // get on-screen radiance if there's any
+    // float4 clipSpacePosition = mul(viewProjectionMatrix, float4(hitPosition.xyz, 1.0));
+    float4 clipSpacePosition = mul(defaultUniformBuffer.mViewProjectionMatrix, float4(hitPosition.xyz, 1.0f));
+    clipSpacePosition.x /= clipSpacePosition.w;
+    clipSpacePosition.y /= clipSpacePosition.w;
+    clipSpacePosition.z /= clipSpacePosition.w;
+    clipSpacePosition.x = clipSpacePosition.x * 0.5f + 0.5f;
+    clipSpacePosition.y = (clipSpacePosition.y * 0.5f + 0.5f);
+    clipSpacePosition.z = clipSpacePosition.z * 0.5f + 0.5f;
+
+    float3 prevClipSpacePosition = float3(
+        clipSpacePosition.x - motionVector.x,
+        clipSpacePosition.y - motionVector.y,
+        clipSpacePosition.z);
+
+    uint2 clipSpaceCoord = uint2(
+        uint32_t(floor(clipSpacePosition.x * float(textureSize.x) + 0.5f)),
+        uint32_t(floor(clipSpacePosition.y * float(textureSize.y) + 0.5f))
+    );
+
+    uint2 prevClipSpaceCoord = uint2(
+        uint32_t(floor(prevClipSpacePosition.x * float(textureSize.x) + 0.5f)),
+        uint32_t(floor(prevClipSpacePosition.y * float(textureSize.y) + 0.5f))
+    );
+
+    // see if it's actually on the screen by checking the onscreen position to the calculated position from above
+    float4 worldSpaceHitPosition = worldPositionTexture[clipSpaceCoord];
+    float4 hitPositionClipSpace = mul(viewProjectionMatrix, float4(worldSpaceHitPosition.xyz, 1.0f));
+    hitPositionClipSpace.x /= hitPositionClipSpace.w;
+    hitPositionClipSpace.y /= hitPositionClipSpace.w;
+    hitPositionClipSpace.z /= hitPositionClipSpace.w;
+    hitPositionClipSpace.x = hitPositionClipSpace.x * 0.5f + 0.5f;
+    hitPositionClipSpace.y = (hitPositionClipSpace.y * 0.5f + 0.5f);
+    hitPositionClipSpace.z = hitPositionClipSpace.z * 0.5f + 0.5f;
+
+    float fReflectivity = 0.3f;
+
+    float fDepthDiff = abs(hitPositionClipSpace.z - clipSpacePosition.z);
+    if (prevClipSpacePosition.x >= 0.0f && prevClipSpacePosition.x <= 1.0f &&
+        prevClipSpacePosition.y >= 0.0f && prevClipSpacePosition.y <= 1.0f &&
+        prevClipSpacePosition.z >= 0.0f && prevClipSpacePosition.z <= 1.0f &&
+        fDepthDiff <= 0.1f)
+    {
+        ret.mRadiance = prevTemporalRadianceTexture[prevClipSpaceCoord].xyz * albedoTexture[clipSpaceCoord].xyz;
+        ret.mbOnScreen = true;
+    }
+
+    if(clipSpacePosition.z >= 0.0f && clipSpacePosition.z <= 1.0f &&
+       clipSpacePosition.x >= 0.0f && clipSpacePosition.x <= 1.0f &&
+       clipSpacePosition.y >= 0.0f && clipSpacePosition.y <= 1.0f &&
+       fDepthDiff <= 0.1f)
+    {
+        // on screen
+        ret.mRadiance += directSunOutputTexture[clipSpaceCoord].xyz * albedoTexture[clipSpaceCoord].xyz;
+        ret.mbOnScreen = true;
+    }
+
+    // distance attenuation
+    ret.mRadiance *= fDistanceAttenuation * fReflectivity;
 
     return ret;
 }

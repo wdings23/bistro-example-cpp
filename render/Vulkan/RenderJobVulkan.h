@@ -135,6 +135,13 @@ namespace Render
 			virtual void platformInitAttachmentBarriers(
 				CreateInfo const& createInfo
 			);
+
+			virtual void platformUploadDataToBuffer(
+				RenderDriver::Common::CBuffer& buffer,
+				char const* pacData,
+				uint32_t iDataSize,
+				RenderDriver::Common::CCommandQueue& commandQueue
+			);
 		};
 
 	}   // Common

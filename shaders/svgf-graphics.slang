@@ -1,41 +1,25 @@
-#define FLT_MAX  1.0e+10
-
 #include "default-uniform-headers.slang"
-#include "octahedron-map-headers.slang"
-#include "motion-vector-headers.slang"
-#include "murmur-hash-headers.slang"
-#include "irradiance-cache-headers.slang"
 
-struct HashEntry
+struct ConstantBufferData
 {
-    uint32_t miPageCoordinate;
-    uint32_t miPageIndex;
-    uint32_t miTextureIDAndMIP;
-    uint32_t miUpdateFrame;
-};
-
-struct TextureAtlasOutput
-{
-    float4 mColor;
-    bool mbLoaded;
+    uint32_t miStep;
 };
 
 [[vk::binding(0, 0)]] Texture2D<float4> worldPositionTexture;
 [[vk::binding(1, 0)]] Texture2D<float4> normalTexture;
-[[vk::binding(2, 0)]] Texture2D<float4> prevWorldPositionTexture;
-[[vk::binding(3, 0)]] Texture2D<float4> prevNormalTexture;
-[[vk::binding(4, 0)]] Texture2D<float4> motionVectorTexture;
-[[vk::binding(5, 0)]] Texture2D<float4> prevMotionVectorTexture;
-[[vk::binding(6, 0)]] Texture2D<float4> screenMotionVectorTexture;
+[[vk::binding(2, 0)]] Texture2D<float4> radianceTexture;
+[[vk::binding(3, 0)]] Texture2D<float2> momentTexture;
 
-[[vk::binding(7, 0)]] Texture2D<float4> indirectDiffuseRadianceTexture;
-[[vk::binding(8, 0)]] Texture2D<float2> indirectDiffuseMomentTexture;
+[[vk::binding(4, 0)]] SamplerState textureSampler;
 
-[[vk::binding(9, 0)]] StructuredBuffer<IrradianceCacheEntry> irradianceCache;
+[[vk::binding(0, 1)]] ConstantBuffer<ConstantBufferData> constantBuffer;
+[[vk::binding(1, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
 
-[[vk::binding(10, 0)]] SamplerState textureSampler;
-
-[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
+struct SVGFFilterResult
+{
+    float3 mRadiance;
+    float2 mMoments;
+};
 
 struct AssembledVertex
 {
@@ -45,9 +29,8 @@ struct AssembledVertex
 
 struct PSOutput
 {
-    float4 mOutput0 : SV_TARGET0;
-    float4 mOutput1 : SV_TARGET1;
-    float4 mOutput2 : SV_TARGET2;
+    float4 mRadiance : SV_TARGET0;
+    float2 mMoment : SV_TARGET1;
 };
 
 struct VertexStageOutput
@@ -73,147 +56,38 @@ PSOutput PSMain(VertexStageOutput in)
 {
     PSOutput out;
 
-    float2 uv = float2(
-        in.texCoord.x,
-        1.0f - in.texCoord.y 
-    );
-
-    float3 normal = normalTexture.Sample(
-        textureSampler,
-        uv
-    ).xyz;
-
     int2 textureSize;
     worldPositionTexture.GetDimensions(textureSize.x, textureSize.y);
 
-    float fOneOverWidth = 1.0f / float(textureSize.x);
-    float fOneOverHeight = 1.0f / float(textureSize.y);
-
-    float fDisocclusion = 0.0f;
-    float4 prevScreenCoord = getPreviousScreenCoord2(uv);
-    float2 prevScreenUV = float2(
-        float(prevScreenCoord.x) * fOneOverWidth,
-        float(prevScreenCoord.y) * fOneOverHeight
-    );
-    if(isPrevUVOutOfBounds(uv))
-    {
-        fDisocclusion = 1.0f;
-    }
-    else
-    {
-        fDisocclusion = (isDisoccluded3(uv, prevScreenUV) == true) ? 1.0f : 0.0f;
-    }
-
-    float3 worldPosition = worldPositionTexture.Sample(
-                                                   textureSampler,
-                                                   uv
-    ) .xyz;
-    uint32_t iCacheIndex = fetchIrradianceCacheIndex(worldPosition);
-    out.mOutput0.xyz = getRadianceFromIrradianceCacheProbe(normal, iCacheIndex);
-    out.mOutput0.w = float(iCacheIndex);
-
-    out.mOutput1.xyz = worldPosition;
-    out.mOutput1.w = float(iCacheIndex);
-
-    float3 scaledPosition = worldPosition;
-    float fSignX = sign(worldPosition.x);
-    float fSignY = sign(worldPosition.y);
-    float fSignZ = sign(worldPosition.z);
-    scaledPosition.x = float(floor(abs(scaledPosition.x) + 0.5f)) * 0.1f * fSignX;
-    scaledPosition.y = float(floor(abs(scaledPosition.y) + 0.5f)) * 0.1f * fSignY;
-    scaledPosition.z = float(floor(abs(scaledPosition.z) + 0.5f)) * 0.1f * fSignZ;
-
-    out.mOutput2.xyz = scaledPosition;
-    out.mOutput2.w = float(iCacheIndex);
-
-#if 0
-    float3 radiance = indirectDiffuseRadianceTexture.Sample(
+    float4 worldPosition = worldPositionTexture.Sample(
         textureSampler,
-        float2(in.texCoord.x, 1.0f - in.texCoord.y)
-    ).xyz;
+        in.texCoord.xy
+    );
+    if (worldPosition.w <= 0.0f)
+    {
+        out.mRadiance = float4(0.0f, 0.0f, 0.0f, 0.0f);
+        out.mMoment = float2(0.0f, 0.0f);
+    }
 
-    // out.mOutput = float4(normal.xyz + float3(fDisocclusion, 0.0f, 0.0f), 1.0f);
-    // out.mOutput0 = float4(fDisocclusion, fDisocclusion, fDisocclusion, 1.0f);
-    out.mOutput0 = float4(radiance.xyz + float3(fDisocclusion, 0.0f, 0.0f), 1.0f);
-    out.mOutput1 = prevScreenCoord;
-
-    uint32_t iX = uint32_t(uv.x * float(textureSize.x));
-    uint32_t iY = uint32_t(uv.y * float(textureSize.x));
-
+    uint32_t iX = uint32_t(in.texCoord.x * float(textureSize.x));
+    uint32_t iY = uint32_t((1.0f - in.texCoord.y) * float(textureSize.x));
     SVGFFilterResult svgfRet = svgFilter(
         iX,
         iY,
-        1,
-        30.0f
+        constantBuffer.miStep,
+        10.0f
     );
 
-    out.mOutput2 = float4(
+    out.mRadiance = float4(
         svgfRet.mRadiance,
         1.0f
     );
-#endif // #if 0
+
+    out.mMoment = svgfRet.mMoments;
 
     return out;
 }
 
-/*
-**
-*/
-float4 getPreviousScreenCoord2(
-    in float2 screenUV)
-{
-    float2 screenUVCopy = screenUV;
-
-    int2 textureSize;
-    worldPositionTexture.GetDimensions(textureSize.x, textureSize.y);
-
-    int2 screenCoord = uint2(
-        int32_t(screenUV.x * float(textureSize.x)),
-        int32_t(screenUV.y * float(textureSize.y)) 
-    );
-
-    float3 worldPosition = worldPositionTexture[screenCoord].xyz;
-    float3 normal = normalTexture[screenCoord].xyz;
-
-    float fOneOverScreenWidth = 1.0f / float(textureSize.x);
-    float fOneOverScreenHeight = 1.0f / float(textureSize.y);
-
-    float2 motionVector = screenMotionVectorTexture[screenCoord].xy;
-    int2 prevScreenCoord = screenCoord - int2(int32_t(motionVector.x), int32_t(motionVector.y));
-
-    return float4(float(screenCoord.x), float(screenCoord.y), 0.0f, 1.0f);
-}
-
-/*
-**
-*/
-bool isDisoccluded3(
-    in float2 screenUV,
-    in float2 prevScreenUV
-)
-{
-    uint2 textureSize;
-
-    float3 worldPosition = worldPositionTexture.Sample(textureSampler, screenUV).xyz;
-    float3 prevWorldPosition = prevWorldPositionTexture.Sample(textureSampler, prevScreenUV).xyz;
-    float3 normal = normalTexture.Sample(textureSampler, screenUV).xyz;
-    float3 prevNormal = prevNormalTexture.Sample(textureSampler, prevScreenUV).xyz;
-    float4 motionVector = motionVectorTexture.Sample(textureSampler, screenUV);
-    float4 prevMotionVectorAndMeshIDAndDepth = prevMotionVectorTexture.Sample(textureSampler, prevScreenUV);
-
-    float fDepth = fract(motionVector.z);
-    float fPrevDepth = fract(prevMotionVectorAndMeshIDAndDepth.z);
-
-    uint32_t iMesh = uint32_t(motionVector.z - fDepth);
-    uint32_t iPrevMesh = uint32_t(prevMotionVectorAndMeshIDAndDepth.z - fPrevDepth);
-
-    float fCheckDepth = abs(fDepth - fPrevDepth);
-    float3 worldPositionDiff = prevWorldPosition.xyz - worldPosition.xyz;
-    float fCheckDP = abs(dot(normalize(normal.xyz), normalize(prevNormal.xyz)));
-    float fCheckWorldPositionDistance = dot(worldPositionDiff, worldPositionDiff);
-
-    return (fCheckWorldPositionDistance > 0.01f || iMesh != iPrevMesh);
-}
 
 /*
 **
@@ -282,7 +156,7 @@ float computeSVGFLuminanceStoppingWeight(
             float2 sampleUV = float2(
                 float(iSampleX) / float(defaultUniformBuffer.miScreenWidth),
                 float(iSampleY) / float(defaultUniformBuffer.miScreenHeight));
-            float2 moment = indirectDiffuseMomentTexture.Sample(
+            float2 moment = momentTexture.Sample(
                              textureSampler,
                              sampleUV
             );
@@ -297,13 +171,9 @@ float computeSVGFLuminanceStoppingWeight(
     return fRet;
 }
 
-struct SVGFFilterResult
-{
-    float3 mRadiance;
-    float2 mMoments;
-};
-
-/////
+/*
+**
+*/
 SVGFFilterResult svgFilter(
     int32_t iX,
     int32_t iY,
@@ -339,6 +209,8 @@ SVGFFilterResult svgFilter(
     );
     if (worldPosition.w == 0.0f)
     {
+        ret.mRadiance = retRadiance;
+        ret.mMoments = float2(0.0f, 0.0f);
         return ret;
     }
 
@@ -349,7 +221,7 @@ SVGFFilterResult svgFilter(
 
     float fDepth = fract(worldPosition.w);
 
-    float4 radiance  = indirectDiffuseRadianceTexture.Sample(
+    float4 radiance  = radianceTexture.Sample(
         textureSampler,
         imageUV
     );
@@ -387,7 +259,7 @@ SVGFFilterResult svgFilter(
                                float(iSampleY) / float(defaultUniformBuffer.miScreenHeight)
             );
 
-            float4 sampleRadiance  = indirectDiffuseRadianceTexture.Sample(
+            float4 sampleRadiance  = radianceTexture.Sample(
                                         textureSampler,
                                         sampleUV
             );
@@ -400,7 +272,7 @@ SVGFFilterResult svgFilter(
                                    sampleUV
             );
 
-            float2 moment = indirectDiffuseMomentTexture.Sample(
+            float2 moment = momentTexture.Sample(
                              textureSampler,
                              sampleUV
             );
@@ -457,7 +329,9 @@ SVGFFilterResult svgFilter(
     return ret;
 }
 
-/////
+/*
+**
+*/
 float computeLuminance(
     float3 radiance)
 {

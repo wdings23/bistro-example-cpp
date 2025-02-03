@@ -27,6 +27,7 @@ struct IntersectBVHResult
     float3 mHitPosition;
     float3 mHitNormal;
     uint32_t miHitTriangle;
+    uint32_t miHitMesh;
     float3 mBarycentricCoordinate;
 };
 
@@ -54,6 +55,12 @@ struct Material
     uint32_t miEmissiveTextureID;
 };
 
+struct MeshRange
+{
+    uint32_t miStart;
+    uint32_t miEnd;
+};
+
 [[vk::binding(0, 0)]]
 RWStructuredBuffer<IrradianceCacheEntry> irradianceCache;
 
@@ -70,15 +77,21 @@ RaytracingAccelerationStructure scene;
 Texture2D<float4> skyTexture;
 
 [[vk::binding(5, 0)]]
-Texture2D<float4> worldPositionTexture;
+Texture2D<float4> sunLightTexture;
 
 [[vk::binding(6, 0)]]
-Texture2D<float4> hitPositionTexture;
+Texture2D<float4> worldPositionTexture;
 
 [[vk::binding(7, 0)]]
-Texture2D<float4> hitNormalTexture;
+Texture2D<float4> normalTexture;
 
 [[vk::binding(8, 0)]]
+Texture2D<float4> hitPositionTexture;
+
+[[vk::binding(9, 0)]]
+Texture2D<float4> hitNormalTexture;
+
+[[vk::binding(10, 0)]]
 RWTexture2D<float4> debugTexture0;
 
 
@@ -87,7 +100,7 @@ RWTexture2D<float4> debugTexture0;
 [[vk::binding(1, 1)]] StructuredBuffer<uint32_t> indexBuffer;
 [[vk::binding(2, 1)]] StructuredBuffer<Material> materialData;
 [[vk::binding(3, 1)]] StructuredBuffer<uint32_t> materialID;
-[[vk::binding(4, 1)]] StructuredBuffer<uint2> meshTriangleRangeData;
+[[vk::binding(4, 1)]] StructuredBuffer<MeshRange> meshTriangleRangeData;
 [[vk::binding(5, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData;
 
 #define NUM_THREADS         16
@@ -126,7 +139,8 @@ void hitTriangle(
 
     float fT = RayTCurrent();
     float fPrimitiveIndex = float(PrimitiveIndex());
-    payload.mOutput = float4(fT, fPrimitiveIndex, 0.0f, 1.0f);
+    float fGeometry = float(GeometryIndex());
+    payload.mOutput = float4(fT, fPrimitiveIndex, fGeometry, 1.0f);
 }
 
 [shader("miss")]
@@ -157,6 +171,7 @@ void rayGen()
 
     float4 worldPosition = worldPositionTexture[texCoord];
     float4 hitPosition = hitPositionTexture[texCoord];
+    float3 normal = normalTexture[texCoord].xyz;
     float fRayLength = length(hitPosition.xyz - worldPosition.xyz);
 
     debugTexture0[texCoord] = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -165,7 +180,7 @@ void rayGen()
     if(fRayLength < 100.0f && length(hitPosition.xyz) > 0.0f)
     {
         // check if on screen
-        float4 clipSpacePosition = mul(float4(hitPosition.xyz, 1.0f), defaultUniformData.mViewProjectionMatrix);
+        float4 clipSpacePosition = mul(defaultUniformData.mViewProjectionMatrix, float4(hitPosition.xyz, 1.0f));
         clipSpacePosition.x /= clipSpacePosition.w;
         clipSpacePosition.y /= clipSpacePosition.w;
         clipSpacePosition.z /= clipSpacePosition.w;
@@ -179,7 +194,7 @@ void rayGen()
         );
 
         float4 hitWorldPosition = worldPositionTexture[clipSpaceScreenCoord];
-        var hitPositionClipSpace = mul(float4(hitWorldPosition.xyz, 1.0f), defaultUniformData.mViewProjectionMatrix);
+        var hitPositionClipSpace = mul(defaultUniformData.mViewProjectionMatrix, float4(hitWorldPosition.xyz, 1.0f));
         hitPositionClipSpace.x /= hitPositionClipSpace.w;
         hitPositionClipSpace.y /= hitPositionClipSpace.w;
         hitPositionClipSpace.z /= hitPositionClipSpace.w;
@@ -197,10 +212,10 @@ void rayGen()
         // so the difference greater than threshold means the hit position is obscured by the current world position
         float fDepthDiff = clipSpacePosition.z - hitPositionClipSpace.z;
 
-        if(counterBuffer[0] < 100 &&
-            (clipSpacePosition.x < 0.0f || clipSpacePosition.x > 1.0f ||
-            clipSpacePosition.y < 0.0f || clipSpacePosition.y > 1.0f || 
-            fDepthDiff >= 0.01f))
+        bool bOffScreen = !(clipSpacePosition.x >= 0.0f && clipSpacePosition.x <= 1.0f && clipSpacePosition.y >= 0.0f && clipSpacePosition.y <= 1.0f);
+        if (counterBuffer[0] < 100/* &&
+            bOffScreen && 
+            fDepthDiff >= 0.01f*/)
         {
             // not on screen, register irradiance cache for hit position
             
@@ -211,6 +226,7 @@ void rayGen()
                 float4 hitNormal  = hitNormalTexture[texCoord];
                 updateIrradianceCache(
                     worldPosition.xyz,
+                    normal.xyz,
                     hitPosition.xyz,
                     hitNormal.xyz,
                     randomResult,
@@ -237,16 +253,20 @@ uint32_t createIrradianceCacheEntry(
     float fSignX = sign(position.x);
     float fSignY = sign(position.y);
     float fSignZ = sign(position.z);
-    scaledPosition.x = float(floor(abs(position.x) + 0.5f)) * 0.1f * fSignX; 
-    scaledPosition.y = float(floor(abs(position.y) + 0.5f)) * 0.1f * fSignY; 
-    scaledPosition.z = float(floor(abs(position.z) + 0.5f)) * 0.1f * fSignZ; 
+    scaledPosition.x = float(floor(abs(scaledPosition.x) + 0.5f)) * 0.1f * fSignX;
+    scaledPosition.y = float(floor(abs(scaledPosition.y) + 0.5f)) * 0.1f * fSignY;
+    scaledPosition.z = float(floor(abs(scaledPosition.z) + 0.5f)) * 0.1f * fSignZ; 
     
     irradianceCache[iIrradianceCacheIndex].mPosition = float4(scaledPosition, 1.0f);
 
-    for(uint32_t i = 0; i < 64u; i++)
-    {
-        irradianceCache[iIrradianceCacheIndex].mImageProbe[i] = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    }
+    //for(uint32_t i = 0; i < 64u; i++)
+    //{
+    //    irradianceCache[iIrradianceCacheIndex].mImageProbe[i] = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    //}
+
+    irradianceCache[iIrradianceCacheIndex].mSphericalHarmonics0 = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    irradianceCache[iIrradianceCacheIndex].mSphericalHarmonics1 = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    irradianceCache[iIrradianceCacheIndex].mSphericalHarmonics2 = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
     return iIrradianceCacheIndex;
 }
@@ -256,6 +276,7 @@ uint32_t createIrradianceCacheEntry(
 */
 UpdateIrradianceCacheResult updateIrradianceCache(
     in float3 worldPosition,
+    in float3 normal,
     in float3 hitPosition,
     in float3 hitNormal,
     RandomResult randomResult: RandomResult,
@@ -297,13 +318,13 @@ UpdateIrradianceCacheResult updateIrradianceCache(
     ray.Origin = hitPosition + rayDirection.mDirection.xyz * 0.01f;
     ray.Direction = rayDirection.mDirection.xyz;
     ray.TMin = 0.001f;
-    ray.TMax = 10000.0f;
+    ray.TMax = 1000.0f;
     RayPayload payload = {
         float4(0.0f, 0.0f, 0.0f, 0.0f)
     };
     TraceRay(
         scene,
-        RAY_FLAG_FORCE_OPAQUE,
+        RAY_FLAG_NONE,
         0xff,
         0,
         0,
@@ -317,9 +338,12 @@ UpdateIrradianceCacheResult updateIrradianceCache(
         intersectionInfo.miHitTriangle = uint32_t(payload.mOutput.y);
         intersectionInfo.mBarycentricCoordinate = payload.mBarycentricCoord.xyz;
 
-        uint32_t iTri0 = indexBuffer[intersectionInfo.miHitTriangle * 3];
-        uint32_t iTri1 = indexBuffer[intersectionInfo.miHitTriangle * 3 + 1];
-        uint32_t iTri2 = indexBuffer[intersectionInfo.miHitTriangle * 3 + 2];
+        intersectionInfo.miHitMesh = uint32_t(payload.mOutput.z);
+        uint32_t iMeshOffset = meshTriangleRangeData[intersectionInfo.miHitMesh].miStart;
+
+        uint32_t iTri0 = indexBuffer[iMeshOffset + intersectionInfo.miHitTriangle * 3];
+        uint32_t iTri1 = indexBuffer[iMeshOffset + intersectionInfo.miHitTriangle * 3 + 1];
+        uint32_t iTri2 = indexBuffer[iMeshOffset + intersectionInfo.miHitTriangle * 3 + 2];
 
         VertexFormat v0 = vertexBuffer[iTri0];
         VertexFormat v1 = vertexBuffer[iTri1];
@@ -353,15 +377,19 @@ UpdateIrradianceCacheResult updateIrradianceCache(
     if(intersectionInfo.miHitTriangle == UINT32_MAX || fRayLength >= 100.0f)
     {
         // didn't hit anything, use skylight
-        float fRadianceDP = max(dot(hitNormal.xyz, rayDirection.mDirection.xyz), 0.0f);
+        float fRadianceDP = max(dot(normal.xyz, rayDirection.mDirection.xyz), 0.0f);
         float2 skyUV = octahedronMap2(rayDirection.mDirection.xyz);
 
+        int2 skyTextureSize;
+        skyTexture.GetDimensions(skyTextureSize.x, skyTextureSize.y);
+
         int2 skyCoord = int2(
-            int32_t(skyUV.x * float(textureSize.x)),
-            int32_t(skyUV.y * float(textureSize.y))
+            int32_t(skyUV.x * float(skyTextureSize.x)),
+            int32_t(skyUV.y * float(skyTextureSize.y))
         );
         float3 skyRadiance = skyTexture[skyCoord].xyz;
-        cacheRadiance = skyRadiance * fRadianceDP;
+        float3 sunLight = sunLightTexture[skyCoord].xyz;
+        cacheRadiance = sunLight + skyRadiance * fRadianceDP;
 
         // update irradiance cache probe with the radiance and ray direction
         updateIrradianceCacheProbe(
@@ -372,24 +400,10 @@ UpdateIrradianceCacheResult updateIrradianceCache(
     else 
     {
         int32_t iHitTriangleIndex = int32_t(intersectionInfo.miHitTriangle);
-
-        // get hit mesh
-        int32_t iHitMeshIndex = UINT32_MAX;
-        for(int32_t i = 0; i < defaultUniformData.miNumMeshes; i++)
+        if (intersectionInfo.miHitMesh < defaultUniformData.miNumMeshes)
         {
-            let iStartTriangleIndex = int32_t(meshTriangleRangeData[i].x);
-            let iEndTriangleIndex = int32_t(meshTriangleRangeData[i].y);
-            if(iHitTriangleIndex >= iStartTriangleIndex && 
-                iHitTriangleIndex <= iEndTriangleIndex)
-            {
-                iHitMeshIndex = i;
-                break;
-            }
-        }
-
-        if(iHitMeshIndex < defaultUniformData.miNumMeshes)
-        {
-            float3 emissiveRadiance = materialData[iHitMeshIndex].mEmissive.xyz;
+            uint32_t iMaterialID = materialID[intersectionInfo.miHitMesh];
+            float3 emissiveRadiance = materialData[iMaterialID].mEmissive.xyz;
             cacheRadiance += emissiveRadiance;
         }
 
@@ -564,6 +578,7 @@ void updateIrradianceCacheProbe(
     //      4) decode back to probe with the coefficients above, the result is a filtered probe with the spherical harmonics info built in, ie. image probe in spherical directions
     //      5) save probe to the irradiance cache
 
+#if 0
     // set probe image pixel
     float2 probeImageUV = octahedronMap2(direction);
     uint2 probeImageCoord = uint2(
@@ -593,11 +608,111 @@ void updateIrradianceCacheProbe(
 
     // update the spherical harmonic probe image
     irradianceCache[iCacheEntryIndex].mImageProbe = decodedResult.mProbeImage;
+#endif // #if 0
+
+    encodeSphericalHarmonicCoefficients(
+        radiance,
+        direction,
+        iCacheEntryIndex
+    );
 }
 
+/*
+**
+*/
+void encodeSphericalHarmonicCoefficients(
+    in float3 radiance,
+    in float3 direction,
+    in uint32_t iCacheEntryIndex
+)
+{
+    float4 SHCoefficent0 = irradianceCache[iCacheEntryIndex].mSphericalHarmonics0; 
+    float4 SHCoefficent1 = irradianceCache[iCacheEntryIndex].mSphericalHarmonics1; 
+    float4 SHCoefficent2 = irradianceCache[iCacheEntryIndex].mSphericalHarmonics2;
 
+    float4 afC = float4(
+        0.282095f,
+        0.488603f,
+        0.488603f,
+        0.488603f
+    );
 
+    float4 A = float4(
+        0.886227f,
+        1.023326f,
+        1.023326f,
+        1.023326f
+    );
 
+    // encode coefficients with direction
+    float4 coefficient = float4(
+        afC.x * A.x,
+        afC.y * direction.y * A.y,
+        afC.z * direction.z * A.z,
+        afC.w * direction.x * A.w
+    );
+
+    // encode with radiance
+    float3 aResults[4];
+    aResults[0] = radiance.xyz * coefficient.x;
+    aResults[1] = radiance.xyz * coefficient.y;
+    aResults[2] = radiance.xyz * coefficient.z;
+    aResults[3] = radiance.xyz * coefficient.w;
+
+    SHCoefficent0.x += aResults[0].x;
+    SHCoefficent0.y += aResults[0].y;
+    SHCoefficent0.z += aResults[0].z;
+    SHCoefficent0.w += aResults[1].x;
+
+    SHCoefficent1.x += aResults[1].y;
+    SHCoefficent1.y += aResults[1].z;
+    SHCoefficent1.z += aResults[2].x;
+    SHCoefficent1.w += aResults[2].y;
+
+    SHCoefficent2.x += aResults[2].z;
+    SHCoefficent2.y += aResults[3].x;
+    SHCoefficent2.z += aResults[3].y;
+    SHCoefficent2.w += aResults[3].z;
+
+    irradianceCache[iCacheEntryIndex].mSphericalHarmonics0 = SHCoefficent0;
+    irradianceCache[iCacheEntryIndex].mSphericalHarmonics1 = SHCoefficent1;
+    irradianceCache[iCacheEntryIndex].mSphericalHarmonics2 = SHCoefficent2;
+
+    irradianceCache[iCacheEntryIndex].mSampleCount.x += 1.0f;
+}
+
+/*
+**
+*/
+float3 decodeFromSphericalHarmonicCoefficients(
+    in float3 direction,
+    in uint32_t iCacheEntryIndex
+)
+{
+    float4 SHCoefficent0 = irradianceCache[iCacheEntryIndex].mSphericalHarmonics0;
+    float4 SHCoefficent1 = irradianceCache[iCacheEntryIndex].mSphericalHarmonics1;
+    float4 SHCoefficent2 = irradianceCache[iCacheEntryIndex].mSphericalHarmonics2;
+
+    float3 aTotalCoefficients[4];
+    float fFactor = 1.0f / max(irradianceCache[iCacheEntryIndex].mSampleCount.x, 1.0f);
+
+    aTotalCoefficients[0] = float3(SHCoefficent0.x, SHCoefficent0.y, SHCoefficent0.z) * fFactor;
+    aTotalCoefficients[1] = float3(SHCoefficent0.w, SHCoefficent1.x, SHCoefficent1.y) * fFactor;
+    aTotalCoefficients[2] = float3(SHCoefficent1.z, SHCoefficent1.w, SHCoefficent2.x) * fFactor;
+    aTotalCoefficients[3] = float3(SHCoefficent2.y, SHCoefficent2.z, SHCoefficent2.w) * fFactor;
+
+    float fC1 = 0.42904276540489171563379376569857f;
+    float fC2 = 0.51166335397324424423977581244463f;
+    float fC3 = 0.24770795610037568833406429782001f;
+    float fC4 = 0.88622692545275801364908374167057f;
+
+    float3 decoded =
+        aTotalCoefficients[0] * fC4 +
+        (aTotalCoefficients[3] * direction.x + aTotalCoefficients[1] * direction.y + aTotalCoefficients[2] * direction.z) *
+            fC2 * 2.0f;
+
+    return decoded;
+}
 
 
 

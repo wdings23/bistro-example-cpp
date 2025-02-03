@@ -8,7 +8,7 @@
             "Type": "AccelerationStructure"
         },
         {
-            "Name": "Output",
+            "Name": "Direct Sun Light Output",
             "Type": "TextureOutput",
             "Format": "rgba32float"
         },
@@ -16,6 +16,11 @@
             "Name" : "World Position Output",
             "Type": "TextureInput",
             "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name" : "Sun Light Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Atmosphere Graphics"
         }
     ],
     "ShaderResources": []

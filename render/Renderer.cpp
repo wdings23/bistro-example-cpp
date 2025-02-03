@@ -230,7 +230,9 @@ namespace Render
                     continue;
                 }
 
-                if(name.find("Light Composite") != std::string::npos)
+                if(name.find("Light Composite") != std::string::npos ||
+                    name.find("Temporal Accumulation Graphics") != std::string::npos ||
+                    name.find("Diffuse Filter Graphics") != std::string::npos)
                 {
                     continue;
                 }
@@ -247,6 +249,35 @@ namespace Render
                         dispatchArray[1].GetInt(),
                         dispatchArray[2].GetInt()
                     );
+                }
+
+                std::vector<char> acConstantBufferData;
+                if(job.HasMember("ConstantBuffer"))
+                {
+                    auto const& array = job["ConstantBuffer"].GetArray();
+
+                    uint32_t iOffset = 0;
+                    for(uint32_t i = 0; i < array.Size(); i++)
+                    {
+                        auto const& constantBufferInfo = array[i];
+                        char const* szDataType = constantBufferInfo["data type"].GetString();
+                        if(std::string(szDataType) == "int")
+                        {
+                            int32_t iData = constantBufferInfo["data"].GetInt();
+                            acConstantBufferData.resize(acConstantBufferData.size() + 4);
+                            int* piData = ((int*)acConstantBufferData.data()) + iOffset;
+                            *piData = iData;
+                            iOffset += 4;
+                        }
+                        else if(std::string(szDataType) == "float")
+                        {
+                            float fData = constantBufferInfo["data"].GetFloat();
+                            acConstantBufferData.resize(acConstantBufferData.size() + 4);
+                            float* pfData = ((float*)acConstantBufferData.data()) + iOffset;
+                            *pfData = fData;
+                            iOffset += 4;
+                        }
+                    }
                 }
 
                 // initialize external data
@@ -278,6 +309,7 @@ namespace Render
                     mpGraphicsCommandQueue.get(),
                     mpComputeCommandQueue.get(),
                     pfnInitDataFunc,
+                    (acConstantBufferData.size() > 0) ? &acConstantBufferData : nullptr
                 };
                 mapRenderJobs[name]->create(createInfo);
 
@@ -312,6 +344,7 @@ namespace Render
             execRenderJobs3();
             miTotalExecRenderJobTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
 
+#if 0
             RenderDriver::Common::SwapChainPresentDescriptor desc;
             desc.miSyncInterval = 0;
             desc.miFlags = 0x200;
@@ -320,6 +353,50 @@ namespace Render
 
             //desc.miSyncInterval = 1;
             //desc.miFlags = 0;
+
+            {
+                std::lock_guard lock(sPresentMutex);
+                beginDebugMarker("Present");
+                mpSwapChain->present(desc);
+                endDebugMarker();
+            }
+
+            if(mbCapturingRenderDebuggerFrame)
+            {
+                platformEndRenderDebuggerCapture();
+                mbCapturingRenderDebuggerFrame = false;
+            }
+
+            // move to next frame
+            {
+                platformSwapChainMoveToNextFrame();
+            }
+
+            if(mbCapturingRenderDocDebugFrame && miFrameIndex - miStartCaptureFrame >= 5)
+            {
+                platformEndRenderDocCapture();
+                mbCapturingRenderDocDebugFrame = false;
+            }
+
+            platformEndDebugMarker();
+
+#if defined(_DEBUG)
+            WTFASSERT(mpUploadCommandBuffer->getNumCommands() <= 0, "There are still un-executed copy commands left in the upload command buffer (%d)\n",
+                mpUploadCommandBuffer->getNumCommands());
+#endif // _DEBUG 
+#endif // #if 0
+        }
+
+        /*
+        **
+        */
+        void CRenderer::presentSwapChain()
+        {
+            RenderDriver::Common::SwapChainPresentDescriptor desc;
+            desc.miSyncInterval = 0;
+            desc.miFlags = 0x200;
+            desc.mpDevice = mpDevice.get();
+            desc.mpPresentQueue = mpGraphicsCommandQueue.get();
 
             {
                 std::lock_guard lock(sPresentMutex);
@@ -1095,7 +1172,7 @@ namespace Render
                     "full-screen-triangle"
                 );
             }
-            else if(pRenderJob->mPassType == PassType::DrawMeshes)
+            else if(pRenderJob->mPassType == PassType::DrawMeshes || pRenderJob->mPassType == PassType::DepthPrepass)
             {
                 platformSetVertexAndIndexBuffers2(
                     commandBuffer,
@@ -1162,7 +1239,7 @@ namespace Render
                     0,
                     0);
             }
-            else if(pRenderJob->mPassType == PassType::DrawMeshes)
+            else if(pRenderJob->mPassType == PassType::DrawMeshes || pRenderJob->mPassType == PassType::DepthPrepass)
             {
                 auto& pDrawIndexedCallsBuffer = mapRenderJobs["Mesh Culling Compute"]->mapOutputBufferAttachments["Draw Indexed Calls"];
                 auto& pDrawIndexedCallCountBuffer = mapRenderJobs["Mesh Culling Compute"]->mapOutputBufferAttachments["Draw Indexed Call Count"];
@@ -1384,7 +1461,9 @@ auto startExecJobs = std::chrono::high_resolution_clock::now();
 auto start0 = std::chrono::high_resolution_clock::now();
 
 #if !defined(USE_RAY_TRACING)
-                if(renderJobName.find("Light Composite") != std::string::npos)
+                if(renderJobName.find("Light Composite") != std::string::npos ||
+                   renderJobName.find("Temporal Accumulation Graphics") != std::string::npos ||
+                   renderJobName.find("Diffuse Filter Graphics") != std::string::npos)
                 {
                     continue;
                 }
@@ -1583,7 +1662,9 @@ auto totalElapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::c
             for(auto const& renderJobName : maRenderJobNames)
             {
 #if !defined(USE_RAY_TRACING)
-                if(renderJobName.find("Light Composite") != std::string::npos)
+                if(renderJobName.find("Light Composite") != std::string::npos ||
+                   renderJobName.find("Temporal Accumulation Graphics") != std::string::npos ||
+                   renderJobName.find("Diffuse Filter Graphics") != std::string::npos)
                 {
                     continue;
                 }
@@ -2050,10 +2131,12 @@ auto totalElapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::c
             float fLengthSquared = dot(diff, diff);
             float fRebuildSkyProbe = (fLengthSquared >= 0.1f) ? 1.0f : 0.0f;
             
-            *pFloat4Data++ = float4(2.0f, 2.0f, 2.0f, 1.0f);
+            float4 lightRadiance = float4(1.5f, 1.5f, 1.5f, 1.0f);
+
+            *pFloat4Data++ = lightRadiance;
             *pFloat4Data++ = float4(gLightDirection, 1.0f);
 
-            *pFloat4Data++ = float4(2.0f, 2.0f, 2.0f, 1.0f);
+            *pFloat4Data++ = lightRadiance;
             *pFloat4Data++ = float4(gPrevLightDirection, 1.0f);
 
             pfData = (float*)pFloat4Data;

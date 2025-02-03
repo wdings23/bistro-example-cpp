@@ -25,6 +25,7 @@ struct PSOutput
     float4 mTexCoord : SV_TARGET1;
     float4 mNormal : SV_TARGET2;
     float4 mMotionVector : SV_TARGET3;
+    float2 mScreenMotionVector : SV_TARGET4;
 };
 
 struct VertexStageOutput
@@ -163,6 +164,22 @@ PSOutput PSMain(VertexStageOutput in)
         (currClipSpacePos.y - prevClipSpacePos.y) * 0.5f + 0.5f,
         float(iMesh) + fDepth,
         1.0f
+    );
+
+    int2 screenCoord = int2(
+        int32_t(currClipSpacePos.x * float(defaultUniformData.miScreenWidth)),
+        int32_t(currClipSpacePos.y * float(defaultUniformData.miScreenHeight))
+    );
+
+    int2 prevScreenCoord = int2(
+        int32_t(prevClipSpacePos.x * float(defaultUniformData.miScreenWidth)),
+        int32_t(prevClipSpacePos.y * float(defaultUniformData.miScreenHeight))
+    );
+
+    int2 screenMotionVector = screenCoord - prevScreenCoord;
+    out.mScreenMotionVector = float2(
+        float(screenMotionVector.x),
+        float(screenMotionVector.y)
     );
 
     return out;

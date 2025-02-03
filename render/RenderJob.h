@@ -55,6 +55,8 @@ namespace Render
 				RenderDriver::Common::CCommandQueue*				mpComputeCommandQueue;
 
 				std::function<void(Render::Common::CRenderJob*)>*	mpfnInitExternalDataFunc = nullptr;
+
+				std::vector<char>*									mpacConstantBufferData = nullptr;
 			};
 
         public:
@@ -170,7 +172,8 @@ namespace Render
 			void createPipelineData(
 				rapidjson::Document const& doc,
 				std::vector<CRenderJob*>* apRenderJobs,
-				RenderDriver::Common::CCommandQueue* pCommandQueue
+				RenderDriver::Common::CCommandQueue* pCommandQueue,
+				std::vector<char>* pacConstantBufferData
 			);
 
 			void initPipelineLayout(
@@ -322,6 +325,13 @@ namespace Render
 
 			virtual void platformInitAttachmentBarriers(
 				CreateInfo const& createInfo
+			) = 0;
+
+			virtual void platformUploadDataToBuffer(
+				RenderDriver::Common::CBuffer& buffer,
+				char const* pacData,
+				uint32_t iDataSize,
+				RenderDriver::Common::CCommandQueue& commandQueue
 			) = 0;
 		};
     

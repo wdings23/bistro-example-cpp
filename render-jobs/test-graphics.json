@@ -8,8 +8,16 @@
             "Type": "TextureOutput",
             "Format": "rgba32float"
         },
-
-
+        {
+            "Name" : "Screen Coord Output",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
+        },
+        {
+            "Name" : "SVG Filter Output",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
+        },
 
         {
             "Name" : "World Position Output",
@@ -40,6 +48,27 @@
             "Name": "Previous Motion Vector Output",
             "Type": "TextureInput",
             "ParentJobName": "Copy Render Targets"
+        },
+        {
+            "Name": "Screen Motion Vector Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+
+        {
+            "Name" : "Spatial Restir Radiance Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Spatial Restir Diffuse Ray Trace"
+        },
+        {
+            "Name" : "Diffuse Moment Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Temporal Accumulation Graphics"
+        },
+        {
+            "Name" : "Irradiance Cache",
+            "Type": "BufferInputOutput",
+            "ParentJobName": "Build Irradiance Cache Ray Trace"
         }
 
     ],
@@ -48,7 +77,7 @@
     ],
     "BlendStates": [
         {
-            "Enabled": "True"
+            "Enabled": "False"
         }
     ],
     "DepthStencilState":

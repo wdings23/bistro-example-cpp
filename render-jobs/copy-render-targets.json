@@ -51,13 +51,6 @@
             "ScaleHeight": 0.25
         },
         {
-            "Name": "Previous Hit Count",
-            "Type": "TextureOutput",
-            "ParentJobName": "Ray Traced Ambient Occlusion",
-            "ParentName": "Output",
-            "Format": "rgba32float"
-        },
-        {
             "Name": "Previous Ray Direction Output",
             "Type": "TextureOutput",
             "ParentJobName": "Temporal Restir Diffuse Ray Trace",
@@ -70,28 +63,28 @@
             "Name": "Previous Temporal Radiance Output",
             "Type": "TextureOutput",
             "ParentJobName": "Temporal Restir Diffuse Ray Trace",
-            "ParentName": "Radiance Output",
+            "ParentName": "Temporal Restir Radiance Output",
             "Format": "rgba32float"
         },
         {
             "Name": "Previous Temporal Reservoir Output",
             "Type": "TextureOutput",
             "ParentJobName": "Temporal Restir Diffuse Ray Trace",
-            "ParentName": "Reservoir Output",
+            "ParentName": "Temporal Restir Reservoir Output",
             "Format": "rgba32float"
         },
         {
             "Name": "Previous Temporal Hit Position Output",
             "Type": "TextureOutput",
             "ParentJobName": "Temporal Restir Diffuse Ray Trace",
-            "ParentName": "Hit Position Output",
+            "ParentName": "Temporal Restir Hit Position Output",
             "Format": "rgba32float"
         },
         {
             "Name": "Previous Temporal Hit Normal Output",
             "Type": "TextureOutput",
             "ParentJobName": "Temporal Restir Diffuse Ray Trace",
-            "ParentName": "Hit Normal Output",
+            "ParentName": "Temporal Restir Hit Normal Output",
             "Format": "rgba32float"
         },
 
@@ -126,12 +119,34 @@
         },
 
         {
-            "Name": "Previous Temporal Accumulated Diffuse",
+            "Name": "Previous Temporal Accumulation Diffuse",
             "Type": "TextureOutput",
-            "ParentJobName": "Diffuse Filter Graphics",
-            "ParentName": "Filtered Output",
+            "ParentJobName": "Temporal Accumulation Graphics",
+            "ParentName": "Diffuse Accumulated Output",
+            "Format": "rgba32float"
+        },
+
+        {
+            "Name": "Previous Spatial Restir Radiance Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Spatial Restir Diffuse Ray Trace",
+            "ParentName": "Spatial Restir Radiance Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Spatial Restir Reservoir Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Spatial Restir Diffuse Ray Trace",
+            "ParentName": "Spatial Restir Reservoir Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Spatial Restir Hit Position Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Spatial Restir Diffuse Ray Trace",
+            "ParentName": "Spatial Restir Hit Position Output",
             "Format": "rgba32float"
         }
-
+    
     ]
 }

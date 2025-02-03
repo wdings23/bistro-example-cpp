@@ -79,7 +79,7 @@
     ],
     "BlendStates": [
         {
-            "Enabled": "True"
+            "Enabled": "False"
         }
     ],
     "DepthStencilState":

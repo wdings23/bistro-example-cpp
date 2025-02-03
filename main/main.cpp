@@ -60,8 +60,13 @@ LRESULT CALLBACK _windowProc(
 //static float3 sCameraPosition(-7.08f, 1.62f, 0.675f);
 //static float3 sInitialCameraPosition(1.0f, 1.0f, 0.0f);
 //static float3 sInitialCameraLookAt(0.0f, 1.0f, 0.0f);
+
 static float3 sInitialCameraPosition(-6.623f, 1.35f, -0.1312f);
 static float3 sInitialCameraLookAt(-5.695f, 1.35f, 0.2434f);
+
+//static float3 sInitialCameraPosition(-3.199f, 3.38f, 1.43f);
+//static float3 sInitialCameraLookAt(-3.07f, 3.39f, 1.263f);
+
 static float3 sCameraPosition(1.0f, 1.0f, 0.0f);
 static float3 sCameraLookAt(0.0f, 0.0f, 0.0f);
 
@@ -109,6 +114,8 @@ void initImgui(
     uint32_t iNumFramesInFlight);
 
 void imguiLayout(Render::Common::CRenderer* pRenderer);
+
+static std::atomic<uint32_t> giCopyingTexturePage;
 
 /*
 **
@@ -388,6 +395,7 @@ int CALLBACK WinMain(
     _In_ LPSTR pCommandLine,
     _In_ int iCommandShow)
 {
+    giCopyingTexturePage.store(0);
 
     //std::this_thread::sleep_for(std::chrono::seconds(5));
 
@@ -455,7 +463,8 @@ int CALLBACK WinMain(
 
     gpRenderer = pRenderer;
 
-    Render::Common::gLightDirection = normalize(float3(0.5f, 1.0f, 0.0f));
+    //Render::Common::gLightDirection = normalize(float3(0.5f, 1.0f, 0.0f));
+    Render::Common::gLightDirection = normalize(float3(-0.703f, 0.5403f, -0.461f));
 
     // TODO: move vertex and index buffer out of renderer
 
@@ -533,7 +542,9 @@ int CALLBACK WinMain(
     };
 
     pRenderer->mapfnRenderJobData["Temporal Restir Diffuse Ray Trace"] = pfnSetBuffers.get();
+    pRenderer->mapfnRenderJobData["Spatial Restir Diffuse Ray Trace"] = pfnSetBuffers.get();
     pRenderer->mapfnRenderJobData["Build Irradiance Cache Ray Trace"] = pfnSetBuffers.get();
+    pRenderer->mapfnRenderJobData["Spatial Restir Diffuse 1 Ray Trace"] = pfnSetBuffers.get();
 #endif // USE_RAY_TRACING
 
     std::map<std::string, std::vector<PageInfo>> aPageInfo;
@@ -752,7 +763,7 @@ int CALLBACK WinMain(
     //    256
     //);
 
-    uint32_t iNumFinished = 0;
+    std::atomic<uint32_t> iNumFinished = 0;
     bool bStartLoad = false;
     std::mutex texturePageThreadMutex;
 
@@ -858,7 +869,9 @@ int CALLBACK WinMain(
                     std::unique_ptr<RenderDriver::Common::CBuffer> threadUploadBuffer;
                     pRenderer->createBuffer(threadUploadBuffer, 256);
 
-                    for(;;)
+                    // TODO: find the buffer overflowing to corrupt function stack data
+
+                    for(uint32_t iLoop = 0;; iLoop++)
                     {
                         if(gbQuit)
                         {
@@ -867,11 +880,13 @@ int CALLBACK WinMain(
                         }
 
                         // wait or caldulate thread start and end indices
-                        if(iThread == 0)
+                        if(iThread == 0 && iLoop > 0)
                         {
                             // get the page queue, page info, and calculate the each thread's start index and num pages in queue to check 
 
-                            std::lock_guard<std::mutex> lock(texturePageThreadMutex);
+                            //std::lock_guard<std::mutex> lock(texturePageThreadMutex);
+
+                            giCopyingTexturePage.store(1);
 
                             // get the texture pages needed
                             auto& pTexturePageQueueBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Texture Page Queue MIP"];
@@ -904,32 +919,55 @@ int CALLBACK WinMain(
                                 pTexturePageCountBuffer,
                                 acCounterData.data(),
                                 0,
-                                256,
+                                128,
                                 *threadCommandBuffer,
                                 *threadCommandQueue
                             );
+
+                            giCopyingTexturePage.store(0);
 
                             // get the size of the queue and compute the start and end indices to check for each threads
                             uint32_t iNumChecks = min(*((uint32_t*)acCounterData.data()), 65535);
                             iNumChecksPerThread = (uint32_t)ceil((float)iNumChecks / (float)iNumThreads);
                             for(uint32_t i = 0; i < iNumThreads; i++)
                             {
-                                aiStartAndNumChecks[i] = std::make_pair(i * iNumChecksPerThread, iNumChecksPerThread);
+                                aiStartAndNumChecks[i] = std::make_pair(i * (uint32_t)ceil((float)iNumChecks / (float)iNumThreads), (uint32_t)ceil((float)iNumChecks / (float)iNumThreads));
+
+                                WTFASSERT(aiStartAndNumChecks[i].first < 1000000, "wtf");
+                                WTFASSERT(aiStartAndNumChecks[i].second < 1000000, "wtf");
                             }
+
+                            for(uint32_t i = 0; i < iNumThreads; i++)
+                            {
+                                WTFASSERT(aiStartAndNumChecks[i].first < 1000000, "wtf");
+                                WTFASSERT(aiStartAndNumChecks[i].second < 1000000, "wtf");
+                            }
+
+                            while(iNumFinished.load() < iNumThreads)
+                            {
+                                if(gbQuit)
+                                {
+                                    break;
+                                }
+                                std::this_thread::sleep_for(std::chrono::microseconds(10));
+                            }
+
+                            iNumFinished.store(0);
 
                             // wake up all other threads
                             bStartLoad = true;
+                            conditionVariable.notify_all();
                             
                         }
-                        else
-                        {
-                            // wait for thread 0 to compute the start and end indices to check in the queue
-                            while(!bStartLoad)
-                            {
-                                std::this_thread::sleep_for(std::chrono::microseconds(10));
-                            }
-                            
-                        }
+                        //else
+                        //{
+                        //    // wait for thread 0 to compute the start and end indices to check in the queue
+                        //    while(!bStartLoad)
+                        //    {
+                        //        std::this_thread::sleep_for(std::chrono::microseconds(10));
+                        //    }
+                        //    
+                        //}
 
                         uint32_t iStartThreadIndex = aiStartAndNumChecks[iThread].first;
                         uint32_t iNumChecksCopy = aiStartAndNumChecks[iThread].second;
@@ -962,35 +1000,35 @@ int CALLBACK WinMain(
                         );
                         WTFASSERT(iNumChecksCopy < 100000, "wtf");
 
-                        {
-                            std::lock_guard<std::mutex> lock(texturePageThreadMutex);
-                            iNumFinished += 1;
-                        }
+                        iNumFinished.fetch_add(1);
+
+                        //{
+                        //    std::lock_guard<std::mutex> lock(texturePageThreadMutex);
+                        //    iNumFinished += 1;
+                        //}
 
                         // wait for all the threads to finish
-                        if(iThread == 0)
-                        {
-                            while(iNumFinished != iNumThreads)
-                            {
-                                if(gbQuit)
-                                {
-                                    break;
-                                }
-                                std::this_thread::sleep_for(std::chrono::microseconds(10));
-                            }
-
-                            // re-initialize and wake up all the other threads
-                            iNumFinished = 0;
-                            bStartLoad = false;
-                            conditionVariable.notify_all();
-                        }
-                        else
+                        //if(iThread == 0)
+                        //{
+                        //    while(iNumFinished < iNumThreads)
+                        //    {
+                        //        if(gbQuit)
+                        //        {
+                        //            break;
+                        //        }
+                        //        std::this_thread::sleep_for(std::chrono::microseconds(10));
+                        //    }
+                        //
+                        //    // re-initialize and wake up all the other threads
+                        //    iNumFinished = 0;
+                        //    bStartLoad = false;
+                        //    //conditionVariable.notify_all();
+                        //}
+                        //else
+                        if(iThread != 0)
                         {
                             std::unique_lock<std::mutex> uniqueLock(texturePageThreadMutex);
-                            if(iNumFinished != 0)
-                            {
-                                conditionVariable.wait(uniqueLock);
-                            }
+                            conditionVariable.wait(uniqueLock);
                         }
                     }
 
@@ -1066,8 +1104,13 @@ auto start = std::chrono::high_resolution_clock::now();
         float3 tangent = cross(up, viewDir);
         float3 binormal = cross(tangent, viewDir);
 
-        //sCameraPosition = sCameraPosition + tangent * 0.003f;
-        //sCameraLookAt = sCameraLookAt + tangent * 0.003f;
+        //sCameraPosition = sCameraPosition + tangent * 0.002f;
+        //sCameraLookAt = sCameraLookAt + tangent * 0.002f;
+
+        //float4x4 rotMatrix = rotateMatrixY(0.00f);
+        //float3 cameraDiff = normalize(sCameraLookAt - sCameraPosition);
+        //float4 newLookAt = mul(float4(cameraDiff, 1.0f), rotMatrix);
+        //sCameraLookAt = sCameraPosition + newLookAt;
 
         Render::Common::UpdateCameraDescriptor cameraDesc = {};
         cameraDesc.mfFar = 100.0f;
@@ -1080,7 +1123,31 @@ auto start = std::chrono::high_resolution_clock::now();
 
         pRenderer->updateCamera(cameraDesc);
         pRenderer->updateRenderJobData();
+
+#if 0
+        float4x4 const& projectionMatrix = Render::Common::gaCameras[0].getProjectionMatrix();
+        float4x4 const& viewMatrix = Render::Common::gaCameras[0].getViewMatrix();
+        float4x4 const& viewProjectionMatrix = Render::Common::gaCameras[0].getViewProjectionMatrix();
+        //float4x4 viewProjectionMatrix = projectionMatrix * viewMatrix;
+        float4 testPos = float4(-1.881f, 3.020f, -0.203f, 1.0f);
+        float4 clipSpace = mul(testPos, viewProjectionMatrix);
+        clipSpace.x /= clipSpace.w;
+        clipSpace.y /= clipSpace.w;
+        clipSpace.x = clipSpace.x * 0.5f + 0.5f;
+        clipSpace.y = 1.0f - (clipSpace.y * 0.5f + 0.5f);
+
+        float2 screenCoord = float2(
+            clipSpace.x * 512.0f,
+            clipSpace.y * 512.0f
+        );
+#endif // #if 0
+
         pRenderer->draw();
+
+        //while(giCopyingTexturePage.load());
+        giCopyingTexturePage.store(1);
+        pRenderer->presentSwapChain();
+        giCopyingTexturePage.store(0);
         pRenderer->postDraw();
     }
 
@@ -1391,6 +1458,16 @@ LRESULT CALLBACK _windowProc(
     }
     case WM_MOUSEMOVE:
     {
+        tagTRACKMOUSEEVENT mouseEvent;
+        mouseEvent.dwFlags = WM_MOUSELEAVE;
+        mouseEvent.cbSize = sizeof(TRACKMOUSEEVENT);
+        mouseEvent.dwHoverTime = HOVER_DEFAULT;
+        BOOL bOutsideWindows = TrackMouseEvent(&mouseEvent);
+        if(bOutsideWindows)
+        {
+            DEBUG_PRINTF("!!! OUTSIDE WINDOWS !!!\n");
+        }
+
         if(sbMiddleMouseDown)
         {
             SetCapture(windowHandle);
@@ -3107,6 +3184,9 @@ auto totalStart = std::chrono::high_resolution_clock::now();
         WTFASSERT(pTexturePageData, "Can\'t find texture page \"%s\"", oss.str().c_str());
         auto durationUS = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
 
+        while(giCopyingTexturePage.load());
+        giCopyingTexturePage.store(1);
+
         auto start1 = std::chrono::high_resolution_clock::now();
 
         // copy texture page to texture atlas, normal or albedo
@@ -3190,6 +3270,8 @@ auto totalStart = std::chrono::high_resolution_clock::now();
             commandQueue,
             uploadBuffer
         );
+
+        giCopyingTexturePage.store(0);
 
         {
             std::lock_guard<std::mutex> lock(threadMutex);
@@ -3368,7 +3450,46 @@ void setupExternalDataBuffers(
         );
 
     }
+}
 
+/*
+**
+*/
+void loadMeshInstanceInfo(
+    std::vector<uint32_t> aiMeshInstanceID
+)
+{
+    FILE* fp = fopen("d:\\Downloads\\Bistro_v4\\bistro2-mesh-instance-ids.bin", "rb");
+    uint32_t iNumOrigMeshes = 0;
+    fread(&iNumOrigMeshes, sizeof(uint32_t), 1, fp);
+    std::vector<std::vector<uint32_t>> aiMeshInstances(iNumOrigMeshes);
+    std::vector<uint32_t> aiOrigMeshes(iNumOrigMeshes);
+    for(uint32_t i = 0; i < iNumOrigMeshes; i++)
+    {
+        uint32_t iOrigMesh = 0, iNumInstances = 0;
+        fread(&iOrigMesh, sizeof(uint32_t), 1, fp);
+        aiOrigMeshes[i] = iOrigMesh;
+        fread(&iNumInstances, sizeof(uint32_t), 1, fp);
+        aiMeshInstances[i].resize(iNumInstances);
+        fread(aiMeshInstances[i].data(), sizeof(uint32_t), iNumInstances, fp);
+    }
+    fclose(fp);
 
+    fp = fopen("d:\\Downloads\\Bistro_v4\\bistro2-mesh-instance-positions.bin", "rb");
+    uint32_t iNumMeshes = 0;
+    fread(&iNumMeshes, sizeof(uint32_t), 1, fp);
+    std::vector<float3> aMeshInstancePositions(iNumMeshes);
+    for(uint32_t i = 0; i < iNumMeshes; i++)
+    {
+        fread(aMeshInstancePositions.data(), sizeof(float3), iNumMeshes, fp);
+    }
 
+    fp = fopen("d:\\Downloads\\Bistro_v4\\bistro2-mesh-instance-bboxes.bin", "rb");
+    iNumMeshes = 0;
+    fread(&iNumMeshes, sizeof(uint32_t), 1, fp);
+    std::vector<float3> aMeshInstanceBBoxes(iNumMeshes);
+    for(uint32_t i = 0; i < iNumMeshes; i++)
+    {
+        fread(aMeshInstanceBBoxes.data(), sizeof(float3), iNumMeshes, fp);
+    }
 }

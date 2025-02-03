@@ -4,7 +4,7 @@
     "Shader": "lighting-composite-graphics.shader",
     "Attachments": [
         {
-            "Name" : "Output",
+            "Name" : "Light Composite Radiance Output",
             "Type": "TextureOutput",
             "Format": "rgba32float"
         },
@@ -12,12 +12,12 @@
 
 
         {
-            "Name" : "Diffuse Accumulated Output",
+            "Name" : "SVG Filter Radiance 2 Output",
             "Type": "TextureInput",
-            "ParentJobName": "Temporal Accumulation Graphics"
+            "ParentJobName": "SVG Filter 2 Graphics"
         },
         {
-            "Name" : "Output",
+            "Name" : "Direct Sun Light Output",
             "Type": "TextureInput",
             "ParentJobName": "Ray Traced Shadow"
         },
@@ -37,7 +37,12 @@
             "ParentJobName": "Deferred Indirect Graphics"
         },
         {
-            "Name": "Reservoir Output",
+            "Name": "Temporal Restir Reservoir Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
+        },
+        {
+            "Name": "Ambient Occlusion Output",
             "Type": "TextureInput",
             "ParentJobName": "Temporal Restir Diffuse Ray Trace"
         }
@@ -47,7 +52,7 @@
     ],
     "BlendStates": [
         {
-            "Enabled": "True"
+            "Enabled": "False"
         }
     ],
     "DepthStencilState":

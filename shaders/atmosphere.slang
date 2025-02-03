@@ -131,7 +131,7 @@ Fragment PSMain(
 
     ret.mSkyRadiance = float4(sky.radiance * sky.transmittance, 1.0f);
     ret.mSunLightRadiance = float4(sun.radiance * sun.transmittance, 1.0f);
-
+#if 0
     ret.mDiffuseSkyRadiance = float4(
         convolve(
             input.texcoord.xy,
@@ -140,6 +140,7 @@ Fragment PSMain(
             64), 
         1.0f
     );
+#endif // #if 0
 
     return ret;
 }

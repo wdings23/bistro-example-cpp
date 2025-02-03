@@ -36,17 +36,27 @@
             "Type": "TextureInput"
         },
         {
+            "Name" : "Sun Light Output",
+            "ParentJobName": "Atmosphere Graphics",
+            "Type": "TextureInput"
+        },
+        {
             "Name" : "World Position Output",
             "Type": "TextureInput",
             "ParentJobName": "Deferred Indirect Graphics"
         },
         {
-            "Name": "Hit Position Output",
+            "Name" : "Normal Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name": "Temporal Restir Hit Position Output",
             "ParentJobName": "Temporal Restir Diffuse Ray Trace",
             "Type": "TextureInput"
         },
         {
-            "Name": "Hit Normal Output",
+            "Name": "Temporal Restir Hit Normal Output",
             "ParentJobName": "Temporal Restir Diffuse Ray Trace",
             "Type": "TextureInput"
         },

@@ -34,11 +34,14 @@ namespace RenderDriver
 			WTFASSERT(ret == VK_SUCCESS, "Error creating vertex shader: %s", Utils::getErrorCode(ret));
 
 			// fragment shader
-			createInfo.codeSize = desc.miPixelShaderSize;
-			createInfo.pCode = reinterpret_cast<const uint32_t*>(desc.mpPixelShader);
-			ret = vkCreateShaderModule(*mpNativeDevice, &createInfo, nullptr, &mFragmentNativeShaderModule);
-			WTFASSERT(ret == VK_SUCCESS, "Error creating vertex shader: %s", Utils::getErrorCode(ret));
-
+			if(desc.mpPixelShader)
+			{
+				createInfo.codeSize = desc.miPixelShaderSize;
+				createInfo.pCode = reinterpret_cast<const uint32_t*>(desc.mpPixelShader);
+				ret = vkCreateShaderModule(*mpNativeDevice, &createInfo, nullptr, &mFragmentNativeShaderModule);
+				WTFASSERT(ret == VK_SUCCESS, "Error creating vertex shader: %s", Utils::getErrorCode(ret));
+			}
+			
 			// vertex stage
 			VkPipelineShaderStageCreateInfo vertShaderStageInfo = {};
 			vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
@@ -48,14 +51,20 @@ namespace RenderDriver
 
 			// fragment stage
 			VkPipelineShaderStageCreateInfo fragmentShaderStageInfo = {};
-			fragmentShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
-			fragmentShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
-			fragmentShaderStageInfo.module = mFragmentNativeShaderModule;
-			fragmentShaderStageInfo.pName = "PSMain";
+			if(desc.mpPixelShader)
+			{
+				fragmentShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+				fragmentShaderStageInfo.stage = VK_SHADER_STAGE_FRAGMENT_BIT;
+				fragmentShaderStageInfo.module = mFragmentNativeShaderModule;
+				fragmentShaderStageInfo.pName = "PSMain";
+			}
 
-			std::vector<VkPipelineShaderStageCreateInfo> aPipelineStages(2);
-			aPipelineStages[0] = vertShaderStageInfo;
-			aPipelineStages[1] = fragmentShaderStageInfo;
+			std::vector<VkPipelineShaderStageCreateInfo> aPipelineStages;
+			aPipelineStages.push_back(vertShaderStageInfo);
+			if(desc.mpPixelShader)
+			{
+				aPipelineStages.push_back(fragmentShaderStageInfo);
+			}
 
 			// dynamic states
 			std::vector<VkDynamicState> dynamicStates =

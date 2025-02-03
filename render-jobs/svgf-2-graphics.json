@@ -1,19 +1,19 @@
 {
     "Type": "Graphics",
     "PassType": "Full Triangle",
-    "Shader": "diffuse-filter-graphics.shader",
+    "Shader": "svgf-graphics.shader",
     "Attachments": [
         {
-            "Name" : "Filtered Output",
+            "Name" : "SVG Filter Radiance 2 Output",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
+        },
+        {
+            "Name" : "SVG Filter Moment 2 Output",
             "Type": "TextureOutput",
             "Format": "rgba32float"
         },
 
-        {
-            "Name" : "Temporal Restir Radiance Output",
-            "Type": "TextureInput",
-            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
-        },
         {
             "Name" : "World Position Output",
             "Type": "TextureInput",
@@ -23,17 +23,21 @@
             "Name" : "Normal Output",
             "Type": "TextureInput",
             "ParentJobName": "Deferred Indirect Graphics"
-        }
-    ],
-    "ShaderResources": [   
+        },
         {
-            "name": "blue noise texture",
-            "type": "texture2d",
-            "shader_stage": "fragment",
-            "format": "rgb8unorm",
-            "usage": "uniform",
-            "file_path": "D:\\projects\\free-blue-noise-textures\\512_512\\LDR_RGBA_0.png"
+            "Name" : "SVG Filter Radiance 1 Output",
+            "Type": "TextureInput",
+            "ParentJobName": "SVG Filter 1 Graphics"
+        },
+        {
+            "Name" : "SVG Filter Moment 1 Output",
+            "Type": "TextureInput",
+            "ParentJobName": "SVG Filter 1 Graphics"
         }
+
+    ],
+    "ShaderResources": [
+        
     ],
     "BlendStates": [
         {

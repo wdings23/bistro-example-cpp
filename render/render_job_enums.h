@@ -23,6 +23,7 @@ namespace Render
 			Copy,
 			SwapChain,
 			Imgui,
+			DepthPrepass,
 			RayTrace,
 		};
 

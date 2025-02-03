@@ -2,6 +2,7 @@
 
 #include "default-uniform-headers.slang"
 #include "octahedron-map-headers.slang"
+#include "motion-vector-headers.slang"
 
 struct HashEntry
 {
@@ -31,10 +32,11 @@ struct VertexFormat
 [[vk::binding(4, 0)]] Texture2D<float4> prevNormalTexture;
 [[vk::binding(5, 0)]] Texture2D<float4> motionVectorTexture;
 [[vk::binding(6, 0)]] Texture2D<float4> prevMotionVectorTexture;
+[[vk::binding(7, 0)]] SamplerState textureSampler;
 
 [[vk::binding(0, 1)]] StructuredBuffer<VertexFormat> vertexBuffer;
 [[vk::binding(1, 1)]] StructuredBuffer<uint32_t> indexBuffer;
-[[vk::binding(2, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData;
+[[vk::binding(2, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
 
 #define NUM_THREADS 256
 
@@ -60,6 +62,9 @@ void CSMain(
 
     float2 motionVector = motionVectorTexture[texCoord].xy;
 
+    float fOneOverWeight = 1.0f / float(textureSize.x);
+    float fOneOverHeight = 1.0f / float(textureSize.y);
+
     float fDisocclusion = 0.0f;
     int2 prevTexCoord = getPreviousScreenCoord(texCoord);
     if(isPrevUVOutOfBounds(texCoord))
@@ -68,7 +73,17 @@ void CSMain(
     }
     else
     {
-        fDisocclusion = (isDisoccluded2(texCoord, prevTexCoord) == true) ? 1.0f : 0.0f;
+        float2 uv = float2(
+            float(texCoord.x) * fOneOverWeight,
+            float(texCoord.y) * fOneOverHeight
+        );
+
+        float2 prevUV = float2(
+            float(prevTexCoord.x) * fOneOverWeight,
+            float(prevTexCoord.y) * fOneOverHeight
+        );
+
+        fDisocclusion = (isDisoccludedRayTrace2(texCoord, prevTexCoord) == true) ? 1.0f : 0.0f;
     }
 
     outputTexture[texCoord] = float4(fDisocclusion, fDisocclusion, fDisocclusion, vertexBuffer[indexBuffer[0]].mPosition.x);
@@ -123,53 +138,4 @@ int2 getPreviousScreenCoord(
     }
 
     return closestCoord;
-}
-
-/*
-**
-*/
-bool isDisoccluded2(
-    in int2 screenCoord,
-    in int2 prevScreenCoord
-)
-{
-    float3 worldPosition = worldPositionTexture[screenCoord].xyz;
-    float3 prevWorldPosition = prevWorldPositionTexture[prevScreenCoord].xyz;
-    float3 normal = normalTexture[screenCoord].xyz;
-    float3 prevNormal = prevNormalTexture[prevScreenCoord].xyz;
-    float4 motionVector = motionVectorTexture[screenCoord];
-    float4 prevMotionVectorAndMeshIDAndDepth = prevMotionVectorTexture[prevScreenCoord];
-
-    float fDepth = fract(motionVector.z);
-    float fPrevDepth = fract(prevMotionVectorAndMeshIDAndDepth.z);
-
-    uint32_t iMesh = uint32_t(motionVector.z - fDepth);
-    uint32_t iPrevMesh = uint32_t(prevMotionVectorAndMeshIDAndDepth.z - fPrevDepth);
-
-    float fCheckDepth = abs(fDepth - fPrevDepth);
-    float3 worldPositionDiff = prevWorldPosition.xyz - worldPosition.xyz;
-    float fCheckDP = abs(dot(normalize(normal.xyz), normalize(prevNormal.xyz)));
-    float fCheckWorldPositionDistance = dot(worldPositionDiff, worldPositionDiff);
-
-    return !(fCheckDP >= 0.99f && fCheckWorldPositionDistance <= 0.001f && iMesh == iPrevMesh);
-}
-
-/*
-**
-*/
-bool isPrevUVOutOfBounds(
-    in int2 inputTexCoord
-)
-{
-    uint2 textureSize;
-    motionVectorTexture.GetDimensions(textureSize.x, textureSize.y);
-
-    float4 motionVector = motionVectorTexture[inputTexCoord];
-    float2 uv = float2(
-        float(inputTexCoord.x) / float(textureSize.x),
-        float(inputTexCoord.y) / float(textureSize.y)
-    );
-
-    float2 backProjectedScreenUV = uv - motionVector.xy;
-    return (backProjectedScreenUV.x < 0.0f || backProjectedScreenUV.x > 1.0 || backProjectedScreenUV.y < 0.0f || backProjectedScreenUV.y > 1.0f);
 }

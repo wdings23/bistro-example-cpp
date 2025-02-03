@@ -393,6 +393,8 @@ namespace Render
                 RenderDriver::Common::CCommandQueue::Type const& type
             );
 
+            void presentSwapChain();
+
             virtual void setAttachmentImage(
                 std::string const& dstRenderJobName,
                 std::string const& dstAttachmentName,

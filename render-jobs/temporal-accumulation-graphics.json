@@ -8,11 +8,16 @@
             "Type": "TextureOutput",
             "Format": "rgba32float"
         },
+        {
+            "Name" : "Diffuse Moment Output",
+            "Type": "TextureOutput",
+            "Format": "rg32float"
+        },
 
         {
-            "Name" : "Decoded Spherical Harmonics Output",
+            "Name" : "Spatial Restir Decoded Spherical Harmonics Output",
             "Type": "TextureInput",
-            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
+            "ParentJobName": "Spatial Restir Diffuse Ray Trace"
         },
         {
             "Name" : "World Position Output",
@@ -35,7 +40,7 @@
             "ParentJobName": "Copy Render Targets"
         },
         {
-            "Name": "Previous Temporal Accumulated Diffuse",
+            "Name": "Previous Temporal Accumulation Diffuse",
             "Type": "TextureInput",
             "ParentJobName": "Copy Render Targets"
         },
@@ -48,6 +53,16 @@
             "Name": "Previous Motion Vector Output",
             "Type": "TextureInput",
             "ParentJobName": "Copy Render Targets"
+        },
+        {
+            "Name" : "Screen Motion Vector Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name": "Ambient Occlusion Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
         }
     ],
     "ShaderResources": [   
@@ -62,7 +77,7 @@
     ],
     "BlendStates": [
         {
-            "Enabled": "True"
+            "Enabled": "False"
         }
     ],
     "DepthStencilState":

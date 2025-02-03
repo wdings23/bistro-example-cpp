@@ -11,22 +11,21 @@
 
 
         {
-            "Name" : "Output",
+            "Name" : "Ambient Occlusion Output",
             "Type": "TextureInput",
-            "ParentJobName": "Ray Traced Ambient Occlusion",
-            "ParentName": "Output"
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
         },
         {
-            "Name" : "Output",
+            "Name" : "Test Graphics Output",
             "Type": "TextureInput",
-            "ParentJobName": "Light Composite Graphics"
+            "ParentJobName": "Test Graphics"
         }
     ],
     "ShaderResources": [
     ],
     "BlendStates": [
         {
-            "Enabled": "True"
+            "Enabled": "False"
         }
     ],
     "DepthStencilState":

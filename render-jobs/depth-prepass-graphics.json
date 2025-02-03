@@ -1,0 +1,32 @@
+{
+    "Type": "Graphics",
+    "PassType": "Depth Prepass",
+    "Shader": "depth-prepass-graphics.shader",
+    "Attachments": [
+        {
+            "Name": "Depth Test",
+            "Type": "TextureOutput",
+            "Format": "r8unorm"
+        }
+    ],
+    "ShaderResources": [
+    ],
+    "BlendStates": [
+        {
+            "Enabled": "False"
+        }
+    ],
+    "DepthStencilState":
+    {
+        "DepthEnable": "True",
+        "DepthWriteMask": "All",
+        "DepthFunc": "LessEqual",
+        "StencilEnable": "False"
+    },
+    "RasterState":
+    {
+        "FillMode": "Solid",
+        "CullMode": "CounterClockwise",
+        "FrontFace": "True"
+    }
+}

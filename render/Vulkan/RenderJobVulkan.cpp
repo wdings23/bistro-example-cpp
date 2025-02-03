@@ -946,6 +946,68 @@ namespace Render
 
 		}
 
+		/*
+		**
+		*/
+		void CRenderJob::platformUploadDataToBuffer(
+			RenderDriver::Common::CBuffer& buffer,
+			char const* pacData,
+			uint32_t iDataSize,
+			RenderDriver::Common::CCommandQueue& commandQueue
+		)
+		{
+			// upload command buffer allocator
+			RenderDriver::Common::CommandAllocatorDescriptor commandAllocatorDesc = {};
+			commandAllocatorDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
+			RenderDriver::Vulkan::CCommandAllocator commandAllocator;
+			commandAllocator.create(commandAllocatorDesc, *mpDevice);
+
+			// upload command buffer
+			RenderDriver::Common::CommandBufferDescriptor commandBufferDesc = {};
+			commandBufferDesc.mpCommandAllocator = &commandAllocator;
+			commandBufferDesc.mpPipelineState = nullptr;
+			commandBufferDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
+			RenderDriver::Vulkan::CCommandBuffer commandBuffer;
+			commandBuffer.create(commandBufferDesc, *mpDevice);
+			commandBuffer.reset();
+
+			// upload buffer 
+			RenderDriver::Vulkan::CBuffer uploadBuffer;
+			RenderDriver::Common::BufferDescriptor bufferDesc;
+			bufferDesc.miSize = iDataSize;
+			bufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage(
+				uint32_t(RenderDriver::Common::BufferUsage::TransferSrc) |
+				uint32_t(RenderDriver::Common::BufferUsage::StorageBuffer)
+			);
+			uploadBuffer.create(bufferDesc, *mpDevice);
+
+			// set image data
+			uploadBuffer.setData(
+				(void*)pacData,
+				iDataSize);
+
+			buffer.copy(
+				uploadBuffer,
+				commandBuffer,
+				0,
+				0,
+				iDataSize
+			);
+
+			commandBuffer.close();
+
+			// execute command 
+			commandQueue.execCommandBuffer(
+				commandBuffer,
+				*mpDevice
+			);
+
+			VkQueue& nativeCommandQueue = *((VkQueue*)commandQueue.getNativeCommandQueue());
+			vkQueueWaitIdle(nativeCommandQueue);
+
+			uploadBuffer.releaseNativeBuffer();
+		}
+
     }	// Vulkan
 
 }	// Render 

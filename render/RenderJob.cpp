@@ -14,6 +14,8 @@
 
 #include <sstream>
 
+#include <render-driver/Vulkan/BufferVulkan.h>
+
 namespace Render
 {
     namespace Common
@@ -76,7 +78,7 @@ namespace Render
             {
                 mType = JobType::RayTrace;
             }
-
+            
             if(passStr == "Compute")
             {
                 mPassType = Render::Common::PassType::Compute;
@@ -109,6 +111,10 @@ namespace Render
             {
                 mPassType = Render::Common::PassType::RayTrace;
             }
+            else if(passStr == "Depth Prepass")
+            {
+                mPassType = Render::Common::PassType::DepthPrepass;
+            }
 
             if(mType != JobType::Copy)
             {
@@ -123,7 +129,8 @@ namespace Render
                 createPipelineData(
                     doc,
                     createInfo.mpaRenderJobs,
-                    createInfo.mpGraphicsCommandQueue
+                    createInfo.mpGraphicsCommandQueue,
+                    createInfo.mpacConstantBufferData
                 );
 
                 initPipelineLayout(
@@ -163,7 +170,8 @@ namespace Render
                         if(pJob->mName == parentJobName)
                         {
                             WTFASSERT(pJob->mapOutputImageAttachments.count(parentName) > 0,
-                                "Can't find \"%s\" from parent job \"%s\"",
+                                "In \"%s\", Can't find \"%s\" from parent job \"%s\"",
+                                mName.c_str(),
                                 parentName.c_str(),
                                 parentJobName.c_str()
                             );
@@ -346,7 +354,8 @@ namespace Render
         void CRenderJob::createPipelineData(
             rapidjson::Document const& doc,
             std::vector<CRenderJob*>* apRenderJobs,
-            RenderDriver::Common::CCommandQueue* pCommandQueue
+            RenderDriver::Common::CCommandQueue* pCommandQueue,
+            std::vector<char>* pacConstantBufferData
         )
         {
             auto aShaderResources = doc["ShaderResources"].GetArray();
@@ -396,6 +405,41 @@ namespace Render
                 ++iIndex;
 
             }   // for shader resource in shader resources
+
+            if(pacConstantBufferData != nullptr)
+            {
+                uint32_t iBufferSize = max((uint32_t)pacConstantBufferData->size(), 64);
+                RenderDriver::Common::BufferUsage usage = RenderDriver::Common::BufferUsage(
+                    uint32_t(RenderDriver::Common::BufferUsage::UniformBuffer) |
+                    uint32_t(RenderDriver::Common::BufferUsage::UniformTexel) |
+                    uint32_t(RenderDriver::Common::BufferUsage::TransferDest)
+                );
+
+                RenderDriver::Common::BufferDescriptor bufferDesc =
+                {
+                    iBufferSize,
+                    RenderDriver::Common::Format::R32_FLOAT,
+                    RenderDriver::Common::ResourceFlagBits::None,
+                    RenderDriver::Common::HeapType::Default,
+                    RenderDriver::Common::ResourceStateFlagBits::None,
+                    nullptr,
+                    0,
+                    0,
+                    RenderDriver::Common::Format::R32_FLOAT,
+                    usage
+                };
+                
+                std::string name = mName + " Constant Buffer";
+                mapUniformBuffers[name] = platformCreateBuffer(name, bufferDesc);
+                platformUploadDataToBuffer(
+                    *mapUniformBuffers[name], 
+                    pacConstantBufferData->data(), 
+                    (uint32_t)pacConstantBufferData->size(),
+                    *pCommandQueue);
+
+                maShaderResourceInfo[name]["usage"] = "uniform";
+                maUniformMappings.push_back(std::make_pair(name, "buffer"));
+            }
         }
 
         /*
@@ -711,6 +755,12 @@ namespace Render
                 pDesc->miVertexShaderSize = (uint32_t)acShaderBufferVS.size();
                 pDesc->mpVertexShader = (uint8_t*)acShaderBufferVS.data();
 
+                // no need for pixel shader in depth pre-pass
+                if(mPassType == PassType::DepthPrepass)
+                {
+                    pDesc->mpPixelShader = nullptr;
+                }
+
                 mpPipelineState->create(
                     *pDesc,
                     *mpDevice
@@ -879,8 +929,11 @@ namespace Render
 #if !defined(USE_RAY_TRACING)
                     if(mName == "Swap Chain Graphics")
                     {
-                        parentJobName = "Texture Atlas Graphics";
-                        name = "Albedo Output";
+                        //parentJobName = "Texture Atlas Graphics";
+                        //name = "Albedo Output";
+
+                        parentJobName = "Test Graphics";
+                        name = "Test Graphics Output";
                     }
 #endif // USE_RAY_TRACING
 
@@ -979,10 +1032,12 @@ namespace Render
                 attachmentFormat = RenderDriver::Common::Format::R32_FLOAT;
             else if(attachmentFormatStr == "r16float")
                 attachmentFormat = RenderDriver::Common::Format::R16_FLOAT;
-            else if(attachmentFormatStr == "rg16float")
+            else if(attachmentFormatStr == "rg32float")
                 attachmentFormat = RenderDriver::Common::Format::R32G32_FLOAT;
             else if(attachmentFormatStr == "rg16float")
                 attachmentFormat = RenderDriver::Common::Format::R16G16_FLOAT;
+            else if(attachmentFormatStr == "r32float")
+                attachmentFormat = RenderDriver::Common::Format::R32_FLOAT;
 
             platformCreateAttachmentImage(
                 attachmentName,
@@ -1032,8 +1087,10 @@ namespace Render
 #if !defined(USE_RAY_TRACING)
             if(mName == "Swap Chain Graphics")
             {
-                name = "Albedo Output";
-                parentJobName = "Texture Atlas Graphics";
+                //name = "Albedo Output";
+                //parentJobName = "Texture Atlas Graphics";
+                parentJobName = "Test Graphics";
+                name = "Test Graphics Output";
                 parentName = name;
             }
 #endif // USE_RAY_TRACING
@@ -1072,7 +1129,10 @@ namespace Render
                 }
                 else
                 {
-                    WTFASSERT(0, "should not be here, no parent name \"%s\" parent job \"%s\"", parentName.c_str(), parentJobName.c_str());
+                    WTFASSERT(0, "\"%s\" should not be here, no parent name \"%s\" parent job \"%s\"", 
+                        mName.c_str(),
+                        parentName.c_str(), 
+                        parentJobName.c_str());
                 }
                
             }

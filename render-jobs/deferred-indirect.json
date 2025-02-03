@@ -22,6 +22,11 @@
             "Name" : "Motion Vector Output",
             "Type": "TextureOutput",
             "Format": "rgba32float"
+        },
+        {
+            "Name" : "Screen Motion Vector Output",
+            "Type": "TextureOutput",
+            "Format": "rg16float"
         }
     ],
     "ShaderResources": [
@@ -49,7 +54,7 @@
     ],
     "BlendStates": [
         {
-            "Enabled": "True"
+            "Enabled": "False"
         }
     ],
     "DepthStencilState":

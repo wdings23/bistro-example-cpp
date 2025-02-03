@@ -1,4 +1,5 @@
 #define PI 3.14159f
+#define FLT_MAX 1.0e+10
 
 #include "default-uniform-headers.slang"
 
@@ -16,6 +17,7 @@ struct RayPayload
 [[vk::binding(6, 0)]] Texture2D<float4> prevWorldPositionTexture;
 [[vk::binding(7, 0)]] Texture2D<float4> prevNormalTexture;
 [[vk::binding(8, 0)]] Texture2D<float4> prevMotionVectorTexture;
+[[vk::binding(9, 0)]] SamplerState textureSampler;
 
 [[vk::binding(0, 1)]] Texture2D<float4> blueNoiseTexture;
 [[vk::binding(1, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;

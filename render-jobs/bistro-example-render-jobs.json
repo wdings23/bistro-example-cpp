@@ -89,6 +89,12 @@
             "PassType": "Full Triangle"
         },
         {
+            "Name": "Ray Traced Shadow",
+            "Pipeline": "ray-traced-shadow.json",
+            "Type": "Ray Trace",
+            "PassType": "Ray Trace"
+        },
+        {
             "Name": "Texture Page Queue Compute",
             "Pipeline": "texture-page-queue-compute.json",
             "Type": "Compute",
@@ -108,14 +114,14 @@
             "PassType": "Ray Trace"
         },
         {
-            "Name": "Ray Traced Ambient Occlusion",
-            "Pipeline": "ray-traced-ambient-occlusion.json",
+            "Name": "Spatial Restir Diffuse Ray Trace",
+            "Pipeline": "spatial-restir-diffuse-ray-trace.json",
             "Type": "Ray Trace",
             "PassType": "Ray Trace"
         },
         {
-            "Name": "Ray Traced Shadow",
-            "Pipeline": "ray-traced-shadow.json",
+            "Name": "Spatial Restir Diffuse 1 Ray Trace",
+            "Pipeline": "spatial-restir-diffuse-1-ray-trace.json",
             "Type": "Ray Trace",
             "PassType": "Ray Trace"
         },
@@ -130,6 +136,45 @@
             "Pipeline": "temporal-accumulation-graphics.json",
             "Type": "Graphics",
             "PassType": "Full Triangle"
+        },
+        {
+            "Name": "SVG Filter 0 Graphics",
+            "Pipeline": "svgf-0-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle",
+            "ConstantBuffer": [ 
+                {
+                    "name": "step",
+                    "data": 0,
+                    "data type": "int"
+                }
+            ]
+        },
+        {
+            "Name": "SVG Filter 1 Graphics",
+            "Pipeline": "svgf-1-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle",
+            "ConstantBuffer": [ 
+                {
+                    "name": "step",
+                    "data": 2,
+                    "data type": "int"
+                }
+            ]
+        },
+        {
+            "Name": "SVG Filter 2 Graphics",
+            "Pipeline": "svgf-2-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle",
+            "ConstantBuffer": [ 
+                {
+                    "name": "step",
+                    "data": 1,
+                    "data type": "int"
+                }
+            ]
         },
         {
             "Name": "Diffuse Filter Graphics",

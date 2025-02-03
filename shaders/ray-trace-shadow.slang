@@ -1,10 +1,14 @@
 #define PI 3.14159f
 
 #include "default-uniform-headers.slang"
+#include "octahedron-map-headers.slang"
 
 [[vk::binding(0, 0)]] RaytracingAccelerationStructure scene;
 [[vk::binding(1, 0)]] RWTexture2D<float4> renderTarget;
 [[vk::binding(2, 0)]] Texture2D<float4> worldPositionTexture;
+[[vk::binding(3, 0)]] Texture2D<float4> sunLightTexture;
+[[vk::binding(4, 0)]] SamplerState textureSampler;
+
 [[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData; 
 
 struct RayPayload
@@ -51,7 +55,9 @@ void rayGen()
             payload
         );
 
-        float3 radianceOutput = payload.mOutput.xyz;
+        float3 radianceOutput = (payload.mOutput.x > 0.0f) ? 
+            sunLightTexture[int2(0, 0)].xyz :
+            float3(0.0f, 0.0f, 0.0f);
         renderTarget[rayIndex] = float4(radianceOutput.xyz, 1.0f);
     }
 }
@@ -74,4 +80,18 @@ void missShader(
 )
 {
     payload.mOutput = float4(1.0f, 1.0f, 1.0f, 1.0f);
+}
+
+/*
+**
+*/
+float3 getSunLight(
+    in float3 rayDirection)
+{
+    float2 skyUV = octahedronMap2(rayDirection);
+
+    return sunLightTexture.Sample(
+        textureSampler,
+        skyUV
+    ) .xyz;
 }
