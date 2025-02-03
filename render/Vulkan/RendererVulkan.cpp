@@ -3158,6 +3158,7 @@ namespace Render
                     uint32_t(RenderDriver::Common::BufferUsage::ShaderDeviceAddress) |
                     uint32_t(RenderDriver::Common::BufferUsage::ShaderBindingTable)
                 );
+                sbtBufferDesc.mHeapType = RenderDriver::Common::HeapType::Upload;
                 maShaderBindingTables[bindingTableName].mBuffer->create(
                     sbtBufferDesc,
                     *mpDevice

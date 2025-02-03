@@ -358,11 +358,12 @@ void rayGen()
             hitPosition,
             hitNormal,
             hitUV,
-            motionVector,
+            float2(0.0f, 0.0f),
             0.8f,
             defaultUniformBuffer.mViewProjectionMatrix,
             outputTextureSize,
-            iMaterialID
+            iMaterialID,
+            temporalRadianceTexture
         );
         onScreenRadiance.xyz = 
             bouncedRadianceInfo.mRadiance * 

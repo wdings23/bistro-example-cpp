@@ -42,9 +42,9 @@
             "ParentJobName": "Temporal Restir Diffuse Ray Trace"
         },
         {
-            "Name": "Ambient Occlusion Output",
+            "Name": "SVG Filter Ambient Occlusion 2 Output",
             "Type": "TextureInput",
-            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
+            "ParentJobName": "SVG Filter 2 Graphics"
         }
     ],
     "ShaderResources": [   

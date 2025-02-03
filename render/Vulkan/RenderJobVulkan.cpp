@@ -249,6 +249,7 @@ namespace Render
 			RenderDriver::Common::BufferDescriptor bufferDesc;
 			bufferDesc.miSize = iSize;
 			bufferDesc.mFormat = format;
+			bufferDesc.mHeapType = RenderDriver::Common::HeapType::Upload;
 			uploadBuffer.create(bufferDesc, *mpDevice);
 
 			// set image data
@@ -979,6 +980,7 @@ namespace Render
 				uint32_t(RenderDriver::Common::BufferUsage::TransferSrc) |
 				uint32_t(RenderDriver::Common::BufferUsage::StorageBuffer)
 			);
+			bufferDesc.mHeapType = RenderDriver::Common::HeapType::Upload;
 			uploadBuffer.create(bufferDesc, *mpDevice);
 
 			// set image data

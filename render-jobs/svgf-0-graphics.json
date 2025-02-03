@@ -13,7 +13,11 @@
             "Type": "TextureOutput",
             "Format": "rg32float"
         },
-
+        {
+            "Name" : "SVG Filter Ambient Occlusion 0 Output",
+            "Type": "TextureOutput",
+            "Format": "rg32float"
+        },
 
         {
             "Name" : "World Position Output",
@@ -34,6 +38,12 @@
             "Name" : "Diffuse Moment Output",
             "Type": "TextureInput",
             "ParentJobName": "Temporal Accumulation Graphics"
+        },
+
+        {
+            "Name": "Ambient Occlusion Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
         }
 
     ],

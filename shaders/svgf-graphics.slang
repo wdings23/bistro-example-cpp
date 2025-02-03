@@ -10,7 +10,9 @@ struct ConstantBufferData
 [[vk::binding(2, 0)]] Texture2D<float4> radianceTexture;
 [[vk::binding(3, 0)]] Texture2D<float2> momentTexture;
 
-[[vk::binding(4, 0)]] SamplerState textureSampler;
+[[vk::binding(4, 0)]] Texture2D<float4> ambientOcclusionTexture;
+
+[[vk::binding(5, 0)]] SamplerState textureSampler;
 
 [[vk::binding(0, 1)]] ConstantBuffer<ConstantBufferData> constantBuffer;
 [[vk::binding(1, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
@@ -19,6 +21,8 @@ struct SVGFFilterResult
 {
     float3 mRadiance;
     float2 mMoments;
+
+    float mfAmbientOcclusion;
 };
 
 struct AssembledVertex
@@ -31,6 +35,8 @@ struct PSOutput
 {
     float4 mRadiance : SV_TARGET0;
     float2 mMoment : SV_TARGET1;
+
+    float mAmbientOcclusion : SV_TARGET2;
 };
 
 struct VertexStageOutput
@@ -84,6 +90,8 @@ PSOutput PSMain(VertexStageOutput in)
     );
 
     out.mMoment = svgfRet.mMoments;
+
+    out.mAmbientOcclusion = svgfRet.mfAmbientOcclusion;
 
     return out;
 }
@@ -234,6 +242,7 @@ SVGFFilterResult svgFilter(
     uint32_t iStepSize = 1u << uint32_t(iStep);
 
     float2 totalMoments = float2(0.0f, 0.0f);
+    float fTotalAmbientOcclusion = 0.0f;
 
     for(int32_t iStepY = -2; iStepY <= 2; iStepY++)
     {
@@ -255,27 +264,32 @@ SVGFFilterResult svgFilter(
             }
 
             float2 sampleUV = float2(
-                               float(iSampleX) / float(defaultUniformBuffer.miScreenWidth),
-                               float(iSampleY) / float(defaultUniformBuffer.miScreenHeight)
+                float(iSampleX) / float(defaultUniformBuffer.miScreenWidth),
+                float(iSampleY) / float(defaultUniformBuffer.miScreenHeight)
             );
 
             float4 sampleRadiance  = radianceTexture.Sample(
-                                        textureSampler,
-                                        sampleUV
+                textureSampler,
+                sampleUV
             );
             float4 sampleWorldPosition  = worldPositionTexture.Sample(
-                                             textureSampler,
-                                             sampleUV
+                textureSampler,
+                sampleUV
             );
             float4 sampleNormal  = normalTexture.Sample(
-                                   textureSampler,
-                                   sampleUV
+                textureSampler,
+                sampleUV
             );
 
             float2 moment = momentTexture.Sample(
-                             textureSampler,
-                             sampleUV
+                textureSampler,
+                sampleUV
             );
+
+            float fSampleAO = ambientOcclusionTexture.Sample(
+                textureSampler,
+                sampleUV
+            ).z;
 
             float fSampleVariance = abs(moment.y - moment.x * moment.x);
             float fSampleLuminance = computeLuminance(sampleRadiance.xyz);
@@ -317,6 +331,8 @@ SVGFFilterResult svgFilter(
             fTotalWeightedVariance += fKernelWeight * fSampleVariance;
 
             totalMoments += moment.xy * fKernelWeight;
+
+            fTotalAmbientOcclusion += fSampleAO * fKernelWeight;
         }
     }
 
@@ -325,6 +341,8 @@ SVGFFilterResult svgFilter(
 
     ret.mRadiance = retRadiance;
     ret.mMoments = totalMoments / (fTotalWeight + 1.0e-4f);
+
+    ret.mfAmbientOcclusion = fTotalAmbientOcclusion / (fTotalWeight + 0.0001f);
 
     return ret;
 }

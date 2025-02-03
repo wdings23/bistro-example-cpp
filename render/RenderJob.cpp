@@ -1156,6 +1156,14 @@ namespace Render
                 usage = (RenderDriver::Common::BufferUsage)((uint32_t)usage | uint32_t(RenderDriver::Common::BufferUsage::VertexBuffer));
             }
 
+            if(attachmentJSON.HasMember("CPU Visible"))
+            {
+                if(std::string(attachmentJSON["CPU Visible"].GetString()) == "True")
+                {
+                    usage = (RenderDriver::Common::BufferUsage)((uint32_t)usage | uint32_t(RenderDriver::Common::BufferUsage::TransferSrc));
+                }
+            }
+
             uint32_t iBufferSize = 0;
             iBufferSize = attachmentJSON["Size"].GetInt();
             

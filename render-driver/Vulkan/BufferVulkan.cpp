@@ -47,11 +47,20 @@ namespace RenderDriver
             VkPhysicalDeviceMemoryProperties memProperties;
             vkGetPhysicalDeviceMemoryProperties(*pNativePhysicalDevice, &memProperties);
 
+            bool bCPUVisible = (
+                ((uint32_t(desc.mBufferUsage) & uint32_t(RenderDriver::Common::BufferUsage::TransferSrc)) > 0) ||
+                desc.mHeapType == RenderDriver::Common::HeapType::Upload
+            );
+
             // find correct memory index
-            VkMemoryPropertyFlags  memoryPropertyFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
-            if((uint32_t(desc.mBufferUsage) & uint32_t(RenderDriver::Common::BufferUsage::ShaderDeviceAddress)) > 0)
+            VkMemoryPropertyFlags  memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT; // VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+            if(bCPUVisible)
             {
-                //memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
+                memoryPropertyFlags = VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT;
+            }
+            else if((uint32_t(desc.mBufferUsage) & uint32_t(RenderDriver::Common::BufferUsage::ShaderDeviceAddress)) > 0)
+            {
+                memoryPropertyFlags = VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT;
             }
 
             uint32_t iMemTypeIndex = RenderDriver::Vulkan::Utils::findMemoryType(

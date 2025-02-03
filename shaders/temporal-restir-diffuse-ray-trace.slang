@@ -835,7 +835,8 @@ TemporalRestirResult temporalRestir(
             0.8f,
             defaultUniformBuffer.mViewProjectionMatrix,
             textureSize,
-            intersectionInfo.miMaterialID
+            intersectionInfo.miMaterialID,
+            prevTemporalRadianceTexture
         );
         candidateRadiance.xyz = bounceRadianceInfo.mRadiance;
         fJacobian = 1.0f;

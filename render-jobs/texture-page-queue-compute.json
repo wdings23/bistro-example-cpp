@@ -7,24 +7,28 @@
             "Name" : "Texture Page Queue MIP",
             "Type": "BufferOutput",
             "ParentJobName": "This",
+            "CPU Visible": "True",
             "Size": 20000000
         },
         {
             "Name" : "Counters",
             "Type": "BufferOutput",
             "ParentJobName": "This",
+            "CPU Visible": "True",
             "Size": 1024
         },
         {
             "Name" : "Used Hash Table",
             "Type": "BufferOutput",
             "ParentJobName": "This",
+            "CPU Visible": "True",
             "Size": 5000000
         },
         {
             "Name" : "MIP Texture Page Hash Table",
             "Type": "BufferOutput",
             "ParentJobName": "This",
+            "CPU Visible": "True",
             "Size": 10000000
         },
 

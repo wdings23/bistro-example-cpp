@@ -571,50 +571,14 @@ void updateIrradianceCacheProbe(
     float3 direction,
     uint32_t iCacheEntryIndex)
 {
-    // Steps: 
-    //      1) fetch image probe from the given irradiance cache index
-    //      2) add radiance to image probe
-    //      3) encode to spherical harmonics coefficients
-    //      4) decode back to probe with the coefficients above, the result is a filtered probe with the spherical harmonics info built in, ie. image probe in spherical directions
-    //      5) save probe to the irradiance cache
-
-#if 0
-    // set probe image pixel
-    float2 probeImageUV = octahedronMap2(direction);
-    uint2 probeImageCoord = uint2(
-        clamp(uint32_t(probeImageUV.x * 8.0f), 0u, 7u),
-        clamp(uint32_t(probeImageUV.y * 8.0f), 0u, 7u)
-    );
-    uint32_t iImageIndex = probeImageCoord.x * 8 + probeImageCoord.x;
-
-    irradianceCache[iCacheEntryIndex].mImageProbe[iImageIndex] = float4(radiance.xyz, 1.0f);
-    irradianceCache[iCacheEntryIndex].mSampleCount.x += 1.0f;
-
-    // max radiance for clamping during decoding phase
-    float3 maxRadiance = float3(0.0f, 0.0f, 0.0f);
-    for(uint32_t i = 0; i < PROBE_IMAGE_SIZE * PROBE_IMAGE_SIZE; i++)
-    {
-        maxRadiance.x = max(irradianceCache[iCacheEntryIndex].mImageProbe[i].x, maxRadiance.x);
-        maxRadiance.y = max(irradianceCache[iCacheEntryIndex].mImageProbe[i].y, maxRadiance.y);
-        maxRadiance.z = max(irradianceCache[iCacheEntryIndex].mImageProbe[i].z, maxRadiance.z); 
-    }
-
-    // get the updated spherical harmonics encoded probe image
-    SphericalHarmonicsEncodeResult encodedResult = encodeProbeImage(irradianceCache[iCacheEntryIndex].mImageProbe);
-    SphericalHarmonicsDecodeResult decodedResult = decodeProbeImage(
-        encodedResult, 
-        maxRadiance,
-        irradianceCache[iCacheEntryIndex].mSampleCount.x);
-
-    // update the spherical harmonic probe image
-    irradianceCache[iCacheEntryIndex].mImageProbe = decodedResult.mProbeImage;
-#endif // #if 0
-
+    // encode to spherical harmonics coefficients
     encodeSphericalHarmonicCoefficients(
         radiance,
         direction,
         iCacheEntryIndex
     );
+
+    irradianceCache[iCacheEntryIndex].mSampleCount.z = float(defaultUniformData.miFrame);
 }
 
 /*

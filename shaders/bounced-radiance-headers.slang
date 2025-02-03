@@ -48,7 +48,8 @@ BouncedRadianceInfo getBouncedRadiance(
     in float fReflectivity,
     in float4x4 viewProjectionMatrix,
     in int2 textureSize,
-    in int32_t iMaterialID
+    in int32_t iMaterialID,
+    in Texture2D<float4> prevRadianceTexture
 )
 {
     BouncedRadianceInfo ret;
@@ -82,11 +83,23 @@ BouncedRadianceInfo getBouncedRadiance(
         clipSpaceCoord.y >= 0 && clipSpaceCoord.y < textureSize.y &&
         clipSpacePosition.z >= 0.0f && clipSpacePosition.z <= 1.0f)
     {
+        uint2 prevClipSpaceCoord = uint2( 
+            uint32_t(floor(prevScreenUV.x * float(textureSize.x) + 0.5f)),
+            uint32_t(floor(prevScreenUV.y * float(textureSize.y) + 0.5f))
+        );
+
         float3 checkHitPosition = worldPositionTexture[clipSpaceCoord.xy].xyz;
         float3 diff = checkHitPosition - hitPosition.xyz;
         if (dot(diff, diff) <= 0.1f)
         {
-            ret.mRadiance = albedoTexture[clipSpaceCoord.xy].xyz * directSunOutputTexture[clipSpaceCoord.xy].xyz * fReflectivity;
+            ret.mRadiance = directSunOutputTexture[clipSpaceCoord.xy].xyz * fReflectivity;
+            if(prevClipSpaceCoord.x >= 0 && prevClipSpaceCoord.x < textureSize.x &&
+               prevClipSpaceCoord.x >= 0 && prevClipSpaceCoord.x < textureSize.x)
+            {
+                ret.mRadiance += prevRadianceTexture[prevClipSpaceCoord].xyz;
+            }
+            ret.mRadiance *= albedoTexture[clipSpaceCoord.xy].xyz;
+
             ret.miIntersectionType = 1;
         }
     }
