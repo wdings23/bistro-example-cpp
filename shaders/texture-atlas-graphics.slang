@@ -68,7 +68,7 @@ PSOutput PSMain(VertexStageOutput in)
 
     float4 sampleTexCoord = texCoordTexture.Sample(
         textureSampler,
-        float2(in.texCoord.x, 1.0f - in.texCoord.y)
+        float2(in.texCoord.x, in.texCoord.y)
     );
 
     if (sampleTexCoord.w <= 0.0f)
@@ -83,16 +83,6 @@ PSOutput PSMain(VertexStageOutput in)
         worldSpace.y /= worldSpace.w;
         worldSpace.z /= worldSpace.w;
 
-#if 0
-        float4x4 inverseProjectionMatrix = inverse(transpose(defaultUniformData.mProjectionMatrix));
-        float4x4 inverseViewMatrix = inverse(transpose(defaultUniformData.mViewMatrix));
-        float4 viewSpace = mul(float4(convertedUV.x, convertedUV.y, 1.0f, 1.0f), inverseProjectionMatrix);
-        viewSpace.x /= viewSpace.w;
-        viewSpace.y /= viewSpace.w;
-        viewSpace.z /= viewSpace.w;
-        float4 worldSpace = mul(viewSpace, inverseViewMatrix);
-#endif // #if 0
-
         float3 direction = normalize(worldSpace.xyz - defaultUniformData.mCameraPosition.xyz);
 
         float2 uv = octahedronMap2(direction);
@@ -105,7 +95,7 @@ PSOutput PSMain(VertexStageOutput in)
     else
     {
         out.mAlbedo = outputTextureMIP(
-            float2(in.texCoord.x, 1.0f - in.texCoord.y),
+            float2(in.texCoord.x, in.texCoord.y),
             0u
         ) .mColor;
     }
@@ -246,23 +236,7 @@ TextureAtlasOutput outputTextureMIP(
             float(iAtlasX + imageCoordDiff.x) / fTextureAtlasSize,
             float(iAtlasY + imageCoordDiff.y) / fTextureAtlasSize 
         );
-        //float2 atlasUV0 = float2(
-        //    float(max(iAtlasX + imageCoordDiff.x - 1, iAtlasX)) / fTextureAtlasSize,
-        //    float(iAtlasY + imageCoordDiff.y) / fTextureAtlasSize 
-        //);
-        //float2 atlasUV1 = float2(
-        //    float(iAtlasX + imageCoordDiff.x) / fTextureAtlasSize,
-        //    float(max(iAtlasY + imageCoordDiff.y - 1, iAtlasY)) / fTextureAtlasSize 
-        //);
-        //float2 atlasUV2 = float2(
-        //    float(min(iAtlasX + imageCoordDiff.x + 1, iAtlasX + int32_t(fPageSize) - 1)) / fTextureAtlasSize,
-        //    float(iAtlasY + imageCoordDiff.y) / fTextureAtlasSize 
-        //);
-        //float2 atlasUV3 = float2(
-        //    float(iAtlasX + imageCoordDiff.x) / fTextureAtlasSize,
-        //    float(min(iAtlasY + imageCoordDiff.y + 1, iAtlasY + int32_t(fPageSize) - 1)) / fTextureAtlasSize 
-        //);
-
+        
         // sample atlas texture based on MIP index
         ret.mColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
         // if(iMIP == 0)

@@ -50,14 +50,7 @@
             "ScaleWidth": 0.25,
             "ScaleHeight": 0.25
         },
-        {
-            "Name": "Previous Ray Direction Output",
-            "Type": "TextureOutput",
-            "ParentJobName": "Temporal Restir Diffuse Ray Trace",
-            "ParentName": "Ray Direction Output",
-            "Format": "rgba32float"
-        },
-
+        
 
         {
             "Name": "Previous Temporal Radiance Output",
@@ -125,6 +118,14 @@
             "ParentName": "Diffuse Accumulated Output",
             "Format": "rgba32float"
         },
+        {
+            "Name": "Previous Temporal Accumulation Emissive",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Accumulation Graphics",
+            "ParentName": "Emissive Accumulated Output",
+            "Format": "rgba32float"
+        },
+
 
         {
             "Name": "Previous Spatial Restir Radiance Output",
@@ -146,7 +147,87 @@
             "ParentJobName": "Spatial Restir Diffuse Ray Trace",
             "ParentName": "Spatial Restir Hit Position Output",
             "Format": "rgba32float"
+        },
+
+        {
+            "Name": "Previous TAA Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "TAA Resolve Graphics",
+            "ParentName": "TAA Output",
+            "Format": "rgba32float"
+        },
+        
+        {
+            "Name": "Previous Emissive Temporal Restir Radiance Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Emissive Graphics",
+            "ParentName": "Emissive Temporal Restir Radiance Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Emissive Temporal Restir Reservoir Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Emissive Graphics",
+            "ParentName": "Emissive Temporal Restir Reservoir Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Emissive Temporal Restir Hit Position Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Emissive Graphics",
+            "ParentName": "Emissive Temporal Restir Hit Position Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Emissive Temporal Restir Hit Normal Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Emissive Graphics",
+            "ParentName": "Emissive Temporal Restir Hit Normal Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Emissive Spherical Harmonics 0 Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Emissive Graphics",
+            "ParentName": "Emissive Spherical Harmonics 0 Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Emissive Spherical Harmonics 1 Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Emissive Graphics",
+            "ParentName": "Emissive Spherical Harmonics 1 Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Emissive Spherical Harmonics 2 Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Emissive Graphics",
+            "ParentName": "Emissive Spherical Harmonics 2 Output",
+            "Format": "rgba32float"
+        },
+
+        {
+            "Name": "Previous Emissive Spatial Restir Radiance Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Spatial Restir Emissive Ray Trace",
+            "ParentName": "Emissive Spatial Restir Radiance Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Emissive Spatial Restir Reservoir Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Spatial Restir Emissive Ray Trace",
+            "ParentName": "Emissive Spatial Restir Reservoir Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Emissive Spatial Restir Hit Position Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Spatial Restir Emissive Ray Trace",
+            "ParentName": "Emissive Spatial Restir Hit Position Output",
+            "Format": "rgba32float"
         }
-    
+
     ]
 }

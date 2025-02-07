@@ -61,8 +61,8 @@ LRESULT CALLBACK _windowProc(
 //static float3 sInitialCameraPosition(1.0f, 1.0f, 0.0f);
 //static float3 sInitialCameraLookAt(0.0f, 1.0f, 0.0f);
 
-static float3 sInitialCameraPosition(-6.623f, 1.35f, -0.1312f);
-static float3 sInitialCameraLookAt(-5.695f, 1.35f, 0.2434f);
+static float3 sInitialCameraPosition(6.3f, 1.48f, 0.4f);
+static float3 sInitialCameraLookAt(6.06f, 1.49f, 0.301f);
 
 //static float3 sInitialCameraPosition(-3.199f, 3.38f, 1.43f);
 //static float3 sInitialCameraLookAt(-3.07f, 3.39f, 1.263f);
@@ -545,6 +545,8 @@ int CALLBACK WinMain(
     pRenderer->mapfnRenderJobData["Spatial Restir Diffuse Ray Trace"] = pfnSetBuffers.get();
     pRenderer->mapfnRenderJobData["Build Irradiance Cache Ray Trace"] = pfnSetBuffers.get();
     pRenderer->mapfnRenderJobData["Spatial Restir Diffuse 1 Ray Trace"] = pfnSetBuffers.get();
+    pRenderer->mapfnRenderJobData["Temporal Restir Emissive Graphics"] = pfnSetBuffers.get();
+    pRenderer->mapfnRenderJobData["Spatial Restir Emissive Ray Trace"] = pfnSetBuffers.get();
 #endif // USE_RAY_TRACING
 
     std::map<std::string, std::vector<PageInfo>> aPageInfo;
@@ -698,9 +700,18 @@ int CALLBACK WinMain(
                 }
             }
         }
-
-        int iDebug = 1;
     }
+
+    int32_t iBlueNoiseWidth = 0, iBlueNoiseHeight = 0, iNumChannels = 0;
+    stbi_uc* pImageData = stbi_load(
+        "D:\\projects\\free-blue-noise-textures\\512_512\\LDR_RGBA_0.png", 
+        &iBlueNoiseWidth,
+        &iBlueNoiseHeight,
+        &iNumChannels, 
+        4);
+    std::vector<unsigned char> acBlueNoiseImageData(iBlueNoiseWidth * iBlueNoiseHeight * 4);
+    memcpy(acBlueNoiseImageData.data(), pImageData, iBlueNoiseWidth * iBlueNoiseHeight * 4);
+    stbi_image_free(pImageData);
 
     ShowWindow(window, iCommandShow);
 
@@ -959,15 +970,6 @@ int CALLBACK WinMain(
                             conditionVariable.notify_all();
                             
                         }
-                        //else
-                        //{
-                        //    // wait for thread 0 to compute the start and end indices to check in the queue
-                        //    while(!bStartLoad)
-                        //    {
-                        //        std::this_thread::sleep_for(std::chrono::microseconds(10));
-                        //    }
-                        //    
-                        //}
 
                         uint32_t iStartThreadIndex = aiStartAndNumChecks[iThread].first;
                         uint32_t iNumChecksCopy = aiStartAndNumChecks[iThread].second;
@@ -1001,30 +1003,6 @@ int CALLBACK WinMain(
                         WTFASSERT(iNumChecksCopy < 100000, "wtf");
 
                         iNumFinished.fetch_add(1);
-
-                        //{
-                        //    std::lock_guard<std::mutex> lock(texturePageThreadMutex);
-                        //    iNumFinished += 1;
-                        //}
-
-                        // wait for all the threads to finish
-                        //if(iThread == 0)
-                        //{
-                        //    while(iNumFinished < iNumThreads)
-                        //    {
-                        //        if(gbQuit)
-                        //        {
-                        //            break;
-                        //        }
-                        //        std::this_thread::sleep_for(std::chrono::microseconds(10));
-                        //    }
-                        //
-                        //    // re-initialize and wake up all the other threads
-                        //    iNumFinished = 0;
-                        //    bStartLoad = false;
-                        //    //conditionVariable.notify_all();
-                        //}
-                        //else
                         if(iThread != 0)
                         {
                             std::unique_lock<std::mutex> uniqueLock(texturePageThreadMutex);
@@ -1120,6 +1098,14 @@ auto start = std::chrono::high_resolution_clock::now();
         cameraDesc.mPosition = sCameraPosition;
         cameraDesc.mLookAt = sCameraLookAt;
         cameraDesc.mfFov = 3.14159f * 0.5f;
+
+        uint32_t iFrameIndex = pRenderer->getFrameIndex();
+        uint32_t iBlueNoiseX = iFrameIndex % iBlueNoiseWidth;
+        uint32_t iBlueNoiseY = (iFrameIndex / iBlueNoiseWidth) % iBlueNoiseHeight;
+        uint32_t iImageIndex = (iBlueNoiseY * iBlueNoiseWidth + iBlueNoiseX) * 4;
+        float fFactor = 0.001f;
+        cameraDesc.mJitter.x = (((float)acBlueNoiseImageData[iImageIndex] / 255.0f) * 2.0f - 1.0f) * fFactor;
+        cameraDesc.mJitter.y = (((float)acBlueNoiseImageData[iImageIndex+1] / 255.0f) * 2.0f - 1.0f) * fFactor;
 
         pRenderer->updateCamera(cameraDesc);
         pRenderer->updateRenderJobData();

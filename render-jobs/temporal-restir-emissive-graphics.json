@@ -1,59 +1,53 @@
 {
-    "Type": "Ray Trace",
-    "PassType": "Ray Trace",
-    "Shader": "temporal-restir-diffuse-ray-trace.shader",
+    "Type": "Graphics",
+    "PassType": "Full Triangle",
+    "Shader": "temporal-restir-emissive-graphics.shader",
     "Attachments": [
         {
-            "Name" : "Temporal Restir Radiance Output",
+            "Name" : "Emissive Temporal Restir Radiance Output",
             "Type": "TextureOutput",
             "Format": "rgba32float",
             "ScaleWidth": 1.0,
             "ScaleHeight": 1.0
         },
         {
-            "Name" : "Temporal Restir Reservoir Output",
+            "Name" : "Emissive Temporal Restir Reservoir Output",
             "Type": "TextureOutput",
             "Format": "rgba32float",
             "ScaleWidth": 1.0,
             "ScaleHeight": 1.0
         },
         {
-            "Name": "Ambient Occlusion Output",
+            "Name": "Emissive Temporal Restir Hit Position Output",
             "Type": "TextureOutput",
             "Format": "rgba32float",
             "ScaleWidth": 1.0,
             "ScaleHeight": 1.0
         },
         {
-            "Name": "Temporal Restir Hit Position Output",
+            "Name": "Emissive Temporal Restir Hit Normal Output",
+            "Type": "TextureOutput",
+            "Format": "rgba32float",
+            "ScaleWidth": 1.0,
+            "ScaleHeight": 1.0
+        },
+        
+        {
+            "Name" : "Emissive Spherical Harmonics 0 Output",
             "Type": "TextureOutput",
             "Format": "rgba32float",
             "ScaleWidth": 1.0,
             "ScaleHeight": 1.0
         },
         {
-            "Name": "Temporal Restir Hit Normal Output",
+            "Name" : "Emissive Spherical Harmonics 1 Output",
             "Type": "TextureOutput",
             "Format": "rgba32float",
             "ScaleWidth": 1.0,
             "ScaleHeight": 1.0
         },
         {
-            "Name": "Sample Ray Hit Position Output",
-            "Type": "TextureOutput",
-            "Format": "rgba32float",
-            "ScaleWidth": 1.0,
-            "ScaleHeight": 1.0
-        },
-        {
-            "Name": "Sample Ray Hit Normal Output",
-            "Type": "TextureOutput",
-            "Format": "rgba32float",
-            "ScaleWidth": 1.0,
-            "ScaleHeight": 1.0
-        },
-        {
-            "Name": "Sample Ray Hit UV Mesh Triangle Output",
+            "Name" : "Emissive Spherical Harmonics 2 Output",
             "Type": "TextureOutput",
             "Format": "rgba32float",
             "ScaleWidth": 1.0,
@@ -61,38 +55,9 @@
         },
 
         {
-            "Name" : "Spherical Harmonics 0 Output",
+            "Name" : "Emissive Decoded Spherical Harmonics Output",
             "Type": "TextureOutput",
             "Format": "rgba32float",
-            "ScaleWidth": 1.0,
-            "ScaleHeight": 1.0
-        },
-        {
-            "Name" : "Spherical Harmonics 1 Output",
-            "Type": "TextureOutput",
-            "Format": "rgba32float",
-            "ScaleWidth": 1.0,
-            "ScaleHeight": 1.0
-        },
-        {
-            "Name" : "Spherical Harmonics 2 Output",
-            "Type": "TextureOutput",
-            "Format": "rgba32float",
-            "ScaleWidth": 1.0,
-            "ScaleHeight": 1.0
-        },
-
-        {
-            "Name" : "Decoded Spherical Harmonics Output",
-            "Type": "TextureOutput",
-            "Format": "rgba32float",
-            "ScaleWidth": 1.0,
-            "ScaleHeight": 1.0
-        },
-        {
-            "Name": "Spherical Harmonics Sample Count",
-            "Type": "TextureOutput",
-            "Format": "r32float",
             "ScaleWidth": 1.0,
             "ScaleHeight": 1.0
         },
@@ -101,6 +66,7 @@
             "Name": "Scene",
             "Type": "AccelerationStructure"
         },
+
         {
             "Name" : "World Position Output",
             "Type": "TextureInput",
@@ -116,31 +82,28 @@
             "Type": "TextureInput",
             "ParentJobName": "Deferred Indirect Graphics"
         },
+
         {
-            "Name" : "Sky Output",
-            "Type": "TextureInput",
-            "ParentJobName": "Atmosphere Graphics"
-        },
-        {
-            "Name": "Previous Temporal Reservoir Output",
+            "Name": "Previous Emissive Temporal Restir Radiance Output",
             "Type": "TextureInput",
             "ParentJobName": "Copy Render Targets"
         },
         {
-            "Name": "Previous Temporal Radiance Output",
+            "Name": "Previous Emissive Temporal Restir Reservoir Output",
             "Type": "TextureInput",
             "ParentJobName": "Copy Render Targets"
         },
         {
-            "Name": "Previous Temporal Hit Position Output",
+            "Name": "Previous Emissive Temporal Restir Hit Position Output",
             "Type": "TextureInput",
             "ParentJobName": "Copy Render Targets"
         },
         {
-            "Name": "Previous Temporal Hit Normal Output",
+            "Name": "Previous Emissive Temporal Restir Hit Normal Output",
             "Type": "TextureInput",
             "ParentJobName": "Copy Render Targets"
         },
+
         {
             "Name": "Previous World Position Output",
             "Type": "TextureInput",
@@ -163,93 +126,51 @@
         },
 
         {
-            "Name" : "Direct Sun Light Output",
-            "Type": "TextureInput",
-            "ParentJobName": "Ray Traced Shadow"
-        },
-
-        {
-            "Name" : "Previous Ambient Occlusion Output",
-            "Type": "TextureInput",
-            "ParentJobName": "Copy Render Targets"
-        },
-
-
-
-        {
-            "Name" : "Previous Spherical Harmonics 0 Output",
+            "Name" : "Previous Emissive Spherical Harmonics 0 Output",
             "Type": "TextureInput",
             "ParentJobName": "Copy Render Targets"
         },
         {
-            "Name" : "Previous Spherical Harmonics 1 Output",
+            "Name" : "Previous Emissive Spherical Harmonics 1 Output",
             "Type": "TextureInput",
             "ParentJobName": "Copy Render Targets"
         },
         {
-            "Name" : "Previous Spherical Harmonics 2 Output",
+            "Name" : "Previous Emissive Spherical Harmonics 2 Output",
             "Type": "TextureInput",
             "ParentJobName": "Copy Render Targets"
         },
-        {
-            "Name" : "Irradiance Cache",
-            "Type": "BufferInputOutput",
-            "ParentJobName": "Build Irradiance Cache Ray Trace"
-        },
+        
         {
             "Name" : "Albedo Output",
             "Type": "TextureInput",
             "ParentJobName": "Texture Atlas Graphics"
         },
+
         {
-            "Name": "Screen Motion Vector Output",
+            "Name": "Sample Ray Hit Position Output",
             "Type": "TextureInput",
-            "ParentJobName": "Deferred Indirect Graphics"
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
         },
         {
-            "Name" : "Initial Texture Atlas",
+            "Name": "Sample Ray Hit Normal Output",
             "Type": "TextureInput",
-            "ParentJobName": "Texture Page Queue Compute"
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
+        },
+        {
+            "Name": "Sample Ray Hit UV Mesh Triangle Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
         },
 
         {
-            "Name" : "Temporal Restir Debug 0",
-            "Type": "TextureOutput",
-            "Format": "rgba32float",
-            "ScaleWidth": 1.0,
-            "ScaleHeight": 1.0
-        },
-        {
-            "Name" : "Temporal Restir Debug 1",
-            "Type": "TextureOutput",
-            "Format": "rgba32float",
-            "ScaleWidth": 1.0,
-            "ScaleHeight": 1.0
-        },
-        {
-            "Name" : "Temporal Restir Debug 2",
-            "Type": "TextureOutput",
-            "Format": "rgba32float",
-            "ScaleWidth": 1.0,
-            "ScaleHeight": 1.0
-        },
-        {
-            "Name" : "Temporal Restir Debug 3",
-            "Type": "TextureOutput",
-            "Format": "rgba32float",
-            "ScaleWidth": 1.0,
-            "ScaleHeight": 1.0
+            "Name": "Temporal Restir Hit Position Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
         }
 
     ],
     "ShaderResources": [
-        { 
-            "name" : "uniformData",
-            "type" : "buffer",
-            "size" : 1024,
-            "shader_stage" : "all",
-            "usage": "uniform"
-        },
         {
             "name": "blue noise texture",
             "type": "texture2d",

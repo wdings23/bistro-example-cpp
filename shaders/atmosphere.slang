@@ -81,7 +81,7 @@ Fragment PSMain(
     {
         float2 uv = float2(
             input.texcoord.x,
-            1.0f - input.texcoord.y 
+            input.texcoord.y 
         );
         float4 prevDiffuseSkyRadiance = prevDiffuseSkyTexture.Sample(
             textureSampler,

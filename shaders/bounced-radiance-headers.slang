@@ -69,10 +69,10 @@ BouncedRadianceInfo getBouncedRadiance(
 
     float2 prevScreenUV = clipSpacePosition.xy - motionVector;
     prevScreenUV.x = prevScreenUV.x * 0.5f + 0.5f;
-    prevScreenUV.y = 1.0f - (prevScreenUV.y * 0.5f + 0.5f);
+    prevScreenUV.y =prevScreenUV.y * 0.5f + 0.5f;
 
     clipSpacePosition.x = clipSpacePosition.x * 0.5f + 0.5f;
-    clipSpacePosition.y = 1.0f - (clipSpacePosition.y * 0.5f + 0.5f);
+    clipSpacePosition.y = clipSpacePosition.y * 0.5f + 0.5f;
     clipSpacePosition.z = clipSpacePosition.z * 0.5f + 0.5f;
     uint2 clipSpaceCoord = uint2(
         uint32_t(floor(clipSpacePosition.x * float(textureSize.x) + 0.5f)),
@@ -111,13 +111,14 @@ BouncedRadianceInfo getBouncedRadiance(
             hitPosition.xyz,
             worldPosition.xyz);
 
-        Material material = materialData[iMaterialID];
+        uint32_t iMaterialIndex = max(iMaterialID - 1, 0);
+        Material material = materialData[iMaterialIndex];
         uint32_t iInitialAtlasWidth = 1, iInitialAtlasHeight = 1;
         initialTextureAtlas.GetDimensions(iInitialAtlasWidth, iInitialAtlasHeight);
 
         int32_t iInitialPageSize = 16;
         int32_t iNumInitialPagesPerRow = iInitialAtlasWidth / iInitialPageSize;
-        uint32_t iTextureID = materialData[iMaterialID].miAlbedoTextureID;
+        uint32_t iTextureID = materialData[iMaterialIndex].miAlbedoTextureID;
 
         int2 pageOffset = int2(
             int32_t(floor(hitUV.x * float(iInitialPageSize) + 0.5f)),

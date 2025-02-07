@@ -52,9 +52,10 @@ void CCamera::update(CameraUpdateInfo& info)
     }
 
     float4x4 jitterMatrix = translate(info.mProjectionJitter.x, info.mProjectionJitter.y, 0.0f);
-    mProjectionMatrix = mProjectionMatrix * jitterMatrix;
+    mJitterProjectionMatrix = mProjectionMatrix * jitterMatrix;
     
     mViewProjectionMatrix = mProjectionMatrix * mViewMatrix;
+    mJitterViewProjectionMatrix = mJitterProjectionMatrix * mViewMatrix;
 
     float fAspectRatio = 1.0f;
     float fTan = (float)tan(info.mfFieldOfView * 0.25f);

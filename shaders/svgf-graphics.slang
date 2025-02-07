@@ -76,7 +76,7 @@ PSOutput PSMain(VertexStageOutput in)
     }
 
     uint32_t iX = uint32_t(in.texCoord.x * float(textureSize.x));
-    uint32_t iY = uint32_t((1.0f - in.texCoord.y) * float(textureSize.x));
+    uint32_t iY = uint32_t(in.texCoord.y * float(textureSize.x));
     SVGFFilterResult svgfRet = svgFilter(
         iX,
         iY,

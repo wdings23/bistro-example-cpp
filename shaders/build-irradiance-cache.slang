@@ -402,7 +402,7 @@ UpdateIrradianceCacheResult updateIrradianceCache(
         int32_t iHitTriangleIndex = int32_t(intersectionInfo.miHitTriangle);
         if (intersectionInfo.miHitMesh < defaultUniformData.miNumMeshes)
         {
-            uint32_t iMaterialID = materialID[intersectionInfo.miHitMesh];
+            uint32_t iMaterialID = materialID[intersectionInfo.miHitMesh] - 1;
             float3 emissiveRadiance = materialData[iMaterialID].mEmissive.xyz;
             cacheRadiance += emissiveRadiance;
         }

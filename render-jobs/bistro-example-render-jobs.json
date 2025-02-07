@@ -126,6 +126,18 @@
             "PassType": "Ray Trace"
         },
         {
+            "Name": "Temporal Restir Emissive Graphics",
+            "Pipeline": "temporal-restir-emissive-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Spatial Restir Emissive Ray Trace",
+            "Pipeline": "spatial-restir-emissive-ray-trace.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
             "Name": "Light Composite Graphics",
             "Pipeline": "light-composite-graphics.json",
             "Type": "Graphics",
@@ -187,6 +199,12 @@
             "Pipeline": "build-irradiance-cache.json",
             "Type": "Ray Trace",
             "PassType": "Ray Trace"
+        },
+        {
+            "Name": "TAA Resolve Graphics",
+            "Pipeline": "taa-resolve-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
         },
         {
             "Name": "Test Compute",

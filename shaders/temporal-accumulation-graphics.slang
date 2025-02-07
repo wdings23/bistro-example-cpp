@@ -19,8 +19,10 @@ struct AssembledVertex
 
 struct PSOutput
 {
-    float4 mOutput : SV_TARGET0;
-    float2 mMoment : SV_TARGET1;
+    float4 mDiffuseOutput : SV_TARGET0;
+    float4 mEmissiveOutput : SV_TARGET1;
+    float2 mDiffuseMoment : SV_TARGET2;
+    float2 mEmissiveMoment : SV_TARGET3;
 };
 
 struct VertexStageOutput
@@ -40,7 +42,10 @@ struct VertexStageOutput
 [[vk::binding(8, 0)]] Texture2D<float4> screenMotionVectorTexture;
 [[vk::binding(9, 0)]] Texture2D<float4> ambientOcclusionTexture;
 
-[[vk::binding(10, 0)]] SamplerState textureSampler;
+[[vk::binding(10, 0)]] Texture2D<float4> emissiveRadianceTexture;
+[[vk::binding(11, 0)]] Texture2D<float4> prevEmissiveRadianceTexture;
+
+[[vk::binding(12, 0)]] SamplerState textureSampler;
 
 [[vk::binding(0, 1)]] Texture2D<float4> blueNoiseTexture;
 [[vk::binding(1, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
@@ -64,14 +69,28 @@ PSOutput PSMain(VertexStageOutput in)
 
     float2 uv = float2(
         in.texCoord.x,
-        1.0f - in.texCoord.y 
+        in.texCoord.y 
     );
 
-    float3 radiance = temporalAccumulation(uv);
-    out.mOutput = float4(radiance, 1.0f);
+    float3 diffuseRadiance = temporalAccumulation(
+        uv,
+        diffuseRadianceTexture,
+        prevDiffuseRadianceTexture
+    );
+    out.mDiffuseOutput = float4(diffuseRadiance, 1.0f);
 
-    float fLuminance = computeLuminance(radiance);
-    out.mMoment = float2(fLuminance, fLuminance * fLuminance);
+    float3 emissiveRadiance = temporalAccumulation(
+        uv,
+        emissiveRadianceTexture,
+        prevEmissiveRadianceTexture
+    );
+    out.mEmissiveOutput = float4(emissiveRadiance, 1.0f);
+
+    float fDiffuseLuminance = computeLuminance(diffuseRadiance);
+    out.mDiffuseMoment = float2(fDiffuseLuminance, fDiffuseLuminance * fDiffuseLuminance);
+
+    float fEmissiveLuminance = computeLuminance(emissiveRadiance);
+    out.mEmissiveMoment = float2(fEmissiveLuminance, fEmissiveLuminance * fEmissiveLuminance);
 
     return out;
 }
@@ -79,10 +98,13 @@ PSOutput PSMain(VertexStageOutput in)
 /*
 **
 */
-float3 temporalAccumulation(float2 screenUV)
+float3 temporalAccumulation(
+    in float2 screenUV,
+    in Texture2D<float4> radianceTexture,
+    in Texture2D<float4> prevRadianceTexture)
 {
     int2 outputTextureSize;
-    diffuseRadianceTexture.GetDimensions(outputTextureSize.x, outputTextureSize.y);
+    radianceTexture.GetDimensions(outputTextureSize.x, outputTextureSize.y);
     float fOneOverWidth = 1.0f / float(outputTextureSize.x);
     float fOneOverHeight = 1.0f / float(outputTextureSize.y);
 
@@ -110,11 +132,10 @@ float3 temporalAccumulation(float2 screenUV)
     //);
     bool bDisoccluded = false; //(isPrevUVOutOfBounds(screenUV) == true || isDisoccluded3(screenUV, prevScreenUV) == true);
 
-    float3 prevDiffuseRadiance = prevDiffuseRadianceTexture.Sample(
+    float3 prevRadiance = prevRadianceTexture.Sample(
         textureSampler,
         prevScreenUV
     ) .xyz;
-    
 
     float3 minRadiance, maxRadiance;
     getMinMaxRadiance(
@@ -122,14 +143,14 @@ float3 temporalAccumulation(float2 screenUV)
         maxRadiance,
         prevScreenCoord,
         screenCoord,
-        outputTextureSize
+        outputTextureSize,
+        radianceTexture
     );
-
-    prevDiffuseRadiance = clamp(prevDiffuseRadiance, minRadiance, maxRadiance);
+    prevRadiance = clamp(prevRadiance, minRadiance, maxRadiance);
 
     // clamp incoming radiance
-    float3 currDiffuseRadiance = diffuseRadianceTexture[screenCoord].xyz;
-    currDiffuseRadiance = clamp(currDiffuseRadiance, minRadiance, maxRadiance);
+    float3 currRadiance = radianceTexture[screenCoord].xyz;
+    currRadiance = clamp(currRadiance, minRadiance, maxRadiance);
 
     float fDstPct = 1.0f / 20.0f;
     float fSrcPct = 1.0f - fDstPct;
@@ -141,7 +162,7 @@ float3 temporalAccumulation(float2 screenUV)
     //}
 
     // float3 ret = lerp(prevDiffuseRadiance, currDiffuseRadiance, fDstPct) * ambientOcclusionTexture[screenCoord].z;
-    float3 ret = lerp(prevDiffuseRadiance, currDiffuseRadiance, fDstPct);
+    float3 ret = lerp(prevRadiance, currRadiance, fDstPct);
 
     return ret; 
 }
@@ -191,7 +212,8 @@ void getMinMaxRadiance(
     out float3 maxRadiance,
     in int2 prevScreenCoord,
     in int2 screenCoord,
-    in int2 textureSize
+    in int2 textureSize,
+    in Texture2D<float4> radianceTexture
 )
 {
     int32_t iRadius = 3;
@@ -201,7 +223,7 @@ void getMinMaxRadiance(
 
     float fNumSamples = 0.0f;
     float3 radianceMean = float3(0.0f, 0.0f, 0.0f);
-    float3 aDiffuseRadiance[9];
+    float3 aRadiance[9];
     for (int32_t iSampleY = -iRadius; iSampleY <= iRadius; iSampleY++)
     {
         for (int32_t iSampleX = -iRadius; iSampleX <= iRadius; iSampleX++)
@@ -211,11 +233,11 @@ void getMinMaxRadiance(
                 float(screenCoord.y + iSampleY) * fOneOverHeight
             );
 
-            aDiffuseRadiance[int(fNumSamples)] = diffuseRadianceTexture.Sample(
+            aRadiance[int(fNumSamples)] = radianceTexture.Sample(
                 textureSampler,
                 sampleUV
             ) .xyz;
-            radianceMean += aDiffuseRadiance[int(fNumSamples)];
+            radianceMean += aRadiance[int(fNumSamples)];
             fNumSamples += 1.0f;
         }
     }
@@ -228,7 +250,7 @@ void getMinMaxRadiance(
     {
         for (int32_t iSampleX = -iRadius; iSampleX <= iRadius; iSampleX++)
         {
-            float3 diff = aDiffuseRadiance[iIndex] - radianceMean;
+            float3 diff = aRadiance[iIndex] - radianceMean;
             totalDiffSquared += diff * diff;
             iIndex += 1;
         }

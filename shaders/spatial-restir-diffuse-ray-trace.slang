@@ -429,18 +429,16 @@ void rayGen()
     debugTexture0[rayIndex] = float4(hitPosition.xyz, payload.mOutput.w);
     if(payload.mOutput.w > 0.0f)
     {
-        float4x4 viewMatrix = defaultUniformBuffer.mViewMatrix;
-        float4x4 projectionMatrix = defaultUniformBuffer.mProjectionMatrix;
-
-        projectionMatrix._22 *= -1.0f;
-
-        float4x4 viewProjectionMatrix = mul(
-            projectionMatrix,
-            viewMatrix
-        );
+        //float4x4 viewMatrix = defaultUniformBuffer.mViewMatrix;
+        //float4x4 projectionMatrix = defaultUniformBuffer.mProjectionMatrix;
+        //projectionMatrix._22 *= -1.0f;
+        //float4x4 viewProjectionMatrix = mul(
+        //    projectionMatrix,
+        //    viewMatrix
+        //);
 
         // get on-screen radiance if there's any
-        float4 clipSpacePosition = mul(viewProjectionMatrix, float4(hitPosition.xyz, 1.0));
+        float4 clipSpacePosition = mul(defaultUniformBuffer.mViewProjectionMatrix, float4(hitPosition.xyz, 1.0));
         clipSpacePosition.x /= clipSpacePosition.w;
         clipSpacePosition.y /= clipSpacePosition.w;
         clipSpacePosition.z /= clipSpacePosition.w;
@@ -607,16 +605,15 @@ OnScreenRadianceResult getOnScreenRadiance(
     float fDistance = length(hitPosition.xyz - worldPosition);
     float fDistanceAttenuation = 1.0f / max(fDistance * fDistance, 1.0f);
 
-    float4x4 viewMatrix = defaultUniformBuffer.mViewMatrix;
-    float4x4 projectionMatrix = defaultUniformBuffer.mProjectionMatrix;
-    projectionMatrix._22 *= -1.0f;
-    float4x4 viewProjectionMatrix = mul(
-        projectionMatrix,
-        viewMatrix
-    );
+    //float4x4 viewMatrix = defaultUniformBuffer.mViewMatrix;
+    //float4x4 projectionMatrix = defaultUniformBuffer.mProjectionMatrix;
+    //projectionMatrix._22 *= -1.0f;
+    //float4x4 viewProjectionMatrix = mul(
+    //    projectionMatrix,
+    //    viewMatrix
+    //);
 
     // get on-screen radiance if there's any
-    // float4 clipSpacePosition = mul(viewProjectionMatrix, float4(hitPosition.xyz, 1.0));
     float4 clipSpacePosition = mul(defaultUniformBuffer.mViewProjectionMatrix, float4(hitPosition.xyz, 1.0f));
     clipSpacePosition.x /= clipSpacePosition.w;
     clipSpacePosition.y /= clipSpacePosition.w;
@@ -632,7 +629,7 @@ OnScreenRadianceResult getOnScreenRadiance(
     
     // see if it's actually on the screen by checking the onscreen position to the calculated position from above
     float4 worldSpaceHitPosition = worldPositionTexture[clipSpaceCoord];
-    float4 hitPositionClipSpace = mul(viewProjectionMatrix, float4(worldSpaceHitPosition.xyz, 1.0f));
+    float4 hitPositionClipSpace = mul(defaultUniformBuffer.mViewProjectionMatrix, float4(worldSpaceHitPosition.xyz, 1.0f));
     hitPositionClipSpace.x /= hitPositionClipSpace.w;
     hitPositionClipSpace.y /= hitPositionClipSpace.w;
     hitPositionClipSpace.z /= hitPositionClipSpace.w;

@@ -4,7 +4,6 @@ struct IrradianceCacheEntry
 {
     float4 mPosition;
     float4 mSampleCount;
-    //float4 mImageProbe[64]; // 8x8 image probe
     float4 mSphericalHarmonics0;
     float4 mSphericalHarmonics1;
     float4 mSphericalHarmonics2;

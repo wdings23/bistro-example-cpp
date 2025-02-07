@@ -743,6 +743,7 @@ namespace Render
             cameraInfo.mUp = desc.mUp;
             cameraInfo.mfFar = desc.mfFar;
             cameraInfo.mfNear = desc.mfNear;
+            cameraInfo.mProjectionJitter = desc.mJitter;
 
             Render::Common::gaCameras[2] = Render::Common::gaCameras[0];
             Render::Common::gaCameras[0].update(cameraInfo);
@@ -2094,6 +2095,17 @@ auto totalElapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::c
             *pfData++ = float(rand() % 100) * 0.01f;
             *pfData++ = float(rand() % 100) * 0.01f;
             
+            float4x4 projectionMatrix = Render::Common::gaCameras[0].getProjectionMatrix();
+            float4x4 viewMatrix = Render::Common::gaCameras[0].getViewMatrix();
+            float4x4 jitterProjectionMatrix = Render::Common::gaCameras[0].getJitterProjectionMatrix();
+
+            if(this->mRenderDriverType == RenderDriverType::Vulkan)
+            {
+                jitterProjectionMatrix.mafEntries[5] *= -1.0f;
+            }
+
+            float4x4 jitterViewProjectionMatrix = jitterProjectionMatrix * viewMatrix;
+
             float4x4* pfMatrixData = (float4x4*)pfData;
             if(mRenderDriverType == RenderDriverType::Vulkan)
             {
@@ -2102,11 +2114,12 @@ auto totalElapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::c
                 *pfMatrixData++ = transpose(Render::Common::gaCameras[0].getViewMatrix());
                 *pfMatrixData++ = transpose(Render::Common::gaCameras[0].getProjectionMatrix());
 
-                *pfMatrixData++ = transpose(Render::Common::gaCameras[0].getViewProjectionMatrix());
-                *pfMatrixData++ = transpose(mPrevViewProjectionMatrix);
+                *pfMatrixData++ = transpose(jitterViewProjectionMatrix);
+                *pfMatrixData++ = transpose(mPrevJitterViewProjectionMatrix);
+                mPrevJitterViewProjectionMatrix = transpose(jitterViewProjectionMatrix);
                 
                 *pfMatrixData++ = invert(Render::Common::gaCameras[0].getViewProjectionMatrix());
-                    
+                
                 mPrevViewProjectionMatrix = transpose(Render::Common::gaCameras[0].getViewProjectionMatrix());
             }
             else

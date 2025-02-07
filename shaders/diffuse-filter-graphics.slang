@@ -52,7 +52,7 @@ PSOutput PSMain(VertexStageOutput in)
 
     float2 uv = float2(
         in.texCoord.x,
-        1.0f - in.texCoord.y 
+        in.texCoord.y 
     );
 
     out.mOutput = blur2(uv);

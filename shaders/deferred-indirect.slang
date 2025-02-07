@@ -44,18 +44,8 @@ VertexStageOutput VSMain(
 {
     VertexStageOutput output;
 
-    float4x4 viewMatrix = defaultUniformData.mViewMatrix;
-    float4x4 projectionMatrix = defaultUniformData.mProjectionMatrix;
-
-    projectionMatrix._22 *= -1.0f;
-    
-    float4x4 viewProjectionMatrix = mul(
-        projectionMatrix,
-        viewMatrix
-    );
-
     output.sv_position = mul(
-        viewProjectionMatrix,
+        defaultUniformData.mJitteredViewProjectionMatrix,
         float4(
             assembledVertex.position.x,
             assembledVertex.position.y,
@@ -71,7 +61,7 @@ VertexStageOutput VSMain(
         float4(assembledVertex.position.xyz, 1.0f)
     );
     output.prevClipSpace = mul(
-        defaultUniformData.mPrevViewProjectionMatrix,
+        defaultUniformData.mPrevJitteredViewProjectionMatrix,
         float4(assembledVertex.position.xyz, 1.0f)
     );
 
@@ -121,22 +111,22 @@ PSOutput PSMain(VertexStageOutput in)
     // store depth and mesh id in worldPosition.w
     //out.mWorldPosition.w = clamp(in.worldPosition.z, 0.0f, 0.999f) + floor(in.worldPosition.w + 0.5f);
 
-    float4 currClipSpacePos = mul(float4(in.worldPosition.xyz, 1.0f), transpose(defaultUniformData.mViewProjectionMatrix));
-    float4 prevClipSpacePos = mul(float4(in.worldPosition.xyz, 1.0f), transpose(defaultUniformData.mPrevViewProjectionMatrix));
+    float4 currClipSpacePos = mul(defaultUniformData.mViewProjectionMatrix, float4(in.worldPosition.xyz, 1.0f));
+    float4 prevClipSpacePos = mul(defaultUniformData.mPrevViewProjectionMatrix, float4(in.worldPosition.xyz, 1.0f));
 
     float fOneOverW = 1.0f / currClipSpacePos.w;
     currClipSpacePos.x *= fOneOverW;
     currClipSpacePos.y *= fOneOverW;
     currClipSpacePos.z *= fOneOverW;
     currClipSpacePos.x = currClipSpacePos.x * 0.5f + 0.5f;
-    currClipSpacePos.y = 1.0f - (currClipSpacePos.y * 0.5f + 0.5f);
+    currClipSpacePos.y = currClipSpacePos.y * 0.5f + 0.5f;
 
     fOneOverW = 1.0f / prevClipSpacePos.w;
     prevClipSpacePos.x *= fOneOverW;
     prevClipSpacePos.y *= fOneOverW;
     prevClipSpacePos.z *= fOneOverW;
     prevClipSpacePos.x = prevClipSpacePos.x * 0.5f + 0.5f;
-    prevClipSpacePos.y = 1.0f - (prevClipSpacePos.y * 0.5f + 0.5f);
+    prevClipSpacePos.y = prevClipSpacePos.y * 0.5f + 0.5f;
 
 #if 0
     float3 currClipSpacePos = float3(

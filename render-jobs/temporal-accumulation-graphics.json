@@ -9,7 +9,17 @@
             "Format": "rgba32float"
         },
         {
+            "Name" : "Emissive Accumulated Output",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
+        },
+        {
             "Name" : "Diffuse Moment Output",
+            "Type": "TextureOutput",
+            "Format": "rg32float"
+        },
+        {
+            "Name" : "Emissive Moment Output",
             "Type": "TextureOutput",
             "Format": "rg32float"
         },
@@ -63,6 +73,17 @@
             "Name": "Ambient Occlusion Output",
             "Type": "TextureInput",
             "ParentJobName": "Temporal Restir Diffuse Ray Trace"
+        },
+
+        {
+            "Name" : "Emissive Spatial Restir Decoded Spherical Harmonics Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Spatial Restir Emissive Ray Trace"
+        },
+        {
+            "Name" : "Previous Temporal Accumulation Emissive",
+            "Type": "TextureInput",
+            "ParentJobName": "Copy Render Targets"
         }
     ],
     "ShaderResources": [   

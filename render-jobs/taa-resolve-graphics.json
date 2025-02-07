@@ -1,0 +1,60 @@
+{
+    "Type": "Graphics",
+    "PassType": "Full Triangle",
+    "Shader": "taa-resolve-graphics.shader",
+    "Attachments": [
+        {
+            "Name" : "TAA Output",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
+        },
+        
+        {
+            "Name" : "World Position Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name" : "Normal Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name" : "Light Composite Radiance Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Light Composite Graphics"
+        },
+        {
+            "Name" : "Previous TAA Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Copy Render Targets"
+        },
+        {
+            "Name": "Motion Vector Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        }
+
+    ],
+    "ShaderResources": [
+        
+    ],
+    "BlendStates": [
+        {
+            "Enabled": "False"
+        }
+    ],
+    "DepthStencilState":
+    {
+        "DepthEnable": "False",
+        "DepthWriteMask": "One",
+        "DepthFunc": "LessEqual",
+        "StencilEnable": "False"
+    },
+    "RasterState":
+    {
+        "FillMode": "Solid",
+        "CullMode": "None",
+        "FrontFace": "CounterClockwise"
+    }
+}

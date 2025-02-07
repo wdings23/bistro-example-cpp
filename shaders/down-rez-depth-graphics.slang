@@ -29,7 +29,7 @@ VertexStageOutput VSMain(
     output.sv_position = assembledVertex.position;
     output.texCoord = float4(
         assembledVertex.texCoord.x,
-        1.0f - assembledVertex.texCoord.y,
+        assembledVertex.texCoord.y,
         0.0f,
         0.0f
     );

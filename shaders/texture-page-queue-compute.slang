@@ -110,146 +110,6 @@ void CSMain(
         fNear,
         fFar
     );
-
-#if 0
-    for(uint32_t iTileY = 0; iTileY < iTileHeight; iTileY++)
-    {
-        float fY = float(iTotalTileY + iTileY) / float(defaultUniformData.miScreenHeight);
-        for(uint32_t iTileX = 0; iTileX < iTileWidth; iTileX++)
-        {
-            float fX = float(iTotalTileX + iTileX) / float(defaultUniformData.miScreenWidth);
-            float2 uv = float2(fX, fY);
-            uint2 sampleCoord = uint2(
-                iTotalTileX + iTileX,
-                iTotalTileY + iTileY
-            );
-
-            float4 worldPosition = worldPositionTexture[sampleCoord];
-            float4 texCoord = texCoordTexture[sampleCoord];
-            float4 motionDepthMesh = motionDepthMeshTexture[sampleCoord];
-
-            if(texCoord.x < 0.0f)
-            {
-                texCoord.x = fract(abs(1.0f - texCoord.x));
-            }
-            else if(texCoord.x > 1.0f)
-            {
-                texCoord.x = fract(texCoord.x);
-            }
-
-            if(texCoord.y < 0.0f)
-            {
-                texCoord.y = fract(abs(1.0f - texCoord.y));
-            }
-            else if(texCoord.y > 1.0f)
-            {
-                texCoord.y = fract(texCoord.y);
-            }
-
-            // TODO: use depth for MIP level
-            float fDepth = motionDepthMesh.z;
-
-            // linearize depth
-            float fLinearDepth = (fNear * fFar) / (fFar - fDepth * (fFar - fNear));
-            uint32_t iMIP = 0u;
-            if(fLinearDepth >= 3.0f && fLinearDepth < 10.0f)
-            {
-                iMIP = 1u;
-            }
-            else if(fLinearDepth >= 10.0f && fLinearDepth < 40.0f)
-            {
-                iMIP = 2u;
-            }
-            else if(fLinearDepth >= 40.0f)
-            {
-                iMIP = 3u;
-            }
-
-            // image coordinate to fetch
-            uint32_t iMesh = uint32_t(motionDepthMesh.w);
-            uint32_t iMaterialID = aMeshMaterialID[iMesh] - 1u;
-            uint32_t iAlbedoTextureID = aMeshMaterials[iMaterialID].miAlbedoTextureID;
-            uint32_t iNormalTextureID = aMeshMaterials[iMaterialID].miNormalTextureID;
-
-            float2 textureSize = float2(
-                float(aTextureSizes[iMaterialID].x),
-                float(aTextureSizes[iMaterialID].y)
-            );
-            float2 normalTextureSize = float2(
-                float(aNormalTextureSizes[iMaterialID].x),
-                float(aNormalTextureSizes[iMaterialID].y)
-            );
-
-            // mip dimension, division by power of 2
-            float2 mipTextureSize = textureSize / pow(2.0f, float(iMIP));
-            float2 mipNormalTextureSize = normalTextureSize / pow(2.0f, float(iMIP));    
-
-            // get the start uv in image space for the page
-            float2 mipImageCoord = texCoord.xy * mipTextureSize;
-            int2 mipStartPageUV = int2(
-                int32_t(floor(mipImageCoord.x / float(TEXTURE_PAGE_SIZE))),
-                int32_t(floor(mipImageCoord.y / float(TEXTURE_PAGE_SIZE)))
-            );
-            float2 mipNormalImageCoord= texCoord.xy * mipNormalTextureSize;
-            int2 mipNormalStartPageUV = int2(
-                int32_t(floor(mipNormalImageCoord.x / float(TEXTURE_PAGE_SIZE))),
-                int32_t(floor(mipNormalImageCoord.y / float(TEXTURE_PAGE_SIZE)))
-            );
-            
-            // hash index to check for existence
-            uint32_t iAlbedoHashIndex = hash13(
-                float3(
-                    float(mipStartPageUV.x),
-                    float(mipStartPageUV.y) * 32.0f, 
-                    float(iAlbedoTextureID) + float(iMIP + 1) * 1024.0f 
-                ),
-                80000u
-            );
-
-            uint32_t iNormalHashIndex = hash13(
-                float3(
-                    float(mipNormalStartPageUV.x),
-                    float(mipNormalStartPageUV.y) * 32.0f, 
-                    float(iNormalTextureID + 65536) + float(iMIP + 1) * 1024.0f 
-                ),
-                80000u
-            );
-
-            iAlbedoHashIndex = registerTexturePage(
-                mipStartPageUV,
-                iAlbedoHashIndex,
-                iAlbedoTextureID,
-                iMIP
-            );
-
-            //iNormalHashIndex = registerTexturePage(
-            //    mipNormalStartPageUV,
-            //    iNormalHashIndex,
-            //    iNormalTextureID + 65536,
-            //    iMIP
-            //);
-
-            // output page info
-            uint32_t iMIPEncodedCoordinate = uint32_t(uint32_t(mipStartPageUV.x) | uint32_t(uint32_t(mipStartPageUV.y) << 16u));
-            texturePageInfoTexture[int2(int32_t(uv.x * float(defaultUniformData.miScreenWidth)), int32_t(uv.y * float(defaultUniformData.miScreenHeight)))] =
-                float4(
-                    float(iMIPEncodedCoordinate),
-                    float(mipStartPageUV.y),
-                    float(iAlbedoTextureID) + float(iMIP) * 0.1f,
-                    float(iAlbedoHashIndex)
-                );
-
-            // output page info
-            //normalTexturePageInfoTexture[int2(int32_t(uv.x * float(defaultUniformData.miScreenWidth)), int32_t(uv.y * float(defaultUniformData.miScreenHeight)))] =
-            //float4(
-            //    float(mipNormalStartPageUV.x),
-            //    float(mipNormalStartPageUV.y),
-            //    float(iNormalTextureID + 65536) + float(iMIP) * 0.1f,
-            //    float(iNormalHashIndex)
-            //);
-        }
-    }
-#endif // #if 0
 }
 
 /////
@@ -441,6 +301,9 @@ void processPixel(
             iMIP = 3u;
         }
 
+// no mip for now
+iMIP = 0u;
+
         // image coordinate to fetch
         uint32_t iMesh = uint32_t(motionDepthMesh.z - fDepth);
         uint32_t iMaterialID = aMeshMaterialID[iMesh] - 1u;
@@ -450,11 +313,11 @@ void processPixel(
         float2 textureSize = float2(
             float(aTextureSizes[iMaterialID].x),
             float(aTextureSizes[iMaterialID].y)
-                );
+        );
         float2 normalTextureSize = float2(
             float(aNormalTextureSizes[iMaterialID].x),
             float(aNormalTextureSizes[iMaterialID].y)
-                );
+        );
 
         // mip dimension, division by power of 2
         float2 mipTextureSize = textureSize / pow(2.0f, float(iMIP));
@@ -465,12 +328,12 @@ void processPixel(
         int2 mipStartPageUV = int2(
             int32_t(floor(mipImageCoord.x / float(TEXTURE_PAGE_SIZE))),
             int32_t(floor(mipImageCoord.y / float(TEXTURE_PAGE_SIZE)))
-                );
+        );
         float2 mipNormalImageCoord = texCoord.xy * mipNormalTextureSize;
         int2 mipNormalStartPageUV = int2(
             int32_t(floor(mipNormalImageCoord.x / float(TEXTURE_PAGE_SIZE))),
             int32_t(floor(mipNormalImageCoord.y / float(TEXTURE_PAGE_SIZE)))
-                );
+        );
 
         // hash index to check for existence
         uint32_t iAlbedoHashIndex = hash13(
@@ -478,32 +341,25 @@ void processPixel(
                 float(mipStartPageUV.x),
                 float(mipStartPageUV.y) * 32.0f,
                 float(iAlbedoTextureID) + float(iMIP + 1) * 1024.0f 
-                    ),
+            ),
             80000u
-                );
+        );
 
         uint32_t iNormalHashIndex = hash13(
             float3(
                 float(mipNormalStartPageUV.x),
                 float(mipNormalStartPageUV.y) * 32.0f,
                 float(iNormalTextureID + 65536) + float(iMIP + 1) * 1024.0f 
-                    ),
+            ),
             80000u
-                );
+        );
 
         iAlbedoHashIndex = registerTexturePage(
             mipStartPageUV,
             iAlbedoHashIndex,
             iAlbedoTextureID,
             iMIP
-                );
-
-        // iNormalHashIndex = registerTexturePage(
-        //     mipNormalStartPageUV,
-        //     iNormalHashIndex,
-        //     iNormalTextureID + 65536,
-        //     iMIP
-        //);
+        );
 
         // output page info
         uint32_t iMIPEncodedCoordinate = uint32_t(uint32_t(mipStartPageUV.x) | uint32_t(uint32_t(mipStartPageUV.y) << 16u));
@@ -511,17 +367,8 @@ void processPixel(
             float4(
                 float(iMIPEncodedCoordinate),
                 float(mipStartPageUV.y),
-                float(iAlbedoTextureID) + float(iMIP) * 0.1f,
+                float(iAlbedoTextureID)/* + float(iMIP) * 0.1f*/,
                 float(iAlbedoHashIndex)
-                    );
-
-        // output page info
-        // normalTexturePageInfoTexture[int2(int32_t(uv.x * float(defaultUniformData.miScreenWidth)), int32_t(uv.y * float(defaultUniformData.miScreenHeight)))] =
-        // float4(
-        //    float(mipNormalStartPageUV.x),
-        //    float(mipNormalStartPageUV.y),
-        //    float(iNormalTextureID + 65536) + float(iMIP) * 0.1f,
-        //    float(iNormalHashIndex)
-        //);
+            );
     }
 }

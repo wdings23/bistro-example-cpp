@@ -65,6 +65,9 @@ public:
     bool isBoxInFrustum(vec3 const& topLeftFront, vec3 const& bottomRightBack) const;
     inline mat4 const& getViewProjectionMatrix() const { return mViewProjectionMatrix; }
     
+    inline mat4 const& getJitterProjectionMatrix() const { return mJitterProjectionMatrix; }
+    inline mat4 const& getJitterViewProjectionMatrix() const { return mJitterViewProjectionMatrix;  }
+
     inline vec4 const& getFrustumPlane(uint32_t iPlane)
     {
         return maFrustomPlanes[iPlane];
@@ -83,6 +86,9 @@ protected:
     mat4                    mProjectionMatrix;
     mat4                    mViewProjectionMatrix;
     
+    mat4                    mJitterProjectionMatrix;
+    mat4                    mJitterViewProjectionMatrix;
+
     ProjectionType          mProjectionType;
     
     vec4                    maFrustomPlanes[NUM_FRUSTUM_PLANES];

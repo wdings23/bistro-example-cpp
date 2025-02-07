@@ -107,6 +107,8 @@ namespace Render
 
             float                   mfNear;
             float                   mfFar;
+
+            vec2                    mJitter;
         };
 
         struct BufferDataWriteDescriptor
@@ -524,6 +526,7 @@ namespace Render
             RenderDriver::Common::CBuffer*                      mpDefaultUniformBuffer;
 
             float4x4                                            mPrevViewProjectionMatrix;
+            float4x4                                            mPrevJitterViewProjectionMatrix;
             std::vector<std::string>                            maRenderJobNames;
 
             void*                                               maSamplers[2];

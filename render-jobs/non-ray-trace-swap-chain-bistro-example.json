@@ -11,14 +11,14 @@
 
 
         {
-            "Name" : "Ambient Occlusion Output",
+            "Name" : "World Position Output",
             "Type": "TextureInput",
-            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
+            "ParentJobName": "Deferred Indirect Graphics"
         },
         {
-            "Name" : "TAA Output",
+            "Name" : "Normal Output",
             "Type": "TextureInput",
-            "ParentJobName": "TAA Resolve Graphics"
+            "ParentJobName": "Deferred Indirect Graphics"
         }
     ],
     "ShaderResources": [

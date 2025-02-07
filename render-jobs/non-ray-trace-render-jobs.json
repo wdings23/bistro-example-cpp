@@ -1,0 +1,111 @@
+{
+    "Jobs" :
+    [
+        {
+            "Name": "Mesh Culling Compute",
+            "Pipeline": "mesh-culling-compute.json",
+            "Type": "Compute",
+            "PassType": "Compute",
+            "Dispatch": [10, 1, 1]
+        },
+        {
+            "Name": "Atmosphere Graphics",
+            "Pipeline": "atmosphere.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Deferred Indirect Graphics",
+            "Pipeline": "deferred-indirect.json",
+            "Type": "Graphics",
+            "PassType": "Draw Meshes"
+        },
+        {
+            "Name": "Down Rez Depth Gather Graphics",
+            "Pipeline": "down-rez-depth-gather.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Down Rez Depth 1 Graphics",
+            "Pipeline": "down-rez-depth-1.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Down Rez Depth 2 Graphics",
+            "Pipeline": "down-rez-depth-2.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Down Rez Depth 3 Graphics",
+            "Pipeline": "down-rez-depth-3.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Down Rez Depth 4 Graphics",
+            "Pipeline": "down-rez-depth-4.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Down Rez Depth 5 Graphics",
+            "Pipeline": "down-rez-depth-5.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Down Rez Depth 6 Graphics",
+            "Pipeline": "down-rez-depth-6.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Down Rez Depth 7 Graphics",
+            "Pipeline": "down-rez-depth-7.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Secondary Mesh Culling Compute",
+            "Pipeline": "secondary-mesh-culling-compute.json",
+            "Type": "Compute",
+            "PassType": "Compute",
+            "Dispatch": [10, 1, 1]
+        },
+        {
+            "Name": "Secondary Deferred Indirect Graphics",
+            "Pipeline": "secondary-deferred-indirect-graphics.json",
+            "Type": "Compute",
+            "PassType": "Compute",
+            "Dispatch": [10, 1, 1]
+        },
+        {
+            "Name": "Texture Page Queue Compute",
+            "Pipeline": "texture-page-queue-compute.json",
+            "Type": "Compute",
+            "PassType": "Compute",
+            "Dispatch": [8, 1, 1]
+        },
+        {
+            "Name": "Texture Atlas Graphics",
+            "Pipeline": "texture-atlas-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Swap Chain Graphics",
+            "Pipeline": "non-ray-trace-swap-chain-bistro-example.json",
+            "Type": "Graphics",
+            "PassType": "Swap Chain"
+        },
+        {
+            "Name": "Copy Render Targets",
+            "Pipeline": "non-ray-trace-copy-render-targets.json",
+            "Type": "Copy",
+            "PassType": "Copy"
+        }
+    ]
+}

@@ -1018,9 +1018,9 @@ namespace Render
 
             VkViewport viewport = {};
             viewport.x = 0.0f;
-            viewport.y = 0.0f;
+            viewport.y = static_cast<float>(iHeight);
             viewport.width = static_cast<float>(iWidth);
-            viewport.height = static_cast<float>(iHeight);
+            viewport.height = static_cast<float>(iHeight) * -1.0f;
             viewport.minDepth = 0.0f;
             viewport.maxDepth = fMaxDepth;
             vkCmdSetViewport(

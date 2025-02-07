@@ -41,7 +41,7 @@ float2 octahedronMap2(
     }
 
     ret = ret * 0.5f + float2(0.5f, 0.5f);
-    //ret.y = 1.0f - ret.y;
+    ret.y = 1.0f - ret.y;
 
     return ret;
 }

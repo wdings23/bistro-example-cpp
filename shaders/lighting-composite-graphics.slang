@@ -44,7 +44,6 @@ VertexStageOutput VSMain(
 
     float4 position = assembledVertex.position;
     float4 uv = assembledVertex.uv;
-    uv.y = 1.0f - uv.y;
 
     output.sv_position = float4(position.xyz, 1.0f);
     output.texcoord = uv;
@@ -96,7 +95,7 @@ float4 PSMain(
             texCoord
         ).xyz;
 
-        ret = (shadow * 0.5f + diffuseRadiance) * albedo * fAO;
+        ret = (shadow + diffuseRadiance) * albedo * fAO;
     }
     return float4(ret.xyz, 1.0f); 
 }

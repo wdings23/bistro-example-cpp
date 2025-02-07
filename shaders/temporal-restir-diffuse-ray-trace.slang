@@ -83,11 +83,16 @@ struct TemporalRestirResult
 
     float3 mCandidateRadiance;
     float4 mCandidateHitPosition;
+    float4 mCandidateHitNormal;
+    float2 mCandidateHitUV;
     bool mbExchanged;
 
     uint32_t miIntersectionType;
 
     float2 mOnScreenUV;
+
+    uint32_t miCandidateHitMesh;
+    uint32_t miCandidateHitTriangle;
 };
 
 struct ReservoirResult
@@ -146,8 +151,8 @@ struct MeshRange
 [[vk::binding(3, 0)]] RWTexture2D<float4> hitPositionOutput;
 [[vk::binding(4, 0)]] RWTexture2D<float4> hitNormalOutput;
 [[vk::binding(5, 0)]] RWTexture2D<float4> sampleRayHitPositionOutput;
-[[vk::binding(6, 0)]] RWTexture2D<float4> sampleRayDirectionOutput;
-[[vk::binding(7, 0)]] RWTexture2D<float4> rayDirectionOutput;
+[[vk::binding(6, 0)]] RWTexture2D<float4> sampleRayHitNormalOutput;
+[[vk::binding(7, 0)]] RWTexture2D<float4> sampleRayHitUVMeshTriangle;
 
 [[vk::binding(8, 0)]] RWTexture2D<float4> sphericalHarmonicCoefficientTexture0;
 [[vk::binding(9, 0)]] RWTexture2D<float4> sphericalHarmonicCoefficientTexture1;
@@ -200,26 +205,23 @@ Texture2D<float4> directSunOutputTexture;
 [[vk::binding(27, 0)]]
 Texture2D<float4> previousAmbientOcclusionTexture;
 
-[[vk::binding(28, 0)]]
-Texture2D<float4> previousRayDirectionTexture;
+[[vk::binding(28, 0)]] Texture2D<float4> prevSphericalHarmonicCoefficientTexture0;
+[[vk::binding(29, 0)]] Texture2D<float4> prevSphericalHarmonicCoefficientTexture1;
+[[vk::binding(30, 0)]] Texture2D<float4> prevSphericalHarmonicCoefficientTexture2;
 
-[[vk::binding(29, 0)]] Texture2D<float4> prevSphericalHarmonicCoefficientTexture0;
-[[vk::binding(30, 0)]] Texture2D<float4> prevSphericalHarmonicCoefficientTexture1;
-[[vk::binding(31, 0)]] Texture2D<float4> prevSphericalHarmonicCoefficientTexture2;
+[[vk::binding(31, 0)]] StructuredBuffer<IrradianceCacheEntry> irradianceCache;
 
-[[vk::binding(32, 0)]] StructuredBuffer<IrradianceCacheEntry> irradianceCache;
+[[vk::binding(32, 0)]] Texture2D<float4> albedoTexture;
 
-[[vk::binding(33, 0)]] Texture2D<float4> albedoTexture;
+[[vk::binding(33, 0)]] Texture2D<float4> screenMotionVectorTexture;
+[[vk::binding(34, 0)]] Texture2D<float4> initialTextureAtlas;
 
-[[vk::binding(34, 0)]] Texture2D<float4> screenMotionVectorTexture;
-[[vk::binding(35, 0)]] Texture2D<float4> initialTextureAtlas;
+[[vk::binding(35, 0)]] RWTexture2D<float4> debugTexture0;
+[[vk::binding(36, 0)]] RWTexture2D<float4> debugTexture1;
+[[vk::binding(37, 0)]] RWTexture2D<float4> debugTexture2;
+[[vk::binding(38, 0)]] RWTexture2D<float4> debugTexture3;
 
-[[vk::binding(36, 0)]] RWTexture2D<float4> debugTexture0;
-[[vk::binding(37, 0)]] RWTexture2D<float4> debugTexture1;
-[[vk::binding(38, 0)]] RWTexture2D<float4> debugTexture2;
-[[vk::binding(39, 0)]] RWTexture2D<float4> debugTexture3;
-
-[[vk::binding(40, 0)]] SamplerState textureSampler;
+[[vk::binding(39, 0)]] SamplerState textureSampler;
 
 [[vk::binding(0, 1)]]
 ConstantBuffer<UniformData> uniformData;
@@ -291,8 +293,8 @@ void rayGen()
         hitPositionOutput[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
         hitNormalOutput[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
         sampleRayHitPositionOutput[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
-        sampleRayDirectionOutput[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
-        rayDirectionOutput[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
+        sampleRayHitNormalOutput[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
+        sampleRayHitUVMeshTriangle[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
         return;
     }
 
@@ -366,7 +368,6 @@ void rayGen()
     result.mRadiance = prevTemporalRadianceTexture[prevScreenCoord] * fValidHistory;
     result.mHitPosition = prevTemporalHitPositionTexture[prevScreenCoord] * fValidHistory;
     result.mHitNormal = prevTemporalHitNormalTexture[prevScreenCoord] * fValidHistory;
-    result.mRayDirection = previousRayDirectionTexture[prevScreenCoord] * fValidHistory;
     result.mAmbientOcclusion = previousAmbientOcclusionTexture[prevScreenCoord] * fValidHistory;
     result.mIntersectionResult.miHitTriangle = UINT32_MAX;
     result.mfNumValidSamples = 0.0f;
@@ -487,13 +488,16 @@ void rayGen()
     radianceOutput[rayIndex] = result.mRadiance * fWeight;
 
     reservoirOutput[rayIndex] = result.mReservoir;
-    rayDirectionOutput[rayIndex] = result.mRayDirection;
-    sampleRayDirectionOutput[rayIndex] = float4(sampleRayDirection, 1.0f);
+
+    sampleRayHitPositionOutput[rayIndex] = result.mCandidateHitPosition;
+    sampleRayHitNormalOutput[rayIndex] = result.mCandidateHitNormal;
+    sampleRayHitUVMeshTriangle[rayIndex].xy = result.mCandidateHitUV;
+    sampleRayHitUVMeshTriangle[rayIndex].z = float(result.miCandidateHitMesh);
+    sampleRayHitUVMeshTriangle[rayIndex].w = float(result.miCandidateHitTriangle);
+
     ambientOcclusionOutput[rayIndex] = float4(result.mAmbientOcclusion.x, result.mAmbientOcclusion.y, fAO, fDisocclusion * 100.0f);
     hitPositionOutput[rayIndex] = result.mHitPosition;
     hitNormalOutput[rayIndex] = result.mHitNormal;
-
-    sampleRayHitPositionOutput[rayIndex] = float4(result.mCandidateHitPosition);
 
     float3 shOutput = decodeFromSphericalHarmonicCoefficients(
         normal.xyz,
@@ -506,16 +510,16 @@ void rayGen()
 
     if(result.miIntersectionType == 2)
     {
-        float4x4 viewMatrix = defaultUniformBuffer.mViewMatrix;
-        float4x4 projectionMatrix = defaultUniformBuffer.mProjectionMatrix;
-        projectionMatrix._22 *= -1.0f;
-        float4x4 viewProjectionMatrix = mul(
-            projectionMatrix,
-            viewMatrix
-                );
+        //float4x4 viewMatrix = defaultUniformBuffer.mViewMatrix;
+        //float4x4 projectionMatrix = defaultUniformBuffer.mProjectionMatrix;
+        //projectionMatrix._22 *= -1.0f;
+        //float4x4 viewProjectionMatrix = mul(
+        //    projectionMatrix,
+        //    viewMatrix
+        //        );
 
         // get on-screen radiance if there's any
-        float4 clipSpacePosition = mul(viewProjectionMatrix, float4(result.mHitPosition.xyz, 1.0));
+        float4 clipSpacePosition = mul(defaultUniformBuffer.mViewProjectionMatrix, float4(result.mHitPosition.xyz, 1.0));
         clipSpacePosition.x /= clipSpacePosition.w;
         clipSpacePosition.y /= clipSpacePosition.w;
         clipSpacePosition.z /= clipSpacePosition.w;
@@ -652,6 +656,8 @@ TemporalRestirResult temporalRestir(
             uint32_t iMesh = uint32_t(payload.mOutput.z);
             uint32_t iMeshOffset = meshRanges[iMesh].miStart;
 
+            intersectionInfo.miMesh = iMesh;
+
             uint32_t iTri0 = indexBuffer[iMeshOffset + intersectionInfo.miHitTriangle * 3];
             uint32_t iTri1 = indexBuffer[iMeshOffset + intersectionInfo.miHitTriangle * 3 + 1];
             uint32_t iTri2 = indexBuffer[iMeshOffset + intersectionInfo.miHitTriangle * 3 + 2];
@@ -680,6 +686,7 @@ TemporalRestirResult temporalRestir(
             candidateHitPosition.xyz = intersectionInfo.mHitPosition.xyz;
             candidateHitPosition.w = payload.mOutput.y;
             candidateHitNormal.xyz = intersectionInfo.mHitNormal.xyz;
+            
         }
         else
         {
@@ -733,96 +740,6 @@ TemporalRestirResult temporalRestir(
     {
         fReflectivity = 0.5f;
 
-#if 0
-        float2 motionVector = motionVectorTexture[screenCoord].xy;
-        motionVector = motionVector * 2.0f - 1.0f;
-        
-        // get on-screen radiance if there's any
-        float4 clipSpacePosition = mul(defaultUniformBuffer.mViewProjectionMatrix, float4(candidateHitPosition.xyz, 1.0));
-        clipSpacePosition.x /= clipSpacePosition.w;
-        clipSpacePosition.y /= clipSpacePosition.w;
-        clipSpacePosition.z /= clipSpacePosition.w;
-
-        float2 prevScreenUV = clipSpacePosition.xy - motionVector;
-        prevScreenUV.x = prevScreenUV.x * 0.5f + 0.5f;
-        prevScreenUV.y = (prevScreenUV.y * 0.5f + 0.5f);
-
-        clipSpacePosition.x = clipSpacePosition.x * 0.5f + 0.5f;
-        clipSpacePosition.y = 1.0f - (clipSpacePosition.y * 0.5f + 0.5f);
-        clipSpacePosition.z = clipSpacePosition.z * 0.5f + 0.5f;
-
-        uint2 clipSpaceCoord = uint2(
-            uint32_t(floor(clipSpacePosition.x * float(textureSize.x) + 0.5f)),
-            uint32_t(floor(clipSpacePosition.y * float(textureSize.y) + 0.5f))
-        );
-
-        bool bOnScreen = false;
-        if (clipSpaceCoord.x >= 0 && clipSpaceCoord.x < textureSize.x &&
-            clipSpaceCoord.y >= 0 && clipSpaceCoord.y < textureSize.y &&
-            clipSpacePosition.z >= 0.0f && clipSpacePosition.z <= 1.0f)
-        {
-            candidateRadiance.xyz = albedoTexture[clipSpaceCoord.xy].xyz * directSunOutputTexture[clipSpaceCoord.xy].xyz;
-            debugTexture1[screenCoord] = float4(candidateRadiance.xyz, float(intersectionInfo.miHitTriangle));
-            debugTexture0[screenCoord] = float4(clipSpaceCoord.x, clipSpaceCoord.y, clipSpacePosition.x, clipSpacePosition.y);
-
-            float3 checkHitPosition = worldPositionTexture[clipSpaceCoord.xy].xyz;
-            float3 diff = checkHitPosition - candidateHitPosition.xyz;
-
-            debugTexture2[screenCoord].xyz = candidateHitPosition.xyz;
-            debugTexture3[screenCoord].xyz = checkHitPosition.xyz;
-            debugTexture2[screenCoord].w = float(intersectionInfo.miMesh);
-
-            float3 direction = checkHitPosition - worldPosition.xyz;
-            float fDistance = length(direction);
-            if(dot(diff, diff) <= 0.1f && fDistance >= 1.0f)
-            {
-                float3 hitNormal = normalTexture[clipSpaceCoord.xy].xyz;
-                fDistanceAttenuation = 1.0f / max(dot(direction, direction), 1.0f);
-                fRadianceDP = max(dot(normalize(direction), normal), 0.0f);
-                fJacobian = 1.0f;
-
-                bOnScreen = true;
-                ret.miIntersectionType = 2;
-            }
-        }
-
-        if(bOnScreen == false)
-        {
-            // not on screen, check irradiance cache
-            candidateRadiance.xyz = getIrradianceCacheRadiance(
-                candidateHitPosition.xyz,
-                worldPosition.xyz);
-
-            Material material = materialData[intersectionInfo.miMaterialID];
-            uint32_t iInitialAtlasWidth = 1, iInitialAtlasHeight = 1;
-            initialTextureAtlas.GetDimensions(iInitialAtlasWidth, iInitialAtlasHeight);
-
-            int32_t iInitialPageSize = 16;
-            int32_t iNumInitialPagesPerRow = iInitialAtlasWidth / iInitialPageSize;
-            uint32_t iTextureID = materialData[intersectionInfo.miMaterialID].miAlbedoTextureID;
-
-            int2 pageOffset = int2(
-                int32_t(floor(intersectionInfo.mHitUV.x * float(iInitialPageSize) + 0.5f)),
-                int32_t(floor(intersectionInfo.mHitUV.x * float(iInitialPageSize) + 0.5f))
-            );
-
-            int2 textureAtlasCoord = int2(
-                (iTextureID % iNumInitialPagesPerRow) * iInitialPageSize + pageOffset.x,
-                (iTextureID / iNumInitialPagesPerRow) * iInitialPageSize + pageOffset.y
-            );
-            float3 albedo = initialTextureAtlas[textureAtlasCoord].xyz;
-
-            float3 direction = candidateHitPosition.xyz - worldPosition.xyz;
-            fDistanceAttenuation = 1.0f / max(dot(direction, direction), 1.0f);
-            fRadianceDP = max(dot(normalize(direction), normal), 0.0f);
-            fJacobian = 1.0f;
-
-            candidateRadiance.xyz *= albedo.xyz;
-            ret.miIntersectionType = 3;
-
-        }
-
-#endif // #if 0
         float2 motionVector = motionVectorTexture[screenCoord].xy;
         motionVector = motionVector * 2.0f - 1.0f;
         BouncedRadianceInfo bounceRadianceInfo = getBouncedRadiance(
@@ -852,14 +769,6 @@ TemporalRestirResult temporalRestir(
         fOneOverPDF;
     
     sphericalHarmonicsCountOutput[screenCoord].x = sphericalHarmonicsCountOutput[screenCoord].x + 1.0f;
-    // encodeToSphericalHarmonicCoefficients(
-    //     candidateRadiance.xyz,
-    //     candidateRayDirection.xyz,
-    //     inputTexCoord,
-    //     prevInputTexCoord,
-    //     (ret.mReservoir.z <= 0.0f),
-    //     sphericalHarmonicsCountOutput[screenCoord].x
-    //);
     float fMaxRayCount = 20.0f;
     float fRayCount = min(sphericalHarmonicsCountOutput[screenCoord].x, fMaxRayCount);
     if(bTraceRay)
@@ -867,29 +776,9 @@ TemporalRestirResult temporalRestir(
         float fDstPct = 1.5f;
         float fSrcPct = 0.7f;
 
-#if 0
-        float fPct = min(fRayCount / fMaxRayCount, 1.0f);
-
-        float fDstPct = 1.0f;
-        float fSrcPct = 1.0f;
-
-        if(fRayCount < fMaxRayCount)
-        {
-            fDstPct = (1.0f - fPct) * 0.9f;
-            fSrcPct = fPct * 0.6f;
-        }
-#endif // #if 0
-
         float4 SHCoefficent0 = prevSphericalHarmonicCoefficientTexture0[prevInputCoord] * fSrcPct;
         float4 SHCoefficent1 = prevSphericalHarmonicCoefficientTexture1[prevInputCoord] * fSrcPct;
         float4 SHCoefficent2 = prevSphericalHarmonicCoefficientTexture2[prevInputCoord] * fSrcPct;
-
-        //if(prevResult.mReservoir.z <= 0.0f)
-        //{
-        //    SHCoefficent0 = float4(0.0f, 0.0f, 0.0f, 0.0f);
-        //    SHCoefficent1 = float4(0.0f, 0.0f, 0.0f, 0.0f);
-        //    SHCoefficent2 = float4(0.0f, 0.0f, 0.0f, 0.0f);
-        //}
 
         float4 afC = float4(
             0.282095f,
@@ -973,11 +862,17 @@ TemporalRestirResult temporalRestir(
         ret.mReservoir.z = fMaxTemporalReservoirSamples;
     }
 
-    ret.mCandidateRadiance = candidateRadiance.xyz;
-    ret.mCandidateHitPosition = candidateHitPosition;
+    
     ret.mIntersectionResult = intersectionInfo;
     ret.mfNumValidSamples += fM * float(fLuminance > 0.0f);
-    
+
+    ret.mCandidateRadiance = candidateRadiance.xyz;
+    ret.mCandidateHitPosition = candidateHitPosition;
+    ret.mCandidateHitNormal = candidateHitNormal;
+    ret.mCandidateHitUV = intersectionInfo.mHitUV;
+    ret.miCandidateHitMesh = intersectionInfo.miMesh;
+    ret.miCandidateHitTriangle = intersectionInfo.miHitTriangle;
+
     return ret;
 }
 
@@ -1722,16 +1617,15 @@ OnScreenRadianceResult getOnScreenRadiance(
     float fDistance = length(hitPosition.xyz - worldPosition);
     float fDistanceAttenuation = 1.0f / max(fDistance * fDistance, 1.0f);
 
-    float4x4 viewMatrix = defaultUniformBuffer.mViewMatrix;
-    float4x4 projectionMatrix = defaultUniformBuffer.mProjectionMatrix;
-    projectionMatrix._22 *= -1.0f;
-    float4x4 viewProjectionMatrix = mul(
-        projectionMatrix,
-        viewMatrix
-    );
+    //float4x4 viewMatrix = defaultUniformBuffer.mViewMatrix;
+    //float4x4 projectionMatrix = defaultUniformBuffer.mProjectionMatrix;
+    //projectionMatrix._22 *= -1.0f;
+    //float4x4 viewProjectionMatrix = mul(
+    //    projectionMatrix,
+    //    viewMatrix
+    //);
 
     // get on-screen radiance if there's any
-    // float4 clipSpacePosition = mul(viewProjectionMatrix, float4(hitPosition.xyz, 1.0));
     float4 clipSpacePosition = mul(defaultUniformBuffer.mViewProjectionMatrix, float4(hitPosition.xyz, 1.0f));
     clipSpacePosition.x /= clipSpacePosition.w;
     clipSpacePosition.y /= clipSpacePosition.w;
@@ -1757,7 +1651,7 @@ OnScreenRadianceResult getOnScreenRadiance(
 
     // see if it's actually on the screen by checking the onscreen position to the calculated position from above
     float4 worldSpaceHitPosition = worldPositionTexture[clipSpaceCoord];
-    float4 hitPositionClipSpace = mul(viewProjectionMatrix, float4(worldSpaceHitPosition.xyz, 1.0f));
+    float4 hitPositionClipSpace = mul(defaultUniformBuffer.mViewProjectionMatrix, float4(worldSpaceHitPosition.xyz, 1.0f));
     hitPositionClipSpace.x /= hitPositionClipSpace.w;
     hitPositionClipSpace.y /= hitPositionClipSpace.w;
     hitPositionClipSpace.z /= hitPositionClipSpace.w;
