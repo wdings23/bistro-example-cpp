@@ -21,8 +21,11 @@ struct PSOutput
 {
     float4 mDiffuseOutput : SV_TARGET0;
     float4 mEmissiveOutput : SV_TARGET1;
-    float2 mDiffuseMoment : SV_TARGET2;
-    float2 mEmissiveMoment : SV_TARGET3;
+    float4 mSpecularOutput : SV_TARGET2;
+
+    float2 mDiffuseMoment : SV_TARGET3;
+    float2 mEmissiveMoment : SV_TARGET4;
+    float2 mSpecularMoment : SV_TARGET4;
 };
 
 struct VertexStageOutput
@@ -45,7 +48,10 @@ struct VertexStageOutput
 [[vk::binding(10, 0)]] Texture2D<float4> emissiveRadianceTexture;
 [[vk::binding(11, 0)]] Texture2D<float4> prevEmissiveRadianceTexture;
 
-[[vk::binding(12, 0)]] SamplerState textureSampler;
+[[vk::binding(12, 0)]] Texture2D<float4> specularRadianceTexture;
+[[vk::binding(13, 0)]] Texture2D<float4> prevSpecularRadianceTexture;
+
+[[vk::binding(14, 0)]] SamplerState textureSampler;
 
 [[vk::binding(0, 1)]] Texture2D<float4> blueNoiseTexture;
 [[vk::binding(1, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
@@ -86,11 +92,21 @@ PSOutput PSMain(VertexStageOutput in)
     );
     out.mEmissiveOutput = float4(emissiveRadiance, 1.0f);
 
+    float3 specularRadiance = temporalAccumulation(
+        uv,
+        specularRadianceTexture,
+        prevSpecularRadianceTexture
+    );
+    out.mSpecularOutput = float4(specularRadiance, 1.0f);
+
     float fDiffuseLuminance = computeLuminance(diffuseRadiance);
     out.mDiffuseMoment = float2(fDiffuseLuminance, fDiffuseLuminance * fDiffuseLuminance);
 
     float fEmissiveLuminance = computeLuminance(emissiveRadiance);
     out.mEmissiveMoment = float2(fEmissiveLuminance, fEmissiveLuminance * fEmissiveLuminance);
+
+    float fSpecularLuminance = computeLuminance(specularRadiance);
+    out.mSpecularMoment = float2(fSpecularLuminance, fSpecularLuminance * fSpecularLuminance);
 
     return out;
 }
@@ -152,7 +168,7 @@ float3 temporalAccumulation(
     float3 currRadiance = radianceTexture[screenCoord].xyz;
     currRadiance = clamp(currRadiance, minRadiance, maxRadiance);
 
-    float fDstPct = 1.0f / 20.0f;
+    float fDstPct = 1.0f / 10.0f;
     float fSrcPct = 1.0f - fDstPct;
     
     //if(bDisoccluded)

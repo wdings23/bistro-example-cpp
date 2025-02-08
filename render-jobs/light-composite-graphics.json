@@ -12,9 +12,19 @@
 
 
         {
-            "Name" : "SVG Filter Radiance 2 Output",
+            "Name" : "Diffuse SVG Filter Radiance 2 Output",
             "Type": "TextureInput",
-            "ParentJobName": "SVG Filter 2 Graphics"
+            "ParentJobName": "Diffuse SVG Filter 2 Graphics"
+        },
+        {
+            "Name" : "Specular SVG Filter Radiance 1 Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Specular SVG Filter 1 Graphics"
+        },
+        {
+            "Name" : "Emissive SVG Filter Radiance 2 Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Emissive SVG Filter 2 Graphics"
         },
         {
             "Name" : "Direct Sun Light Output",
@@ -42,10 +52,16 @@
             "ParentJobName": "Temporal Restir Diffuse Ray Trace"
         },
         {
-            "Name": "SVG Filter Ambient Occlusion 2 Output",
+            "Name": "Diffuse SVG Filter Ambient Occlusion 2 Output",
             "Type": "TextureInput",
-            "ParentJobName": "SVG Filter 2 Graphics"
+            "ParentJobName": "Diffuse SVG Filter 2 Graphics"
+        },
+        {
+            "Name" : "Specular Temporal Restir Radiance Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Specular Temporal Restir Ray Trace"
         }
+
     ],
     "ShaderResources": [   
         

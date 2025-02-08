@@ -310,6 +310,11 @@ iMIP = 0u;
         uint32_t iAlbedoTextureID = aMeshMaterials[iMaterialID].miAlbedoTextureID;
         uint32_t iNormalTextureID = aMeshMaterials[iMaterialID].miNormalTextureID;
 
+        if(length(aMeshMaterials[iMaterialID].mEmissive.xyz) >= 0.6f)
+        {
+            iAlbedoTextureID = 0;
+        }
+
         float2 textureSize = float2(
             float(aTextureSizes[iMaterialID].x),
             float(aTextureSizes[iMaterialID].y)

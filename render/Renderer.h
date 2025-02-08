@@ -25,6 +25,8 @@ namespace Render
         extern std::vector<CCamera>                 gaCameras;
         extern float3                               gLightDirection;
         extern float3                               gPrevLightDirection;
+        extern float                                gfEmissiveRadiance;
+        extern float                                gfClearReservoir;
 
         enum RenderDriverType
         {

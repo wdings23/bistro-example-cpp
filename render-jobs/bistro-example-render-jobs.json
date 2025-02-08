@@ -132,6 +132,12 @@
             "PassType": "Full Triangle"
         },
         {
+            "Name": "Specular Temporal Restir Ray Trace",
+            "Pipeline": "specular-temporal-restir-ray-trace.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
             "Name": "Spatial Restir Emissive Ray Trace",
             "Pipeline": "spatial-restir-emissive-ray-trace.json",
             "Type": "Graphics",
@@ -150,8 +156,8 @@
             "PassType": "Full Triangle"
         },
         {
-            "Name": "SVG Filter 0 Graphics",
-            "Pipeline": "svgf-0-graphics.json",
+            "Name": "Diffuse SVG Filter 0 Graphics",
+            "Pipeline": "diffuse-svgf-0-graphics.json",
             "Type": "Graphics",
             "PassType": "Full Triangle",
             "ConstantBuffer": [ 
@@ -163,8 +169,8 @@
             ]
         },
         {
-            "Name": "SVG Filter 1 Graphics",
-            "Pipeline": "svgf-1-graphics.json",
+            "Name": "Diffuse SVG Filter 1 Graphics",
+            "Pipeline": "diffuse-svgf-1-graphics.json",
             "Type": "Graphics",
             "PassType": "Full Triangle",
             "ConstantBuffer": [ 
@@ -176,14 +182,79 @@
             ]
         },
         {
-            "Name": "SVG Filter 2 Graphics",
-            "Pipeline": "svgf-2-graphics.json",
+            "Name": "Diffuse SVG Filter 2 Graphics",
+            "Pipeline": "diffuse-svgf-2-graphics.json",
             "Type": "Graphics",
             "PassType": "Full Triangle",
             "ConstantBuffer": [ 
                 {
                     "name": "step",
                     "data": 1,
+                    "data type": "int"
+                }
+            ]
+        },
+        {
+            "Name": "Specular SVG Filter 0 Graphics",
+            "Pipeline": "specular-svgf-0-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle",
+            "ConstantBuffer": [ 
+                {
+                    "name": "step",
+                    "data": 0,
+                    "data type": "int"
+                }
+            ]
+        },
+        {
+            "Name": "Specular SVG Filter 1 Graphics",
+            "Pipeline": "specular-svgf-1-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle",
+            "ConstantBuffer": [ 
+                {
+                    "name": "step",
+                    "data": 1,
+                    "data type": "int"
+                }
+            ]
+        },
+        {
+            "Name": "Emissive SVG Filter 0 Graphics",
+            "Pipeline": "emissive-svgf-0-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle",
+            "ConstantBuffer": [ 
+                {
+                    "name": "step",
+                    "data": 0,
+                    "data type": "int"
+                }
+            ]
+        },
+        {
+            "Name": "Emissive SVG Filter 1 Graphics",
+            "Pipeline": "emissive-svgf-1-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle",
+            "ConstantBuffer": [ 
+                {
+                    "name": "step",
+                    "data": 1,
+                    "data type": "int"
+                }
+            ]
+        },
+        {
+            "Name": "Emissive SVG Filter 2 Graphics",
+            "Pipeline": "emissive-svgf-2-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle",
+            "ConstantBuffer": [ 
+                {
+                    "name": "step",
+                    "data": 2,
                     "data type": "int"
                 }
             ]

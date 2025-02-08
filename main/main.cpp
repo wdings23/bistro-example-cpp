@@ -466,6 +466,9 @@ int CALLBACK WinMain(
     //Render::Common::gLightDirection = normalize(float3(0.5f, 1.0f, 0.0f));
     Render::Common::gLightDirection = normalize(float3(-0.703f, 0.5403f, -0.461f));
 
+    Render::Common::gfEmissiveRadiance = 0.0f;
+    Render::Common::gfClearReservoir = 0.0f;
+
     // TODO: move vertex and index buffer out of renderer
 
     pDesc->mRenderJobsFilePath = "d:\\test\\bistro-example-cpp\\render-jobs\\bistro-example-render-jobs.json";
@@ -547,6 +550,8 @@ int CALLBACK WinMain(
     pRenderer->mapfnRenderJobData["Spatial Restir Diffuse 1 Ray Trace"] = pfnSetBuffers.get();
     pRenderer->mapfnRenderJobData["Temporal Restir Emissive Graphics"] = pfnSetBuffers.get();
     pRenderer->mapfnRenderJobData["Spatial Restir Emissive Ray Trace"] = pfnSetBuffers.get();
+    pRenderer->mapfnRenderJobData["Specular Temporal Restir Ray Trace"] = pfnSetBuffers.get();
+
 #endif // USE_RAY_TRACING
 
     std::map<std::string, std::vector<PageInfo>> aPageInfo;
@@ -1746,6 +1751,20 @@ LRESULT CALLBACK _windowProc(
             case '*':
             {
                 sSunColor += float3(0.1f, 0.1f, 0.1f);
+                break;
+            }
+
+            case '[':
+            {
+                Render::Common::gfEmissiveRadiance = max(Render::Common::gfEmissiveRadiance - 5.0f, 0.0f);
+                Render::Common::gfClearReservoir = 1.0f;
+                break;
+            }
+
+            case ']':
+            {
+                Render::Common::gfEmissiveRadiance = max(Render::Common::gfEmissiveRadiance + 5.0f, 0.0f);
+                Render::Common::gfClearReservoir = 1.0f;
                 break;
             }
 

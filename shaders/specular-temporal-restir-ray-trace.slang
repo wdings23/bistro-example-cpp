@@ -7,7 +7,7 @@
 #include "default-uniform-headers.slang"
 #include "murmur-hash-headers.slang"
 #include "octahedron-map-headers.slang"
-//#include "irradiance-cache-headers.slang"
+#include "irradiance-cache-headers.slang"
 //#include "motion-vector-headers.slang"
 
 #include "bounced-radiance-headers.slang"
@@ -39,21 +39,6 @@ struct VertexStageOutput
 {
     float4 sv_position : SV_Position;
     float4 texCoord;
-};
-struct FragmentOutput {
-    float4 radianceOutput : SV_TARGET0;
-    float4 temporalReservoir : SV_TARGET1;
-    float4 ambientOcclusionOutput : SV_TARGET2;
-    float4 hitPosition : SV_TARGET3;
-    float4 hitNormal : SV_TARGET4;
-    float4 sampleRayHitPosition : SV_TARGET5;
-    float4 sampleRayDirection : SV_TARGET6;
-    float4 rayDirection : SV_TARGET7;
-};
-
-struct UniformData
-{
-    int32_t miNumTemporalRestirSamplePermutations;
 };
 
 struct IntersectBVHResult
@@ -107,13 +92,6 @@ struct DisocclusionResult
     bool mbDisoccluded;
 };
 
-struct DirectSunLightResult
-{
-    float4 mReservoir;
-    float3 mRadiance;
-    RandomResult mRandomResult;
-};
-
 struct VertexFormat
 {
     float4 mPosition;
@@ -147,96 +125,62 @@ struct MeshRange
 
 [[vk::binding(0, 0)]] RWTexture2D<float4> radianceOutput;
 [[vk::binding(1, 0)]] RWTexture2D<float4> reservoirOutput;
-[[vk::binding(2, 0)]] RWTexture2D<float4> ambientOcclusionOutput;
-[[vk::binding(3, 0)]] RWTexture2D<float4> hitPositionOutput;
-[[vk::binding(4, 0)]] RWTexture2D<float4> hitNormalOutput;
-[[vk::binding(5, 0)]] RWTexture2D<float4> sampleRayHitPositionOutput;
-[[vk::binding(6, 0)]] RWTexture2D<float4> sampleRayHitNormalOutput;
-[[vk::binding(7, 0)]] RWTexture2D<float4> sampleRayHitUVMeshTriangle;
+[[vk::binding(2, 0)]] RWTexture2D<float4> hitPositionOutput;
+[[vk::binding(3, 0)]] RWTexture2D<float4> hitNormalOutput;
+[[vk::binding(4, 0)]] RWTexture2D<float4> sampleRayHitPositionOutput;
+[[vk::binding(5, 0)]] RWTexture2D<float4> sampleRayHitNormalOutput;
+[[vk::binding(6, 0)]] RWTexture2D<float4> sampleRayHitUVMeshTriangle;
 
-[[vk::binding(8, 0)]] RWTexture2D<float4> sphericalHarmonicCoefficientTexture0;
-[[vk::binding(9, 0)]] RWTexture2D<float4> sphericalHarmonicCoefficientTexture1;
-[[vk::binding(10, 0)]] RWTexture2D<float4> sphericalHarmonicCoefficientTexture2;
+[[vk::binding(7, 0)]] RWTexture2D<float4> sphericalHarmonicCoefficientTexture0;
+[[vk::binding(8, 0)]] RWTexture2D<float4> sphericalHarmonicCoefficientTexture1;
+[[vk::binding(9, 0)]] RWTexture2D<float4> sphericalHarmonicCoefficientTexture2;
 
-[[vk::binding(11, 0)]] RWTexture2D<float4> decodedSphericalHarmonicsOutput;
-[[vk::binding(12, 0)]] RWTexture2D<float4> sphericalHarmonicsCountOutput;
+[[vk::binding(10, 0)]] RWTexture2D<float4> decodedSphericalHarmonicsOutput;
 
-[[vk::binding(13, 0)]] RaytracingAccelerationStructure scene;
+[[vk::binding(11, 0)]] RaytracingAccelerationStructure scene;
+[[vk::binding(12, 0)]] Texture2D<float4> worldPositionTexture;
+[[vk::binding(13, 0)]] Texture2D<float4> normalTexture;
+[[vk::binding(14, 0)]] Texture2D<float4> texCoordTexture;
+[[vk::binding(15, 0)]] Texture2D<float4> skyTexture;
+[[vk::binding(16, 0)]] Texture2D<float4> prevTemporalReservoirTexture;
+[[vk::binding(17, 0)]] Texture2D<float4> prevTemporalRadianceTexture;
+[[vk::binding(18, 0)]] Texture2D<float4> prevTemporalHitPositionTexture;
+[[vk::binding(19, 0)]] Texture2D<float4> prevTemporalHitNormalTexture;
+[[vk::binding(20, 0)]] Texture2D<float4> prevWorldPositionTexture;
+[[vk::binding(21, 0)]] Texture2D<float4> prevNormalTexture;
+[[vk::binding(22, 0)]] Texture2D<float4> motionVectorTexture;
+[[vk::binding(23, 0)]] Texture2D<float4> prevMotionVectorTexture;
+[[vk::binding(24, 0)]] Texture2D<float4> directSunOutputTexture;
+[[vk::binding(25, 0)]] Texture2D<float4> previousAmbientOcclusionTexture;
 
-[[vk::binding(14, 0)]]
-Texture2D<float4> worldPositionTexture;
+[[vk::binding(26, 0)]] Texture2D<float4> prevSphericalHarmonicCoefficientTexture0;
+[[vk::binding(27, 0)]] Texture2D<float4> prevSphericalHarmonicCoefficientTexture1;
+[[vk::binding(28, 0)]] Texture2D<float4> prevSphericalHarmonicCoefficientTexture2;
 
-[[vk::binding(15, 0)]]
-Texture2D<float4> normalTexture;
+[[vk::binding(29, 0)]] StructuredBuffer<IrradianceCacheEntry> irradianceCache;
 
-[[vk::binding(16, 0)]]
-Texture2D<float4> texCoordTexture;
+[[vk::binding(30, 0)]] Texture2D<float4> albedoTexture;
 
-[[vk::binding(17, 0)]]
-Texture2D<float4> skyTexture;
+[[vk::binding(31, 0)]] Texture2D<float4> screenMotionVectorTexture;
+[[vk::binding(32, 0)]] Texture2D<float4> initialTextureAtlas;
 
-[[vk::binding(18, 0)]]
-Texture2D<float4> prevTemporalReservoirTexture;
+[[vk::binding(33, 0)]] Texture2D<float4> sunLightTexture;
 
-[[vk::binding(19, 0)]]
-Texture2D<float4> prevTemporalRadianceTexture;
+[[vk::binding(34, 0)]] RWTexture2D<float4> debugTexture0;
+[[vk::binding(35, 0)]] RWTexture2D<float4> debugTexture1;
+[[vk::binding(36, 0)]] RWTexture2D<float4> debugTexture2;
+[[vk::binding(37, 0)]] RWTexture2D<float4> debugTexture3;
 
-[[vk::binding(20, 0)]]
-Texture2D<float4> prevTemporalHitPositionTexture;
+[[vk::binding(38, 0)]] SamplerState textureSampler;
 
-[[vk::binding(21, 0)]]
-Texture2D<float4> prevTemporalHitNormalTexture;
+[[vk::binding(0, 1)]] Texture2D<float4> blueNoiseTexture;
+[[vk::binding(1, 1)]] StructuredBuffer<VertexFormat> vertexBuffer;
+[[vk::binding(2, 1)]] StructuredBuffer<uint32_t> indexBuffer;
+[[vk::binding(3, 1)]] StructuredBuffer<Material> materialData;
+[[vk::binding(4, 1)]] StructuredBuffer<uint32_t> materialID;
+[[vk::binding(5, 1)]] StructuredBuffer<MeshRange> meshRanges;
 
-[[vk::binding(22, 0)]]
-Texture2D<float4> prevWorldPositionTexture;
-
-[[vk::binding(23, 0)]]
-Texture2D<float4> prevNormalTexture;
-
-[[vk::binding(24, 0)]]
-Texture2D<float4> motionVectorTexture;
-
-[[vk::binding(25, 0)]]
-Texture2D<float4> prevMotionVectorTexture;
-
-[[vk::binding(26, 0)]]
-Texture2D<float4> directSunOutputTexture;
-
-[[vk::binding(27, 0)]]
-Texture2D<float4> previousAmbientOcclusionTexture;
-
-[[vk::binding(28, 0)]] Texture2D<float4> prevSphericalHarmonicCoefficientTexture0;
-[[vk::binding(29, 0)]] Texture2D<float4> prevSphericalHarmonicCoefficientTexture1;
-[[vk::binding(30, 0)]] Texture2D<float4> prevSphericalHarmonicCoefficientTexture2;
-
-[[vk::binding(31, 0)]] StructuredBuffer<IrradianceCacheEntry> irradianceCache;
-
-[[vk::binding(32, 0)]] Texture2D<float4> albedoTexture;
-
-[[vk::binding(33, 0)]] Texture2D<float4> screenMotionVectorTexture;
-[[vk::binding(34, 0)]] Texture2D<float4> initialTextureAtlas;
-
-[[vk::binding(35, 0)]] RWTexture2D<float4> debugTexture0;
-[[vk::binding(36, 0)]] RWTexture2D<float4> debugTexture1;
-[[vk::binding(37, 0)]] RWTexture2D<float4> debugTexture2;
-[[vk::binding(38, 0)]] RWTexture2D<float4> debugTexture3;
-
-[[vk::binding(39, 0)]] SamplerState textureSampler;
-
-[[vk::binding(0, 1)]]
-ConstantBuffer<UniformData> uniformData;
-
-[[vk::binding(1, 1)]]
-Texture2D<float4> blueNoiseTexture;
-
-[[vk::binding(2, 1)]] StructuredBuffer<VertexFormat> vertexBuffer;
-[[vk::binding(3, 1)]] StructuredBuffer<uint32_t> indexBuffer;
-[[vk::binding(4, 1)]] StructuredBuffer<Material> materialData;
-[[vk::binding(5, 1)]] StructuredBuffer<uint32_t> materialID;
-[[vk::binding(6, 1)]] StructuredBuffer<MeshRange> meshRanges;
-
-[[vk::binding(7, 1)]]
-ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
+[[vk::binding(6, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
 
 [shader("vertex")]
 VertexStageOutput VSMain(
@@ -285,11 +229,14 @@ void rayGen()
     debugTexture2[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
     debugTexture3[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
+    //sphericalHarmonicCoefficientTexture0[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    //sphericalHarmonicCoefficientTexture1[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    //sphericalHarmonicCoefficientTexture2[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
     if(defaultUniformBuffer.miFrame < 1)
     {
         radianceOutput[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
         reservoirOutput[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
-        ambientOcclusionOutput[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
         hitPositionOutput[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
         hitNormalOutput[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
         sampleRayHitPositionOutput[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -353,7 +300,6 @@ void rayGen()
         prevScreenUV.x < 0.0f || prevScreenUV.x > 1.0f ||
         prevScreenUV.y < 0.0f || prevScreenUV.y > 1.0f
     );
-    // bool bDisoccluded = isDisoccluded3(uv, prevScreenUV);
     bool bDisoccluded = isDisoccluded(prevScreenUV, rayIndex);
     float fDisocclusion = (bOutOfBounds || bDisoccluded) ? 1.0f : 0.0f;
     float fValidHistory = 1.0f - fDisocclusion;
@@ -405,8 +351,13 @@ void rayGen()
     if(fDisocclusion > 0.0f)
     {
         result.mAmbientOcclusion = float4(0.0f, 0.0f, 0.0f, 0.0f);
-        sphericalHarmonicsCountOutput[rayIndex].x = 0.0f;
     }
+
+    int32_t iMaterialID = max(materialID[iCenterMeshID] - 1, 0);
+    float3 viewDirection = normalize(defaultUniformBuffer.mCameraPosition.xyz - worldPosition.xyz);
+
+    float fRoughness = materialData[iMaterialID].mSpecular.x;
+    float fMetalness = max(materialData[iMaterialID].mSpecular.y, 0.1f);
 
     // center pixel sample
     float3 sampleRayDirection = float3(0.0f, 0.0f, 0.0f);
@@ -423,20 +374,22 @@ void rayGen()
         blueNoiseScreenCoord.x = (blueNoiseScreenCoord.x + iOffsetX) % blueNoiseTextureSize.x;
         blueNoiseScreenCoord.y = (blueNoiseScreenCoord.y + iOffsetY) % blueNoiseTextureSize.y;
 
-        //uint32_t iTotalIndex = ((defaultUniformBuffer.miFrame * iNumCenterSamples) + iSample) % (blueNoiseTextureSize.x * blueNoiseTextureSize.y);
-        //uint32_t iSampleX = iTotalIndex % blueNoiseTextureSize.x;
-        //uint32_t iSampleY = iTotalIndex / blueNoiseTextureSize.y;
-        //blueNoiseScreenCoord.x = (blueNoiseScreenCoord.x + iSampleX) % blueNoiseTextureSize.x;
-        //blueNoiseScreenCoord.y = (blueNoiseScreenCoord.y + iSampleY) % blueNoiseTextureSize.y;
-
         float3 blueNoise = blueNoiseTexture[blueNoiseScreenCoord].xyz;
-        Ray ray = uniformSampling(
-            worldPosition.xyz,
-            normal.xyz,
-            blueNoise.x,
-            blueNoise.y);
-        sampleRayDirection = ray.mDirection.xyz;
         result.mIntersectionResult.miHitTriangle = UINT32_MAX;
+
+        float3 sampleRayDirection = sampleGGXVNDF(
+            viewDirection,
+            fRoughness,
+            blueNoise.x,
+            blueNoise.y
+        );
+
+        //Ray ray = uniformSampling(
+        //    worldPosition.xyz,
+        //    normal.xyz,
+        //    blueNoise.x,
+        //    blueNoise.y);
+        //sampleRayDirection = ray.mDirection.xyz;
 
         // restir
         result.mAmbientOcclusion.y += 1.0f;
@@ -456,23 +409,11 @@ void rayGen()
             0.1f,
             bRayTrace,
             textureSize,
-            (fDisocclusion > 0.0f)
+            (fDisocclusion > 0.0f),
+            fRoughness,
+            fMetalness
         );
     }
-
-    result = permutationRestir(
-        result,
-        uv,
-        prevScreenUV,
-        rayIndex,
-        prevScreenCoord,
-        worldPosition.xyz,
-        normal.xyz,
-        iCenterMeshID,
-        fReservoirSize,
-        textureSize,
-        randomResult
-    );
 
     result.mAmbientOcclusion.y += 1;
     if (result.mIntersectionResult.miHitTriangle != UINT32_MAX)
@@ -487,6 +428,12 @@ void rayGen()
 
     radianceOutput[rayIndex] = result.mRadiance * fWeight;
 
+    encodeToSphericalHarmonicCoefficients2(
+        radianceOutput[rayIndex].xyz * 20.0f,
+        normalize(result.mHitPosition.xyz - worldPosition.xyz),
+        rayIndex
+    );
+
     reservoirOutput[rayIndex] = result.mReservoir;
 
     sampleRayHitPositionOutput[rayIndex] = result.mCandidateHitPosition;
@@ -495,67 +442,15 @@ void rayGen()
     sampleRayHitUVMeshTriangle[rayIndex].z = float(result.miCandidateHitMesh);
     sampleRayHitUVMeshTriangle[rayIndex].w = float(result.miCandidateHitTriangle);
 
-    ambientOcclusionOutput[rayIndex] = float4(result.mAmbientOcclusion.x, result.mAmbientOcclusion.y, fAO, fDisocclusion * 100.0f);
     hitPositionOutput[rayIndex] = result.mHitPosition;
     hitNormalOutput[rayIndex] = result.mHitNormal;
 
     float3 shOutput = decodeFromSphericalHarmonicCoefficients(
         normal.xyz,
-        float3(10.0f, 10.0f, 10.0f),
-        uv,
-        max(sphericalHarmonicsCountOutput[rayIndex].x, 5.0f)
+        rayIndex
     );
 
     decodedSphericalHarmonicsOutput[rayIndex] = float4(shOutput.xyz, 1.0f);
-
-    if(result.miIntersectionType == 2)
-    {
-        // get on-screen radiance if there's any
-        float4 clipSpacePosition = mul(defaultUniformBuffer.mViewProjectionMatrix, float4(result.mHitPosition.xyz, 1.0));
-        clipSpacePosition.x /= clipSpacePosition.w;
-        clipSpacePosition.y /= clipSpacePosition.w;
-        clipSpacePosition.z /= clipSpacePosition.w;
-        clipSpacePosition.x = clipSpacePosition.x * 0.5f + 0.5f;
-        clipSpacePosition.y = (clipSpacePosition.y * 0.5f + 0.5f);
-        clipSpacePosition.z = clipSpacePosition.z * 0.5f + 0.5f;
-
-        float3 prevClipSpacePosition = float3(
-            clipSpacePosition.x - motionVector.x,
-            clipSpacePosition.y - motionVector.y,
-            clipSpacePosition.z);
-
-        uint2 clipSpaceCoord = uint2(
-            uint32_t(floor(clipSpacePosition.x * float(textureSize.x) + 0.5f)),
-            uint32_t(floor(clipSpacePosition.y * float(textureSize.y) + 0.5f))
-        );
-
-        uint2 prevClipSpaceCoord = uint2(
-            uint32_t(floor(prevClipSpacePosition.x * float(textureSize.x) + 0.5f)),
-            uint32_t(floor(prevClipSpacePosition.y * float(textureSize.y) + 0.5f))
-        );
-
-        //debugTexture0[rayIndex] = clipSpacePosition;
-        //debugTexture1[rayIndex] = float4(
-        //    float(clipSpaceCoord.x),
-        //    float(clipSpaceCoord.y),
-        //    clipSpacePosition.x,
-        //    clipSpacePosition.y
-        //);
-
-        //if (clipSpacePosition.x >= 0.0f && clipSpacePosition.x <= 1.0f &&
-        //    clipSpacePosition.y >= 0.0f && clipSpacePosition.y <= 1.0f &&
-        //    clipSpacePosition.z >= 0.0f && clipSpacePosition.z <= 1.0f)
-        {
-            //debugTexture2[rayIndex] = result.mHitPosition;
-            //debugTexture3[rayIndex].xyz = result.mCandidateRadiance.xyz;
-        }
-    }
-
-    //debugTexture3[rayIndex].xyz = 
-    //    radianceOutput[rayIndex].xyz + 
-    //    float3(float(bDisoccluded), 0.0f, 0.0f);
-
-    //debugTexture3[rayIndex].xyz = radianceOutput[rayIndex].xyz;
 }
 
 /////
@@ -577,7 +472,9 @@ TemporalRestirResult temporalRestir(
     in float fM,
     in bool bTraceRay,
     in uint2 textureSize,
-    bool bDisoccluded)
+    in bool bDisoccluded,
+    in float fRoughness,
+    in float fMetalness)
 {
     float fOneOverPDF = 1.0f; // 1.0f / PI;
 
@@ -609,16 +506,16 @@ TemporalRestirResult temporalRestir(
     
     IntersectBVHResult intersectionInfo;
 
-    float3 emissiveRadiance = float3(0.0f, 0.0f, 0.0f);
-
     float4 candidateHitPosition = float4(0.0f, 0.0f, 0.0f, 0.0f);
     float4 candidateHitNormal = float4(0.0f, 0.0f, 0.0f, 1.0f);
     intersectionInfo.miHitTriangle = UINT32_MAX;
 
+    float3 emissiveRadiance = float3(0.0f, 0.0f, 0.0f);
+
     RayDesc ray;
     ray.Origin = worldPosition + rayDirection * 0.01f;
     ray.Direction = rayDirection;
-    ray.TMin = 0.001f;
+    ray.TMin = 0.01f;
     ray.TMax = 1000.0f;
     RayPayload payload = {
         float4(0.0f, 0.0f, 0.0f, 0.0f)
@@ -639,14 +536,9 @@ TemporalRestirResult temporalRestir(
         if(payload.mOutput.w > 0.0f)
         {
             // hit
-
             intersectionInfo.miHitTriangle = uint32_t(payload.mOutput.y);
             intersectionInfo.mBarycentricCoordinate = payload.mBarycentricCoord.xyz;
-            if(payload.mOutput.x <= 2.0f)
-            {
-                ret.mAmbientOcclusion.x += 1.0f;
-            }
-
+            
             uint32_t iMesh = uint32_t(payload.mOutput.z);
             uint32_t iMeshOffset = meshRanges[iMesh].miStart;
 
@@ -683,7 +575,7 @@ TemporalRestirResult temporalRestir(
 
             uint32_t iMaterialID = materialID[iMesh] - 1;
             Material material = materialData[iMaterialID];
-            emissiveRadiance = material.mEmissive.xyz;
+            emissiveRadiance = material.mEmissive.xyz; 
         }
         else
         {
@@ -724,7 +616,7 @@ TemporalRestirResult temporalRestir(
             uint32_t(skyUV.y * float(skyTextureSize.y))
         );
 
-        candidateRadiance = skyTexture[skyCoord];
+        candidateRadiance = skyTexture[skyCoord] + sunLightTexture[skyCoord];
 
         candidateHitNormal = float4(-ray.Direction.x, -ray.Direction.y, -ray.Direction.z, 1.0f);
         candidateHitPosition.x = worldPosition.x + ray.Direction.x * 50000.0f;
@@ -756,82 +648,10 @@ TemporalRestirResult temporalRestir(
         fJacobian = 1.0f;
         fRadianceDP = bounceRadianceInfo.mfAnglePct;
         fDistanceAttenuation = bounceRadianceInfo.mfDistanceAttenuation;
-        
-        // apply emissive radiance for irradiance cache hit
-        if(bounceRadianceInfo.miIntersectionType == 2)
-        {
-            candidateRadiance.xyz += emissiveRadiance;
-        }
     }
 
-    candidateRadiance.xyz = 
-        candidateRadiance.xyz * 
-        fJacobian * 
-        fRadianceDP * 
-        fDistanceAttenuation * 
-        fOneOverPDF;
-    
-    sphericalHarmonicsCountOutput[screenCoord].x = sphericalHarmonicsCountOutput[screenCoord].x + 1.0f;
-    float fMaxRayCount = 20.0f;
-    float fRayCount = min(sphericalHarmonicsCountOutput[screenCoord].x, fMaxRayCount);
-    if(bTraceRay)
-    {
-        float fDstPct = 1.5f;
-        float fSrcPct = 0.7f;
+    candidateRadiance.xyz += emissiveRadiance;
 
-        float4 SHCoefficent0 = prevSphericalHarmonicCoefficientTexture0[prevInputCoord] * fSrcPct;
-        float4 SHCoefficent1 = prevSphericalHarmonicCoefficientTexture1[prevInputCoord] * fSrcPct;
-        float4 SHCoefficent2 = prevSphericalHarmonicCoefficientTexture2[prevInputCoord] * fSrcPct;
-
-        float4 afC = float4(
-            0.282095f,
-            0.488603f,
-            0.488603f,
-            0.488603f
-        );
-
-        float4 A = float4(
-            0.886227f,
-            1.023326f,
-            1.023326f,
-            1.023326f
-        );
-
-        // encode coefficients with direction
-        float4 coefficient = float4(
-            afC.x * A.x,
-            afC.y * candidateRayDirection.y * A.y,
-            afC.z * candidateRayDirection.z * A.z,
-            afC.w * candidateRayDirection.x * A.w
-        );
-
-        // encode with radiance
-        float3 aResults[4];
-        aResults[0] = candidateRadiance.xyz * coefficient.x * fDstPct;
-        aResults[1] = candidateRadiance.xyz * coefficient.y * fDstPct;
-        aResults[2] = candidateRadiance.xyz * coefficient.z * fDstPct;
-        aResults[3] = candidateRadiance.xyz * coefficient.w * fDstPct;
-        SHCoefficent0.x += aResults[0].x;
-        SHCoefficent0.y += aResults[0].y;
-        SHCoefficent0.z += aResults[0].z;
-        SHCoefficent0.w += aResults[1].x;
-
-        SHCoefficent1.x += aResults[1].y;
-        SHCoefficent1.y += aResults[1].z;
-        SHCoefficent1.z += aResults[2].x;
-        SHCoefficent1.w += aResults[2].y;
-
-        SHCoefficent2.x += aResults[2].z;
-        SHCoefficent2.y += aResults[3].x;
-        SHCoefficent2.z += aResults[3].y;
-        SHCoefficent2.w += aResults[3].z;
-
-        sphericalHarmonicCoefficientTexture0[screenCoord] = SHCoefficent0;
-        sphericalHarmonicCoefficientTexture1[screenCoord] = SHCoefficent1;
-        sphericalHarmonicCoefficientTexture2[screenCoord] = SHCoefficent2;
-    }
-    
-    
     // reservoir
     float fLuminance = computeLuminance(
         candidateRadiance.xyz
@@ -846,11 +666,20 @@ TemporalRestirResult temporalRestir(
     if(fRand2 < fWeightPct || ret.mReservoir.z <= 0.0f)
     {
         ret.mReservoir.y = fPHat;
-        ret.mRadiance = candidateRadiance;
+        //ret.mRadiance = candidateRadiance;
         ret.mHitPosition = candidateHitPosition;
         ret.mHitNormal = candidateHitNormal;
         ret.mRayDirection = candidateRayDirection;
         ret.mbExchanged = true;
+
+        ret.mRadiance.xyz = computeSpecularRadiance(
+            candidateRadiance.xyz,
+            worldPosition,
+            normal,
+            candidateHitPosition.xyz,
+            fRoughness,
+            fMetalness
+        );
     }
     else
     {
@@ -1084,97 +913,6 @@ float3 linearToSRGB(
 
 // https://media.contentapi.ea.com/content/dam/eacom/frostbite/files/gdc2018-precomputedgiobalilluminationinfrostbite.pdf
 // http://orlandoaguilar.github.io/sh/spherical/harmonics/irradiance/map/2017/02/12/SphericalHarmonics.html
-/*
-**
-*/
-void encodeToSphericalHarmonicCoefficients(
-    in float3 radiance,
-    in float3 direction,
-    in float2 texCoord,
-    in float2 prevTexCoord,
-    in bool bDisoccluded,
-    in float fNumSamples
-)
-{
-    // float fPct = (fNumSamples <= 20.0f) ? 1.0f / 20.0f : 10.0f / fNumSamples;
-    //float fPct = 0.001f;
-    //if(fNumSamples >= 10.0f)
-    //{
-    //    fPct = 10.0f / fNumSamples;
-    //}
-
-    uint2 textureSize;
-    radianceOutput.GetDimensions(textureSize.x, textureSize.y);
-
-    uint2 prevCoord = uint2(
-        uint32_t(prevTexCoord.x * float(textureSize.x)),
-        uint32_t(prevTexCoord.y * float(textureSize.y))
-    );
-
-    float4 SHCoefficent0 = prevSphericalHarmonicCoefficientTexture0[prevCoord];
-    float4 SHCoefficent1 = prevSphericalHarmonicCoefficientTexture1[prevCoord];
-    float4 SHCoefficent2 = prevSphericalHarmonicCoefficientTexture2[prevCoord];
-
-    if(bDisoccluded)
-    {
-        SHCoefficent0 = float4(0.0f, 0.0f, 0.0f, 0.0f);
-        SHCoefficent1 = float4(0.0f, 0.0f, 0.0f, 0.0f);
-        SHCoefficent2 = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    }
-    
-    float4 afC = float4(
-        0.282095f,
-        0.488603f,
-        0.488603f,
-        0.488603f
-    );
-
-    float4 A = float4(
-        0.886227f,
-        1.023326f,
-        1.023326f,
-        1.023326f
-    );
-
-    // encode coefficients with direction
-    float4 coefficient = float4(
-        afC.x * A.x,
-        afC.y * direction.y * A.y,
-        afC.z * direction.z * A.z,
-        afC.w * direction.x * A.w
-    );
-
-    // encode with radiance
-    float3 aResults[4];
-    aResults[0] = radiance.xyz * coefficient.x;
-    aResults[1] = radiance.xyz * coefficient.y;
-    aResults[2] = radiance.xyz * coefficient.z;
-    aResults[3] = radiance.xyz * coefficient.w;
-
-    SHCoefficent0.x += aResults[0].x;
-    SHCoefficent0.y += aResults[0].y;
-    SHCoefficent0.z += aResults[0].z;
-    SHCoefficent0.w += aResults[1].x;
-
-    SHCoefficent1.x += aResults[1].y;
-    SHCoefficent1.y += aResults[1].z;
-    SHCoefficent1.z += aResults[2].x;
-    SHCoefficent1.w += aResults[2].y;
-
-    SHCoefficent2.x += aResults[2].z;
-    SHCoefficent2.y += aResults[3].x;
-    SHCoefficent2.z += aResults[3].y;
-    SHCoefficent2.w += aResults[3].z;
-
-    uint2 coord = uint2(
-        int32_t(texCoord.x * float(textureSize.x)),
-        int32_t(texCoord.y * float(textureSize.y))
-    );
-
-    sphericalHarmonicCoefficientTexture0[coord] = SHCoefficent0;
-    sphericalHarmonicCoefficientTexture1[coord] = SHCoefficent1;
-    sphericalHarmonicCoefficientTexture2[coord] = SHCoefficent2;
-}
 
 /*
 **
@@ -1182,17 +920,9 @@ void encodeToSphericalHarmonicCoefficients(
 void encodeToSphericalHarmonicCoefficients2(
     in float3 radiance,
     in float3 direction,
-    in uint2 screenCoord,
-    in float4 prevSphericalHarmonicsCoefficients0,
-    in float4 prevSphericalHarmonicsCoefficients1,
-    in float4 prevSphericalHarmonicsCoefficients2
+    in uint2 screenCoord
 )
 {
-
-    float4 SHCoefficent0 = prevSphericalHarmonicsCoefficients0;
-    float4 SHCoefficent1 = prevSphericalHarmonicsCoefficients1;
-    float4 SHCoefficent2 = prevSphericalHarmonicsCoefficients2;
-
     float4 afC = float4(
         0.282095f,
         0.488603f,
@@ -1214,7 +944,7 @@ void encodeToSphericalHarmonicCoefficients2(
         afC.z * direction.z * A.z,
         afC.w * direction.x * A.w
     );
-
+    
     // encode with radiance
     float3 aResults[4];
     aResults[0] = radiance.xyz * coefficient.x;
@@ -1222,24 +952,20 @@ void encodeToSphericalHarmonicCoefficients2(
     aResults[2] = radiance.xyz * coefficient.z;
     aResults[3] = radiance.xyz * coefficient.w;
 
-    SHCoefficent0.x += aResults[0].x;
-    SHCoefficent0.y += aResults[0].y;
-    SHCoefficent0.z += aResults[0].z;
-    SHCoefficent0.w += aResults[1].x;
+    sphericalHarmonicCoefficientTexture0[screenCoord].x = aResults[0].x;
+    sphericalHarmonicCoefficientTexture0[screenCoord].y = aResults[0].y;
+    sphericalHarmonicCoefficientTexture0[screenCoord].z = aResults[0].z;
+    sphericalHarmonicCoefficientTexture0[screenCoord].w = aResults[1].x;
 
-    SHCoefficent1.x += aResults[1].y;
-    SHCoefficent1.y += aResults[1].z;
-    SHCoefficent1.z += aResults[2].x;
-    SHCoefficent1.w += aResults[2].y;
+    sphericalHarmonicCoefficientTexture1[screenCoord].x = aResults[1].y;
+    sphericalHarmonicCoefficientTexture1[screenCoord].y = aResults[1].z;
+    sphericalHarmonicCoefficientTexture1[screenCoord].z = aResults[2].x;
+    sphericalHarmonicCoefficientTexture1[screenCoord].w = aResults[2].y;
 
-    SHCoefficent2.x += aResults[2].z;
-    SHCoefficent2.y += aResults[3].x;
-    SHCoefficent2.z += aResults[3].y;
-    SHCoefficent2.w += aResults[3].z;
-
-    sphericalHarmonicCoefficientTexture0[screenCoord] = SHCoefficent0;
-    sphericalHarmonicCoefficientTexture1[screenCoord] = SHCoefficent1;
-    sphericalHarmonicCoefficientTexture2[screenCoord] = SHCoefficent2;
+    sphericalHarmonicCoefficientTexture2[screenCoord].x = aResults[2].z;
+    sphericalHarmonicCoefficientTexture2[screenCoord].y = aResults[3].x;
+    sphericalHarmonicCoefficientTexture2[screenCoord].z = aResults[3].y;
+    sphericalHarmonicCoefficientTexture2[screenCoord].w = aResults[3].z;
 }
 
 /*
@@ -1247,31 +973,16 @@ void encodeToSphericalHarmonicCoefficients2(
 */
 float3 decodeFromSphericalHarmonicCoefficients(
     in float3 direction,
-    in float3 maxRadiance,
-    in float2 texCoord,
-    in float fRayCount
+    in int2 screenCoord
 )
 {
-    uint2 textureSize;
-    ambientOcclusionOutput.GetDimensions(textureSize.x, textureSize.y);
+    float4 SHCoefficent0 = sphericalHarmonicCoefficientTexture0[screenCoord];
+    float4 SHCoefficent1 = sphericalHarmonicCoefficientTexture1[screenCoord];
+    float4 SHCoefficent2 = sphericalHarmonicCoefficientTexture2[screenCoord];
 
-    uint2 coord = uint2(
-        uint32_t(texCoord.x * float(textureSize.x)),
-        uint32_t(texCoord.y * float(textureSize.y))
-    );
-
-    float4 SHCoefficent0 = sphericalHarmonicCoefficientTexture0[coord];
-    float4 SHCoefficent1 = sphericalHarmonicCoefficientTexture1[coord];
-    float4 SHCoefficent2 = sphericalHarmonicCoefficientTexture2[coord];
-
-    float3 aTotalCoefficients[4];
-    //float fFactor = (4.0f * 3.14159f) / max(fRayCount, 1.0f);
-    //if (fRayCount < 10.0f)
-    //{
-    //     fFactor = 1.0f;
-    //}
     float fFactor = 1.0f;
 
+    float3 aTotalCoefficients[4];
     aTotalCoefficients[0] = float3(SHCoefficent0.x, SHCoefficent0.y, SHCoefficent0.z) * fFactor;
     aTotalCoefficients[1] = float3(SHCoefficent0.w, SHCoefficent1.x, SHCoefficent1.y) * fFactor;
     aTotalCoefficients[2] = float3(SHCoefficent1.z, SHCoefficent1.w, SHCoefficent2.x) * fFactor;
@@ -1286,176 +997,8 @@ float3 decodeFromSphericalHarmonicCoefficients(
         aTotalCoefficients[0] * fC4 +
         (aTotalCoefficients[3] * direction.x + aTotalCoefficients[1] * direction.y + aTotalCoefficients[2] * direction.z) *
         fC2 * 2.0f;
-    decoded = clamp(decoded, float3(0.0f, 0.0f, 0.0f), maxRadiance);
 
     return decoded;
-}
-
-/*
-**
-*/
-TemporalRestirResult permutationRestir(
-    in TemporalRestirResult result,
-    in float2 uv,
-    in float2 prevUV,
-    in int2 origScreenCoord,
-    in int2 prevScreenCoord,
-    in float3 worldPosition,
-    in float3 normal,
-    in uint32_t iCenterMeshID,
-    in float fReservoirSize,
-    in uint2 textureSize,
-    in RandomResult randomResult
-)
-{
-    TemporalRestirResult prevResult = result;
-    result.mRandomResult = randomResult;
-
-    // permutation samples
-    int32_t iNumPermutations = 5;
-    for (int32_t iSample = 1; iSample < iNumPermutations; iSample++)
-    {
-        uint2 aXOR[4];
-        aXOR[0] = int2(3, 3);
-        aXOR[1] = int2(2, 1);
-        aXOR[2] = int2(1, 2);
-        aXOR[3] = int2(3, 3);
-
-        int2 aOffsets[4];
-        aOffsets[0] = int2(-1, -1);
-        aOffsets[1] = int2(1, 1);
-        aOffsets[2] = int2(-1, 1);
-        aOffsets[3] = int2(1, -1);
-
-        // apply permutation offset to screen coordinate, converting to uv after
-        int32_t iFrame = int32_t(defaultUniformBuffer.miFrame);
-        int32_t iIndex0 = iFrame & 3;
-        int32_t iIndex1 = (iSample + (iFrame ^ 1)) & 3;
-        int2 offset = aOffsets[iIndex0] + aOffsets[iIndex1];
-        int2 screenCoord = (origScreenCoord + offset) ^ aXOR[iFrame & 3];
-
-        float3 sampleRayDirection = float3(0.0f, 0.0f, 0.0f);
-        Ray ray;
-
-        // permutation uv
-        float2 sampleUV = float2(
-            ceil(float(screenCoord.x) + 0.5f) / float(defaultUniformBuffer.miScreenWidth),
-            ceil(float(screenCoord.y) + 0.5f) / float(defaultUniformBuffer.miScreenHeight));
-
-        // get sample world position, normal, and ray direction
-        float fJacobian = 1.0f;
-        {
-            // sample world position
-            float4 sampleWorldPosition = prevWorldPositionTexture[prevScreenCoord];
-            float3 sampleNormal = prevNormalTexture[prevScreenCoord].xyz;
-
-            // neighbor normal difference check
-            float fDP = dot(sampleNormal, normal);
-            if (fDP <= 0.6f)
-            {
-                continue;
-            }
-
-            // neightbor depth difference check
-            float fSampleDepth = fract(sampleWorldPosition.w);
-
-            // mesh id difference check
-            int32_t iSampleMeshID = int32_t(floor((sampleWorldPosition.w - fSampleDepth) + 0.5f));
-            if (iSampleMeshID != iCenterMeshID)
-            {
-                continue;
-            }
-
-            // hit point and hit normal for jacobian
-            float3 sampleHitPoint = prevTemporalHitPositionTexture[prevScreenCoord].xyz;
-            float3 neighborHitNormal = prevTemporalHitNormalTexture[prevScreenCoord].xyz;
-            float3 centerToNeighborHitPointUnNormalized = sampleHitPoint - worldPosition.xyz;
-            float3 neighborToNeighborHitPointUnNormalized = sampleHitPoint - sampleWorldPosition.xyz;
-            float3 centerToNeighborHitPointNormalized = normalize(centerToNeighborHitPointUnNormalized);
-            float3 neighborToNeighborHitPointNormalized = normalize(neighborToNeighborHitPointUnNormalized);
-
-            // compare normals for jacobian
-            float fDP0 = max(dot(neighborHitNormal, centerToNeighborHitPointNormalized * -1.0f), 0.0f);
-            float fDP1 = max(dot(neighborHitNormal, neighborToNeighborHitPointNormalized * -1.0f), 1.0e-4f);
-            fJacobian = fDP0 / fDP1;
-
-            // compare length for jacobian
-            float fCenterToHitPointLength = length(centerToNeighborHitPointUnNormalized);
-            float fNeighborToHitPointLength = length(neighborToNeighborHitPointUnNormalized);
-            fJacobian *= ((fCenterToHitPointLength * fCenterToHitPointLength) / (fNeighborToHitPointLength * fNeighborToHitPointLength));
-            fJacobian = clamp(fJacobian, 0.0f, 1.0f);
-
-            sampleRayDirection = centerToNeighborHitPointNormalized;
-        }
-
-        result.mIntersectionResult.miHitTriangle = UINT32_MAX;
-        TemporalRestirResult ret = temporalRestir(
-            prevResult,
-
-            worldPosition.xyz,
-            normal,
-            uv,
-            prevUV,
-            sampleRayDirection,
-            
-            fReservoirSize,
-            fJacobian,
-            randomResult,
-            uint32_t(iSample),
-            0.1f,
-            false,
-            textureSize,
-            false
-        );
-
-        prevResult = ret;
-
-    } // for sample = 0 to num permutation samples
-
-
-    RayDesc ray;
-    ray.Origin = worldPosition + prevResult.mRayDirection.xyz * 0.01f;
-    ray.Direction = prevResult.mRayDirection.xyz;
-    ray.TMin = 0.01f;
-    ray.TMax = 1000.0f;
-    RayPayload payload = {
-        float4(0.0f, 0.0f, 0.0f, 0.0f)
-    };
-    TraceRay(
-        scene,
-        RAY_FLAG_NONE,
-        0xff,
-        0,
-        0,
-        0,
-        ray,
-        payload
-    );
-
-    prevResult.mIntersectionResult.miHitTriangle = UINT32_MAX;
-    if(payload.mOutput.w > 0.0f)
-    {
-        prevResult = result;
-
-#if 0
-        // hit
-        prevResult.mRadiance = float4(0.0f, 0.0f, 0.0f, 0.0f);
-        prevResult.mReservoir.x = max(prevResult.mReservoir.x - prevResult.mReservoir.y, 0.0f);
-        prevResult.mReservoir.y = 0.0f;
-        prevResult.mCandidateRadiance = float3(0.0f, 0.0f, 0.0f);
-        prevResult.mIntersectionResult.miHitTriangle = 1;
-        prevResult.mIntersectionResult.mBarycentricCoordinate = float3(1.0f, 0.0f, 0.0f);
-        prevResult.mHitPosition = float4(0.0f, 0.0f, 0.0f, 0.0f);
-        prevResult.mHitNormal = float4(0.0f, 0.0f, 0.0f, 0.0f);
-#endif // #if 0
-    }
-    else
-    {
-        // miss
-        //revResult.mAmbientOcclusion.y += 1.0f;
-    }
-
-    return prevResult;
 }
 
 /*
@@ -1467,35 +1010,6 @@ float4 getIrradianceCachePosition(
 {
     return irradianceCache[iIrradianceCacheIndex].mPosition;
 }
-
-#if 0
-/*
-**
-*/
-float3 getIrradianceCacheRadiance(
-    in float3 position,
-    in float3 worldPosition)
-{
-    float fReflectivity = 1.0f;
-
-    float3 ret = float3(0.0f, 0.0f, 0.0f);
-
-    uint32_t iHitIrradianceCacheIndex = fetchIrradianceCacheIndex(position);
-    float4 irradianceCachePosition = irradianceCache[iHitIrradianceCacheIndex].mPosition;
-    if (irradianceCachePosition.w > 0.0f)
-    {
-        float3 diff = irradianceCachePosition.xyz - worldPosition;
-        float3 positionToCacheDirection = normalize(irradianceCachePosition.xyz - worldPosition) * -1.0f;
-        float3 irradianceCacheProbeRadiance = getRadianceFromIrradianceCacheProbe(
-            positionToCacheDirection,
-            iHitIrradianceCacheIndex);
-        float fLengthSquared = dot(diff, diff);
-        ret.xyz = (irradianceCacheProbeRadiance.xyz * fReflectivity) / max(fLengthSquared, 1.0f);
-    }
-
-    return ret;
-}
-#endif // #if 0
 
 /*
 **
@@ -1517,29 +1031,6 @@ bool isPrevUVOutOfBoundsRayTrace(
 float4 getPreviousScreenCoord2(
     in float2 screenUV)
 {
-#if 0
-    float2 screenUVCopy = screenUV;
-
-    int2 textureSize;
-    worldPositionTexture.GetDimensions(textureSize.x, textureSize.y);
-
-    int2 screenCoord = uint2(
-        int32_t(screenUV.x * float(textureSize.x)),
-        int32_t(screenUV.y * float(textureSize.y)) 
-    );
-
-    float3 worldPosition = worldPositionTexture[screenCoord].xyz;
-    float3 normal = normalTexture[screenCoord].xyz;
-
-    float fOneOverScreenWidth = 1.0f / float(textureSize.x);
-    float fOneOverScreenHeight = 1.0f / float(textureSize.y);
-
-    float2 motionVector = screenMotionVectorTexture[screenCoord].xy;
-    int2 prevScreenCoord = screenCoord - int2(int32_t(motionVector.x), int32_t(motionVector.y));
-
-    return float4(float(prevScreenCoord.x), float(prevScreenCoord.y), 0.0f, 1.0f);
-#endif // #if 0
-
     int2 textureSize;
     worldPositionTexture.GetDimensions(textureSize.x, textureSize.y);
     int2 screenCoord = uint2(
@@ -1588,7 +1079,7 @@ bool isDisoccluded(
 
     float fDP = max(dot(normal, prevNormal), 0.0f);
     float fLength = dot(worldPositionDiff, worldPositionDiff);
-    bool bDisoccluded = (fLength > 0.01f || /*fDP < 0.8f || */iMesh != iPrevMesh);
+    bool bDisoccluded = (fLength > 0.005f || /*fDP < 0.8f || */iMesh != iPrevMesh);
 
     return bDisoccluded;
 }
@@ -1680,4 +1171,147 @@ OnScreenRadianceResult getOnScreenRadiance(
     ret.mRadiance *= fDistanceAttenuation * fReflectivity;
 
     return ret;
+}
+
+/*
+**
+*/
+float3 sampleGGXVNDF(
+    in float3 viewDirection,
+    in float fRoughness,
+    in float fRand0,
+    in float fRand1)
+{
+    // Section 3.2: transforming the view direction to the hemisphere configuration
+    float3 Vh = normalize(float3(fRoughness * viewDirection.x, fRoughness * viewDirection.y, viewDirection.z));
+    // Section 4.1: orthonormal basis (with special case if cross product is zero)
+    float lensq = Vh.x * Vh.x + Vh.y * Vh.y;
+    float3 T1 = float3(1.0f, 0.0f, 0.0f);
+    if(lensq > 0)
+    {
+        T1 = float3(-Vh.y, Vh.x, 0) * (1.0f / sqrt(lensq));
+    }
+
+    float3 T2 = cross(Vh, T1);
+    // Section 4.2: parameterization of the projected area
+    float r = sqrt(fRand0);
+    float phi = 2.0f * PI * fRand1;
+    float t1 = r * cos(phi);
+    float t2 = r * sin(phi);
+    float s = 0.5f * (1.0f + Vh.z);
+    t2 = (1.0f - s)*sqrt(1.0f - t1*t1) + s*t2;
+    // Section 4.3: reprojection onto hemisphere
+    float3 Nh = t1*T1 + t2*T2 + sqrt(max(0.0f, 1.0f - t1*t1 - t2*t2))*Vh;
+    // Section 3.4: transforming the normal back to the ellipsoid configuration
+    float3 Ne = normalize(float3(fRoughness * Nh.x, fRoughness * Nh.y, max(0.0f, Nh.z)));
+    return Ne;
+}
+
+/*
+**
+*/
+float3 computeSpecularRadiance(
+    in float3 radiance,
+    in float3 worldPosition,
+    in float3 normal,
+    in float3 hitPosition,
+    in float fRoughness,
+    in float fMetalness
+)
+{
+    float3 specularLight = float3(0.0f, 0.0f, 0.0f);
+    float kS = 0.0f;
+    {
+        float3 viewDir = normalize(defaultUniformBuffer.mCameraPosition.xyz - worldPosition.xyz);
+
+        float3 F0 = float3(0.04f, 0.04f, 0.04f);
+        F0 = lerp(F0, float3(1.0f, 1.0f, 1.0f), fMetalness);
+
+        // calculate per-light radiance
+        float3 lightDir = normalize(hitPosition.xyz - worldPosition.xyz);
+        float3 halfV = normalize(viewDir + lightDir);
+
+        // cook-torrance brdf
+        float NDF = distributionGGX(normal.xyz, halfV, fRoughness);
+        float geometry = geometrySmith(normal.xyz, viewDir, lightDir, fRoughness);
+        float3 fresnel = fresnelShlickRoughness(max(dot(halfV, viewDir), 0.0f), F0, fRoughness);
+
+        float3 numerator = fresnel * NDF * geometry;
+        float denominator = 4.0f * max(dot(normal.xyz, viewDir), 0.0f) * max(dot(normal.xyz, lightDir), 0.0f) + 0.0001f;
+        float3 specular = clamp(
+                           numerator / denominator,
+                           float3(0.0f, 0.0f, 0.0f),
+                           float3(1.0f, 1.0f, 1.0f));
+
+        specularLight = specular * radiance * max(dot(normal.xyz, lightDir.xyz), 0.0f) * 1.0f;
+        kS = 1.0f - fresnel.x;
+    }
+
+    return specularLight;
+}
+
+/*
+**
+*/
+float distributionGGX(
+    in float3 N: vec3<f32>,
+    in float3 H: vec3<f32>,
+    in float roughness)
+{
+    float a  = roughness * roughness;
+    float a2  = a * a;
+    float NdotH  = max(dot(N, H), 0.0f);
+    float NdotH2  = NdotH * NdotH;
+
+    float num  = a2;
+    float denom  = (NdotH2 * (a2 - 1.0f) + 1.0f);
+    denom = PI * denom * denom;
+
+    return num / denom;
+}
+
+/*
+**
+*/
+float geometrySchlickGGX(
+    float NdotV,
+    float roughness)
+{
+    float r  = (roughness + 1.0f);
+    float k  = (r * r) / 8.0f;
+
+    float num  = NdotV;
+    float denom  = NdotV * (1.0f - k) + k;
+
+    return num / denom;
+}
+
+/*
+**
+*/
+float geometrySmith(
+    float3 N: vec3<f32>,
+    float3 V: vec3<f32>,
+    float3 L: vec3<f32>,
+    float roughness)
+{
+    float NdotV  = max(dot(N, V), 0.0f);
+    float NdotL  = max(dot(N, L), 0.0f);
+    float ggx2  = geometrySchlickGGX(NdotV, roughness);
+    float ggx1  = geometrySchlickGGX(NdotL, roughness);
+
+    return ggx1 * ggx2;
+}
+
+/*
+**
+*/
+float3 fresnelShlickRoughness(
+    float fCosTheta,
+    float3 f0: vec3<f32>,
+    float fRoughness)
+{
+    float fOneMinusRoughness  = 1.0f - fRoughness;
+    float fClamp  = clamp(1.0f - fCosTheta, 0.0f, 1.0f);
+    return f0 + (max(float3(fOneMinusRoughness, fOneMinusRoughness, fOneMinusRoughness), f0) - f0) * pow(fClamp, 5.0f);
 }

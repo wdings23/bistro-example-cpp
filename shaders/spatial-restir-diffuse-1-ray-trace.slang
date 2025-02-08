@@ -354,14 +354,6 @@ void rayGen()
     debugTexture0[rayIndex] = float4(hitPosition.xyz, payload.mOutput.w);
     if(payload.mOutput.w > 0.0f)
     {
-        //float4x4 viewMatrix = defaultUniformBuffer.mViewMatrix;
-        //float4x4 projectionMatrix = defaultUniformBuffer.mProjectionMatrix;
-        //projectionMatrix._22 *= -1.0f;
-        //float4x4 viewProjectionMatrix = mul(
-        //    projectionMatrix,
-        //    viewMatrix
-        //);
-
         // get on-screen radiance if there's any
         float4 clipSpacePosition = mul(defaultUniformBuffer.mViewProjectionMatrix, float4(hitPosition.xyz, 1.0));
         clipSpacePosition.x /= clipSpacePosition.w;
@@ -526,14 +518,6 @@ OnScreenRadianceResult getOnScreenRadiance(
     // distance for on-screen radiance and ambient occlusion
     float fDistance = length(hitPosition.xyz - worldPosition);
     float fDistanceAttenuation = 1.0f / max(fDistance * fDistance, 1.0f);
-
-    //float4x4 viewMatrix = defaultUniformBuffer.mViewMatrix;
-    //float4x4 projectionMatrix = defaultUniformBuffer.mProjectionMatrix;
-    //projectionMatrix._22 *= -1.0f;
-    //float4x4 viewProjectionMatrix = mul(
-    //    projectionMatrix,
-    //    viewMatrix
-    //);
 
     // get on-screen radiance if there's any
     float4 clipSpacePosition = mul(defaultUniformBuffer.mViewProjectionMatrix, float4(hitPosition.xyz, 1.0));

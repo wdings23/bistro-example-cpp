@@ -1,0 +1,71 @@
+{
+    "Type": "Graphics",
+    "PassType": "Full Triangle",
+    "Shader": "svgf-graphics.shader",
+    "Attachments": [
+        {
+            "Name" : "Diffuse SVG Filter Radiance 2 Output",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
+        },
+        {
+            "Name" : "Diffuse SVG Filter Moment 2 Output",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
+        },
+        {
+            "Name" : "Diffuse SVG Filter Ambient Occlusion 2 Output",
+            "Type": "TextureOutput",
+            "Format": "rg32float"
+        },
+
+        {
+            "Name" : "World Position Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name" : "Normal Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name" : "Diffuse SVG Filter Radiance 1 Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Diffuse SVG Filter 1 Graphics"
+        },
+        {
+            "Name" : "Diffuse SVG Filter Moment 1 Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Diffuse SVG Filter 1 Graphics"
+        },
+
+        {
+            "Name": "Ambient Occlusion Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
+        }
+
+    ],
+    "ShaderResources": [
+        
+    ],
+    "BlendStates": [
+        {
+            "Enabled": "False"
+        }
+    ],
+    "DepthStencilState":
+    {
+        "DepthEnable": "False",
+        "DepthWriteMask": "One",
+        "DepthFunc": "LessEqual",
+        "StencilEnable": "False"
+    },
+    "RasterState":
+    {
+        "FillMode": "Solid",
+        "CullMode": "None",
+        "FrontFace": "CounterClockwise"
+    }
+}

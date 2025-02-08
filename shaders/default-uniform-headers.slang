@@ -30,4 +30,7 @@ struct DefaultUniformData
     float4 mPrevLightDirection;
 
     float mfAmbientOcclusionDistanceThreshold;
+    float mfEmissiveRadiancePct;
+    float mfClearReservoirs;
+    float mfFiller;
 };

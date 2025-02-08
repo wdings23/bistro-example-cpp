@@ -14,12 +14,22 @@
             "Format": "rgba32float"
         },
         {
+            "Name" : "Specular Accumulated Output",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
+        },
+        {
             "Name" : "Diffuse Moment Output",
             "Type": "TextureOutput",
             "Format": "rg32float"
         },
         {
             "Name" : "Emissive Moment Output",
+            "Type": "TextureOutput",
+            "Format": "rg32float"
+        },
+        {
+            "Name" : "Specular Moment Output",
             "Type": "TextureOutput",
             "Format": "rg32float"
         },
@@ -50,7 +60,7 @@
             "ParentJobName": "Copy Render Targets"
         },
         {
-            "Name": "Previous Temporal Accumulation Diffuse",
+            "Name": "Previous Diffuse SVG Filter Radiance",
             "Type": "TextureInput",
             "ParentJobName": "Copy Render Targets"
         },
@@ -81,7 +91,18 @@
             "ParentJobName": "Spatial Restir Emissive Ray Trace"
         },
         {
-            "Name" : "Previous Temporal Accumulation Emissive",
+            "Name" : "Previous Emissive SVG Filter Radiance",
+            "Type": "TextureInput",
+            "ParentJobName": "Copy Render Targets"
+        },
+
+        {
+            "Name" : "Specular Decoded Spherical Harmonics Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Specular Temporal Restir Ray Trace"
+        },
+        {
+            "Name" : "Previous Specular SVG Filter Radiance",
             "Type": "TextureInput",
             "ParentJobName": "Copy Render Targets"
         }

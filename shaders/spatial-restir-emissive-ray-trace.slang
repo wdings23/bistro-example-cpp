@@ -220,6 +220,8 @@ void rayGen()
     debugTexture2[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
     debugTexture3[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
 
+    float fRadiancePct = 1.0f - max(dot(defaultUniformBuffer.mLightDirection.xyz, float3(0.0f, 1.0f, 0.0f)), 0.0f);
+
     float3 radiance = float3(0.0f, 0.0f, 0.0f);
     if(payload.mOutput.w > 0.0f)
     {
@@ -235,7 +237,7 @@ void rayGen()
 
             Material material = materialData[iMaterialID];
             radiance =
-                material.mEmissive.xyz * 10.0f *
+                material.mEmissive.xyz * 100.0f * fRadiancePct *
                 fRadianceDP *
                 fDistanceAttenuation;
 
@@ -333,6 +335,8 @@ SpatialRestirResult spatialRestir(
 
     float3 worldPosition = worldPositionTexture[screenCoord].xyz;
 
+    float fRadiancePct = 1.0f - max(dot(defaultUniformBuffer.mLightDirection.xyz, float3(0.0f, 1.0f, 0.0f)), 0.0f);
+
     float fJacobian = 1.0f;
     uint32_t iFrame = defaultUniformBuffer.miFrame;
     int2 blueNoiseScreenCoord;
@@ -369,7 +373,7 @@ SpatialRestirResult spatialRestir(
         uint32_t iMesh = uint32_t(neighborHitPosition.w);
         uint32_t iMaterialIndex = materialID[iMesh] - 1;
         Material neighborMaterial = materialData[iMaterialIndex];
-        float fNeighborLuminance = computeLuminance(neighborMaterial.mEmissive.xyz * 10.0f);
+        float fNeighborLuminance = computeLuminance(neighborMaterial.mEmissive.xyz * fRadiancePct * 100.0f);
 
         ret.mRandomResult = nextRand(ret.mRandomResult.miSeed);
         float fRand = ret.mRandomResult.mfNum;

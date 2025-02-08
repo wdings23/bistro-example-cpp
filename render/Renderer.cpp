@@ -40,6 +40,8 @@ namespace Render
         std::vector<CCamera>                 gaCameras;
         float3                               gLightDirection;
         float3                               gPrevLightDirection;
+        float                                gfEmissiveRadiance;
+        float                                gfClearReservoir;
 
         /*
         **
@@ -2154,6 +2156,9 @@ auto totalElapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::c
 
             pfData = (float*)pFloat4Data;
             *pfData++ = 1.0f;
+            *pfData++ = gfEmissiveRadiance;
+            *pfData++ = gfClearReservoir;
+            *pfData++ = 1.0f;
 
             gPrevLightDirection = gLightDirection;
 
@@ -2188,6 +2193,8 @@ auto totalElapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::c
                 iFlags
             );
 #endif // USE_RAY_TRACING
+
+            gfClearReservoir = 0.0f;
 
         }
 

@@ -222,16 +222,18 @@ PSOutput PSMain(VertexStageOutput in)
     float fDisocclusion = (bOutOfBounds || bDisoccluded) ? 1.0f : 0.0f;
     float fValidHistory = 1.0f - fDisocclusion;
 
+    float fClearReservoir = 1.0f - defaultUniformBuffer.mfClearReservoirs;
+
     uint2 prevScreenCoord = uint2(
         uint32_t(floor(prevScreenUV.x * float(textureSize.x) + 0.5f)),
         uint32_t(floor(prevScreenUV.y * float(textureSize.y) + 0.5f)),
     );
 
     TemporalRestirResult result;
-    result.mReservoir = prevTemporalReservoirTexture.Sample(textureSampler, prevScreenUV) * fValidHistory;
-    result.mRadiance = prevTemporalRadianceTexture.Sample(textureSampler, prevScreenUV) * fValidHistory;
-    result.mHitPosition = prevTemporalHitPositionTexture.Sample(textureSampler, prevScreenUV) * fValidHistory;
-    result.mHitNormal = prevTemporalHitNormalTexture.Sample(textureSampler, prevScreenUV) * fValidHistory;
+    result.mReservoir = prevTemporalReservoirTexture.Sample(textureSampler, prevScreenUV) * fValidHistory * fClearReservoir;
+    result.mRadiance = prevTemporalRadianceTexture.Sample(textureSampler, prevScreenUV) * fValidHistory * fClearReservoir;
+    result.mHitPosition = prevTemporalHitPositionTexture.Sample(textureSampler, prevScreenUV) * fValidHistory * fClearReservoir;
+    result.mHitNormal = prevTemporalHitNormalTexture.Sample(textureSampler, prevScreenUV) * fValidHistory * fClearReservoir;
     result.mIntersectionResult.miHitTriangle = UINT32_MAX;
     result.mfNumValidSamples = 0.0f;
     result.mbExchanged = false;
@@ -259,9 +261,9 @@ PSOutput PSMain(VertexStageOutput in)
     uint32_t iCurrIndex = uint32_t(defaultUniformBuffer.miFrame) * uint32_t(iNumCenterSamples);
 
     SphericalHarmonicsResult sphericalHarmonicsResult;
-    sphericalHarmonicsResult.mCoefficients0 = prevSphericalHarmonicCoefficientTexture0.Sample(textureSampler, prevScreenUV);
-    sphericalHarmonicsResult.mCoefficients1 = prevSphericalHarmonicCoefficientTexture1.Sample(textureSampler, prevScreenUV);
-    sphericalHarmonicsResult.mCoefficients2 = prevSphericalHarmonicCoefficientTexture2.Sample(textureSampler, prevScreenUV);
+    sphericalHarmonicsResult.mCoefficients0 = prevSphericalHarmonicCoefficientTexture0.Sample(textureSampler, prevScreenUV) * fClearReservoir;
+    sphericalHarmonicsResult.mCoefficients1 = prevSphericalHarmonicCoefficientTexture1.Sample(textureSampler, prevScreenUV) * fClearReservoir;
+    sphericalHarmonicsResult.mCoefficients2 = prevSphericalHarmonicCoefficientTexture2.Sample(textureSampler, prevScreenUV) * fClearReservoir;
 
     // center pixel sample
     float3 sampleRayDirection = float3(0.0f, 0.0f, 0.0f);
@@ -431,7 +433,7 @@ TemporalRestirResult temporalRestir(
         intersectionInfo.miMaterialID = materialID[intersectionInfo.miMesh];
         Material material = materialData[intersectionInfo.miMaterialID-1];
 
-        candidateRadiance.xyz = material.mEmissive.xyz * 10.0f;
+        candidateRadiance.xyz = material.mEmissive.xyz * defaultUniformBuffer.mfEmissiveRadiancePct;
         candidateHitPosition.w = hitUVMeshTriangle.z;
 
         float fRadianceDP = max(dot(normalize(candidateRayDirection), normal), 0.0f);
