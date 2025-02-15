@@ -2,7 +2,7 @@
 
 #include "Camera.h"
 #include "LogPrint.h"
-#include <wtfassert.h>
+#include <utils/wtfassert.h>
 
 #include "quaternion.h"
 

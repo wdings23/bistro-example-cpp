@@ -1,1227 +1,184 @@
-#include "serialize_utils.h"
-#include <LogPrint.h>
-#include <wtfassert.h>
+#include <utils/serialize_utils.h>
+#include <utils/LogPrint.h>
+#include <utils/wtfassert.h>
 #include <sstream>
-
 namespace SerializeUtils
 {
-	/*
-	**
-	*/
-	D3D12_DESCRIPTOR_RANGE_TYPE _getRangeType(PipelineDataType dataType)
-	{
-		D3D12_DESCRIPTOR_RANGE_TYPE ret = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-		switch(dataType)
-		{
-		case PipelineDataType::PIPELINE_DATA_TYPE_SHADER_RESOURCE:
-			ret = D3D12_DESCRIPTOR_RANGE_TYPE_SRV;
-			break;
-		case PipelineDataType::PIPELINE_DATA_TYPE_SAMPLER:
-			ret = D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER;
-			break;
-		case PipelineDataType::PIPELINE_DATA_CONSTANT_BUFFER:
-			ret = D3D12_DESCRIPTOR_RANGE_TYPE_CBV;
-			break;
-		}
-
-		return ret;
-	}
-
-	/*
-	**
-	*/
-	D3D12_ROOT_PARAMETER_TYPE _getRootParameterType(PipelineDataType dataType)
-	{
-		D3D12_ROOT_PARAMETER_TYPE ret = D3D12_ROOT_PARAMETER_TYPE_DESCRIPTOR_TABLE;
-		switch(dataType)
-		{
-		case PipelineDataType::PIPELINE_DATA_TYPE_SHADER_RESOURCE:
-		{
-			ret = D3D12_ROOT_PARAMETER_TYPE_SRV;
-			break;
-		}
-		case PipelineDataType::PIPELINE_DATA_TYPE_SAMPLER:
-		{
-			ret = D3D12_ROOT_PARAMETER_TYPE_SRV;
-			break;
-		}
-		case PipelineDataType::PIPELINE_DATA_CONSTANT_BUFFER:
-		{
-			ret = D3D12_ROOT_PARAMETER_TYPE_CBV;
-			break;
-		}
-		}
-
-		return ret;
-	}
-
-	/*
-	**
-	*/
-	D3D12_SHADER_VISIBILITY _getShaderVisibility(ShaderType shaderType)
-	{
-		D3D12_SHADER_VISIBILITY ret = D3D12_SHADER_VISIBILITY_ALL;
-		switch(shaderType)
-		{
-		case ShaderType::VERTEX_SHADER_TYPE:
-		{
-			ret = D3D12_SHADER_VISIBILITY_VERTEX;
-			break;
-		}
-		case ShaderType::PIXEL_SHADER_TYPE:
-		{
-			ret = D3D12_SHADER_VISIBILITY_PIXEL;
-			break;
-		}
-		case ShaderType::COMPUTE_SHADER_TYPE:
-		{
-			ret = D3D12_SHADER_VISIBILITY_ALL;
-			break;
-		}
-		}
-
-		return ret;
-	}
-
-	/*
-	**
-	*/
-	RenderDriver::Common::ResourceViewType _getResourceView(std::string const& view)
-	{
-		RenderDriver::Common::ResourceViewType ret = RenderDriver::Common::ResourceViewType::ShaderResourceView;
-		if(view == "ShaderResourceView")
-		{
-			ret = RenderDriver::Common::ResourceViewType::ShaderResourceView;
-		}
-		else if(view == "UnorderedAccessView")
-		{
-			ret = RenderDriver::Common::ResourceViewType::UnorderedAccessView;
-		}
-		else if(view == "ConstantBufferView")
-		{
-			ret = RenderDriver::Common::ResourceViewType::ConstantBufferView;
-		}
-		else if(view == "None")
-		{
-			ret = RenderDriver::Common::ResourceViewType::None;
-		}
-		else
-		{
-			assert(0);
-		}
-
-		return ret;
-	}
-
-	/*
-	**
-	*/
-	ResourceViewType _getResourceView2(std::string const& view)
-	{
-		ResourceViewType ret = ResourceViewType::SHADER_RESOURCE_VIEW;
-		if(view == "ShaderResourceView")
-		{
-			ret = ResourceViewType::SHADER_RESOURCE_VIEW;
-		}
-		else if(view == "UnorderedAccessView")
-		{
-			ret = ResourceViewType::UNORDERED_ACCESS_VIEW;
-		}
-		else if(view == "ConstantBufferView")
-		{
-			ret = ResourceViewType::CONSTANT_BUFFER_VIEW;
-		}
-		else if(view == "None")
-		{
-			ret = ResourceViewType::NONE;
-		}
-		else
-		{
-			assert(0);
-		}
-
-		return ret;
-	}
-
-	/*
-	**
-	*/
-	D3D12_RESOURCE_FLAGS _getResourceFlag(std::string const& flag)
-	{
-		D3D12_RESOURCE_FLAGS ret = D3D12_RESOURCE_FLAG_NONE;
-		if(flag == "None")
-		{
-			ret = D3D12_RESOURCE_FLAG_NONE;
-		}
-		else if(flag == "AllowRenderTarget")
-		{
-			ret = D3D12_RESOURCE_FLAG_ALLOW_RENDER_TARGET;
-		}
-		else if(flag == "AllowDepthStencil")
-		{
-			ret = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
-		}
-		else if(flag == "AllowUnorderedAccess")
-		{
-			ret = D3D12_RESOURCE_FLAG_ALLOW_UNORDERED_ACCESS;
-		}
-		else if(flag == "DenyShaderResource")
-		{
-			ret = D3D12_RESOURCE_FLAG_DENY_SHADER_RESOURCE;
-		}
-		else if(flag == "AllowCrossAdapter")
-		{
-			ret = D3D12_RESOURCE_FLAG_ALLOW_CROSS_ADAPTER;
-		}
-		else if(flag == "AllowSimultaneousAccess")
-		{
-			ret = D3D12_RESOURCE_FLAG_ALLOW_SIMULTANEOUS_ACCESS;
-		}
-		else if(flag == "VideoDecodeReferenceOnly")
-		{
-			ret = D3D12_RESOURCE_FLAG_VIDEO_DECODE_REFERENCE_ONLY;
-		}
-		else
-		{
-			assert(0);
-		}
-
-		return ret;
-	}
-
-	/*
-	**
-	*/
-	DXGI_FORMAT _getTextureFormat(std::string const& format)
-	{
-#define IF_STATEMENT(FORMAT)					\
-		if(format == #FORMAT)						\
-		{											\
-			ret = DXGI_FORMAT_##FORMAT##;			\
-		}
-
-#define ELSE_IF_STATEMENT(FORMAT)				\
-		else if(format == #FORMAT)					\
-		{											\
-			ret = DXGI_FORMAT_##FORMAT##;			\
-		}
-
-		DXGI_FORMAT ret = DXGI_FORMAT_UNKNOWN;
-
-		IF_STATEMENT(UNKNOWN)
-		ELSE_IF_STATEMENT(R32G32B32A32_TYPELESS)
-		ELSE_IF_STATEMENT(R32G32B32A32_FLOAT)
-		ELSE_IF_STATEMENT(R32G32B32A32_UINT)
-		ELSE_IF_STATEMENT(R32G32B32A32_SINT)
-		ELSE_IF_STATEMENT(R32G32B32_TYPELESS)
-		ELSE_IF_STATEMENT(R32G32B32_FLOAT)
-		ELSE_IF_STATEMENT(R32G32B32_UINT)
-		ELSE_IF_STATEMENT(R32G32B32_SINT)
-		ELSE_IF_STATEMENT(R16G16B16A16_TYPELESS)
-		ELSE_IF_STATEMENT(R16G16B16A16_FLOAT)
-		ELSE_IF_STATEMENT(R16G16B16A16_UNORM)
-		ELSE_IF_STATEMENT(R16G16B16A16_UINT)
-		ELSE_IF_STATEMENT(R16G16B16A16_SNORM)
-		ELSE_IF_STATEMENT(R16G16B16A16_SINT)
-		ELSE_IF_STATEMENT(R32G32_TYPELESS)
-		ELSE_IF_STATEMENT(R32G32_FLOAT)
-		ELSE_IF_STATEMENT(R32G32_UINT)
-		ELSE_IF_STATEMENT(R32G32_SINT)
-		ELSE_IF_STATEMENT(R32G8X24_TYPELESS)
-		ELSE_IF_STATEMENT(D32_FLOAT_S8X24_UINT)
-		ELSE_IF_STATEMENT(R32_FLOAT_X8X24_TYPELESS)
-		ELSE_IF_STATEMENT(X32_TYPELESS_G8X24_UINT)
-		ELSE_IF_STATEMENT(R10G10B10A2_TYPELESS)
-		ELSE_IF_STATEMENT(R10G10B10A2_UNORM)
-		ELSE_IF_STATEMENT(R10G10B10A2_UINT)
-		ELSE_IF_STATEMENT(R11G11B10_FLOAT)
-		ELSE_IF_STATEMENT(R8G8B8A8_TYPELESS)
-		ELSE_IF_STATEMENT(R8G8B8A8_UNORM)
-		ELSE_IF_STATEMENT(R8G8B8A8_UNORM_SRGB)
-		ELSE_IF_STATEMENT(R8G8B8A8_UINT)
-		ELSE_IF_STATEMENT(R8G8B8A8_SNORM)
-		ELSE_IF_STATEMENT(R8G8B8A8_SINT)
-		ELSE_IF_STATEMENT(R16G16_TYPELESS)
-		ELSE_IF_STATEMENT(R16G16_FLOAT)
-		ELSE_IF_STATEMENT(R16G16_UNORM)
-		ELSE_IF_STATEMENT(R16G16_UINT)
-		ELSE_IF_STATEMENT(R16G16_SNORM)
-		ELSE_IF_STATEMENT(R16G16_SINT)
-		ELSE_IF_STATEMENT(R32_TYPELESS)
-		ELSE_IF_STATEMENT(D32_FLOAT)
-		ELSE_IF_STATEMENT(R32_FLOAT)
-		ELSE_IF_STATEMENT(R32_UINT)
-		ELSE_IF_STATEMENT(R32_SINT)
-		ELSE_IF_STATEMENT(R24G8_TYPELESS)
-		ELSE_IF_STATEMENT(D24_UNORM_S8_UINT)
-		ELSE_IF_STATEMENT(R24_UNORM_X8_TYPELESS)
-		ELSE_IF_STATEMENT(X24_TYPELESS_G8_UINT)
-		ELSE_IF_STATEMENT(R8G8_TYPELESS)
-		ELSE_IF_STATEMENT(R8G8_UNORM)
-		ELSE_IF_STATEMENT(R8G8_UINT)
-		ELSE_IF_STATEMENT(R8G8_SNORM)
-		ELSE_IF_STATEMENT(R8G8_SINT)
-		ELSE_IF_STATEMENT(R16_TYPELESS)
-		ELSE_IF_STATEMENT(R16_FLOAT)
-		ELSE_IF_STATEMENT(D16_UNORM)
-		ELSE_IF_STATEMENT(R16_UNORM)
-		ELSE_IF_STATEMENT(R16_UINT)
-		ELSE_IF_STATEMENT(R16_SNORM)
-		ELSE_IF_STATEMENT(R16_SINT)
-		ELSE_IF_STATEMENT(R8_TYPELESS)
-		ELSE_IF_STATEMENT(R8_UNORM)
-		ELSE_IF_STATEMENT(R8_UINT)
-		ELSE_IF_STATEMENT(R8_SNORM)
-		ELSE_IF_STATEMENT(R8_SINT)
-		ELSE_IF_STATEMENT(A8_UNORM)
-		ELSE_IF_STATEMENT(R1_UNORM)
-		ELSE_IF_STATEMENT(R9G9B9E5_SHAREDEXP)
-		ELSE_IF_STATEMENT(R8G8_B8G8_UNORM)
-		ELSE_IF_STATEMENT(G8R8_G8B8_UNORM)
-		ELSE_IF_STATEMENT(BC1_TYPELESS)
-		ELSE_IF_STATEMENT(BC1_UNORM)
-		ELSE_IF_STATEMENT(BC1_UNORM_SRGB)
-		ELSE_IF_STATEMENT(BC2_TYPELESS)
-		ELSE_IF_STATEMENT(BC2_UNORM)
-		ELSE_IF_STATEMENT(BC2_UNORM_SRGB)
-		ELSE_IF_STATEMENT(BC3_TYPELESS)
-		ELSE_IF_STATEMENT(BC3_UNORM)
-		ELSE_IF_STATEMENT(BC3_UNORM_SRGB)
-		ELSE_IF_STATEMENT(BC4_TYPELESS)
-		ELSE_IF_STATEMENT(BC4_UNORM)
-		ELSE_IF_STATEMENT(BC4_SNORM)
-		ELSE_IF_STATEMENT(BC5_TYPELESS)
-		ELSE_IF_STATEMENT(BC5_UNORM)
-		ELSE_IF_STATEMENT(BC5_SNORM)
-		ELSE_IF_STATEMENT(B5G6R5_UNORM)
-		ELSE_IF_STATEMENT(B5G5R5A1_UNORM)
-		ELSE_IF_STATEMENT(B8G8R8A8_UNORM)
-		ELSE_IF_STATEMENT(B8G8R8X8_UNORM)
-		ELSE_IF_STATEMENT(R10G10B10_XR_BIAS_A2_UNORM)
-		ELSE_IF_STATEMENT(B8G8R8A8_TYPELESS)
-		ELSE_IF_STATEMENT(B8G8R8A8_UNORM_SRGB)
-		ELSE_IF_STATEMENT(B8G8R8X8_TYPELESS)
-		ELSE_IF_STATEMENT(B8G8R8X8_UNORM_SRGB)
-		ELSE_IF_STATEMENT(BC6H_TYPELESS)
-		ELSE_IF_STATEMENT(BC6H_UF16)
-		ELSE_IF_STATEMENT(BC6H_SF16)
-		ELSE_IF_STATEMENT(BC7_TYPELESS)
-		ELSE_IF_STATEMENT(BC7_UNORM)
-		ELSE_IF_STATEMENT(BC7_UNORM_SRGB)
-		ELSE_IF_STATEMENT(AYUV)
-		ELSE_IF_STATEMENT(Y410)
-		ELSE_IF_STATEMENT(Y416)
-		ELSE_IF_STATEMENT(NV12)
-		ELSE_IF_STATEMENT(P010)
-		ELSE_IF_STATEMENT(P016)
-		ELSE_IF_STATEMENT(420_OPAQUE)
-		ELSE_IF_STATEMENT(YUY2)
-		ELSE_IF_STATEMENT(Y210)
-		ELSE_IF_STATEMENT(Y216)
-		ELSE_IF_STATEMENT(NV11)
-		ELSE_IF_STATEMENT(AI44)
-		ELSE_IF_STATEMENT(IA44)
-		ELSE_IF_STATEMENT(P8)
-		ELSE_IF_STATEMENT(A8P8)
-		ELSE_IF_STATEMENT(B4G4R4A4_UNORM)
-		ELSE_IF_STATEMENT(P208)
-		ELSE_IF_STATEMENT(V208)
-		ELSE_IF_STATEMENT(V408)
-
-		return ret;
-
-#undef IF_STATEMENT
-#undef ELSE_IF_STATEMENT
-	}
-
-	/*
-	**
-	*/
-	RenderDriver::Common::Format _getTextureFormat2(std::string const& format)
-	{
-#define IF_STATEMENT(FORMAT)					\
-		if(format == #FORMAT)						\
-		{											\
-			ret = RenderDriver::Common::Format::##FORMAT##;			\
-		}
-
-#define ELSE_IF_STATEMENT(FORMAT)				\
-		else if(format == #FORMAT)					\
-		{											\
-			ret = RenderDriver::Common::Format::##FORMAT##;			\
-		}
-
-		RenderDriver::Common::Format ret = RenderDriver::Common::Format::UNKNOWN;
-
-		IF_STATEMENT(UNKNOWN)
-		ELSE_IF_STATEMENT(R32G32B32A32_TYPELESS)
-		ELSE_IF_STATEMENT(R32G32B32A32_FLOAT)
-		ELSE_IF_STATEMENT(R32G32B32A32_UINT)
-		ELSE_IF_STATEMENT(R32G32B32A32_SINT)
-		ELSE_IF_STATEMENT(R32G32B32_TYPELESS)
-		ELSE_IF_STATEMENT(R32G32B32_FLOAT)
-		ELSE_IF_STATEMENT(R32G32B32_UINT)
-		ELSE_IF_STATEMENT(R32G32B32_SINT)
-		ELSE_IF_STATEMENT(R16G16B16A16_TYPELESS)
-		ELSE_IF_STATEMENT(R16G16B16A16_FLOAT)
-		ELSE_IF_STATEMENT(R16G16B16A16_UNORM)
-		ELSE_IF_STATEMENT(R16G16B16A16_UINT)
-		ELSE_IF_STATEMENT(R16G16B16A16_SNORM)
-		ELSE_IF_STATEMENT(R16G16B16A16_SINT)
-		ELSE_IF_STATEMENT(R32G32_TYPELESS)
-		ELSE_IF_STATEMENT(R32G32_FLOAT)
-		ELSE_IF_STATEMENT(R32G32_UINT)
-		ELSE_IF_STATEMENT(R32G32_SINT)
-		ELSE_IF_STATEMENT(R32G8X24_TYPELESS)
-		ELSE_IF_STATEMENT(D32_FLOAT_S8X24_UINT)
-		ELSE_IF_STATEMENT(R32_FLOAT_X8X24_TYPELESS)
-		ELSE_IF_STATEMENT(X32_TYPELESS_G8X24_UINT)
-		ELSE_IF_STATEMENT(R10G10B10A2_TYPELESS)
-		ELSE_IF_STATEMENT(R10G10B10A2_UNORM)
-		ELSE_IF_STATEMENT(R10G10B10A2_UINT)
-		ELSE_IF_STATEMENT(R11G11B10_FLOAT)
-		ELSE_IF_STATEMENT(R8G8B8A8_TYPELESS)
-		ELSE_IF_STATEMENT(R8G8B8A8_UNORM)
-		ELSE_IF_STATEMENT(R8G8B8A8_UNORM_SRGB)
-		ELSE_IF_STATEMENT(R8G8B8A8_UINT)
-		ELSE_IF_STATEMENT(R8G8B8A8_SNORM)
-		ELSE_IF_STATEMENT(R8G8B8A8_SINT)
-		ELSE_IF_STATEMENT(R16G16_TYPELESS)
-		ELSE_IF_STATEMENT(R16G16_FLOAT)
-		ELSE_IF_STATEMENT(R16G16_UNORM)
-		ELSE_IF_STATEMENT(R16G16_UINT)
-		ELSE_IF_STATEMENT(R16G16_SNORM)
-		ELSE_IF_STATEMENT(R16G16_SINT)
-		ELSE_IF_STATEMENT(R32_TYPELESS)
-		ELSE_IF_STATEMENT(D32_FLOAT)
-		ELSE_IF_STATEMENT(R32_FLOAT)
-		ELSE_IF_STATEMENT(R32_UINT)
-		ELSE_IF_STATEMENT(R32_SINT)
-		ELSE_IF_STATEMENT(R24G8_TYPELESS)
-		ELSE_IF_STATEMENT(D24_UNORM_S8_UINT)
-		ELSE_IF_STATEMENT(R24_UNORM_X8_TYPELESS)
-		ELSE_IF_STATEMENT(X24_TYPELESS_G8_UINT)
-		ELSE_IF_STATEMENT(R8G8_TYPELESS)
-		ELSE_IF_STATEMENT(R8G8_UNORM)
-		ELSE_IF_STATEMENT(R8G8_UINT)
-		ELSE_IF_STATEMENT(R8G8_SNORM)
-		ELSE_IF_STATEMENT(R8G8_SINT)
-		ELSE_IF_STATEMENT(R16_TYPELESS)
-		ELSE_IF_STATEMENT(R16_FLOAT)
-		ELSE_IF_STATEMENT(D16_UNORM)
-		ELSE_IF_STATEMENT(R16_UNORM)
-		ELSE_IF_STATEMENT(R16_UINT)
-		ELSE_IF_STATEMENT(R16_SNORM)
-		ELSE_IF_STATEMENT(R16_SINT)
-		ELSE_IF_STATEMENT(R8_TYPELESS)
-		ELSE_IF_STATEMENT(R8_UNORM)
-		ELSE_IF_STATEMENT(R8_UINT)
-		ELSE_IF_STATEMENT(R8_SNORM)
-		ELSE_IF_STATEMENT(R8_SINT)
-		ELSE_IF_STATEMENT(A8_UNORM)
-		ELSE_IF_STATEMENT(R1_UNORM)
-		ELSE_IF_STATEMENT(R9G9B9E5_SHAREDEXP)
-		ELSE_IF_STATEMENT(R8G8_B8G8_UNORM)
-		ELSE_IF_STATEMENT(G8R8_G8B8_UNORM)
-
-			ELSE_IF_STATEMENT(BC1_TYPELESS)
-			ELSE_IF_STATEMENT(BC1_UNORM)
-			ELSE_IF_STATEMENT(BC1_UNORM_SRGB)
-			ELSE_IF_STATEMENT(BC2_TYPELESS)
-			ELSE_IF_STATEMENT(BC2_UNORM)
-			ELSE_IF_STATEMENT(BC2_UNORM_SRGB)
-			ELSE_IF_STATEMENT(BC3_TYPELESS)
-			ELSE_IF_STATEMENT(BC3_UNORM)
-			ELSE_IF_STATEMENT(BC3_UNORM_SRGB)
-			ELSE_IF_STATEMENT(BC4_TYPELESS)
-			ELSE_IF_STATEMENT(BC4_UNORM)
-			ELSE_IF_STATEMENT(BC4_SNORM)
-			ELSE_IF_STATEMENT(BC5_TYPELESS)
-			ELSE_IF_STATEMENT(BC5_UNORM)
-			ELSE_IF_STATEMENT(BC5_SNORM)
-			ELSE_IF_STATEMENT(B5G6R5_UNORM)
-			ELSE_IF_STATEMENT(B5G5R5A1_UNORM)
-			ELSE_IF_STATEMENT(B8G8R8A8_UNORM)
-			ELSE_IF_STATEMENT(B8G8R8X8_UNORM)
-			ELSE_IF_STATEMENT(R10G10B10_XR_BIAS_A2_UNORM)
-			ELSE_IF_STATEMENT(B8G8R8A8_TYPELESS)
-			ELSE_IF_STATEMENT(B8G8R8A8_UNORM_SRGB)
-			ELSE_IF_STATEMENT(B8G8R8X8_TYPELESS)
-			ELSE_IF_STATEMENT(B8G8R8X8_UNORM_SRGB)
-			ELSE_IF_STATEMENT(BC6H_TYPELESS)
-			ELSE_IF_STATEMENT(BC6H_UF16)
-			ELSE_IF_STATEMENT(BC6H_SF16)
-			ELSE_IF_STATEMENT(BC7_TYPELESS)
-			ELSE_IF_STATEMENT(BC7_UNORM)
-			ELSE_IF_STATEMENT(BC7_UNORM_SRGB)
-			ELSE_IF_STATEMENT(AYUV)
-			ELSE_IF_STATEMENT(Y410)
-			ELSE_IF_STATEMENT(Y416)
-			ELSE_IF_STATEMENT(NV12)
-			ELSE_IF_STATEMENT(P010)
-			ELSE_IF_STATEMENT(P016)
-			ELSE_IF_STATEMENT(YUY2)
-			ELSE_IF_STATEMENT(Y210)
-			ELSE_IF_STATEMENT(Y216)
-			ELSE_IF_STATEMENT(NV11)
-			ELSE_IF_STATEMENT(AI44)
-			ELSE_IF_STATEMENT(IA44)
-			ELSE_IF_STATEMENT(P8)
-			ELSE_IF_STATEMENT(A8P8)
-			ELSE_IF_STATEMENT(B4G4R4A4_UNORM)
-
-
-		return ret;
-
-#undef IF_STATEMENT
-#undef ELSE_IF_STATEMENT
-	}
-	
-
-	/*
-	**
-	*/
-	AttachmentBufferType _getBufferType(std::string const& type)
-	{
-		AttachmentBufferType ret = AttachmentBufferType::TEXTURE1D;
-		if(type == "Texture2D")
-		{
-			ret = AttachmentBufferType::TEXTURE2D;
-		}
-		else if(type == "Texture3D")
-		{
-			ret = AttachmentBufferType::TEXTURE3D;
-		}
-		else if(type == "Structured")
-		{
-			ret = AttachmentBufferType::STRUCTURED;
-		}
-
-		return ret;
-	}
-
-	/*
-	**
-	*/
-	uint32_t _getFormatDataSize(std::string const& formatStr)
-	{
-		uint32_t ret = 0;
-
-		DXGI_FORMAT format = _getTextureFormat(formatStr);
-		switch(format)
-		{
-		case DXGI_FORMAT_R32G32B32A32_FLOAT:
-			ret = 4 * sizeof(float);
-			break;
-
-		case DXGI_FORMAT_R32G32B32_FLOAT:
-			ret = 3 * sizeof(float);
-			break;
-
-		case DXGI_FORMAT_R32G32_FLOAT:
-			ret = 2 * sizeof(float);
-			break;
-
-		case DXGI_FORMAT_R32_FLOAT:
-			ret = 1 * sizeof(float);
-			break;
-
-		default:
-			assert(0);
-		}
-
-		return ret;
-	}
-
-	/*
-	**
-	*/
-	D3D12_TEXTURE_LAYOUT _getTextureLayout(std::string const& layout)
-	{
-		D3D12_TEXTURE_LAYOUT ret = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-		if(layout == "Unknown")
-		{
-			ret = D3D12_TEXTURE_LAYOUT_UNKNOWN;
-		}
-		else if(layout == "RowMajor")
-		{
-			ret = D3D12_TEXTURE_LAYOUT_ROW_MAJOR;
-		}
-		else if(layout == "64KBUndefinedSwizzle")
-		{
-			ret = D3D12_TEXTURE_LAYOUT_64KB_UNDEFINED_SWIZZLE;
-		}
-		else if(layout == "64KBStandardSwizzle")
-		{
-			ret = D3D12_TEXTURE_LAYOUT_64KB_STANDARD_SWIZZLE;
-		}
-		else
-		{
-			assert(0);
-		}
-
-		return ret;
-	}
-
-	/*
-	**
-	*/
-	D3D12_RESOURCE_DIMENSION _getResourceDimension(std::string const& dimension)
-	{
-		D3D12_RESOURCE_DIMENSION ret = D3D12_RESOURCE_DIMENSION_UNKNOWN;
-		if(dimension == "Unknown")
-		{
-			ret = D3D12_RESOURCE_DIMENSION_UNKNOWN;
-		}
-		else if(dimension == "Buffer")
-		{
-			ret = D3D12_RESOURCE_DIMENSION_BUFFER;
-		}
-		else if(dimension == "Texture1D")
-		{
-			ret = D3D12_RESOURCE_DIMENSION_TEXTURE1D;
-		}
-		else if(dimension == "Texture2D")
-		{
-			ret = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-		}
-		else if(dimension == "Texture3D")
-		{
-			ret = D3D12_RESOURCE_DIMENSION_TEXTURE3D;
-		}
-		else
-		{
-			assert(0);
-		}
-
-		return ret;
-	}
-
-	/*
-	**
-	*/
-	ShaderResourceType _getShaderResourceType(std::string const& type)
-	{
-		ShaderResourceType ret = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN;
-		if(type == "TextureIn")
-		{
-			ret = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN;
-		}
-		else if(type == "TextureOut")
-		{
-			ret = ShaderResourceType::RESOURCE_TYPE_TEXTURE_OUT;
-		}
-		else if(type == "TextureInOut")
-		{
-			ret = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN_OUT;
-		}
-		else if(type == "BufferIn")
-		{
-			ret = ShaderResourceType::RESOURCE_TYPE_BUFFER_IN;
-		}
-		else if(type == "BufferOut")
-		{
-			ret = ShaderResourceType::RESOURCE_TYPE_BUFFER_OUT;
-		}
-		else if(type == "BufferInOut")
-		{
-			ret = ShaderResourceType::RESOURCE_TYPE_BUFFER_IN_OUT;
-		}
-
-		return ret;
-	}
-
-	/*
-	**
-	*/
-	D3D12_DEPTH_WRITE_MASK _getDepthWriteMask(std::string const& mask)
-	{
-		D3D12_DEPTH_WRITE_MASK ret = D3D12_DEPTH_WRITE_MASK_ZERO;
-		if(mask == "All")
-		{
-			ret = D3D12_DEPTH_WRITE_MASK_ALL;
-		}
-
-		return ret;
-	}
-
-	/*
-	**
-	*/
-	D3D12_COMPARISON_FUNC _getDepthStencilFunc(std::string const& depthFunc)
-	{
-		D3D12_COMPARISON_FUNC ret = D3D12_COMPARISON_FUNC_NEVER;
-		if(depthFunc == std::string("Never"))
-		{
-			ret = D3D12_COMPARISON_FUNC_NEVER;
-		}
-		else if(depthFunc == std::string("Less"))
-		{
-			ret = D3D12_COMPARISON_FUNC_LESS;
-		}
-		else if(depthFunc == std::string("Equal"))
-		{
-			ret = D3D12_COMPARISON_FUNC_EQUAL;
-		}
-		else if(depthFunc == std::string("LessEqual"))
-		{
-			ret = D3D12_COMPARISON_FUNC_LESS_EQUAL;
-		}
-		else if(depthFunc == std::string("Greater"))
-		{
-			ret = D3D12_COMPARISON_FUNC_GREATER;
-		}
-		else if(depthFunc == std::string("NotEqual"))
-		{
-			ret = D3D12_COMPARISON_FUNC_NOT_EQUAL;
-		}
-		else if(depthFunc == std::string("GreaterEqual"))
-		{
-			ret = D3D12_COMPARISON_FUNC_GREATER_EQUAL;
-		}
-		else if(depthFunc == std::string("Always"))
-		{
-			ret = D3D12_COMPARISON_FUNC_ALWAYS;
-		}
-
-		return ret;
-	}
-
-	/*
-	**
-	*/
-	uint32_t _getImageBufferDimensionSize(
-		std::string const& imageSize)
-	{
-		uint32_t ret = atoi(imageSize.c_str());
-		if(imageSize == "Dynamic" || imageSize == "Image")
-		{
-			ret = UINT32_MAX;
-		}
-		else if(imageSize == "ScreenSize")
-		{
-			ret = 0;
-		}
-		
-		return ret;
-	}
-
-	/*
-	**
-	*/
-	D3D12_STENCIL_OP _getDepthStencilOp(std::string const& op)
-	{
-		D3D12_STENCIL_OP ret = D3D12_STENCIL_OP_KEEP;
-		if(op == std::string("Keep"))
-		{
-			ret = D3D12_STENCIL_OP_KEEP;
-		}
-		else if(op == std::string("Zero"))
-		{
-			ret = D3D12_STENCIL_OP_ZERO;
-		}
-		else if(op == std::string("Replace"))
-		{
-			ret = D3D12_STENCIL_OP_REPLACE;
-		}
-		else if(op == std::string("IncreaseSaturate"))
-		{
-			ret = D3D12_STENCIL_OP_INCR_SAT;
-		}
-		else if(op == std::string("DecreaseSaturate"))
-		{
-			ret = D3D12_STENCIL_OP_DECR_SAT;
-		}
-		else if(op == std::string("Invert"))
-		{
-			ret = D3D12_STENCIL_OP_INVERT;
-		}
-		else if(op == std::string("Increment"))
-		{
-			ret = D3D12_STENCIL_OP_INCR;
-		}
-		else if(op == std::string("Decrement"))
-		{
-			ret = D3D12_STENCIL_OP_DECR;
-		}
-
-		return ret;
-	}
-
-	/*
-	**
-	*/
-	uint32_t getBaseComponentSize(RenderDriver::Common::Format format)
-	{
-		uint32_t iRet = 0;
-		switch(format)
-		{
-			case RenderDriver::Common::Format::R32G32B32A32_FLOAT:
-			case RenderDriver::Common::Format::R16G16B16A16_FLOAT:
-			case RenderDriver::Common::Format::R11G11B10_FLOAT:
-			case RenderDriver::Common::Format::R32G32B32_FLOAT:
-			case RenderDriver::Common::Format::R32G32_FLOAT:
-			case RenderDriver::Common::Format::R32_FLOAT:
-			{
-				iRet = static_cast<uint32_t>(sizeof(float));
-				break;
-			}
-			case RenderDriver::Common::Format::R32G32B32A32_UINT:
-			case RenderDriver::Common::Format::R32G32B32A32_SINT:
-			case RenderDriver::Common::Format::R32G32B32_TYPELESS:
-			case RenderDriver::Common::Format::R32G32B32_UINT:
-			case RenderDriver::Common::Format::R32G32B32_SINT:
-			case RenderDriver::Common::Format::R32G32_TYPELESS:
-			case RenderDriver::Common::Format::R32G32_UINT:
-			case RenderDriver::Common::Format::R32G32_SINT:
-			{
-				iRet = static_cast<uint32_t>(sizeof(uint32_t));
-				break;
-			}
-
-			case RenderDriver::Common::Format::R16G16B16A16_TYPELESS:
-			case RenderDriver::Common::Format::R16G16B16A16_UNORM:
-			case RenderDriver::Common::Format::R16G16B16A16_UINT:
-			case RenderDriver::Common::Format::R16G16B16A16_SNORM:
-			case RenderDriver::Common::Format::R16G16B16A16_SINT:
-			case RenderDriver::Common::Format::R10G10B10A2_TYPELESS:
-			case RenderDriver::Common::Format::R16G16_TYPELESS:
-			case RenderDriver::Common::Format::R16G16_FLOAT:
-			case RenderDriver::Common::Format::R16G16_UNORM:
-			case RenderDriver::Common::Format::R16G16_UINT:
-			case RenderDriver::Common::Format::R16G16_SNORM:
-			case RenderDriver::Common::Format::R16G16_SINT:
-			case RenderDriver::Common::Format::R16_FLOAT:
-			case RenderDriver::Common::Format::R10G10B10A2_UNORM:
-			case RenderDriver::Common::Format::R10G10B10A2_UINT:
-			{
-				iRet = static_cast<uint32_t>(sizeof(uint16_t));
-				break;
-			}
-			case RenderDriver::Common::Format::R8G8B8A8_TYPELESS:
-			case RenderDriver::Common::Format::R8G8B8A8_UNORM:
-			case RenderDriver::Common::Format::R8G8B8A8_UNORM_SRGB:
-			case RenderDriver::Common::Format::R8G8B8A8_UINT:
-			case RenderDriver::Common::Format::R8G8B8A8_SNORM:
-			case RenderDriver::Common::Format::R8G8B8A8_SINT:
-			case RenderDriver::Common::Format::R8G8_TYPELESS:
-			case RenderDriver::Common::Format::R8G8_UNORM:
-			case RenderDriver::Common::Format::R8G8_UINT:
-			case RenderDriver::Common::Format::R8G8_SNORM:
-			case RenderDriver::Common::Format::R8G8_SINT:
-			case RenderDriver::Common::Format::B8G8R8A8_UNORM:
-			{
-				iRet = static_cast<uint32_t>(sizeof(uint8_t));
-				break;
-			}
-			default:
-				WTFASSERT(0, "Failed to account for format %d", format);
-				break;
-		}
-
-		return iRet;
-	}
-
-	/*
-	**
-	*/
-	void getTotalPipelineShaders(
-		std::vector<ShaderInfo>& aPipelineShaders,
-		rapidjson::Document const& doc)
-	{
-		char const* szFilePath = doc["Shaders"].GetString();
-
-		FILE* fp = fopen(szFilePath, "rb");
-		fseek(fp, 0, SEEK_END);
-		size_t iFileSize = ftell(fp);
-		fseek(fp, 0, SEEK_SET);
-		std::vector<char> acBuffer(iFileSize + 1);
-		memset(acBuffer.data(), 0, iFileSize + 1);
-		fread(acBuffer.data(), sizeof(char), iFileSize, fp);
-		fclose(fp);
-
-		rapidjson::Document shaderDoc;
-		shaderDoc.Parse(acBuffer.data());
-
-		// shaders
-		auto const& aShaders = shaderDoc["Shaders"].GetArray();
-		for(auto const& shader : aShaders)
-		{
-			char const* szShaderName = shader["Name"].GetString();
-			char const* szType = shader["Type"].GetString();
-			
-			char const* szShaderFilePath = shader["FilePath"].GetString();
-			char const* szShaderOutputFilePath = shader["OutputFilePath"].GetString();
-			
-			ShaderInfo shaderInfo;
-			shaderInfo.mName = szShaderName;
-			shaderInfo.mType = ShaderType::COMPUTE_SHADER_TYPE;
-			if(std::string(szType) == "Vertex")
-			{
-				shaderInfo.mType = ShaderType::VERTEX_SHADER_TYPE;
-			}
-			else if(std::string(szType) == "Fragment")
-			{
-				shaderInfo.mType = ShaderType::PIXEL_SHADER_TYPE;
-			}
-
-			shaderInfo.mFilePath = szShaderFilePath;
-			shaderInfo.mFileOutputPath = szShaderOutputFilePath;
-
-			aPipelineShaders.push_back(shaderInfo);
-		}
-	}
-
-	/*
-	**
-	*/
-	D3D12_BLEND_OP _setBlendOpType(std::string const& type)
-	{
-		D3D12_BLEND_OP ret;
-		if(type == std::string("Add"))
-		{
-			ret = D3D12_BLEND_OP_ADD;
-		}
-		else if(type == std::string("Subtract"))
-		{
-			ret = D3D12_BLEND_OP_SUBTRACT;
-		}
-		else if(type == std::string("ReverseSubtract"))
-		{
-			ret = D3D12_BLEND_OP_REV_SUBTRACT;
-		}
-		else if(type == std::string("Min"))
-		{
-			ret = D3D12_BLEND_OP_MIN;
-		}
-		else if(type == std::string("Max"))
-		{
-			ret = D3D12_BLEND_OP_MAX;
-		}
-		else
-		{
-			assert(0);
-		}
-
-		return ret;
-	}
-
-	/*
-	**
-	*/
-	D3D12_BLEND _setBlendType(std::string const& type)
-	{
-		D3D12_BLEND ret = D3D12_BLEND_ZERO;
-		if(type == "Zero")
-		{
-			ret = D3D12_BLEND_ZERO;
-		}
-		else if(type == "One")
-		{
-			ret = D3D12_BLEND_ONE;
-		}
-		else if(type == "SrcColor")
-		{
-			ret = D3D12_BLEND_SRC_COLOR;
-		}
-		else if(type == "InvSrcColor")
-		{
-			ret = D3D12_BLEND_INV_SRC_COLOR;
-		}
-		else if(type == "SrcAlpha")
-		{
-			ret = D3D12_BLEND_SRC_ALPHA;
-		}
-		else if(type == "InvSrcAlpha")
-		{
-			ret = D3D12_BLEND_INV_SRC_ALPHA;
-		}
-		else if(type == "DestAlpha")
-		{
-			ret = D3D12_BLEND_DEST_ALPHA;
-		}
-		else if(type == "InvDestAlpha")
-		{
-			ret = D3D12_BLEND_INV_DEST_ALPHA;
-		}
-		else if(type == "DestColor")
-		{
-			ret = D3D12_BLEND_DEST_COLOR;
-		}
-		else if(type == "InvDestColor")
-		{
-			ret = D3D12_BLEND_INV_DEST_COLOR;
-		}
-		else if(type == "SrcAlphaSaturate")
-		{
-			ret = D3D12_BLEND_SRC_ALPHA_SAT;
-		}
-		else if(type == "BlendFactor")
-		{
-			ret = D3D12_BLEND_BLEND_FACTOR;
-		}
-		else if(type == "InvBlendFactor")
-		{
-			ret = D3D12_BLEND_INV_BLEND_FACTOR;
-		}
-		else if(type == "Src1Color")
-		{
-			ret = D3D12_BLEND_SRC1_COLOR;
-		}
-		else if(type == "InvSrc1Color")
-		{
-			ret = D3D12_BLEND_INV_SRC1_COLOR;
-		}
-		else if(type == "Src1Alpha")
-		{
-			ret = D3D12_BLEND_SRC1_ALPHA;
-		}
-		else if(type == "InvSrc1Alpha")
-		{
-			ret = D3D12_BLEND_INV_SRC1_ALPHA;
-		}
-		else
-		{
-			assert(0);
-		}
-
-		return ret;
-	}
-
-	/*
-	**
-	*/
-	AttachmentType _getAttachmentType(std::string const& type)
-	{
-		AttachmentType ret = AttachmentType::COLOR_INPUT;
-		if(type == "ColorInput")
-		{
-			ret = AttachmentType::COLOR_INPUT;
-		}
-		else if(type == "ColorOutput")
-		{
-			ret = AttachmentType::COLOR_OUTPUT;
-		}
-		else if(type == "ColorInputOutput")
-		{
-			ret = AttachmentType::COLOR_INPUTOUTPUT;
-		}
-		else if(type == "DepthInput")
-		{
-			ret = AttachmentType::DEPTH_INPUT;
-		}
-		else if(type == "DepthOutput")
-		{
-			ret = AttachmentType::DEPTH_OUTPUT;
-		}
-		else if(type == "DepthInputOutput")
-		{
-			ret = AttachmentType::DEPTH_INPUTOUT;
-		}
-		else
-		{
-			assert(0);
-		}
-
-		return ret;
-	}
-
-	bool _getBool(std::string const& flag)
-	{
-		return (flag == "True");
-	}
-
-	D3D12_FILL_MODE _getFillMode(std::string const& mode)
-	{
-		D3D12_FILL_MODE ret = D3D12_FILL_MODE_SOLID;
-		if(mode == "WireFrame")
-		{
-			ret = D3D12_FILL_MODE_WIREFRAME;
-		}
-		else if(mode == "Solid")
-		{
-			ret = D3D12_FILL_MODE_SOLID;
-		}
-
-		return ret;
-	}
-
-	D3D12_CULL_MODE _getCullMode(std::string const& mode)
-	{
-		D3D12_CULL_MODE ret = D3D12_CULL_MODE_NONE;
-		if(mode == "None")
-		{
-			ret = D3D12_CULL_MODE_NONE;
-		}
-		else if(mode == "Front")
-		{
-			ret = D3D12_CULL_MODE_FRONT;
-		}
-		else if(mode == "Back")
-		{
-			ret = D3D12_CULL_MODE_BACK;
-		}
-
-		return ret;
-	}
-
-	D3D12_CONSERVATIVE_RASTERIZATION_MODE _getConservateRaster(std::string const& mode)
-	{
-		D3D12_CONSERVATIVE_RASTERIZATION_MODE ret = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
-		if(mode == "Off")
-		{
-			ret = D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF;
-		}
-		else if(mode == "On")
-		{
-			ret = D3D12_CONSERVATIVE_RASTERIZATION_MODE_ON;
-		}
-
-		return ret;
-	}
-
-	/*
-	**
-	*/
-	void loadShaderResources(
-		std::vector<ShaderResourceInfo>& aResourceDesc,
-		std::string const& filePath)
-	{
-		FILE* fp = fopen(filePath.c_str(), "rb");
-		fseek(fp, 0, SEEK_END);
-		size_t iFileSize = ftell(fp);
-		fseek(fp, 0, SEEK_SET);
-		std::vector<char> acBuffer(iFileSize + 1);
-		memset(acBuffer.data(), 0, iFileSize + 1);
-		fread(acBuffer.data(), sizeof(char), iFileSize, fp);
-		fclose(fp);
-
-		rapidjson::Document doc;
-		doc.Parse(acBuffer.data());
-
-		char const* szName = doc["Name"].GetString();
-		auto const& aResources = doc["Resources"].GetArray();
-		for(auto const& resource : aResources)
-		{
-			char const* szResourceName = resource["Name"].GetString();
-			char const* szType = resource["Type"].GetString();
-			char const* szView = resource["View"].GetString();
-			char const* szImageFilePath = nullptr;
-			char const* szBufferFilePath = nullptr;
-
-			if(resource.HasMember("ImageFilePath"))
-			{
-				szImageFilePath = resource["ImageFilePath"].GetString();
-			}
-			
-			if(resource.HasMember("BufferFilePath"))
-			{
-				szBufferFilePath = resource["BufferFilePath"].GetString();
-			}
-
-			auto const& desc = resource["Description"];
-			uint32_t iAlignment = desc["Alignment"].GetInt();
-			char const* szWidth = desc["Width"].GetString();
-			char const* szHeight = desc["Height"].GetString();
-			char const* szDepth = desc["Depth"].GetString();
-			uint32_t iMIPLevel = desc["MIPLevel"].GetInt();
-			char const* szFormat = desc["Format"].GetString();
-			uint32_t iSampleCount = desc["SampleCount"].GetInt();
-			uint32_t iSampleQuality = desc["SampleQuality"].GetInt();
-			char const* szLayout = desc["Layout"].GetString();
-			uint32_t iStructureByteStride = 1;
-			
-			D3D12_RESOURCE_FLAGS resourceFlags = D3D12_RESOURCE_FLAG_NONE;
-			auto const& aFlags = desc["Flags"].GetArray();
-			for(auto const& flagStr : aFlags)
-			{
-				D3D12_RESOURCE_FLAGS resourceFlag = _getResourceFlag(flagStr.GetString());
-				resourceFlags |= resourceFlag;
-			}
-			char const* szDimension = desc["Dimension"].GetString();
-
-			DXGI_FORMAT format = _getTextureFormat(szFormat);
-			D3D12_TEXTURE_LAYOUT layout = _getTextureLayout(szLayout);
-			D3D12_RESOURCE_DIMENSION dimension = _getResourceDimension(szDimension);
-			ResourceViewType viewType = _getResourceView2(szView);
-
-			// structure stride
-			if(desc.HasMember("StructureByteStride"))
-			{
-				iStructureByteStride = desc["StructureByteStride"].GetInt();
-			}
-			else
-			{
-				iStructureByteStride = SerializeUtils::DX12::getBaseComponentSize(format);
-			}
-
-			uint32_t iWidth = _getImageBufferDimensionSize(szWidth);
-			uint32_t iHeight = _getImageBufferDimensionSize(szHeight);
-			uint32_t iDepth = _getImageBufferDimensionSize(szDepth);
-
-			ShaderResourceType type = _getShaderResourceType(szType);
-
-			ShaderResourceInfo shaderResourceInfo;
-			shaderResourceInfo.mName = szResourceName;
-			shaderResourceInfo.mType = type;
-			shaderResourceInfo.mViewType = viewType;
-			shaderResourceInfo.mDataInfo.miDataSize = 0;
-			shaderResourceInfo.mDataInfo.mpData = nullptr;
-			shaderResourceInfo.mDataInfo.mpMappedData = nullptr;
-			shaderResourceInfo.miStructByteStride = iStructureByteStride;
-
-			if(szImageFilePath == nullptr)
-			{
-				shaderResourceInfo.mImageFilePath = "";
-			}
-			else
-			{
-				shaderResourceInfo.mImageFilePath = szImageFilePath;
-			}
-
-			if(szBufferFilePath == nullptr)
-			{
-				shaderResourceInfo.mBufferFilePath = "";
-			}
-			else
-			{
-				shaderResourceInfo.mBufferFilePath = szBufferFilePath;
-			}
-
-			aResourceDesc.push_back(shaderResourceInfo);
-		}
-	}
-
-	
-
-	/*
-	**
-	*/
-	void getVertexFormat(
-		std::vector<D3D12_INPUT_ELEMENT_DESC>& aInputElementDescs,
-		rapidjson::Document const& doc)
-	{
-		uint32_t iCurrOffset = 0;
-		auto const& aVertexEntries = doc["VertexFormat"].GetArray();
-		for(auto const& entry : aVertexEntries)
-		{
-			D3D12_INPUT_ELEMENT_DESC desc = {};
-			desc.SemanticName = entry["Name"].GetString();
-			desc.SemanticIndex = 0;
-			desc.Format = _getTextureFormat(entry["Format"].GetString());
-			desc.InputSlot = 0;
-			desc.AlignedByteOffset = iCurrOffset;
-			desc.InputSlotClass = D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA;
-			desc.InstanceDataStepRate = 0;
-			
-			iCurrOffset += _getFormatDataSize(entry["Format"].GetString());
-
-			aInputElementDescs.push_back(desc);
-		}
-	}
-
 	namespace Common
 	{
+        /*
+        **
+        */
+        RenderDriver::Common::Format _getTextureFormat(std::string const& format)
+        {
+
+#define IF_STATEMENT(FORMAT)    \
+        if(format == #FORMAT)   \
+            ret = RenderDriver::Common::Format::FORMAT;
+            
+#define ELSE_IF_STATEMENT(FORMAT)                                  \
+        else if(format == #FORMAT)                                 \
+            ret = RenderDriver::Common::Format::FORMAT;
+
+            RenderDriver::Common::Format ret = RenderDriver::Common::Format::UNKNOWN;
+
+            IF_STATEMENT(UNKNOWN)
+            ELSE_IF_STATEMENT(R32G32B32A32_TYPELESS)
+            ELSE_IF_STATEMENT(R32G32B32A32_FLOAT)
+            ELSE_IF_STATEMENT(R32G32B32A32_UINT)
+            ELSE_IF_STATEMENT(R32G32B32A32_SINT)
+            ELSE_IF_STATEMENT(R32G32B32_TYPELESS)
+            ELSE_IF_STATEMENT(R32G32B32_FLOAT)
+            ELSE_IF_STATEMENT(R32G32B32_UINT)
+            ELSE_IF_STATEMENT(R32G32B32_SINT)
+            ELSE_IF_STATEMENT(R16G16B16A16_TYPELESS)
+            ELSE_IF_STATEMENT(R16G16B16A16_FLOAT)
+            ELSE_IF_STATEMENT(R16G16B16A16_UNORM)
+            ELSE_IF_STATEMENT(R16G16B16A16_UINT)
+            ELSE_IF_STATEMENT(R16G16B16A16_SNORM)
+            ELSE_IF_STATEMENT(R16G16B16A16_SINT)
+            ELSE_IF_STATEMENT(R32G32_TYPELESS)
+            ELSE_IF_STATEMENT(R32G32_FLOAT)
+            ELSE_IF_STATEMENT(R32G32_UINT)
+            ELSE_IF_STATEMENT(R32G32_SINT)
+            ELSE_IF_STATEMENT(R32G8X24_TYPELESS)
+            ELSE_IF_STATEMENT(D32_FLOAT_S8X24_UINT)
+            ELSE_IF_STATEMENT(R32_FLOAT_X8X24_TYPELESS)
+            ELSE_IF_STATEMENT(X32_TYPELESS_G8X24_UINT)
+            ELSE_IF_STATEMENT(R10G10B10A2_TYPELESS)
+            ELSE_IF_STATEMENT(R10G10B10A2_UNORM)
+            ELSE_IF_STATEMENT(R10G10B10A2_UINT)
+            ELSE_IF_STATEMENT(R11G11B10_FLOAT)
+            ELSE_IF_STATEMENT(R8G8B8A8_TYPELESS)
+            ELSE_IF_STATEMENT(R8G8B8A8_UNORM)
+            ELSE_IF_STATEMENT(R8G8B8A8_UNORM_SRGB)
+            ELSE_IF_STATEMENT(R8G8B8A8_UINT)
+            ELSE_IF_STATEMENT(R8G8B8A8_SNORM)
+            ELSE_IF_STATEMENT(R8G8B8A8_SINT)
+            ELSE_IF_STATEMENT(R16G16_TYPELESS)
+            ELSE_IF_STATEMENT(R16G16_FLOAT)
+            ELSE_IF_STATEMENT(R16G16_UNORM)
+            ELSE_IF_STATEMENT(R16G16_UINT)
+            ELSE_IF_STATEMENT(R16G16_SNORM)
+            ELSE_IF_STATEMENT(R16G16_SINT)
+            ELSE_IF_STATEMENT(R32_TYPELESS)
+            ELSE_IF_STATEMENT(D32_FLOAT)
+            ELSE_IF_STATEMENT(R32_FLOAT)
+            ELSE_IF_STATEMENT(R32_UINT)
+            ELSE_IF_STATEMENT(R32_SINT)
+            ELSE_IF_STATEMENT(R24G8_TYPELESS)
+            ELSE_IF_STATEMENT(D24_UNORM_S8_UINT)
+            ELSE_IF_STATEMENT(R24_UNORM_X8_TYPELESS)
+            ELSE_IF_STATEMENT(X24_TYPELESS_G8_UINT)
+            ELSE_IF_STATEMENT(R8G8_TYPELESS)
+            ELSE_IF_STATEMENT(R8G8_UNORM)
+            ELSE_IF_STATEMENT(R8G8_UINT)
+            ELSE_IF_STATEMENT(R8G8_SNORM)
+            ELSE_IF_STATEMENT(R8G8_SINT)
+            ELSE_IF_STATEMENT(R16_TYPELESS)
+            ELSE_IF_STATEMENT(R16_FLOAT)
+            ELSE_IF_STATEMENT(D16_UNORM)
+            ELSE_IF_STATEMENT(R16_UNORM)
+            ELSE_IF_STATEMENT(R16_UINT)
+            ELSE_IF_STATEMENT(R16_SNORM)
+            ELSE_IF_STATEMENT(R16_SINT)
+            ELSE_IF_STATEMENT(R8_TYPELESS)
+            ELSE_IF_STATEMENT(R8_UNORM)
+            ELSE_IF_STATEMENT(R8_UINT)
+            ELSE_IF_STATEMENT(R8_SNORM)
+            ELSE_IF_STATEMENT(R8_SINT)
+            ELSE_IF_STATEMENT(A8_UNORM)
+            ELSE_IF_STATEMENT(R1_UNORM)
+            ELSE_IF_STATEMENT(R9G9B9E5_SHAREDEXP)
+            ELSE_IF_STATEMENT(R8G8_B8G8_UNORM)
+            ELSE_IF_STATEMENT(G8R8_G8B8_UNORM)
+
+                ELSE_IF_STATEMENT(BC1_TYPELESS)
+                ELSE_IF_STATEMENT(BC1_UNORM)
+                ELSE_IF_STATEMENT(BC1_UNORM_SRGB)
+                ELSE_IF_STATEMENT(BC2_TYPELESS)
+                ELSE_IF_STATEMENT(BC2_UNORM)
+                ELSE_IF_STATEMENT(BC2_UNORM_SRGB)
+                ELSE_IF_STATEMENT(BC3_TYPELESS)
+                ELSE_IF_STATEMENT(BC3_UNORM)
+                ELSE_IF_STATEMENT(BC3_UNORM_SRGB)
+                ELSE_IF_STATEMENT(BC4_TYPELESS)
+                ELSE_IF_STATEMENT(BC4_UNORM)
+                ELSE_IF_STATEMENT(BC4_SNORM)
+                ELSE_IF_STATEMENT(BC5_TYPELESS)
+                ELSE_IF_STATEMENT(BC5_UNORM)
+                ELSE_IF_STATEMENT(BC5_SNORM)
+                ELSE_IF_STATEMENT(B5G6R5_UNORM)
+                ELSE_IF_STATEMENT(B5G5R5A1_UNORM)
+                ELSE_IF_STATEMENT(B8G8R8A8_UNORM)
+                ELSE_IF_STATEMENT(B8G8R8X8_UNORM)
+                ELSE_IF_STATEMENT(R10G10B10_XR_BIAS_A2_UNORM)
+                ELSE_IF_STATEMENT(B8G8R8A8_TYPELESS)
+                ELSE_IF_STATEMENT(B8G8R8A8_UNORM_SRGB)
+                ELSE_IF_STATEMENT(B8G8R8X8_TYPELESS)
+                ELSE_IF_STATEMENT(B8G8R8X8_UNORM_SRGB)
+                ELSE_IF_STATEMENT(BC6H_TYPELESS)
+                ELSE_IF_STATEMENT(BC6H_UF16)
+                ELSE_IF_STATEMENT(BC6H_SF16)
+                ELSE_IF_STATEMENT(BC7_TYPELESS)
+                ELSE_IF_STATEMENT(BC7_UNORM)
+                ELSE_IF_STATEMENT(BC7_UNORM_SRGB)
+                ELSE_IF_STATEMENT(AYUV)
+                ELSE_IF_STATEMENT(Y410)
+                ELSE_IF_STATEMENT(Y416)
+                ELSE_IF_STATEMENT(NV12)
+                ELSE_IF_STATEMENT(P010)
+                ELSE_IF_STATEMENT(P016)
+                ELSE_IF_STATEMENT(YUY2)
+                ELSE_IF_STATEMENT(Y210)
+                ELSE_IF_STATEMENT(Y216)
+                ELSE_IF_STATEMENT(NV11)
+                ELSE_IF_STATEMENT(AI44)
+                ELSE_IF_STATEMENT(IA44)
+                ELSE_IF_STATEMENT(P8)
+                ELSE_IF_STATEMENT(A8P8)
+                ELSE_IF_STATEMENT(B4G4R4A4_UNORM)
+
+
+            return ret;
+
+    #undef IF_STATEMENT
+    #undef ELSE_IF_STATEMENT
+        }
+    
+        /*
+        **
+        */
+        uint32_t _getFormatDataSize(std::string const& formatStr)
+        {
+            uint32_t ret = 0;
+
+            RenderDriver::Common::Format format = _getTextureFormat(formatStr);
+            switch(format)
+            {
+                case RenderDriver::Common::Format::R32G32B32A32_FLOAT:
+                ret = 4 * sizeof(float);
+                break;
+
+            case RenderDriver::Common::Format::R32G32B32_FLOAT:
+                ret = 3 * sizeof(float);
+                break;
+
+            case RenderDriver::Common::Format::R32G32_FLOAT:
+                ret = 2 * sizeof(float);
+                break;
+
+            case RenderDriver::Common::Format::R32_FLOAT:
+                ret = 1 * sizeof(float);
+                break;
+
+            default:
+                assert(0);
+            }
+
+            return ret;
+        }
+    
 		/*
 		**
 		*/
@@ -1286,7 +243,7 @@ namespace SerializeUtils
 					RenderDriver::Common::VertexFormat desc = {};
 					desc.mSemanticName = entry["Name"].GetString();
 					desc.miSemanticIndex = 0;
-					desc.mFormat = _getTextureFormat2(entry["Format"].GetString());
+					desc.mFormat = _getTextureFormat(entry["Format"].GetString());
 					desc.miInputSlot = 0;
 					desc.miAlignedByteOffset = iCurrOffset;
 					desc.miInputSlot = 0;
@@ -1501,13 +458,13 @@ namespace SerializeUtils
 #define IF_STATEMENT(FORMAT)							\
 			if(format == #FORMAT)						\
 			{											\
-				ret = RenderDriver::Common::Format::##FORMAT##;		\
+				ret = RenderDriver::Common::Format::FORMAT;		\
 			}
 
 #define ELSE_IF_STATEMENT(FORMAT)						\
 			else if(format == #FORMAT)					\
 			{											\
-				ret = RenderDriver::Common::Format::##FORMAT##;		\
+				ret = RenderDriver::Common::Format::FORMAT;		\
 			}
 
 			RenderDriver::Common::Format ret = RenderDriver::Common::Format::UNKNOWN;
@@ -3012,7 +1969,7 @@ DEBUG_PRINTF("\t\tfill end u%d name: %s\n", iUnorderAccessResource, filler.mName
 				for(uint32_t i = 0; i < aFormatStr.Size(); i++)
 				{
 					char const* szFormat = aFormatStr[i].GetString();
-					RenderDriver::Common::Format format = _getTextureFormat2(std::string(szFormat));
+					RenderDriver::Common::Format format = _getTextureFormat(std::string(szFormat));
 					aFormats.push_back(format);
 				}
 			}
@@ -3390,6 +2347,7 @@ DEBUG_PRINTF("\t\tfill end u%d name: %s\n", iUnorderAccessResource, filler.mName
 
 	}	// Common
 
+#if defined(_MSC_VER)
 	namespace DX12
 	{
 #define CASE(X, Y)	\
@@ -4739,6 +3697,7 @@ DEBUG_PRINTF("\t\tfill end u%d name: %s\n", iUnorderAccessResource, filler.mName
 		}
 
 	}	// Vulkan
+#endif // _MSC_VER
 
 }	// SerializeUtils
 

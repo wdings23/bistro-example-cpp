@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 #include <render-driver/Format.h>
-#include <serialize_utils.h>
+#include <utils/serialize_utils.h>
 #include <render-driver/Image.h>
 #include <render-driver/Fence.h>
 #include <render-driver/Utils.h>

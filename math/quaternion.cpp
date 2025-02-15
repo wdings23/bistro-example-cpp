@@ -1,5 +1,8 @@
-#include "quaternion.h"
+#include <math/quaternion.h>
+
+#if defined(_MSC_VER)
 #include <corecrt_math_defines.h>
+#endif // _MSC_VER
 
 /*
 **

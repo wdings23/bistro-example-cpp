@@ -1,4 +1,4 @@
-#include <wtfassert.h>
+#include <utils/wtfassert.h>
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -38,21 +38,23 @@ void wtfAssert(
         vsprintf(sacBuffer, szFormat, args);
         //perror(szBuffer);
         va_end(args);
-
+        
         uint64_t iLast = strlen(sacBuffer);
         sacBuffer[iLast] = '\n';
         sacBuffer[iLast + 1] = '\0';
-
+        
         sprintf(sacPreStatement, "\n!!!!!!!!!\n%s line %d\n", szFunction, iLine);
-
+        
 #ifdef _MSC_VER
         OutputDebugStringA(sacPreStatement);
         OutputDebugStringA(sacBuffer);
 #else
 #ifdef ANDROID
         __android_log_print(ANDROID_LOG_VERBOSE, "RenderWithMe", "%s", szBuffer);
-#else 
-        printf("%s", szBuffer);
+    }
+#else
+        printf("%s", sacBuffer);
+    }
 #endif // ANDROID
 #endif // _MSC_VER
         //#endif // _DEBUG

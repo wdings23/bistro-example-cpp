@@ -1,10 +1,15 @@
-#include <Utils/Utils.h>
+#include <utils/Utils.h>
 
 #include <mutex>
 #include <atomic>
+#include <thread>
 
 #include "LogPrint.h"
 #include "wtfassert.h"
+
+#ifdef __APPLE__
+#define FLT_MAX __FLT_MAX__
+#endif // __APPLE__
 
 namespace Render
 {
@@ -1067,3 +1072,7 @@ namespace Render
     }   // Common
 
 }   // Render
+
+#ifdef __APPLE__
+#undef FLT_MAX
+#endif // __APPLE__

@@ -1,0 +1,262 @@
+#include <metal_stdlib>
+#include <simd/simd.h>
+
+using namespace metal;
+
+struct RayPayload
+{
+    float4 mOutput;
+};
+
+struct _MatrixStorage_float4x4_ColMajorstd140
+{
+    float4 data[4];
+};
+
+struct DefaultUniformData_std140
+{
+    int miScreenWidth;
+    int miScreenHeight;
+    int miFrame;
+    int miNumMeshes;
+    float mfRand0;
+    float mfRand1;
+    float mfRand2;
+    float mfRand3;
+    _MatrixStorage_float4x4_ColMajorstd140 mViewProjectionMatrix;
+    _MatrixStorage_float4x4_ColMajorstd140 mPrevViewProjectionMatrix;
+    _MatrixStorage_float4x4_ColMajorstd140 mViewMatrix;
+    _MatrixStorage_float4x4_ColMajorstd140 mProjectionMatrix;
+    _MatrixStorage_float4x4_ColMajorstd140 mJitteredViewProjectionMatrix;
+    _MatrixStorage_float4x4_ColMajorstd140 mPrevJitteredViewProjectionMatrix;
+    _MatrixStorage_float4x4_ColMajorstd140 mInverseViewProjectionMatrix;
+    float4 mCameraPosition;
+    float4 mCameraLookDir;
+    float4 mLightRadiance;
+    float4 mLightDirection;
+    float4 mPrevLightRadiance;
+    float4 mPrevLightDirection;
+    float mfAmbientOcclusionDistanceThreshold;
+    float mfEmissiveRadiancePct;
+    float mfClearReservoirs;
+    float mfFiller;
+};
+
+unknown void rayGen(constant DefaultUniformData_std140& defaultUniformBuffer [[buffer(0)]], texture2d<float> worldPositionTexture [[texture(0)]], texture2d<float> normalTexture [[texture(1)]], texture2d<float> blueNoiseTexture [[texture(2)]], texture2d<float> motionVectorTexture [[texture(3)]], texture2d<float> prevWorldPositionTexture [[texture(4)]], texture2d<float> prevNormalTexture [[texture(5)]], texture2d<float> prevMotionVectorTexture [[texture(6)]], texture2d<float> previousHitCountRenderTarget [[texture(7)]], texture2d<float, access::write> renderTarget [[texture(8)]], raytracing::instance_acceleration_structure scene [[buffer(1)]], unsupported-built-in-type gl_LaunchIDNV [[unsupported-built-in]])
+{
+    uint2 _19 = gl_LaunchIDNV.xy;
+    float4 sampled = worldPositionTexture.read(uint2(gl_LaunchIDNV.xy), 0);
+    float4 _23 = sampled;
+    float4 sampled_1 = normalTexture.read(uint2(gl_LaunchIDNV.xy), 0);
+    float3 normal = sampled_1.xyz;
+    float3 _26 = normal;
+    uint2 vecSize = uint2(blueNoiseTexture.get_width(), blueNoiseTexture.get_height());
+    uint2 _textureSize;
+    uint2 _1825 = _textureSize;
+    _1825.x = vecSize.x;
+    _1825.y = vecSize.y;
+    _textureSize = _1825;
+    uint2 _27;
+    uint2 _1837 = _27;
+    _1837.y = _1825.y;
+    _27 = _1837;
+    _1837.x = _1825.x;
+    _27 = _1837;
+    int _31 = defaultUniformBuffer.miFrame;
+    uint _203 = uint(defaultUniformBuffer.miFrame);
+    uint iOffsetX = _203 % _1825.x;
+    uint _33 = iOffsetX;
+    uint iOffsetY = (_203 / _1825.x) % _1825.y;
+    uint _34 = iOffsetY;
+    uint2 screenCoord = uint2((gl_LaunchIDNV.x + iOffsetX) % _1825.x, (gl_LaunchIDNV.y + iOffsetY) % _1825.y);
+    uint2 _35 = screenCoord;
+    float4 sampled_2 = blueNoiseTexture.read(uint2(screenCoord), 0);
+    float3 _36 = sampled_2.xyz;
+    uint _254 = uint(defaultUniformBuffer.miScreenWidth);
+    uint _257 = uint(defaultUniformBuffer.miScreenHeight);
+    uint2 _37 = uint2(_254, _257);
+    if (sampled.w <= 0.0)
+    {
+        renderTarget.write(float4(0.0, 1.0, 0.0, 1.0), uint2(gl_LaunchIDNV.xy));
+    }
+    else
+    {
+        float3 _38 = float3(0.0, 1.0, 0.0);
+        float3 up;
+        if (abs(sampled_1.y) > 0.999000012874603271484375)
+        {
+            _38 = float3(1.0, 0.0, 0.0);
+            up = float3(1.0, 0.0, 0.0);
+        }
+        else
+        {
+            up = float3(0.0, 1.0, 0.0);
+        }
+        float3 _303 = fast::normalize(cross(up, normal));
+        float3 _40 = _303;
+        float3 _311 = fast::normalize(cross(normal, _303));
+        float3 _41 = _311;
+        float2 _1371 = (float2(gl_LaunchIDNV.xy) / float2(float(defaultUniformBuffer.miScreenWidth), float(defaultUniformBuffer.miScreenHeight))) - motionVectorTexture.read(uint2(gl_LaunchIDNV.xy), 0).xy;
+        float3 _1375 = worldPositionTexture.read(uint2(gl_LaunchIDNV.xy), 0).xyz;
+        float3 _1379 = normalTexture.read(uint2(gl_LaunchIDNV.xy), 0).xyz;
+        float _1382 = 1.0 / float(defaultUniformBuffer.miScreenWidth);
+        float _1385 = 1.0 / float(defaultUniformBuffer.miScreenHeight);
+        float _1347 = 99999.0;
+        float2 _1349 = _1371;
+        int _1350 = -1;
+        bool _1355;
+        for (;;)
+        {
+            if (!(_1350 <= 1))
+            {
+                break;
+            }
+            float _1396 = float(_1350) * _1385;
+            float _1351 = _1347;
+            float2 _1352 = _1349;
+            int _1353 = -1;
+            for (;;)
+            {
+                if (!(_1353 <= 1))
+                {
+                    break;
+                }
+                float2 _1411 = _1371 + float2(float(_1353) * _1382, _1396);
+                _1411.x = fast::clamp(_1411.x, 0.0, 1.0);
+                _1411.y = fast::clamp(_1411.y, 0.0, 1.0);
+                float2 _1354 = _1411;
+                uint2 _1432 = uint2(uint(_1411.x * float(defaultUniformBuffer.miScreenWidth)), uint(_1411.y * float(defaultUniformBuffer.miScreenHeight)));
+                float3 _1443 = prevWorldPositionTexture.read(uint2(_1432), 0).xyz - _1375;
+                float _1444 = dot(_1443, _1443);
+                if (abs(dot(prevNormalTexture.read(uint2(_1432), 0).xyz, _1379)) >= 0.9900000095367431640625)
+                {
+                    _1355 = _1351 > _1444;
+                }
+                else
+                {
+                    _1355 = false;
+                }
+                if (_1355)
+                {
+                    _1351 = _1444;
+                    _1352 = _1354;
+                }
+                _1353++;
+                continue;
+            }
+            _1347 = _1351;
+            _1349 = _1352;
+            _1350++;
+            continue;
+        }
+        float2 _44 = _1349;
+        float _46 = 0.0;
+        float _47 = 0.0;
+        uint2 prevScreenCoord = uint2(uint(_1349.x * float(defaultUniformBuffer.miScreenWidth)), uint(_1349.y * float(defaultUniformBuffer.miScreenHeight)));
+        uint2 _48 = prevScreenCoord;
+        float3 _1627 = prevWorldPositionTexture.read(uint2(prevScreenCoord), 0).xyz - worldPositionTexture.read(uint2(gl_LaunchIDNV.xy), 0).xyz;
+        bool _1594;
+        if ((uint(ceil(motionVectorTexture.read(uint2(gl_LaunchIDNV.xy), 0).w - 0.5)) - 1u) == (uint(ceil(prevMotionVectorTexture.read(uint2(prevScreenCoord), 0).w - 0.5)) - 1u))
+        {
+            _1594 = dot(_1627, _1627) <= 0.00999999977648258209228515625;
+        }
+        else
+        {
+            _1594 = false;
+        }
+        if (_1594)
+        {
+            _1594 = abs(dot(fast::normalize(normalTexture.read(uint2(gl_LaunchIDNV.xy), 0).xyz), fast::normalize(prevNormalTexture.read(uint2(prevScreenCoord), 0).xyz))) >= 0.9900000095367431640625;
+        }
+        else
+        {
+            _1594 = false;
+        }
+        bool _51;
+        if ((!_1594) == false)
+        {
+            float2 _1716 = (float2(gl_LaunchIDNV.xy) / float2(float(_254), float(_257))) - motionVectorTexture.read(uint2(gl_LaunchIDNV.xy), 0).xy;
+            float _1717 = _1716.x;
+            bool _1701;
+            if (_1717 < 0.0)
+            {
+                _1701 = true;
+            }
+            else
+            {
+                _1701 = _1717 > 1.0;
+            }
+            if (_1701)
+            {
+                _1701 = true;
+            }
+            else
+            {
+                _1701 = _1716.y < 0.0;
+            }
+            if (_1701)
+            {
+                _1701 = true;
+            }
+            else
+            {
+                _1701 = _1716.y > 1.0;
+            }
+            _51 = _1701 == false;
+        }
+        else
+        {
+            _51 = false;
+        }
+        float fNumHits;
+        float fCount;
+        if (_51)
+        {
+            float4 sampled_3 = previousHitCountRenderTarget.read(uint2(prevScreenCoord), 0);
+            float _753 = sampled_3.x;
+            _46 = _753;
+            float4 sampled_4 = previousHitCountRenderTarget.read(uint2(prevScreenCoord), 0);
+            float _760 = sampled_4.y;
+            _47 = _760;
+            fNumHits = _753;
+            fCount = _760;
+        }
+        else
+        {
+            fNumHits = 0.0;
+            fCount = 0.0;
+        }
+        float fPhi = 6.28318023681640625 * sampled_2.x;
+        float _54 = fPhi;
+        float fCosTheta = 1.0 - sampled_2.y;
+        float _55 = fCosTheta;
+        float _786 = sqrt(1.0 - (fCosTheta * fCosTheta));
+        float _56 = _786;
+        float _794 = cos(fPhi) * _786;
+        float _796 = sin(fPhi) * _786;
+        float3 _57 = float3(_794, _796, fCosTheta);
+        float3 _808 = fast::normalize(((_303 * _794) + (_311 * _796)) + (normal * fCosTheta));
+        float3 _58 = _808;
+        float3 origin = sampled.xyz;
+        float3 _63 = origin;
+        float3 _1781 = origin;
+        float3 _1783 = _808;
+        float _1782 = 0.001000000047497451305389404296875;
+        float _1784 = 10000.0;
+        float4 _1754 = float4(0.0);
+        float4 _1813 = float4(0.0);
+        p = RayPayload{ float4(0.0) };
+        traceRayEXT(scene, 1u, 255u, 0u, 0u, 0u, origin, 0.001000000047497451305389404296875, _808, 10000.0, 0);
+        _1813 = p.mOutput;
+        if (p.mOutput.x > 0.0)
+        {
+            float fNumHits_1 = fNumHits + 1.0;
+            _46 = fNumHits_1;
+            fNumHits = fNumHits_1;
+        }
+        float fCount_1 = fCount + 1.0;
+        _47 = fCount_1;
+        renderTarget.write(float4(fNumHits, fCount_1, fNumHits / fCount_1, 1.0), uint2(gl_LaunchIDNV.xy));
+    }
+}
+

@@ -9,6 +9,10 @@
 #define MAX_CLUSTER_TREE_NODE_CHILDREN      16
 #define MAX_CLUSTER_TREE_NODE_PARENTS       16
 
+#if !defined(_MSC_VER)
+#define FLT_MAX __FLT_MAX__
+#endif // _MSC_VER
+
 namespace Render
 {
     namespace Common
@@ -108,3 +112,6 @@ namespace Render
 
 }   // Render
 
+#if !defined(_MSC_VER)
+#undef FLT_MAX
+#endif // _MSC_VER

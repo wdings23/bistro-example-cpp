@@ -7,14 +7,13 @@
 
 #include <render-driver/Utils.h>
 
-#include <wtfassert.h>
-#include <LogPrint.h>
+#include <utils/wtfassert.h>
+#include <utils/LogPrint.h>
 
 #include <stb_image.h>
 
 #include <sstream>
 
-#include <render-driver/Vulkan/BufferVulkan.h>
 
 namespace Render
 {
@@ -408,7 +407,7 @@ namespace Render
 
             if(pacConstantBufferData != nullptr)
             {
-                uint32_t iBufferSize = max((uint32_t)pacConstantBufferData->size(), 64);
+                uint32_t iBufferSize = std::max((uint32_t)pacConstantBufferData->size(), 64u);
                 RenderDriver::Common::BufferUsage usage = RenderDriver::Common::BufferUsage(
                     uint32_t(RenderDriver::Common::BufferUsage::UniformBuffer) |
                     uint32_t(RenderDriver::Common::BufferUsage::UniformTexel) |

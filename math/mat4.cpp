@@ -1,7 +1,9 @@
 #include <stdint.h>
 #include <math.h>
 
+#ifdef _MSC_VER
 #include <corecrt_math_defines.h>
+#endif // MSC_VER
 
 #include "mat4.h"
 #include "quaternion.h"

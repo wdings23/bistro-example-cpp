@@ -5,7 +5,9 @@
 
 #include <memory>
 
+#if defined(_MSC_VER)
 #include <vulkan/vulkan.h>
+#endif // _MSC_VER
 
 namespace RenderDriver
 {

@@ -1,8 +1,8 @@
 #pragma once
 
 #include <stdint.h>
-#include "vec.h"
-#include "mat4.h"
+#include <math/vec.h>
+#include <math/mat4.h>
 
 enum ProjectionType
 {

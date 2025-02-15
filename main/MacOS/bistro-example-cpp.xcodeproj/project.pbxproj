@@ -1,0 +1,518 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		259DF5842D605457007BA6A1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259DF5832D605457007BA6A1 /* ViewController.swift */; };
+		259DF5882D6054A9007BA6A1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259DF5872D6054A9007BA6A1 /* AppDelegate.swift */; };
+		25DECE7F2D6057FF00ED56EE /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DECE7E2D6057FF00ED56EE /* MetalView.swift */; };
+		25DECE862D6058E900ED56EE /* Wrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECE852D6058E900ED56EE /* Wrapper.mm */; };
+		25DECE892D605CAC00ED56EE /* App.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECE882D605CAC00ED56EE /* App.mm */; };
+		25DECE9A2D60606200ED56EE /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECE962D60606200ED56EE /* Utils.cpp */; };
+		25DECE9B2D60606200ED56EE /* image_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECE8B2D60606200ED56EE /* image_utils.cpp */; };
+		25DECE9C2D60606200ED56EE /* JobManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECE8D2D60606200ED56EE /* JobManager.cpp */; };
+		25DECE9D2D60606200ED56EE /* usleep.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECE942D60606200ED56EE /* usleep.cpp */; };
+		25DECE9E2D60606200ED56EE /* wtfassert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECE982D60606200ED56EE /* wtfassert.cpp */; };
+		25DECE9F2D60606200ED56EE /* serialize_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECE922D60606200ED56EE /* serialize_utils.cpp */; };
+		25DECEA02D60606200ED56EE /* LogPrint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECE8F2D60606200ED56EE /* LogPrint.cpp */; };
+		25DECEA82D6063D700ED56EE /* quaternion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEA42D6063D700ED56EE /* quaternion.cpp */; };
+		25DECEA92D6063D700ED56EE /* vec.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEA62D6063D700ED56EE /* vec.cpp */; };
+		25DECEAA2D6063D700ED56EE /* mat4.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEA22D6063D700ED56EE /* mat4.cpp */; };
+		25DECEBC2D61373400ED56EE /* Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEB72D61373400ED56EE /* Renderer.cpp */; };
+		25DECEBD2D61373400ED56EE /* RendererVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEAF2D61373400ED56EE /* RendererVulkan.cpp */; };
+		25DECEBE2D61373400ED56EE /* RenderJobVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEB12D61373400ED56EE /* RenderJobVulkan.cpp */; };
+		25DECEBF2D61373400ED56EE /* RenderJob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEB92D61373400ED56EE /* RenderJob.cpp */; };
+		25DECEC02D61373400ED56EE /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEB42D61373400ED56EE /* Camera.cpp */; };
+		25DECEC12D61373400ED56EE /* RendererDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEAC2D61373400ED56EE /* RendererDX12.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		259DF54C2D6053C9007BA6A1 /* bistro-example-cpp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "bistro-example-cpp.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		259DF5832D605457007BA6A1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		259DF5872D6054A9007BA6A1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		25DECE7E2D6057FF00ED56EE /* MetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalView.swift; sourceTree = "<group>"; };
+		25DECE832D6058A400ED56EE /* bistro-example-cpp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "bistro-example-cpp-Bridging-Header.h"; sourceTree = "<group>"; };
+		25DECE842D6058E900ED56EE /* Wrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Wrapper.h; sourceTree = "<group>"; };
+		25DECE852D6058E900ED56EE /* Wrapper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Wrapper.mm; sourceTree = "<group>"; };
+		25DECE872D605CAC00ED56EE /* App.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = App.h; sourceTree = "<group>"; };
+		25DECE882D605CAC00ED56EE /* App.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = App.mm; sourceTree = "<group>"; };
+		25DECE8A2D60606200ED56EE /* image_utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = image_utils.h; sourceTree = "<group>"; };
+		25DECE8B2D60606200ED56EE /* image_utils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = image_utils.cpp; sourceTree = "<group>"; };
+		25DECE8C2D60606200ED56EE /* JobManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JobManager.h; sourceTree = "<group>"; };
+		25DECE8D2D60606200ED56EE /* JobManager.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = JobManager.cpp; sourceTree = "<group>"; };
+		25DECE8E2D60606200ED56EE /* LogPrint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LogPrint.h; sourceTree = "<group>"; };
+		25DECE8F2D60606200ED56EE /* LogPrint.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = LogPrint.cpp; sourceTree = "<group>"; };
+		25DECE902D60606200ED56EE /* render_enums.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = render_enums.h; sourceTree = "<group>"; };
+		25DECE912D60606200ED56EE /* serialize_utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = serialize_utils.h; sourceTree = "<group>"; };
+		25DECE922D60606200ED56EE /* serialize_utils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = serialize_utils.cpp; sourceTree = "<group>"; };
+		25DECE932D60606200ED56EE /* usleep.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = usleep.h; sourceTree = "<group>"; };
+		25DECE942D60606200ED56EE /* usleep.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = usleep.cpp; sourceTree = "<group>"; };
+		25DECE952D60606200ED56EE /* Utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
+		25DECE962D60606200ED56EE /* Utils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Utils.cpp; sourceTree = "<group>"; };
+		25DECE972D60606200ED56EE /* wtfassert.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = wtfassert.h; sourceTree = "<group>"; };
+		25DECE982D60606200ED56EE /* wtfassert.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = wtfassert.cpp; sourceTree = "<group>"; };
+		25DECEA12D6063D700ED56EE /* mat4.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = mat4.h; sourceTree = "<group>"; };
+		25DECEA22D6063D700ED56EE /* mat4.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = mat4.cpp; sourceTree = "<group>"; };
+		25DECEA32D6063D700ED56EE /* quaternion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = quaternion.h; sourceTree = "<group>"; };
+		25DECEA42D6063D700ED56EE /* quaternion.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = quaternion.cpp; sourceTree = "<group>"; };
+		25DECEA52D6063D700ED56EE /* vec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = vec.h; sourceTree = "<group>"; };
+		25DECEA62D6063D700ED56EE /* vec.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = vec.cpp; sourceTree = "<group>"; };
+		25DECEAB2D61373400ED56EE /* RendererDX12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RendererDX12.h; sourceTree = "<group>"; };
+		25DECEAC2D61373400ED56EE /* RendererDX12.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RendererDX12.cpp; sourceTree = "<group>"; };
+		25DECEAE2D61373400ED56EE /* RendererVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RendererVulkan.h; sourceTree = "<group>"; };
+		25DECEAF2D61373400ED56EE /* RendererVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RendererVulkan.cpp; sourceTree = "<group>"; };
+		25DECEB02D61373400ED56EE /* RenderJobVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderJobVulkan.h; sourceTree = "<group>"; };
+		25DECEB12D61373400ED56EE /* RenderJobVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RenderJobVulkan.cpp; sourceTree = "<group>"; };
+		25DECEB32D61373400ED56EE /* Camera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Camera.h; sourceTree = "<group>"; };
+		25DECEB42D61373400ED56EE /* Camera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
+		25DECEB52D61373400ED56EE /* render_job_enums.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = render_job_enums.h; sourceTree = "<group>"; };
+		25DECEB62D61373400ED56EE /* Renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Renderer.h; sourceTree = "<group>"; };
+		25DECEB72D61373400ED56EE /* Renderer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Renderer.cpp; sourceTree = "<group>"; };
+		25DECEB82D61373400ED56EE /* RenderJob.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderJob.h; sourceTree = "<group>"; };
+		25DECEB92D61373400ED56EE /* RenderJob.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RenderJob.cpp; sourceTree = "<group>"; };
+		25DECEBA2D61373400ED56EE /* VertexFormat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VertexFormat.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		259DF5492D6053C9007BA6A1 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		259DF5432D6053C9007BA6A1 = {
+			isa = PBXGroup;
+			children = (
+				259DF5832D605457007BA6A1 /* ViewController.swift */,
+				259DF5872D6054A9007BA6A1 /* AppDelegate.swift */,
+				25DECE7E2D6057FF00ED56EE /* MetalView.swift */,
+				25DECE832D6058A400ED56EE /* bistro-example-cpp-Bridging-Header.h */,
+				259DF54D2D6053C9007BA6A1 /* Products */,
+				25DECE842D6058E900ED56EE /* Wrapper.h */,
+				25DECE852D6058E900ED56EE /* Wrapper.mm */,
+				25DECE872D605CAC00ED56EE /* App.h */,
+				25DECE882D605CAC00ED56EE /* App.mm */,
+				25DECE992D60606200ED56EE /* utils */,
+				25DECEA72D6063D700ED56EE /* math */,
+				25DECEBB2D61373400ED56EE /* render */,
+			);
+			sourceTree = "<group>";
+		};
+		259DF54D2D6053C9007BA6A1 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				259DF54C2D6053C9007BA6A1 /* bistro-example-cpp.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		25DECE992D60606200ED56EE /* utils */ = {
+			isa = PBXGroup;
+			children = (
+				25DECE8A2D60606200ED56EE /* image_utils.h */,
+				25DECE8B2D60606200ED56EE /* image_utils.cpp */,
+				25DECE8C2D60606200ED56EE /* JobManager.h */,
+				25DECE8D2D60606200ED56EE /* JobManager.cpp */,
+				25DECE8E2D60606200ED56EE /* LogPrint.h */,
+				25DECE8F2D60606200ED56EE /* LogPrint.cpp */,
+				25DECE902D60606200ED56EE /* render_enums.h */,
+				25DECE912D60606200ED56EE /* serialize_utils.h */,
+				25DECE922D60606200ED56EE /* serialize_utils.cpp */,
+				25DECE932D60606200ED56EE /* usleep.h */,
+				25DECE942D60606200ED56EE /* usleep.cpp */,
+				25DECE952D60606200ED56EE /* Utils.h */,
+				25DECE962D60606200ED56EE /* Utils.cpp */,
+				25DECE972D60606200ED56EE /* wtfassert.h */,
+				25DECE982D60606200ED56EE /* wtfassert.cpp */,
+			);
+			name = utils;
+			path = "/Users/dingwings/projects/bistro-example-cpp/utils";
+			sourceTree = "<absolute>";
+		};
+		25DECEA72D6063D700ED56EE /* math */ = {
+			isa = PBXGroup;
+			children = (
+				25DECEA12D6063D700ED56EE /* mat4.h */,
+				25DECEA22D6063D700ED56EE /* mat4.cpp */,
+				25DECEA32D6063D700ED56EE /* quaternion.h */,
+				25DECEA42D6063D700ED56EE /* quaternion.cpp */,
+				25DECEA52D6063D700ED56EE /* vec.h */,
+				25DECEA62D6063D700ED56EE /* vec.cpp */,
+			);
+			name = math;
+			path = "/Users/dingwings/projects/bistro-example-cpp/math";
+			sourceTree = "<absolute>";
+		};
+		25DECEAD2D61373400ED56EE /* DX12 */ = {
+			isa = PBXGroup;
+			children = (
+				25DECEAB2D61373400ED56EE /* RendererDX12.h */,
+				25DECEAC2D61373400ED56EE /* RendererDX12.cpp */,
+			);
+			path = DX12;
+			sourceTree = "<group>";
+		};
+		25DECEB22D61373400ED56EE /* Vulkan */ = {
+			isa = PBXGroup;
+			children = (
+				25DECEAE2D61373400ED56EE /* RendererVulkan.h */,
+				25DECEAF2D61373400ED56EE /* RendererVulkan.cpp */,
+				25DECEB02D61373400ED56EE /* RenderJobVulkan.h */,
+				25DECEB12D61373400ED56EE /* RenderJobVulkan.cpp */,
+			);
+			path = Vulkan;
+			sourceTree = "<group>";
+		};
+		25DECEBB2D61373400ED56EE /* render */ = {
+			isa = PBXGroup;
+			children = (
+				25DECEAD2D61373400ED56EE /* DX12 */,
+				25DECEB22D61373400ED56EE /* Vulkan */,
+				25DECEB32D61373400ED56EE /* Camera.h */,
+				25DECEB42D61373400ED56EE /* Camera.cpp */,
+				25DECEB52D61373400ED56EE /* render_job_enums.h */,
+				25DECEB62D61373400ED56EE /* Renderer.h */,
+				25DECEB72D61373400ED56EE /* Renderer.cpp */,
+				25DECEB82D61373400ED56EE /* RenderJob.h */,
+				25DECEB92D61373400ED56EE /* RenderJob.cpp */,
+				25DECEBA2D61373400ED56EE /* VertexFormat.h */,
+			);
+			name = render;
+			path = "/Users/dingwings/projects/bistro-example-cpp/render";
+			sourceTree = "<absolute>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		259DF54B2D6053C9007BA6A1 /* bistro-example-cpp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 259DF5712D6053CA007BA6A1 /* Build configuration list for PBXNativeTarget "bistro-example-cpp" */;
+			buildPhases = (
+				259DF5482D6053C9007BA6A1 /* Sources */,
+				259DF5492D6053C9007BA6A1 /* Frameworks */,
+				259DF54A2D6053C9007BA6A1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "bistro-example-cpp";
+			packageProductDependencies = (
+			);
+			productName = "bistro-example-cpp";
+			productReference = 259DF54C2D6053C9007BA6A1 /* bistro-example-cpp.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		259DF5442D6053C9007BA6A1 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1620;
+				LastUpgradeCheck = 1620;
+				TargetAttributes = {
+					259DF54B2D6053C9007BA6A1 = {
+						CreatedOnToolsVersion = 16.2;
+						LastSwiftMigration = 1620;
+					};
+				};
+			};
+			buildConfigurationList = 259DF5472D6053C9007BA6A1 /* Build configuration list for PBXProject "bistro-example-cpp" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 259DF5432D6053C9007BA6A1;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 259DF54D2D6053C9007BA6A1 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				259DF54B2D6053C9007BA6A1 /* bistro-example-cpp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		259DF54A2D6053C9007BA6A1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		259DF5482D6053C9007BA6A1 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				25DECEA82D6063D700ED56EE /* quaternion.cpp in Sources */,
+				25DECEA92D6063D700ED56EE /* vec.cpp in Sources */,
+				25DECEAA2D6063D700ED56EE /* mat4.cpp in Sources */,
+				25DECEBC2D61373400ED56EE /* Renderer.cpp in Sources */,
+				25DECEBD2D61373400ED56EE /* RendererVulkan.cpp in Sources */,
+				25DECEBE2D61373400ED56EE /* RenderJobVulkan.cpp in Sources */,
+				25DECEBF2D61373400ED56EE /* RenderJob.cpp in Sources */,
+				25DECEC02D61373400ED56EE /* Camera.cpp in Sources */,
+				25DECEC12D61373400ED56EE /* RendererDX12.cpp in Sources */,
+				25DECE892D605CAC00ED56EE /* App.mm in Sources */,
+				25DECE7F2D6057FF00ED56EE /* MetalView.swift in Sources */,
+				259DF5882D6054A9007BA6A1 /* AppDelegate.swift in Sources */,
+				259DF5842D605457007BA6A1 /* ViewController.swift in Sources */,
+				25DECE862D6058E900ED56EE /* Wrapper.mm in Sources */,
+				25DECE9A2D60606200ED56EE /* Utils.cpp in Sources */,
+				25DECE9B2D60606200ED56EE /* image_utils.cpp in Sources */,
+				25DECE9C2D60606200ED56EE /* JobManager.cpp in Sources */,
+				25DECE9D2D60606200ED56EE /* usleep.cpp in Sources */,
+				25DECE9E2D60606200ED56EE /* wtfassert.cpp in Sources */,
+				25DECE9F2D60606200ED56EE /* serialize_utils.cpp in Sources */,
+				25DECEA02D60606200ED56EE /* LogPrint.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		259DF56F2D6053CA007BA6A1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		259DF5702D6053CA007BA6A1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.2;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		259DF5722D6053CA007BA6A1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = bistro_example_cpp.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TLLLVB493P;
+				ENABLE_HARDENED_RUNTIME = YES;
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.framework *.gch *.xcode* *.xcassets (*) .DS_Store CVS .svn .git .hg *.pbproj *.pbxproj";
+				EXCLUDED_SOURCE_FILE_NAMES = (
+					"/Users/dingwings/projects/bistro-example-cpp/render-driver/Vulkan/*",
+					"/Users/dingwings/projects/bistro-example-cpp/render-driver/DX12/*",
+					"/Users/dingwings/projects/bistro-example-cpp/render/Vulkan/*",
+					"/Users/dingwings/projects/bistro-example-cpp/render/DX12/*",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"/Users/dingwings/projects/bistro-example-cpp/externals",
+					"/Users/dingwings/projects/bistro-example-cpp",
+				);
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.needsnacks.bistro-example-cpp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "bistro-example-cpp-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		259DF5732D6053CA007BA6A1 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = bistro_example_cpp.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = TLLLVB493P;
+				ENABLE_HARDENED_RUNTIME = YES;
+				EXCLUDED_RECURSIVE_SEARCH_PATH_SUBDIRECTORIES = "*.nib *.lproj *.framework *.gch *.xcode* *.xcassets (*) .DS_Store CVS .svn .git .hg *.pbproj *.pbxproj";
+				EXCLUDED_SOURCE_FILE_NAMES = (
+					"/Users/dingwings/projects/bistro-example-cpp/render-driver/Vulkan/*",
+					"/Users/dingwings/projects/bistro-example-cpp/render-driver/DX12/*",
+					"/Users/dingwings/projects/bistro-example-cpp/render/Vulkan/*",
+					"/Users/dingwings/projects/bistro-example-cpp/render/DX12/*",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"/Users/dingwings/projects/bistro-example-cpp/externals",
+					"/Users/dingwings/projects/bistro-example-cpp",
+				);
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.needsnacks.bistro-example-cpp";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "bistro-example-cpp-Bridging-Header.h";
+				SWIFT_PRECOMPILE_BRIDGING_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		259DF5472D6053C9007BA6A1 /* Build configuration list for PBXProject "bistro-example-cpp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				259DF56F2D6053CA007BA6A1 /* Debug */,
+				259DF5702D6053CA007BA6A1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		259DF5712D6053CA007BA6A1 /* Build configuration list for PBXNativeTarget "bistro-example-cpp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				259DF5722D6053CA007BA6A1 /* Debug */,
+				259DF5732D6053CA007BA6A1 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 259DF5442D6053C9007BA6A1 /* Project object */;
+}

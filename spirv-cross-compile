@@ -1,0 +1,5 @@
+~/Downloads/slang-2025.5-macos-aarch64/bin/slangc ray-trace.slang -profile glsl_450 -target metal -o ../shader-output/ray-trace.msl -entry rayGen
+
+~/projects/SPIRV-Cross/build/Release/spirv-cross ~/projects/bistro-example-cpp/shader-output/ray-trace.spv --output ~/projects/bistro-example-cpp/shader-output/ray-trace.mtl --msl --msl-version 20300
+
+

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <serialize_utils.h>
+#include <utils/serialize_utils.h>
 
 namespace RenderDriver
 {
@@ -45,8 +45,10 @@ namespace RenderDriver
                RenderDriver::Common::ResourceStateFlagBits before,
                RenderDriver::Common::ResourceStateFlagBits after);
 
+#if defined(_MSC_VER)
            uint32_t alignForUavCounter(UINT bufferSize);
-
+#endif // _MSC_VER
+       
            void copyBufferToTexture(
                RenderDriver::Common::CBuffer& srcBuffer,
                RenderDriver::Common::CImage& destImage,

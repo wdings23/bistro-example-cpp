@@ -2,16 +2,15 @@
 
 #include <render-driver/SwapChain.h>
 #include <render-driver/Fence.h>
-#include <render-driver/DX12/FenceDX12.h>
 #include <mesh-clusters/MeshClusterManager.h>
 
 #include <render/render_job_enums.h>
 #include <render/RenderJob.h>
 
-#include <JobManager.h>
-#include <Camera.h>
-#include <LogPrint.h>
-#include <wtfassert.h>
+#include <utils/JobManager.h>
+#include <render/Camera.h>
+#include <utils/LogPrint.h>
+#include <utils/wtfassert.h>
 
 #include <sstream>
 #include <thread>
@@ -21,8 +20,6 @@
 #include <stb_image_write.h>
 
 #include <chrono>
-
-#include <render-driver/Vulkan/ImageVulkan.h>
 
 #if defined(RUN_TEST_LOCALLY)
 std::vector<char> gaReadOnlyBufferCopy(1 << 27);

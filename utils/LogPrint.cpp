@@ -65,7 +65,7 @@ extern "C" int printOutputToDebugWindow(char const* const szFormat, ...)
 	#ifdef ANDROID
 		__android_log_print(ANDROID_LOG_VERBOSE, "RenderWithMe", "%s", szBuffer); 
 	#else 
-    	printf("%s", szBuffer);
+    	printf("%s", sacBuffer);
 	#endif // ANDROID
 #endif // _MSC_VER
 //#endif // _DEBUG

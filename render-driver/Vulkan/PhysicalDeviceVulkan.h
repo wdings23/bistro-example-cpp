@@ -3,7 +3,9 @@
 #include <render-driver/PhysicalDevice.h>
 #include <render-driver/Device.h>
 
+#if defined(_MSC_VER)
 #include <vulkan/vulkan.h>
+#endif // _MSC_VER
 
 namespace RenderDriver
 {

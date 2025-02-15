@@ -1,16 +1,19 @@
 #pragma once
 
 #include <string>
-#include <vec.h>
 #include <vector>
-#include <mat4.h>
+#include <math/vec.h>
+#include <math/mat4.h>
 
 #include <functional>
 #include <map>
 
 
 #define MAX_RASTERIZER_RENDER_TARGETS   8
-          
+         
+#ifdef __APPLE__
+#define FLT_MAX __FLT_MAX__
+#endif // __APPLE__
 
 namespace Render
 {
@@ -176,7 +179,7 @@ namespace Render
 
                 NUM_MATRIX_INPUTS
             };
-
+        
             struct VertexShaderInput
             {
                 float4      maInput[NUM_VERTEX_SHADER_OUTPUT_MAPPINGS] =
@@ -199,7 +202,7 @@ namespace Render
 
                 std::map<std::string, float4> maUserData;
             };
-
+        
             struct VertexShaderOutput
             {
                 float4      maOutput[NUM_VERTEX_SHADER_OUTPUT_MAPPINGS] =
@@ -337,3 +340,7 @@ namespace Render
 
 
 }   // Render
+
+#ifdef __APPLE__
+#undef FLT_MAX
+#endif // __APPLE__

@@ -1,8 +1,10 @@
 #pragma once
 
+#if defined(_MSC_VER)
 #include "dxgi1_6.h"
 #include "d3d12.h"
 #include "wrl/client.h"
+#endif // _MSC_VER
 
 #include <vector>
 #include <string>
@@ -16,9 +18,10 @@
 #include <render-driver/Device.h>
 #include <render-driver/Format.h>
 
+#if defined(_MSC_VER)
 #include "vulkan/vulkan.h"
-
 using namespace Microsoft::WRL;
+#endif // _MSC_VER
 
 enum class AttachmentTypeBits
 {
@@ -784,6 +787,7 @@ namespace SerializeUtils
 
 	}	// Common
 
+#if defined(_MSC_VER)
 	namespace DX12
 	{
 		struct ShaderResourceInfo
@@ -879,5 +883,7 @@ namespace SerializeUtils
 
 
 	}	// Vulkan
+#endif // _MSC_VER
+
 
 }	// SerializeUtils
