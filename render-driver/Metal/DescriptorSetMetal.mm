@@ -1,10 +1,10 @@
-#include <RenderDriver/Metal/DeviceMetal.h>
-#include <RenderDriver/Metal/DescriptorSetMetal.h>
+#include <render-driver/Metal/DeviceMetal.h>
+#include <render-driver/Metal/DescriptorSetMetal.h>
 
-#include <LogPrint.h>
+#include <utils/LogPrint.h>
 #include <sstream>
 
-#include <wtfassert.h>
+#include <utils/wtfassert.h>
 
 #define DEBUG_PRINT_OUT 1
 

@@ -1,10 +1,10 @@
-#include <RenderDriver/Metal/DeviceMetal.h>
-#include <RenderDriver/Metal/FenceMetal.h>
+#include <render-driver/Metal/DeviceMetal.h>
+#include <render-driver/Metal/FenceMetal.h>
 //#include <RenderDriver/Metal/UtilsMetal.h>
-#include <RenderDriver/Metal/CommandQueueMetal.h>
+#include <render-driver/Metal/CommandQueueMetal.h>
 
-#include <LogPrint.h>
-#include <wtfassert.h>
+#include <utils/LogPrint.h>
+#include <utils/wtfassert.h>
 
 #include <Metal/Metal.h>
 #include <chrono>

@@ -51,8 +51,44 @@ namespace RenderDriver
                 void* pSampler
             );
 
+            inline DescriptorSetDescriptor getDesc() { return mDesc; }
+            
+            inline void setComputeLayoutIndices(std::vector<uint32_t> const& aiLayoutIndices)
+            {
+                maiComputeLayoutIndices = aiLayoutIndices;
+            }
+            
+            inline void setVertexLayoutIndices(std::vector<uint32_t> const& aiLayoutIndices)
+            {
+                maiVertexLayoutIndices = aiLayoutIndices;
+            }
+            
+            inline void setFragmentLayoutIndices(std::vector<uint32_t> const& aiLayoutIndices)
+            {
+                maiFragmentLayoutIndices = aiLayoutIndices;
+            }
+            
+            inline std::vector<uint32_t> const& getComputeLayoutIndices()
+            {
+                return maiComputeLayoutIndices;
+            }
+            
+            inline std::vector<uint32_t> const& getVertexLayoutIndices()
+            {
+                return maiVertexLayoutIndices;
+            }
+            
+            inline std::vector<uint32_t> const& getFragmentLayoutIndices()
+            {
+                return maiFragmentLayoutIndices;
+            }
+            
         protected:
             DescriptorSetDescriptor             mDesc;
+            
+            std::vector<uint32_t>               maiVertexLayoutIndices;
+            std::vector<uint32_t>               maiFragmentLayoutIndices;
+            std::vector<uint32_t>               maiComputeLayoutIndices;
         };
 
     }   // Common

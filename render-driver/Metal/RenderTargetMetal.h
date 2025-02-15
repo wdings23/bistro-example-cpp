@@ -1,8 +1,8 @@
 #pragma once
 
-#include <RenderDriver/Device.h>
-#include <RenderDriver/RenderTarget.h>
-#include <RenderDriver/Metal/ImageMetal.h>
+#include <render-driver/Device.h>
+#include <render-driver/RenderTarget.h>
+#include <render-driver/Metal/ImageMetal.h>
 
 namespace RenderDriver
 {

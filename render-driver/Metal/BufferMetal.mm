@@ -1,13 +1,11 @@
-#include <RenderDriver/Metal/BufferMetal.h>
-#include <RenderDriver/Metal/DeviceMetal.h>
+#include <render-driver/Metal/BufferMetal.h>
+#include <render-driver/Metal/DeviceMetal.h>
 //#include <RenderDriver/Metal/UtilsMetal.h>
-#include <RenderDriver/Metal/CommandBufferMetal.h>
+#include <render-driver/Metal/CommandBufferMetal.h>
 
-#include <serialize_utils.h>
-
-#include <LogPrint.h>
-
-#include <wtfassert.h>
+#include <utils/serialize_utils.h>
+#include <utils/LogPrint.h>
+#include <utils/wtfassert.h>
 
 
 namespace RenderDriver

@@ -1,9 +1,9 @@
-#include <RenderDriver/Metal/DeviceMetal.h>
-#include <RenderDriver/Metal/FenceMetal.h>
-#include <RenderDriver/Metal/CommandBufferMetal.h>
-#include <RenderDriver/Metal/CommandQueueMetal.h>
+#include <render-driver/Metal/DeviceMetal.h>
+#include <render-driver/Metal/FenceMetal.h>
+#include <render-driver/Metal/CommandBufferMetal.h>
+#include <render-driver/Metal/CommandQueueMetal.h>
 
-#include <wtfassert.h>
+#include <utils/wtfassert.h>
 
 namespace RenderDriver
 {

@@ -1,7 +1,7 @@
-#include <RenderDriver/Metal/SwapChainMetal.h>
-#include <RenderDriver/Metal/DeviceMetal.h>
+#include <render-driver/Metal/SwapChainMetal.h>
+#include <render-driver/Metal/DeviceMetal.h>
 
-#include <wtfassert.h>
+#include <utils/wtfassert.h>
 #include <sstream>
 
 namespace RenderDriver

@@ -1,6 +1,6 @@
-#include <RenderDriver/Metal/RenderTargetMetal.h>
+#include <render-driver/Metal/RenderTargetMetal.h>
 
-#include <wtfassert.h>
+#include <utils/wtfassert.h>
 
 namespace RenderDriver
 {

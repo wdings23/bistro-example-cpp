@@ -1,7 +1,7 @@
 #pragma once
 
-#include <RenderDriver/Metal/DeviceMetal.h>
-#include <RenderDriver/CommandAllocator.h>
+#include <render-driver/Metal/DeviceMetal.h>
+#include <render-driver/CommandAllocator.h>
 
 
 namespace RenderDriver

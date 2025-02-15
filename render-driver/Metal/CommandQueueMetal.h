@@ -1,8 +1,8 @@
 #pragma once
 
-#include <RenderDriver/CommandQueue.h>
-#include <RenderDriver/CommandBuffer.h>
-#include <RenderDriver/Device.h>
+#include <render-driver/CommandQueue.h>
+#include <render-driver/CommandBuffer.h>
+#include <render-driver/Device.h>
 #include <Metal/Metal.h>
 
 #include <atomic>

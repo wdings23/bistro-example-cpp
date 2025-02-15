@@ -1,8 +1,7 @@
-#include <RenderDriver/Metal/ImageMetal.h>
+#include <render-driver/Metal/ImageMetal.h>
+#include <render-driver/Metal/UtilsMetal.h>
 
-#include <wtfassert.h>
-
-#include <Utils/Metal/serialize_utils_metal.h>
+#include <utils/wtfassert.h>
 
 namespace RenderDriver
 {
@@ -19,7 +18,7 @@ namespace RenderDriver
 
             mNativeDevice = (__bridge id<MTLDevice>)device.getNativeDevice();
 
-            MTLPixelFormat pixelFormat = SerializeUtils::Metal::convert(desc.mFormat);
+            MTLPixelFormat pixelFormat = RenderDriver::Metal::Utils::convert(desc.mFormat);
             
             MTLTextureDescriptor* textureDescriptor = [
                 MTLTextureDescriptor

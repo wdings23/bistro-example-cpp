@@ -1,7 +1,7 @@
 #pragma once
 
-#include <RenderDriver/Fence.h>
-#include <RenderDriver/Metal/CommandQueueMetal.h>
+#include <render-driver/Fence.h>
+#include <render-driver/Metal/CommandQueueMetal.h>
 
 namespace RenderDriver
 {

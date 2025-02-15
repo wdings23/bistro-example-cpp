@@ -28,6 +28,71 @@
 		25DECEBF2D61373400ED56EE /* RenderJob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEB92D61373400ED56EE /* RenderJob.cpp */; };
 		25DECEC02D61373400ED56EE /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEB42D61373400ED56EE /* Camera.cpp */; };
 		25DECEC12D61373400ED56EE /* RendererDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEAC2D61373400ED56EE /* RendererDX12.cpp */; };
+		25DECEC72D614A7700ED56EE /* RendererMetal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEC62D614A7700ED56EE /* RendererMetal.mm */; };
+		25DECECA2D614BBA00ED56EE /* RenderJobMetal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEC92D614BBA00ED56EE /* RenderJobMetal.mm */; };
+		25DECF512D61532E00ED56EE /* Device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF3A2D61532E00ED56EE /* Device.cpp */; };
+		25DECF522D61532E00ED56EE /* RenderTargetMetal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEFF2D61532E00ED56EE /* RenderTargetMetal.mm */; };
+		25DECF532D61532E00ED56EE /* DescriptorHeapVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF112D61532E00ED56EE /* DescriptorHeapVulkan.cpp */; };
+		25DECF542D61532E00ED56EE /* DescriptorHeapDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECED62D61532E00ED56EE /* DescriptorHeapDX12.cpp */; };
+		25DECF552D61532E00ED56EE /* CommandAllocatorDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECED02D61532E00ED56EE /* CommandAllocatorDX12.cpp */; };
+		25DECF562D61532E00ED56EE /* DeviceMetal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEF72D61532E00ED56EE /* DeviceMetal.mm */; };
+		25DECF572D61532E00ED56EE /* Fence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF3C2D61532E00ED56EE /* Fence.cpp */; };
+		25DECF582D61532E00ED56EE /* BufferView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF2E2D61532E00ED56EE /* BufferView.cpp */; };
+		25DECF592D61532E00ED56EE /* BufferViewVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF072D61532E00ED56EE /* BufferViewVulkan.cpp */; };
+		25DECF5A2D61532E00ED56EE /* DescriptorSetVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF132D61532E00ED56EE /* DescriptorSetVulkan.cpp */; };
+		25DECF5B2D61532E00ED56EE /* FenceDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEDC2D61532E00ED56EE /* FenceDX12.cpp */; };
+		25DECF5C2D61532E00ED56EE /* SwapChainDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEE82D61532E00ED56EE /* SwapChainDX12.cpp */; };
+		25DECF5D2D61532E00ED56EE /* CommandBufferDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECED22D61532E00ED56EE /* CommandBufferDX12.cpp */; };
+		25DECF5E2D61532E00ED56EE /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF2C2D61532E00ED56EE /* Buffer.cpp */; };
+		25DECF5F2D61532E00ED56EE /* FrameBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF3F2D61532E00ED56EE /* FrameBuffer.cpp */; };
+		25DECF602D61532E00ED56EE /* PhysicalDevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF462D61532E00ED56EE /* PhysicalDevice.cpp */; };
+		25DECF612D61532E00ED56EE /* CommandQueue.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF342D61532E00ED56EE /* CommandQueue.cpp */; };
+		25DECF622D61532E00ED56EE /* CommandAllocatorMetal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEEF2D61532E00ED56EE /* CommandAllocatorMetal.mm */; };
+		25DECF632D61532E00ED56EE /* CommandBufferMetal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEF12D61532E00ED56EE /* CommandBufferMetal.mm */; };
+		25DECF642D61532E00ED56EE /* PhyiscalDeviceVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF1E2D61532E00ED56EE /* PhyiscalDeviceVulkan.cpp */; };
+		25DECF652D61532E00ED56EE /* PipelineStateDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEE42D61532E00ED56EE /* PipelineStateDX12.cpp */; };
+		25DECF662D61532E00ED56EE /* SwapChainMetal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF012D61532E00ED56EE /* SwapChainMetal.mm */; };
+		25DECF672D61532E00ED56EE /* AccelerationStructureVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF052D61532E00ED56EE /* AccelerationStructureVulkan.cpp */; };
+		25DECF682D61532E00ED56EE /* ImageDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEDE2D61532E00ED56EE /* ImageDX12.cpp */; };
+		25DECF692D61532E00ED56EE /* DescriptorSetMetal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEF52D61532E00ED56EE /* DescriptorSetMetal.mm */; };
+		25DECF6A2D61532E00ED56EE /* CommandAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF302D61532E00ED56EE /* CommandAllocator.cpp */; };
+		25DECF6B2D61532E00ED56EE /* ImageView.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF432D61532E00ED56EE /* ImageView.cpp */; };
+		25DECF6C2D61532E00ED56EE /* UtilsDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEEA2D61532E00ED56EE /* UtilsDX12.cpp */; };
+		25DECF6D2D61532E00ED56EE /* RenderTargetVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF232D61532E00ED56EE /* RenderTargetVulkan.cpp */; };
+		25DECF6E2D61532E00ED56EE /* PipelineStateMetal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEFD2D61532E00ED56EE /* PipelineStateMetal.mm */; };
+		25DECF6F2D61532E00ED56EE /* FenceVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF172D61532E00ED56EE /* FenceVulkan.cpp */; };
+		25DECF702D61532E00ED56EE /* CommandAllocatorVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF0B2D61532E00ED56EE /* CommandAllocatorVulkan.cpp */; };
+		25DECF712D61532E00ED56EE /* BufferDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECECC2D61532E00ED56EE /* BufferDX12.cpp */; };
+		25DECF722D61532E00ED56EE /* CommandBuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF322D61532E00ED56EE /* CommandBuffer.cpp */; };
+		25DECF732D61532E00ED56EE /* AccelerationStructure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF2A2D61532E00ED56EE /* AccelerationStructure.cpp */; };
+		25DECF742D61532E00ED56EE /* FrameBufferVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF192D61532E00ED56EE /* FrameBufferVulkan.cpp */; };
+		25DECF752D61532E00ED56EE /* RenderTarget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF4C2D61532E00ED56EE /* RenderTarget.cpp */; };
+		25DECF762D61532E00ED56EE /* CommandBufferVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF0D2D61532E00ED56EE /* CommandBufferVulkan.cpp */; };
+		25DECF772D61532E00ED56EE /* DescriptorSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF382D61532E00ED56EE /* DescriptorSet.cpp */; };
+		25DECF782D61532E00ED56EE /* DescriptorHeap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF362D61532E00ED56EE /* DescriptorHeap.cpp */; };
+		25DECF792D61532E00ED56EE /* PipelineState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF492D61532E00ED56EE /* PipelineState.cpp */; };
+		25DECF7A2D61532E00ED56EE /* SwapChain.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF4E2D61532E00ED56EE /* SwapChain.cpp */; };
+		25DECF7B2D61532E00ED56EE /* ImageViewDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEE02D61532E00ED56EE /* ImageViewDX12.cpp */; };
+		25DECF7C2D61532E00ED56EE /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF412D61532E00ED56EE /* Image.cpp */; };
+		25DECF7D2D61532E00ED56EE /* BufferMetal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEED2D61532E00ED56EE /* BufferMetal.mm */; };
+		25DECF7E2D61532E00ED56EE /* UtilsVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF272D61532E00ED56EE /* UtilsVulkan.cpp */; };
+		25DECF7F2D61532E00ED56EE /* SwapChainVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF252D61532E00ED56EE /* SwapChainVulkan.cpp */; };
+		25DECF802D61532E00ED56EE /* CommandQueueMetal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEF32D61532E00ED56EE /* CommandQueueMetal.mm */; };
+		25DECF812D61532E00ED56EE /* DeviceDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEDA2D61532E00ED56EE /* DeviceDX12.cpp */; };
+		25DECF822D61532E00ED56EE /* DeviceVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF152D61532E00ED56EE /* DeviceVulkan.cpp */; };
+		25DECF832D61532E00ED56EE /* ImageVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF1D2D61532E00ED56EE /* ImageVulkan.cpp */; };
+		25DECF842D61532E00ED56EE /* BufferVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF092D61532E00ED56EE /* BufferVulkan.cpp */; };
+		25DECF852D61532E00ED56EE /* BufferViewDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECECE2D61532E00ED56EE /* BufferViewDX12.cpp */; };
+		25DECF862D61532E00ED56EE /* DescriptorSetDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECED82D61532E00ED56EE /* DescriptorSetDX12.cpp */; };
+		25DECF872D61532E00ED56EE /* PipelineStateVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF212D61532E00ED56EE /* PipelineStateVulkan.cpp */; };
+		25DECF882D61532E00ED56EE /* CommandQueueVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF0F2D61532E00ED56EE /* CommandQueueVulkan.cpp */; };
+		25DECF892D61532E00ED56EE /* PhysicalDeviceDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEE22D61532E00ED56EE /* PhysicalDeviceDX12.cpp */; };
+		25DECF8A2D61532E00ED56EE /* FenceMetal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEF92D61532E00ED56EE /* FenceMetal.mm */; };
+		25DECF8B2D61532E00ED56EE /* ImageMetal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEFB2D61532E00ED56EE /* ImageMetal.mm */; };
+		25DECF8C2D61532E00ED56EE /* RenderTargetDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECEE62D61532E00ED56EE /* RenderTargetDX12.cpp */; };
+		25DECF8D2D61532E00ED56EE /* CommandQueueDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECED42D61532E00ED56EE /* CommandQueueDX12.cpp */; };
+		25DECF8E2D61532E00ED56EE /* ImageViewVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF1B2D61532E00ED56EE /* ImageViewVulkan.cpp */; };
+		25DECF902D6155AD00ED56EE /* UtilsMetal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF8F2D6155AD00ED56EE /* UtilsMetal.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -75,6 +140,141 @@
 		25DECEB82D61373400ED56EE /* RenderJob.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderJob.h; sourceTree = "<group>"; };
 		25DECEB92D61373400ED56EE /* RenderJob.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RenderJob.cpp; sourceTree = "<group>"; };
 		25DECEBA2D61373400ED56EE /* VertexFormat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VertexFormat.h; sourceTree = "<group>"; };
+		25DECEC52D6144E700ED56EE /* RendererMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RendererMetal.h; sourceTree = "<group>"; };
+		25DECEC62D614A7700ED56EE /* RendererMetal.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RendererMetal.mm; sourceTree = "<group>"; };
+		25DECEC82D614BBA00ED56EE /* RenderJobMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderJobMetal.h; sourceTree = "<group>"; };
+		25DECEC92D614BBA00ED56EE /* RenderJobMetal.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RenderJobMetal.mm; sourceTree = "<group>"; };
+		25DECECB2D61532E00ED56EE /* BufferDX12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BufferDX12.h; sourceTree = "<group>"; };
+		25DECECC2D61532E00ED56EE /* BufferDX12.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BufferDX12.cpp; sourceTree = "<group>"; };
+		25DECECD2D61532E00ED56EE /* BufferViewDX12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BufferViewDX12.h; sourceTree = "<group>"; };
+		25DECECE2D61532E00ED56EE /* BufferViewDX12.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BufferViewDX12.cpp; sourceTree = "<group>"; };
+		25DECECF2D61532E00ED56EE /* CommandAllocatorDX12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommandAllocatorDX12.h; sourceTree = "<group>"; };
+		25DECED02D61532E00ED56EE /* CommandAllocatorDX12.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CommandAllocatorDX12.cpp; sourceTree = "<group>"; };
+		25DECED12D61532E00ED56EE /* CommandBufferDX12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommandBufferDX12.h; sourceTree = "<group>"; };
+		25DECED22D61532E00ED56EE /* CommandBufferDX12.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CommandBufferDX12.cpp; sourceTree = "<group>"; };
+		25DECED32D61532E00ED56EE /* CommandQueueDX12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommandQueueDX12.h; sourceTree = "<group>"; };
+		25DECED42D61532E00ED56EE /* CommandQueueDX12.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CommandQueueDX12.cpp; sourceTree = "<group>"; };
+		25DECED52D61532E00ED56EE /* DescriptorHeapDX12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DescriptorHeapDX12.h; sourceTree = "<group>"; };
+		25DECED62D61532E00ED56EE /* DescriptorHeapDX12.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DescriptorHeapDX12.cpp; sourceTree = "<group>"; };
+		25DECED72D61532E00ED56EE /* DescriptorSetDX12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DescriptorSetDX12.h; sourceTree = "<group>"; };
+		25DECED82D61532E00ED56EE /* DescriptorSetDX12.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DescriptorSetDX12.cpp; sourceTree = "<group>"; };
+		25DECED92D61532E00ED56EE /* DeviceDX12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceDX12.h; sourceTree = "<group>"; };
+		25DECEDA2D61532E00ED56EE /* DeviceDX12.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceDX12.cpp; sourceTree = "<group>"; };
+		25DECEDB2D61532E00ED56EE /* FenceDX12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FenceDX12.h; sourceTree = "<group>"; };
+		25DECEDC2D61532E00ED56EE /* FenceDX12.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FenceDX12.cpp; sourceTree = "<group>"; };
+		25DECEDD2D61532E00ED56EE /* ImageDX12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageDX12.h; sourceTree = "<group>"; };
+		25DECEDE2D61532E00ED56EE /* ImageDX12.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImageDX12.cpp; sourceTree = "<group>"; };
+		25DECEDF2D61532E00ED56EE /* ImageViewDX12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageViewDX12.h; sourceTree = "<group>"; };
+		25DECEE02D61532E00ED56EE /* ImageViewDX12.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImageViewDX12.cpp; sourceTree = "<group>"; };
+		25DECEE12D61532E00ED56EE /* PhysicalDeviceDX12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhysicalDeviceDX12.h; sourceTree = "<group>"; };
+		25DECEE22D61532E00ED56EE /* PhysicalDeviceDX12.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PhysicalDeviceDX12.cpp; sourceTree = "<group>"; };
+		25DECEE32D61532E00ED56EE /* PipelineStateDX12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PipelineStateDX12.h; sourceTree = "<group>"; };
+		25DECEE42D61532E00ED56EE /* PipelineStateDX12.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PipelineStateDX12.cpp; sourceTree = "<group>"; };
+		25DECEE52D61532E00ED56EE /* RenderTargetDX12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderTargetDX12.h; sourceTree = "<group>"; };
+		25DECEE62D61532E00ED56EE /* RenderTargetDX12.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RenderTargetDX12.cpp; sourceTree = "<group>"; };
+		25DECEE72D61532E00ED56EE /* SwapChainDX12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwapChainDX12.h; sourceTree = "<group>"; };
+		25DECEE82D61532E00ED56EE /* SwapChainDX12.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SwapChainDX12.cpp; sourceTree = "<group>"; };
+		25DECEE92D61532E00ED56EE /* UtilsDX12.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UtilsDX12.h; sourceTree = "<group>"; };
+		25DECEEA2D61532E00ED56EE /* UtilsDX12.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UtilsDX12.cpp; sourceTree = "<group>"; };
+		25DECEEC2D61532E00ED56EE /* BufferMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BufferMetal.h; sourceTree = "<group>"; };
+		25DECEED2D61532E00ED56EE /* BufferMetal.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = BufferMetal.mm; sourceTree = "<group>"; };
+		25DECEEE2D61532E00ED56EE /* CommandAllocatorMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommandAllocatorMetal.h; sourceTree = "<group>"; };
+		25DECEEF2D61532E00ED56EE /* CommandAllocatorMetal.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CommandAllocatorMetal.mm; sourceTree = "<group>"; };
+		25DECEF02D61532E00ED56EE /* CommandBufferMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommandBufferMetal.h; sourceTree = "<group>"; };
+		25DECEF12D61532E00ED56EE /* CommandBufferMetal.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CommandBufferMetal.mm; sourceTree = "<group>"; };
+		25DECEF22D61532E00ED56EE /* CommandQueueMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommandQueueMetal.h; sourceTree = "<group>"; };
+		25DECEF32D61532E00ED56EE /* CommandQueueMetal.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = CommandQueueMetal.mm; sourceTree = "<group>"; };
+		25DECEF42D61532E00ED56EE /* DescriptorSetMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DescriptorSetMetal.h; sourceTree = "<group>"; };
+		25DECEF52D61532E00ED56EE /* DescriptorSetMetal.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = DescriptorSetMetal.mm; sourceTree = "<group>"; };
+		25DECEF62D61532E00ED56EE /* DeviceMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceMetal.h; sourceTree = "<group>"; };
+		25DECEF72D61532E00ED56EE /* DeviceMetal.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = DeviceMetal.mm; sourceTree = "<group>"; };
+		25DECEF82D61532E00ED56EE /* FenceMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FenceMetal.h; sourceTree = "<group>"; };
+		25DECEF92D61532E00ED56EE /* FenceMetal.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = FenceMetal.mm; sourceTree = "<group>"; };
+		25DECEFA2D61532E00ED56EE /* ImageMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageMetal.h; sourceTree = "<group>"; };
+		25DECEFB2D61532E00ED56EE /* ImageMetal.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = ImageMetal.mm; sourceTree = "<group>"; };
+		25DECEFC2D61532E00ED56EE /* PipelineStateMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PipelineStateMetal.h; sourceTree = "<group>"; };
+		25DECEFD2D61532E00ED56EE /* PipelineStateMetal.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = PipelineStateMetal.mm; sourceTree = "<group>"; };
+		25DECEFE2D61532E00ED56EE /* RenderTargetMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderTargetMetal.h; sourceTree = "<group>"; };
+		25DECEFF2D61532E00ED56EE /* RenderTargetMetal.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = RenderTargetMetal.mm; sourceTree = "<group>"; };
+		25DECF002D61532E00ED56EE /* SwapChainMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwapChainMetal.h; sourceTree = "<group>"; };
+		25DECF012D61532E00ED56EE /* SwapChainMetal.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = SwapChainMetal.mm; sourceTree = "<group>"; };
+		25DECF022D61532E00ED56EE /* UtilsMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UtilsMetal.h; sourceTree = "<group>"; };
+		25DECF042D61532E00ED56EE /* AccelerationStructureVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AccelerationStructureVulkan.h; sourceTree = "<group>"; };
+		25DECF052D61532E00ED56EE /* AccelerationStructureVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AccelerationStructureVulkan.cpp; sourceTree = "<group>"; };
+		25DECF062D61532E00ED56EE /* BufferViewVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BufferViewVulkan.h; sourceTree = "<group>"; };
+		25DECF072D61532E00ED56EE /* BufferViewVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BufferViewVulkan.cpp; sourceTree = "<group>"; };
+		25DECF082D61532E00ED56EE /* BufferVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BufferVulkan.h; sourceTree = "<group>"; };
+		25DECF092D61532E00ED56EE /* BufferVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BufferVulkan.cpp; sourceTree = "<group>"; };
+		25DECF0A2D61532E00ED56EE /* CommandAllocatorVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommandAllocatorVulkan.h; sourceTree = "<group>"; };
+		25DECF0B2D61532E00ED56EE /* CommandAllocatorVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CommandAllocatorVulkan.cpp; sourceTree = "<group>"; };
+		25DECF0C2D61532E00ED56EE /* CommandBufferVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommandBufferVulkan.h; sourceTree = "<group>"; };
+		25DECF0D2D61532E00ED56EE /* CommandBufferVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CommandBufferVulkan.cpp; sourceTree = "<group>"; };
+		25DECF0E2D61532E00ED56EE /* CommandQueueVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommandQueueVulkan.h; sourceTree = "<group>"; };
+		25DECF0F2D61532E00ED56EE /* CommandQueueVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CommandQueueVulkan.cpp; sourceTree = "<group>"; };
+		25DECF102D61532E00ED56EE /* DescriptorHeapVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DescriptorHeapVulkan.h; sourceTree = "<group>"; };
+		25DECF112D61532E00ED56EE /* DescriptorHeapVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DescriptorHeapVulkan.cpp; sourceTree = "<group>"; };
+		25DECF122D61532E00ED56EE /* DescriptorSetVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DescriptorSetVulkan.h; sourceTree = "<group>"; };
+		25DECF132D61532E00ED56EE /* DescriptorSetVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DescriptorSetVulkan.cpp; sourceTree = "<group>"; };
+		25DECF142D61532E00ED56EE /* DeviceVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceVulkan.h; sourceTree = "<group>"; };
+		25DECF152D61532E00ED56EE /* DeviceVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DeviceVulkan.cpp; sourceTree = "<group>"; };
+		25DECF162D61532E00ED56EE /* FenceVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FenceVulkan.h; sourceTree = "<group>"; };
+		25DECF172D61532E00ED56EE /* FenceVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FenceVulkan.cpp; sourceTree = "<group>"; };
+		25DECF182D61532E00ED56EE /* FrameBufferVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FrameBufferVulkan.h; sourceTree = "<group>"; };
+		25DECF192D61532E00ED56EE /* FrameBufferVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FrameBufferVulkan.cpp; sourceTree = "<group>"; };
+		25DECF1A2D61532E00ED56EE /* ImageViewVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageViewVulkan.h; sourceTree = "<group>"; };
+		25DECF1B2D61532E00ED56EE /* ImageViewVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImageViewVulkan.cpp; sourceTree = "<group>"; };
+		25DECF1C2D61532E00ED56EE /* ImageVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageVulkan.h; sourceTree = "<group>"; };
+		25DECF1D2D61532E00ED56EE /* ImageVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImageVulkan.cpp; sourceTree = "<group>"; };
+		25DECF1E2D61532E00ED56EE /* PhyiscalDeviceVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PhyiscalDeviceVulkan.cpp; sourceTree = "<group>"; };
+		25DECF1F2D61532E00ED56EE /* PhysicalDeviceVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhysicalDeviceVulkan.h; sourceTree = "<group>"; };
+		25DECF202D61532E00ED56EE /* PipelineStateVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PipelineStateVulkan.h; sourceTree = "<group>"; };
+		25DECF212D61532E00ED56EE /* PipelineStateVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PipelineStateVulkan.cpp; sourceTree = "<group>"; };
+		25DECF222D61532E00ED56EE /* RenderTargetVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderTargetVulkan.h; sourceTree = "<group>"; };
+		25DECF232D61532E00ED56EE /* RenderTargetVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RenderTargetVulkan.cpp; sourceTree = "<group>"; };
+		25DECF242D61532E00ED56EE /* SwapChainVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwapChainVulkan.h; sourceTree = "<group>"; };
+		25DECF252D61532E00ED56EE /* SwapChainVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SwapChainVulkan.cpp; sourceTree = "<group>"; };
+		25DECF262D61532E00ED56EE /* UtilsVulkan.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = UtilsVulkan.h; sourceTree = "<group>"; };
+		25DECF272D61532E00ED56EE /* UtilsVulkan.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UtilsVulkan.cpp; sourceTree = "<group>"; };
+		25DECF292D61532E00ED56EE /* AccelerationStructure.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AccelerationStructure.h; sourceTree = "<group>"; };
+		25DECF2A2D61532E00ED56EE /* AccelerationStructure.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AccelerationStructure.cpp; sourceTree = "<group>"; };
+		25DECF2B2D61532E00ED56EE /* Buffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
+		25DECF2C2D61532E00ED56EE /* Buffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Buffer.cpp; sourceTree = "<group>"; };
+		25DECF2D2D61532E00ED56EE /* BufferView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BufferView.h; sourceTree = "<group>"; };
+		25DECF2E2D61532E00ED56EE /* BufferView.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = BufferView.cpp; sourceTree = "<group>"; };
+		25DECF2F2D61532E00ED56EE /* CommandAllocator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommandAllocator.h; sourceTree = "<group>"; };
+		25DECF302D61532E00ED56EE /* CommandAllocator.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CommandAllocator.cpp; sourceTree = "<group>"; };
+		25DECF312D61532E00ED56EE /* CommandBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommandBuffer.h; sourceTree = "<group>"; };
+		25DECF322D61532E00ED56EE /* CommandBuffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CommandBuffer.cpp; sourceTree = "<group>"; };
+		25DECF332D61532E00ED56EE /* CommandQueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommandQueue.h; sourceTree = "<group>"; };
+		25DECF342D61532E00ED56EE /* CommandQueue.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = CommandQueue.cpp; sourceTree = "<group>"; };
+		25DECF352D61532E00ED56EE /* DescriptorHeap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DescriptorHeap.h; sourceTree = "<group>"; };
+		25DECF362D61532E00ED56EE /* DescriptorHeap.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DescriptorHeap.cpp; sourceTree = "<group>"; };
+		25DECF372D61532E00ED56EE /* DescriptorSet.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DescriptorSet.h; sourceTree = "<group>"; };
+		25DECF382D61532E00ED56EE /* DescriptorSet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = DescriptorSet.cpp; sourceTree = "<group>"; };
+		25DECF392D61532E00ED56EE /* Device.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Device.h; sourceTree = "<group>"; };
+		25DECF3A2D61532E00ED56EE /* Device.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Device.cpp; sourceTree = "<group>"; };
+		25DECF3B2D61532E00ED56EE /* Fence.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Fence.h; sourceTree = "<group>"; };
+		25DECF3C2D61532E00ED56EE /* Fence.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Fence.cpp; sourceTree = "<group>"; };
+		25DECF3D2D61532E00ED56EE /* Format.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Format.h; sourceTree = "<group>"; };
+		25DECF3E2D61532E00ED56EE /* FrameBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FrameBuffer.h; sourceTree = "<group>"; };
+		25DECF3F2D61532E00ED56EE /* FrameBuffer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = FrameBuffer.cpp; sourceTree = "<group>"; };
+		25DECF402D61532E00ED56EE /* Image.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Image.h; sourceTree = "<group>"; };
+		25DECF412D61532E00ED56EE /* Image.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = Image.cpp; sourceTree = "<group>"; };
+		25DECF422D61532E00ED56EE /* ImageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageView.h; sourceTree = "<group>"; };
+		25DECF432D61532E00ED56EE /* ImageView.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImageView.cpp; sourceTree = "<group>"; };
+		25DECF442D61532E00ED56EE /* Object.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Object.h; sourceTree = "<group>"; };
+		25DECF452D61532E00ED56EE /* PhysicalDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PhysicalDevice.h; sourceTree = "<group>"; };
+		25DECF462D61532E00ED56EE /* PhysicalDevice.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PhysicalDevice.cpp; sourceTree = "<group>"; };
+		25DECF472D61532E00ED56EE /* PipelineInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PipelineInfo.h; sourceTree = "<group>"; };
+		25DECF482D61532E00ED56EE /* PipelineState.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PipelineState.h; sourceTree = "<group>"; };
+		25DECF492D61532E00ED56EE /* PipelineState.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PipelineState.cpp; sourceTree = "<group>"; };
+		25DECF4A2D61532E00ED56EE /* RayTrace.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RayTrace.h; sourceTree = "<group>"; };
+		25DECF4B2D61532E00ED56EE /* RenderTarget.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RenderTarget.h; sourceTree = "<group>"; };
+		25DECF4C2D61532E00ED56EE /* RenderTarget.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RenderTarget.cpp; sourceTree = "<group>"; };
+		25DECF4D2D61532E00ED56EE /* SwapChain.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SwapChain.h; sourceTree = "<group>"; };
+		25DECF4E2D61532E00ED56EE /* SwapChain.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SwapChain.cpp; sourceTree = "<group>"; };
+		25DECF4F2D61532E00ED56EE /* Utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
+		25DECF8F2D6155AD00ED56EE /* UtilsMetal.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = UtilsMetal.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +303,7 @@
 				25DECE992D60606200ED56EE /* utils */,
 				25DECEA72D6063D700ED56EE /* math */,
 				25DECEBB2D61373400ED56EE /* render */,
+				25DECF502D61532E00ED56EE /* render-driver */,
 			);
 			sourceTree = "<group>";
 		};
@@ -174,6 +375,7 @@
 		25DECEBB2D61373400ED56EE /* render */ = {
 			isa = PBXGroup;
 			children = (
+				25DECEC32D61439700ED56EE /* Metal */,
 				25DECEAD2D61373400ED56EE /* DX12 */,
 				25DECEB22D61373400ED56EE /* Vulkan */,
 				25DECEB32D61373400ED56EE /* Camera.h */,
@@ -187,6 +389,180 @@
 			);
 			name = render;
 			path = "/Users/dingwings/projects/bistro-example-cpp/render";
+			sourceTree = "<absolute>";
+		};
+		25DECEC32D61439700ED56EE /* Metal */ = {
+			isa = PBXGroup;
+			children = (
+				25DECEC82D614BBA00ED56EE /* RenderJobMetal.h */,
+				25DECEC92D614BBA00ED56EE /* RenderJobMetal.mm */,
+				25DECEC62D614A7700ED56EE /* RendererMetal.mm */,
+				25DECEC52D6144E700ED56EE /* RendererMetal.h */,
+			);
+			path = Metal;
+			sourceTree = "<group>";
+		};
+		25DECEEB2D61532E00ED56EE /* DX12 */ = {
+			isa = PBXGroup;
+			children = (
+				25DECECB2D61532E00ED56EE /* BufferDX12.h */,
+				25DECECC2D61532E00ED56EE /* BufferDX12.cpp */,
+				25DECECD2D61532E00ED56EE /* BufferViewDX12.h */,
+				25DECECE2D61532E00ED56EE /* BufferViewDX12.cpp */,
+				25DECECF2D61532E00ED56EE /* CommandAllocatorDX12.h */,
+				25DECED02D61532E00ED56EE /* CommandAllocatorDX12.cpp */,
+				25DECED12D61532E00ED56EE /* CommandBufferDX12.h */,
+				25DECED22D61532E00ED56EE /* CommandBufferDX12.cpp */,
+				25DECED32D61532E00ED56EE /* CommandQueueDX12.h */,
+				25DECED42D61532E00ED56EE /* CommandQueueDX12.cpp */,
+				25DECED52D61532E00ED56EE /* DescriptorHeapDX12.h */,
+				25DECED62D61532E00ED56EE /* DescriptorHeapDX12.cpp */,
+				25DECED72D61532E00ED56EE /* DescriptorSetDX12.h */,
+				25DECED82D61532E00ED56EE /* DescriptorSetDX12.cpp */,
+				25DECED92D61532E00ED56EE /* DeviceDX12.h */,
+				25DECEDA2D61532E00ED56EE /* DeviceDX12.cpp */,
+				25DECEDB2D61532E00ED56EE /* FenceDX12.h */,
+				25DECEDC2D61532E00ED56EE /* FenceDX12.cpp */,
+				25DECEDD2D61532E00ED56EE /* ImageDX12.h */,
+				25DECEDE2D61532E00ED56EE /* ImageDX12.cpp */,
+				25DECEDF2D61532E00ED56EE /* ImageViewDX12.h */,
+				25DECEE02D61532E00ED56EE /* ImageViewDX12.cpp */,
+				25DECEE12D61532E00ED56EE /* PhysicalDeviceDX12.h */,
+				25DECEE22D61532E00ED56EE /* PhysicalDeviceDX12.cpp */,
+				25DECEE32D61532E00ED56EE /* PipelineStateDX12.h */,
+				25DECEE42D61532E00ED56EE /* PipelineStateDX12.cpp */,
+				25DECEE52D61532E00ED56EE /* RenderTargetDX12.h */,
+				25DECEE62D61532E00ED56EE /* RenderTargetDX12.cpp */,
+				25DECEE72D61532E00ED56EE /* SwapChainDX12.h */,
+				25DECEE82D61532E00ED56EE /* SwapChainDX12.cpp */,
+				25DECEE92D61532E00ED56EE /* UtilsDX12.h */,
+				25DECEEA2D61532E00ED56EE /* UtilsDX12.cpp */,
+			);
+			path = DX12;
+			sourceTree = "<group>";
+		};
+		25DECF032D61532E00ED56EE /* Metal */ = {
+			isa = PBXGroup;
+			children = (
+				25DECEEC2D61532E00ED56EE /* BufferMetal.h */,
+				25DECEED2D61532E00ED56EE /* BufferMetal.mm */,
+				25DECEEE2D61532E00ED56EE /* CommandAllocatorMetal.h */,
+				25DECEEF2D61532E00ED56EE /* CommandAllocatorMetal.mm */,
+				25DECEF02D61532E00ED56EE /* CommandBufferMetal.h */,
+				25DECEF12D61532E00ED56EE /* CommandBufferMetal.mm */,
+				25DECEF22D61532E00ED56EE /* CommandQueueMetal.h */,
+				25DECEF32D61532E00ED56EE /* CommandQueueMetal.mm */,
+				25DECEF42D61532E00ED56EE /* DescriptorSetMetal.h */,
+				25DECEF52D61532E00ED56EE /* DescriptorSetMetal.mm */,
+				25DECEF62D61532E00ED56EE /* DeviceMetal.h */,
+				25DECEF72D61532E00ED56EE /* DeviceMetal.mm */,
+				25DECEF82D61532E00ED56EE /* FenceMetal.h */,
+				25DECEF92D61532E00ED56EE /* FenceMetal.mm */,
+				25DECEFA2D61532E00ED56EE /* ImageMetal.h */,
+				25DECEFB2D61532E00ED56EE /* ImageMetal.mm */,
+				25DECEFC2D61532E00ED56EE /* PipelineStateMetal.h */,
+				25DECEFD2D61532E00ED56EE /* PipelineStateMetal.mm */,
+				25DECEFE2D61532E00ED56EE /* RenderTargetMetal.h */,
+				25DECEFF2D61532E00ED56EE /* RenderTargetMetal.mm */,
+				25DECF002D61532E00ED56EE /* SwapChainMetal.h */,
+				25DECF012D61532E00ED56EE /* SwapChainMetal.mm */,
+				25DECF022D61532E00ED56EE /* UtilsMetal.h */,
+				25DECF8F2D6155AD00ED56EE /* UtilsMetal.mm */,
+			);
+			path = Metal;
+			sourceTree = "<group>";
+		};
+		25DECF282D61532E00ED56EE /* Vulkan */ = {
+			isa = PBXGroup;
+			children = (
+				25DECF042D61532E00ED56EE /* AccelerationStructureVulkan.h */,
+				25DECF052D61532E00ED56EE /* AccelerationStructureVulkan.cpp */,
+				25DECF062D61532E00ED56EE /* BufferViewVulkan.h */,
+				25DECF072D61532E00ED56EE /* BufferViewVulkan.cpp */,
+				25DECF082D61532E00ED56EE /* BufferVulkan.h */,
+				25DECF092D61532E00ED56EE /* BufferVulkan.cpp */,
+				25DECF0A2D61532E00ED56EE /* CommandAllocatorVulkan.h */,
+				25DECF0B2D61532E00ED56EE /* CommandAllocatorVulkan.cpp */,
+				25DECF0C2D61532E00ED56EE /* CommandBufferVulkan.h */,
+				25DECF0D2D61532E00ED56EE /* CommandBufferVulkan.cpp */,
+				25DECF0E2D61532E00ED56EE /* CommandQueueVulkan.h */,
+				25DECF0F2D61532E00ED56EE /* CommandQueueVulkan.cpp */,
+				25DECF102D61532E00ED56EE /* DescriptorHeapVulkan.h */,
+				25DECF112D61532E00ED56EE /* DescriptorHeapVulkan.cpp */,
+				25DECF122D61532E00ED56EE /* DescriptorSetVulkan.h */,
+				25DECF132D61532E00ED56EE /* DescriptorSetVulkan.cpp */,
+				25DECF142D61532E00ED56EE /* DeviceVulkan.h */,
+				25DECF152D61532E00ED56EE /* DeviceVulkan.cpp */,
+				25DECF162D61532E00ED56EE /* FenceVulkan.h */,
+				25DECF172D61532E00ED56EE /* FenceVulkan.cpp */,
+				25DECF182D61532E00ED56EE /* FrameBufferVulkan.h */,
+				25DECF192D61532E00ED56EE /* FrameBufferVulkan.cpp */,
+				25DECF1A2D61532E00ED56EE /* ImageViewVulkan.h */,
+				25DECF1B2D61532E00ED56EE /* ImageViewVulkan.cpp */,
+				25DECF1C2D61532E00ED56EE /* ImageVulkan.h */,
+				25DECF1D2D61532E00ED56EE /* ImageVulkan.cpp */,
+				25DECF1E2D61532E00ED56EE /* PhyiscalDeviceVulkan.cpp */,
+				25DECF1F2D61532E00ED56EE /* PhysicalDeviceVulkan.h */,
+				25DECF202D61532E00ED56EE /* PipelineStateVulkan.h */,
+				25DECF212D61532E00ED56EE /* PipelineStateVulkan.cpp */,
+				25DECF222D61532E00ED56EE /* RenderTargetVulkan.h */,
+				25DECF232D61532E00ED56EE /* RenderTargetVulkan.cpp */,
+				25DECF242D61532E00ED56EE /* SwapChainVulkan.h */,
+				25DECF252D61532E00ED56EE /* SwapChainVulkan.cpp */,
+				25DECF262D61532E00ED56EE /* UtilsVulkan.h */,
+				25DECF272D61532E00ED56EE /* UtilsVulkan.cpp */,
+			);
+			path = Vulkan;
+			sourceTree = "<group>";
+		};
+		25DECF502D61532E00ED56EE /* render-driver */ = {
+			isa = PBXGroup;
+			children = (
+				25DECEEB2D61532E00ED56EE /* DX12 */,
+				25DECF032D61532E00ED56EE /* Metal */,
+				25DECF282D61532E00ED56EE /* Vulkan */,
+				25DECF292D61532E00ED56EE /* AccelerationStructure.h */,
+				25DECF2A2D61532E00ED56EE /* AccelerationStructure.cpp */,
+				25DECF2B2D61532E00ED56EE /* Buffer.h */,
+				25DECF2C2D61532E00ED56EE /* Buffer.cpp */,
+				25DECF2D2D61532E00ED56EE /* BufferView.h */,
+				25DECF2E2D61532E00ED56EE /* BufferView.cpp */,
+				25DECF2F2D61532E00ED56EE /* CommandAllocator.h */,
+				25DECF302D61532E00ED56EE /* CommandAllocator.cpp */,
+				25DECF312D61532E00ED56EE /* CommandBuffer.h */,
+				25DECF322D61532E00ED56EE /* CommandBuffer.cpp */,
+				25DECF332D61532E00ED56EE /* CommandQueue.h */,
+				25DECF342D61532E00ED56EE /* CommandQueue.cpp */,
+				25DECF352D61532E00ED56EE /* DescriptorHeap.h */,
+				25DECF362D61532E00ED56EE /* DescriptorHeap.cpp */,
+				25DECF372D61532E00ED56EE /* DescriptorSet.h */,
+				25DECF382D61532E00ED56EE /* DescriptorSet.cpp */,
+				25DECF392D61532E00ED56EE /* Device.h */,
+				25DECF3A2D61532E00ED56EE /* Device.cpp */,
+				25DECF3B2D61532E00ED56EE /* Fence.h */,
+				25DECF3C2D61532E00ED56EE /* Fence.cpp */,
+				25DECF3D2D61532E00ED56EE /* Format.h */,
+				25DECF3E2D61532E00ED56EE /* FrameBuffer.h */,
+				25DECF3F2D61532E00ED56EE /* FrameBuffer.cpp */,
+				25DECF402D61532E00ED56EE /* Image.h */,
+				25DECF412D61532E00ED56EE /* Image.cpp */,
+				25DECF422D61532E00ED56EE /* ImageView.h */,
+				25DECF432D61532E00ED56EE /* ImageView.cpp */,
+				25DECF442D61532E00ED56EE /* Object.h */,
+				25DECF452D61532E00ED56EE /* PhysicalDevice.h */,
+				25DECF462D61532E00ED56EE /* PhysicalDevice.cpp */,
+				25DECF472D61532E00ED56EE /* PipelineInfo.h */,
+				25DECF482D61532E00ED56EE /* PipelineState.h */,
+				25DECF492D61532E00ED56EE /* PipelineState.cpp */,
+				25DECF4A2D61532E00ED56EE /* RayTrace.h */,
+				25DECF4B2D61532E00ED56EE /* RenderTarget.h */,
+				25DECF4C2D61532E00ED56EE /* RenderTarget.cpp */,
+				25DECF4D2D61532E00ED56EE /* SwapChain.h */,
+				25DECF4E2D61532E00ED56EE /* SwapChain.cpp */,
+				25DECF4F2D61532E00ED56EE /* Utils.h */,
+			);
+			name = "render-driver";
+			path = "/Users/dingwings/projects/bistro-example-cpp/render-driver";
 			sourceTree = "<absolute>";
 		};
 /* End PBXGroup section */
@@ -268,11 +644,76 @@
 				25DECEBD2D61373400ED56EE /* RendererVulkan.cpp in Sources */,
 				25DECEBE2D61373400ED56EE /* RenderJobVulkan.cpp in Sources */,
 				25DECEBF2D61373400ED56EE /* RenderJob.cpp in Sources */,
+				25DECECA2D614BBA00ED56EE /* RenderJobMetal.mm in Sources */,
 				25DECEC02D61373400ED56EE /* Camera.cpp in Sources */,
 				25DECEC12D61373400ED56EE /* RendererDX12.cpp in Sources */,
 				25DECE892D605CAC00ED56EE /* App.mm in Sources */,
+				25DECEC72D614A7700ED56EE /* RendererMetal.mm in Sources */,
 				25DECE7F2D6057FF00ED56EE /* MetalView.swift in Sources */,
 				259DF5882D6054A9007BA6A1 /* AppDelegate.swift in Sources */,
+				25DECF512D61532E00ED56EE /* Device.cpp in Sources */,
+				25DECF522D61532E00ED56EE /* RenderTargetMetal.mm in Sources */,
+				25DECF532D61532E00ED56EE /* DescriptorHeapVulkan.cpp in Sources */,
+				25DECF542D61532E00ED56EE /* DescriptorHeapDX12.cpp in Sources */,
+				25DECF552D61532E00ED56EE /* CommandAllocatorDX12.cpp in Sources */,
+				25DECF562D61532E00ED56EE /* DeviceMetal.mm in Sources */,
+				25DECF572D61532E00ED56EE /* Fence.cpp in Sources */,
+				25DECF582D61532E00ED56EE /* BufferView.cpp in Sources */,
+				25DECF592D61532E00ED56EE /* BufferViewVulkan.cpp in Sources */,
+				25DECF5A2D61532E00ED56EE /* DescriptorSetVulkan.cpp in Sources */,
+				25DECF5B2D61532E00ED56EE /* FenceDX12.cpp in Sources */,
+				25DECF5C2D61532E00ED56EE /* SwapChainDX12.cpp in Sources */,
+				25DECF5D2D61532E00ED56EE /* CommandBufferDX12.cpp in Sources */,
+				25DECF5E2D61532E00ED56EE /* Buffer.cpp in Sources */,
+				25DECF5F2D61532E00ED56EE /* FrameBuffer.cpp in Sources */,
+				25DECF602D61532E00ED56EE /* PhysicalDevice.cpp in Sources */,
+				25DECF612D61532E00ED56EE /* CommandQueue.cpp in Sources */,
+				25DECF622D61532E00ED56EE /* CommandAllocatorMetal.mm in Sources */,
+				25DECF632D61532E00ED56EE /* CommandBufferMetal.mm in Sources */,
+				25DECF642D61532E00ED56EE /* PhyiscalDeviceVulkan.cpp in Sources */,
+				25DECF652D61532E00ED56EE /* PipelineStateDX12.cpp in Sources */,
+				25DECF662D61532E00ED56EE /* SwapChainMetal.mm in Sources */,
+				25DECF672D61532E00ED56EE /* AccelerationStructureVulkan.cpp in Sources */,
+				25DECF682D61532E00ED56EE /* ImageDX12.cpp in Sources */,
+				25DECF692D61532E00ED56EE /* DescriptorSetMetal.mm in Sources */,
+				25DECF6A2D61532E00ED56EE /* CommandAllocator.cpp in Sources */,
+				25DECF6B2D61532E00ED56EE /* ImageView.cpp in Sources */,
+				25DECF6C2D61532E00ED56EE /* UtilsDX12.cpp in Sources */,
+				25DECF6D2D61532E00ED56EE /* RenderTargetVulkan.cpp in Sources */,
+				25DECF6E2D61532E00ED56EE /* PipelineStateMetal.mm in Sources */,
+				25DECF6F2D61532E00ED56EE /* FenceVulkan.cpp in Sources */,
+				25DECF702D61532E00ED56EE /* CommandAllocatorVulkan.cpp in Sources */,
+				25DECF712D61532E00ED56EE /* BufferDX12.cpp in Sources */,
+				25DECF722D61532E00ED56EE /* CommandBuffer.cpp in Sources */,
+				25DECF732D61532E00ED56EE /* AccelerationStructure.cpp in Sources */,
+				25DECF742D61532E00ED56EE /* FrameBufferVulkan.cpp in Sources */,
+				25DECF752D61532E00ED56EE /* RenderTarget.cpp in Sources */,
+				25DECF762D61532E00ED56EE /* CommandBufferVulkan.cpp in Sources */,
+				25DECF772D61532E00ED56EE /* DescriptorSet.cpp in Sources */,
+				25DECF782D61532E00ED56EE /* DescriptorHeap.cpp in Sources */,
+				25DECF792D61532E00ED56EE /* PipelineState.cpp in Sources */,
+				25DECF7A2D61532E00ED56EE /* SwapChain.cpp in Sources */,
+				25DECF7B2D61532E00ED56EE /* ImageViewDX12.cpp in Sources */,
+				25DECF902D6155AD00ED56EE /* UtilsMetal.mm in Sources */,
+				25DECF7C2D61532E00ED56EE /* Image.cpp in Sources */,
+				25DECF7D2D61532E00ED56EE /* BufferMetal.mm in Sources */,
+				25DECF7E2D61532E00ED56EE /* UtilsVulkan.cpp in Sources */,
+				25DECF7F2D61532E00ED56EE /* SwapChainVulkan.cpp in Sources */,
+				25DECF802D61532E00ED56EE /* CommandQueueMetal.mm in Sources */,
+				25DECF812D61532E00ED56EE /* DeviceDX12.cpp in Sources */,
+				25DECF822D61532E00ED56EE /* DeviceVulkan.cpp in Sources */,
+				25DECF832D61532E00ED56EE /* ImageVulkan.cpp in Sources */,
+				25DECF842D61532E00ED56EE /* BufferVulkan.cpp in Sources */,
+				25DECF852D61532E00ED56EE /* BufferViewDX12.cpp in Sources */,
+				25DECF862D61532E00ED56EE /* DescriptorSetDX12.cpp in Sources */,
+				25DECF872D61532E00ED56EE /* PipelineStateVulkan.cpp in Sources */,
+				25DECF882D61532E00ED56EE /* CommandQueueVulkan.cpp in Sources */,
+				25DECF892D61532E00ED56EE /* PhysicalDeviceDX12.cpp in Sources */,
+				25DECF8A2D61532E00ED56EE /* FenceMetal.mm in Sources */,
+				25DECF8B2D61532E00ED56EE /* ImageMetal.mm in Sources */,
+				25DECF8C2D61532E00ED56EE /* RenderTargetDX12.cpp in Sources */,
+				25DECF8D2D61532E00ED56EE /* CommandQueueDX12.cpp in Sources */,
+				25DECF8E2D61532E00ED56EE /* ImageViewVulkan.cpp in Sources */,
 				259DF5842D605457007BA6A1 /* ViewController.swift in Sources */,
 				25DECE862D6058E900ED56EE /* Wrapper.mm in Sources */,
 				25DECE9A2D60606200ED56EE /* Utils.cpp in Sources */,
@@ -425,6 +866,8 @@
 					"/Users/dingwings/projects/bistro-example-cpp/render-driver/DX12/*",
 					"/Users/dingwings/projects/bistro-example-cpp/render/Vulkan/*",
 					"/Users/dingwings/projects/bistro-example-cpp/render/DX12/*",
+					"/Users/dingwings/projects/bistro-example-cpp/render-driver/DX12/*",
+					"/Users/dingwings/projects/bistro-example-cpp/render-driver/Vulkan/*",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
@@ -468,6 +911,8 @@
 					"/Users/dingwings/projects/bistro-example-cpp/render-driver/DX12/*",
 					"/Users/dingwings/projects/bistro-example-cpp/render/Vulkan/*",
 					"/Users/dingwings/projects/bistro-example-cpp/render/DX12/*",
+					"/Users/dingwings/projects/bistro-example-cpp/render-driver/DX12/*",
+					"/Users/dingwings/projects/bistro-example-cpp/render-driver/Vulkan/*",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (

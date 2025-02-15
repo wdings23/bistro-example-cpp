@@ -1,8 +1,8 @@
 #pragma once
 
-#include <RenderDriver/CommandBuffer.h>
-#include <RenderDriver/Device.h>
-#include <serialize_utils.h>
+#include <render-driver/CommandBuffer.h>
+#include <render-driver/Device.h>
+#include <utils/serialize_utils.h>
 
 #import <Metal/Metal.h>
 

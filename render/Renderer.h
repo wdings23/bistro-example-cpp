@@ -33,7 +33,8 @@ namespace Render
             None = 0,
             DX12 = 1,
             Vulkan = 2,
-
+            Metal = 3,
+            
             NumRenderTypes,
         };
 

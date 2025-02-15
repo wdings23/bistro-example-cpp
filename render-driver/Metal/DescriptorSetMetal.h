@@ -1,7 +1,7 @@
 #pragma once
 
-#include <RenderDriver/Device.h>
-#include <RenderDriver/DescriptorSet.h>
+#include <render-driver/Device.h>
+#include <render-driver/DescriptorSet.h>
 
 namespace RenderDriver
 {

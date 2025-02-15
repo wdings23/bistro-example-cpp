@@ -1,7 +1,7 @@
 #pragma once
 
-#include <RenderDriver/Buffer.h>
-#include <RenderDriver/Metal/DeviceMetal.h>
+#include <render-driver/Buffer.h>
+#include <render-driver/Metal/DeviceMetal.h>
 
 namespace RenderDriver
 {

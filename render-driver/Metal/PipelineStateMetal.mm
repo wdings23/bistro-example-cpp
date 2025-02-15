@@ -1,10 +1,10 @@
-#include <RenderDriver/Metal/PipelineStateMetal.h>
-#include <RenderDriver/Metal/DeviceMetal.h>
+#include <render-driver/Metal/PipelineStateMetal.h>
+#include <render-driver/Metal/DeviceMetal.h>
 
-#include <Utils/Metal/serialize_utils_metal.h>
+#include <render-driver/Metal/UtilsMetal.h>
 
-#include <wtfassert.h>
-#include <LogPrint.h>
+#include <utils/wtfassert.h>
+#include <utils/LogPrint.h>
 
 extern char const* getSaveDir();
 
@@ -89,14 +89,14 @@ renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPix
                 else
                 {
                     RenderDriver::Common::Format const& colorAttachmentFormat = metalPipelineDesc.maRenderTargetFormats[iColorAttachment];
-                    renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = SerializeUtils::Metal::convert(colorAttachmentFormat);
+                    renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = RenderDriver::Metal::Utils::convert(colorAttachmentFormat);
                 }
             }
             
             // depth attachment format, no depth enabled or not swap chain pass ==> invalid pixel format for depth
             renderPipelineDescriptor.depthAttachmentPixelFormat =
                 (desc.mDepthStencilState.mbDepthEnabled || desc.mbOutputPresent) ?
-                SerializeUtils::Metal::convert(metalPipelineDesc.mDepthStencilFormat) :
+                RenderDriver::Metal::Utils::convert(metalPipelineDesc.mDepthStencilFormat) :
                 MTLPixelFormatInvalid;
             
             // further info: https://github.com/KhronosGroup/SPIRV-Cross/issues/792
@@ -155,7 +155,7 @@ renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPix
             
             mNativeDepthStencilDescriptor = [[MTLDepthStencilDescriptor alloc] init];
             mNativeDepthStencilDescriptor.depthWriteEnabled = desc.mDepthStencilState.mbDepthEnabled;
-            mNativeDepthStencilDescriptor.depthCompareFunction = (desc.mDepthStencilState.mbDepthEnabled) ? SerializeUtils::Metal::convert(desc.mDepthStencilState.mDepthFunc) : SerializeUtils::Metal::convert(RenderDriver::Common::ComparisonFunc::Always);
+            mNativeDepthStencilDescriptor.depthCompareFunction = (desc.mDepthStencilState.mbDepthEnabled) ? RenderDriver::Metal::Utils::convert(desc.mDepthStencilState.mDepthFunc) : RenderDriver::Metal::Utils::convert(RenderDriver::Common::ComparisonFunc::Always);
             
             mNativeDepthStencilState = [mNativeDevice newDepthStencilStateWithDescriptor: mNativeDepthStencilDescriptor];
             
