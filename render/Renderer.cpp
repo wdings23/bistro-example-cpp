@@ -544,11 +544,7 @@ namespace Render
 
             if(bWaitCPU)
             {
-                auto start = std::chrono::high_resolution_clock::now();
-
                 mpUploadFence->waitCPU(UINT64_MAX);
-
-                uint64_t iElapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
             }
 
             mpUploadCommandAllocator->reset();
@@ -1163,8 +1159,6 @@ namespace Render
                 mDesc.mfViewportMaxDepth,
                 commandBuffer);
 
-            float afClearColor[] = {0.0f, 0.0f, 0.3f, 0.0f};
-
             if(pRenderJob->mPassType == PassType::FullTriangle || pRenderJob->mPassType == PassType::SwapChain)
             {
                 platformSetVertexAndIndexBuffers2(
@@ -1199,7 +1193,7 @@ namespace Render
             std::vector<bool> abClear(iNumRenderTargetAttachments);
             std::vector<std::vector<float>> aafClearColors(iNumRenderTargetAttachments);
             uint32_t iIndex = 0;
-            for(auto& attachmentKeyValue : pRenderJob->mapOutputImageAttachments)
+            for(uint32_t i = 0; i < pRenderJob->mapOutputImageAttachments.size(); i++)
             {
                 aafClearColors[iIndex].resize(4);
                 aafClearColors[iIndex][0] = 0.0f; aafClearColors[iIndex][1] = 0.0f; aafClearColors[iIndex][2] = 0.3f; aafClearColors[iIndex][3] = 0.0f;
@@ -1449,17 +1443,12 @@ namespace Render
             RenderDriver::Common::CCommandQueue* pGraphicsCommandQueue = mpGraphicsCommandQueue.get();
             RenderDriver::Common::CCommandQueue* pComputeCommandQueue = mpComputeCommandQueue.get();
             RenderDriver::Common::CCommandQueue* pCopyCommandQueue = mpCopyCommandQueue.get();
-            RenderDriver::Common::CCommandQueue* pGPUCopyCommandQueue = mpGPUCopyCommandQueue.get();
 
-auto startExecJobs = std::chrono::high_resolution_clock::now();
 
             uint32_t iJobIndex = 0;
             bool bHasSwapChainPass = false;
-            uint32_t iTripleBufferIndex = miFrameIndex % 3;
             for(auto const& renderJobName : maRenderJobNames)
             {
-auto start0 = std::chrono::high_resolution_clock::now();
-
 #if !defined(USE_RAY_TRACING)
                 if(renderJobName.find("Light Composite") != std::string::npos ||
                    renderJobName.find("Temporal Accumulation Graphics") != std::string::npos ||
@@ -1560,12 +1549,7 @@ auto start0 = std::chrono::high_resolution_clock::now();
                     );
                 }
 
-auto elapsed0 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start0).count();
-//DEBUG_PRINTF("\"%s\" 0 %d micro-seconds\n", pRenderJob->mName.c_str(), elapsed0);
-
                 commandBuffer.close();
-
-auto start1 = std::chrono::high_resolution_clock::now();
 
                 // execute the command buffer
                 if(pRenderJob->mType == Render::Common::JobType::Graphics)
@@ -1611,12 +1595,7 @@ auto start1 = std::chrono::high_resolution_clock::now();
 
                 ++iJobIndex;
 
-auto elapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start1).count();
-//DEBUG_PRINTF("\"%s\" 1 %d micro-seconds\n", pRenderJob->mName.c_str(), elapsed1);
             }
-
-auto totalElapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - startExecJobs).count();
-
 
             // transition swap chain image to present if no swap chain pass is listed
             if(!bHasSwapChainPass)
@@ -1702,7 +1681,8 @@ auto totalElapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::c
             uint32_t iNumTotalVertices = *paiMeshBuffer++;
             uint32_t iNumTotalTriangles = *paiMeshBuffer++;
             uint32_t iVertexSize = *paiMeshBuffer++;
-            uint32_t iTriangleStartOffset = *paiMeshBuffer++;
+            //uint32_t iTriangleStartOffset = *paiMeshBuffer++;
+            ++paiMeshBuffer;
             
             // mesh ranges
             //std::vector<std::pair<uint32_t, uint32_t>> aMeshRanges;
@@ -2094,7 +2074,7 @@ auto totalElapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::c
             *pfData++ = float(rand() % 100) * 0.01f;
             *pfData++ = float(rand() % 100) * 0.01f;
             
-            float4x4 projectionMatrix = Render::Common::gaCameras[0].getProjectionMatrix();
+            //float4x4 projectionMatrix = Render::Common::gaCameras[0].getProjectionMatrix();
             float4x4 viewMatrix = Render::Common::gaCameras[0].getViewMatrix();
             float4x4 jitterProjectionMatrix = Render::Common::gaCameras[0].getJitterProjectionMatrix();
 
@@ -2139,9 +2119,9 @@ auto totalElapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::c
             *pFloat4Data++ = float4(Render::Common::gaCameras[0].getPosition(), 1.0f);
             *pFloat4Data++ = float4(Render::Common::gaCameras[0].getLookAt(), 1.0f);
             
-            float3 diff = gLightDirection - gPrevLightDirection;
-            float fLengthSquared = dot(diff, diff);
-            float fRebuildSkyProbe = (fLengthSquared >= 0.1f) ? 1.0f : 0.0f;
+            //float3 diff = gLightDirection - gPrevLightDirection;
+            //float fLengthSquared = dot(diff, diff);
+            //float fRebuildSkyProbe = (fLengthSquared >= 0.1f) ? 1.0f : 0.0f;
             
             float4 lightRadiance = float4(1.5f, 1.5f, 1.5f, 1.0f);
 

@@ -272,7 +272,6 @@ namespace Render
                     iImageHeight = attachmentJSON["ImageHeight"].GetInt();
                 }
 
-                RenderDriver::Common::Format attachmentFormat = RenderDriver::Common::Format::R8G8B8A8_UNORM;
                 if(type == "TextureOutput")
                 {
                     handleTextureOutput(
@@ -910,7 +909,6 @@ namespace Render
                     iImageHeight = attachmentJSON["ImageHeight"].GetInt();
                 }
 
-                RenderDriver::Common::Format attachmentFormat = RenderDriver::Common::Format::R8G8B8A8_UNORM;
                 if(type == "TextureOutput")
                 {
                     maAttachmentMappings.push_back(std::make_pair(name, "texture-output"));
@@ -1015,7 +1013,6 @@ namespace Render
         {
             std::string attachmentName = attachmentJSON["Name"].GetString();
 
-            RenderDriver::Common::ImageLayout imageLayout = RenderDriver::Common::ImageLayout::ATTACHMENT_OPTIMAL;
             RenderDriver::Common::Format attachmentFormat = RenderDriver::Common::Format::R8G8B8A8_UNORM;
 
             std::string attachmentFormatStr = attachmentJSON["Format"].GetString();
@@ -1235,8 +1232,6 @@ namespace Render
             std::vector<Render::Common::CRenderJob*>* apRenderJobs
         )
         {
-            RenderDriver::Common::BufferUsage usage = RenderDriver::Common::BufferUsage::StorageBuffer;
-
             std::string const name = attachmentJSON["Name"].GetString();
 
             // get parent job
@@ -1455,12 +1450,11 @@ namespace Render
             std::string name = shaderResource["name"].GetString();
 
             int32_t iTextureWidth = 0, iTextureHeight = 0;
-            RenderDriver::Common::Format textureFormat = RenderDriver::Common::Format::R8G8B8A8_UNORM;
             if(shaderResource.HasMember("file_path"))
             {
                 std::string filePath = shaderResource["file_path"].GetString();
                 
-                int32_t iWidth = 0, iHeight = 0, iComp = 0;
+                int32_t iComp = 0;
                 stbi_uc* pImageData = stbi_load(
                     filePath.c_str(),
                     &iTextureWidth,

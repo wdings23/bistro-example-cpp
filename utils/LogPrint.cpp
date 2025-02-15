@@ -40,7 +40,11 @@ extern "C" int printOutputToDebugWindow(char const* const szFormat, ...)
 
 	va_list args;
 	va_start(args, szFormat);
-	vsprintf(sacBuffer, szFormat, args);
+#if defined(_MSC_VER)
+    vsprintf(sacBuffer, szFormat, args);
+#else
+    vsnprintf(sacBuffer, 1024, szFormat, args);
+#endif // _MSC_VER
 	//perror(szBuffer);
 	va_end(args);
 

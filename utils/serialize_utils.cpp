@@ -344,6 +344,8 @@ namespace SerializeUtils
 			case RenderDriver::Common::Format::R8G8_SINT:
 				iRet = 2;
 				break;
+            default:
+                    assert(!"format not handled");
 			}
 
 			return iRet;
@@ -1053,7 +1055,6 @@ DEBUG_PRINTF("\t\tfill u%d %s\n", iUnorderAccessResource, shaderResourceName.c_s
 
 DEBUG_PRINTF("\t%s %s\n", hlslBinding.c_str(), shaderResource.mName.c_str());
 
-					uint32_t iStart = UINT32_MAX;
 					for(uint32_t iChar = 0; iChar < static_cast<uint32_t>(hlslBinding.size()); iChar++)
 					{
 						if(hlslBinding[iChar] >= '0' && hlslBinding[iChar] <= '9')
@@ -1077,8 +1078,7 @@ DEBUG_PRINTF("\t%s %s\n", hlslBinding.c_str(), shaderResource.mName.c_str());
 						}
 					}
 					WTFASSERT(idIndexStr.length() > 0, "invalid id register index");
-					uint32_t iIDRegisterIndex = atoi(idIndexStr.c_str());
-
+					
 					// add fillers between the binding index
 					uint32_t iBindingIndex = atoi(hlslIndex.c_str());
 					if(hlslType == "cb" && bFilloutConstantBufferEntries)
@@ -1529,7 +1529,6 @@ DEBUG_PRINTF("\t\tfill end u%d name: %s\n", iUnorderAccessResource, filler.mName
 					std::string hlslIndex = "";
 					std::string hlslType = "";
 					std::string hlslBinding = variableInfo["HLSLBind"].GetString();
-					uint32_t iStart = UINT32_MAX;
 					for(uint32_t iChar = 0; iChar < static_cast<uint32_t>(hlslBinding.size()); iChar++)
 					{
 						if(hlslBinding[iChar] >= '0' && hlslBinding[iChar] <= '9')

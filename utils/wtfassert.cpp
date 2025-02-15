@@ -35,7 +35,11 @@ void wtfAssert(
     {
         va_list args;
         va_start(args, szFormat);
+#if defined(_MSC_VER)
         vsprintf(sacBuffer, szFormat, args);
+#else
+        vsnprintf(sacBuffer, 1024, szFormat, args);
+#endif // _MSC_VER
         //perror(szBuffer);
         va_end(args);
         
@@ -43,7 +47,11 @@ void wtfAssert(
         sacBuffer[iLast] = '\n';
         sacBuffer[iLast + 1] = '\0';
         
+#if defined(_MSC_VER)
         sprintf(sacPreStatement, "\n!!!!!!!!!\n%s line %d\n", szFunction, iLine);
+#else
+        snprintf(sacPreStatement, 1024, "\n!!!!!!!!!\n%s line %d\n", szFunction, iLine);
+#endif // _MSC_VER
         
 #ifdef _MSC_VER
         OutputDebugStringA(sacPreStatement);

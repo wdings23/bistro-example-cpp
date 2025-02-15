@@ -606,8 +606,6 @@ vec3 extractEulerAngles(mat4 const& m)
 {
 	vec3 ret;
 
-	float const fTwoPI = 2.0f * (float)M_PI;
-
 	float fSY = sqrtf(m.mafEntries[0] * m.mafEntries[0] + m.mafEntries[4] * m.mafEntries[4]);   // (0,0), (1,0)
 
 	if(fSY < 1e-6)

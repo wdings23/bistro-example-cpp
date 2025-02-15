@@ -53,7 +53,6 @@ static uint32_t								siAddToQueueDebugIndex;
 #define MAX_QUEUE_CAPACITY		32
 #define WORK_QUEUE_SIZE			65536
 
-static std::chrono::high_resolution_clock::time_point siStartWakeTime;
 
 struct QueueDebugInfo
 {
@@ -299,11 +298,7 @@ void JobManager::_workerThreadFunc(WorkInfo* pWorkInfo)
 
 	while (pWorkInfo->mbRunning)
 	{
-		auto currTime = std::chrono::high_resolution_clock::now();
-		auto lastWakeElapsed = (uint64_t)std::chrono::duration_cast<std::chrono::microseconds>(currTime - pWorkInfo->mStartWorkerWakeTime).count();
-
 		// wait for new jobs
-		uint32_t iWaitLoop = 0;
 		while(pWorkInfo->miNumJobs <= 0)
 		{
             //assert(pWorkInfo->miNumJobs == 0);

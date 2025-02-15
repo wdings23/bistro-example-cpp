@@ -79,7 +79,7 @@ void CCamera::update(CameraUpdateInfo& info)
     vec3 ftl = fc + Y * fFarHeight - X * fFarWidth;
     vec3 ftr = fc + Y * fFarHeight + X * fFarWidth;
     vec3 fbl = fc - Y * fFarHeight - X * fFarWidth;
-    vec3 fbr = fc - Y * fFarHeight + X * fFarWidth;
+    //vec3 fbr = fc - Y * fFarHeight + X * fFarWidth;
     
     {
         vec3 v0 = nbl - ntl;
@@ -91,7 +91,7 @@ void CCamera::update(CameraUpdateInfo& info)
 
     {
         vec3 v0 = fbl - ftl;
-        vec3 v1 = ftr - ftl;
+        vec3 v1 = ftl - ftl;
         vec3 planeNormal = normalize(cross(v1, v0));
         float fD = -dot(planeNormal, fbl);
         maFrustomPlanes[FRUSTUM_PLANE_FAR] = vec4(planeNormal.x, planeNormal.y, planeNormal.z, fD);

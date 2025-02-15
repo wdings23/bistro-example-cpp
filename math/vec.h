@@ -173,7 +173,7 @@ struct vec2
 {
     vec2() { x = y = 0.0f; }
     vec2(float fX, float fY) { x = fX; y = fY; }
-    vec2(vec3 const& v) { x = v.x, y = v.y; }
+    vec2(vec3 const& v) { x = v.x; y = v.y; }
     vec2(float fVal) { x = fVal; y = fVal; }
 
     vec2 operator + (vec2 const& v) const
