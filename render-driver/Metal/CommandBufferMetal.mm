@@ -261,17 +261,21 @@ namespace RenderDriver
         {
             mState = RenderDriver::Common::CommandBufferState::Closed;
             
-            if(mType == RenderDriver::Common::CommandBufferType::Graphics)
+            if((uint32_t(mType) & uint32_t(RenderDriver::Common::CommandBufferType::Graphics)) > 0 && mNativeRenderCommandEncoder != nil)
             {
                 [mNativeRenderCommandEncoder endEncoding];
             }
-            else if(mType == RenderDriver::Common::CommandBufferType::Compute)
+            else if((uint32_t(mType) & uint32_t(RenderDriver::Common::CommandBufferType::Compute)) > 0 && mNativeComputeCommandEncoder != nil)
             {
                 [mNativeComputeCommandEncoder endEncoding];
             }
-            else if(mType == RenderDriver::Common::CommandBufferType::Copy)
+            else if((uint32_t(mType) & uint32_t(RenderDriver::Common::CommandBufferType::Copy)) > 0 && mNativeBlitCommandEncoder != nil)
             {
                 [mNativeBlitCommandEncoder endEncoding];
+            }
+            else
+            {
+                WTFASSERT(0, "no native command buffer");
             }
             
         }

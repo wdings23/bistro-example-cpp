@@ -24,14 +24,46 @@ namespace Render
         */
         void CRenderer::platformSetup(Render::Common::RendererDescriptor const& desc)
         {
-            WTFASSERT(0, "Implement me");
-            
             bool bRenderDoc = true;
 
             Render::Metal::RendererDescriptor const& descMetal = static_cast<Render::Metal::RendererDescriptor const&>(desc);
             
             mRenderDriverType = Render::Common::RenderDriverType::Metal;
 
+            mpDevice = std::make_unique<RenderDriver::Metal::CDevice>();
+            RenderDriver::Common::CDevice::CreateDesc createDesc = {};
+            createDesc.mpPhyiscalDevice = nullptr;
+            mpDevice->create(createDesc);
+
+            mpSwapChain = std::make_unique<RenderDriver::Metal::CSwapChain>();
+            RenderDriver::Metal::SwapChainDescriptor swapChainCreateDesc = {};
+            swapChainCreateDesc.mFormat = desc.mFormat;
+            swapChainCreateDesc.miWidth = desc.miScreenWidth;
+            swapChainCreateDesc.miHeight = desc.miScreenHeight;
+            mpSwapChain->create(swapChainCreateDesc, *mpDevice);
+            
+            mpComputeCommandQueue = std::make_unique<RenderDriver::Metal::CCommandQueue>();
+            mpGraphicsCommandQueue = std::make_unique<RenderDriver::Metal::CCommandQueue>();
+            mpCopyCommandQueue = std::make_unique<RenderDriver::Metal::CCommandQueue>();
+            mpGPUCopyCommandQueue = std::make_unique<RenderDriver::Metal::CCommandQueue>();
+            
+            RenderDriver::Metal::CCommandQueue::CreateDesc queueCreateDesc = {};
+            queueCreateDesc.mpDevice = mpDevice.get();
+            queueCreateDesc.mType = RenderDriver::Common::CCommandQueue::Type::Graphics;
+            mpGraphicsCommandQueue->create(queueCreateDesc);
+            queueCreateDesc.mType = RenderDriver::Common::CCommandQueue::Type::Compute;
+            mpComputeCommandQueue->create(queueCreateDesc);
+            queueCreateDesc.mType = RenderDriver::Common::CCommandQueue::Type::Copy;
+            mpCopyCommandQueue->create(queueCreateDesc);
+            queueCreateDesc.mType = RenderDriver::Common::CCommandQueue::Type::CopyGPU;
+            mpGPUCopyCommandQueue->create(queueCreateDesc);
+
+            mpGraphicsCommandQueue->setID("Graphics Command Queue");
+            mpComputeCommandQueue->setID("Compute Command Queue");
+            mpCopyCommandQueue->setID("Copy Command Queue");
+            mpGPUCopyCommandQueue->setID("GPU Copy Command Queue");
+            
+            
             mDefaultUniformBuffer = std::make_unique<RenderDriver::Metal::CBuffer>();
 
             RenderDriver::Common::BufferDescriptor bufferCreationDesc = {};
@@ -47,6 +79,73 @@ namespace Render
             );
             mDefaultUniformBuffer->setID("Default Uniform Buffer");
             mpDefaultUniformBuffer = mDefaultUniformBuffer.get();
+            
+            RenderDriver::Common::CommandAllocatorDescriptor commandAllocatorDesc;
+            RenderDriver::Metal::CommandBufferDescriptor commandBufferDesc;
+            
+            mapQueueCommandAllocators.resize(RenderDriver::Common::CCommandQueue::NumTypes);
+            mapQueueCommandBuffers.resize(RenderDriver::Common::CCommandQueue::NumTypes);
+            for(uint32_t i = 0; i < static_cast<uint32_t>(mapQueueCommandBuffers.size()); i++)
+            {
+                std::string name = "Graphics Queue";
+                if(i == RenderDriver::Common::CCommandQueue::Type::Graphics)
+                {
+                    commandBufferDesc.mpCommandQueue = (__bridge id<MTLCommandQueue>)mpGraphicsCommandQueue->getNativeCommandQueue();
+                }
+                else if(i == RenderDriver::Common::CCommandQueue::Type::Compute)
+                {
+                    name = "Compute Queue";
+                    commandBufferDesc.mpCommandQueue = (__bridge id<MTLCommandQueue>)mpComputeCommandQueue->getNativeCommandQueue();
+                }
+                else if(i == RenderDriver::Common::CCommandQueue::Type::Copy)
+                {
+                    name = "Copy Queue";
+                    commandBufferDesc.mpCommandQueue = (__bridge id<MTLCommandQueue>)mpCopyCommandQueue->getNativeCommandQueue();
+                }
+                
+                // command buffers
+                mapQueueCommandAllocators[i] = std::make_shared<RenderDriver::Metal::CCommandAllocator>();
+                mapQueueCommandBuffers[i] = std::make_shared<RenderDriver::Metal::CCommandBuffer>();
+
+                commandAllocatorDesc.mType = static_cast<RenderDriver::Common::CommandBufferType>(i);
+                mapQueueCommandAllocators[i]->create(commandAllocatorDesc, *mpDevice);
+                mapQueueCommandAllocators[i]->setID(name + " Command Allocator");
+
+                commandBufferDesc.mpCommandAllocator = mapQueueCommandAllocators[i].get();
+                commandBufferDesc.mType = commandAllocatorDesc.mType;
+                commandBufferDesc.mpPipelineState = nullptr;
+                
+                mapQueueCommandBuffers[i]->create(commandBufferDesc, *mpDevice);
+                mapQueueCommandBuffers[i]->setID(name + " Command Buffer");
+
+                mapQueueCommandAllocators[i]->reset();
+                mapQueueCommandBuffers[i]->reset();
+            }
+            
+            // upload command buffer
+            mpUploadCommandBuffer = std::make_unique<RenderDriver::Metal::CCommandBuffer>();
+            RenderDriver::Metal::CommandBufferDescriptor metalCommandBufferDesc = {};
+            metalCommandBufferDesc.mpCommandAllocator = mpUploadCommandAllocator.get();
+            metalCommandBufferDesc.mpPipelineState = nullptr;
+            metalCommandBufferDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
+            metalCommandBufferDesc.mpCommandQueue = (__bridge id<MTLCommandQueue>)mpCopyCommandQueue->getNativeCommandQueue();
+            mpUploadCommandBuffer->create(commandBufferDesc, *mpDevice);
+            mpUploadCommandBuffer->setID("Upload Command Buffer");
+            mpUploadCommandBuffer->reset();
+            
+            mpUploadFence = std::make_unique<RenderDriver::Metal::CFence>();
+            RenderDriver::Common::FenceDescriptor fenceDesc = {};
+            mpUploadFence->create(fenceDesc, *mpDevice);
+            mpUploadFence->setID("Upload Fence");
+
+            // upload command buffer allocator
+            mpUploadCommandAllocator = std::make_unique<RenderDriver::Metal::CCommandAllocator>();
+            commandAllocatorDesc = {};
+            commandAllocatorDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
+            mpUploadCommandAllocator->create(commandAllocatorDesc, *mpDevice);
+            mpUploadCommandAllocator->setID("Upload Command Allocator");
+            
+            mDesc = desc;
         }
 
         /*
@@ -279,8 +378,6 @@ namespace Render
             uint64_t iDataSize,
             uint64_t iDestDataOffset)
         {
-            WTFASSERT(0, "Implement me");
-            
             char szOutput[256];
             sprintf(szOutput, "Upload Resource %s (%lld bytes)\n",
                 buffer.getID().c_str(),
@@ -293,6 +390,7 @@ namespace Render
 
             uploadBufferDesc.mHeapType = RenderDriver::Common::HeapType::Upload;
             uploadBufferDesc.miSize = iDataSize;
+            uploadBufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferSrc;
             uploadBuffer.create(uploadBufferDesc, *mpDevice);
             uploadBuffer.setID("UploadBuffer");
 
@@ -862,8 +960,6 @@ namespace Render
             uint32_t iDataSize,
             uint32_t iFlag)
         {
-            WTFASSERT(0, "Implement me");
-            
             pUploadBuffer->setData(pCPUData, iDataSize);
             pDestBuffer->copy(
                 *pUploadBuffer,
@@ -925,7 +1021,18 @@ namespace Render
             RenderDriver::Common::CCommandBuffer& commandBuffer,
             uint32_t iFlag)
         {
-            WTFASSERT(0, "Implement me");
+            commandBuffer.close();
+            mpCopyCommandQueue->execCommandBuffer(
+                commandBuffer,
+                *mpDevice
+            );
+            
+            RenderDriver::Metal::CFence* pUploadFenceMetal = static_cast<RenderDriver::Metal::CFence*>(mpUploadFence.get());
+            
+            pUploadFenceMetal->waitCPU2(
+                UINT64_MAX,
+                mpCopyCommandQueue.get(),
+                &commandBuffer);
         }
 
         /*

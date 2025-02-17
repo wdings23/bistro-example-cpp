@@ -118,5 +118,7 @@ void wtfAssert(
             _CrtDbgBreak();
         }
     }
+#else
+    assert(bStatement);
 #endif // _MSC_VER
 }

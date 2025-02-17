@@ -7,6 +7,279 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		257FBDBA2D61D3CE00F92519 /* bistro2-triangles.bin in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDB72D61D2E200F92519 /* bistro2-triangles.bin */; };
+		257FBDC02D629FDF00F92519 /* bistro2-mesh-instance-ids.bin in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDBC2D629FDF00F92519 /* bistro2-mesh-instance-ids.bin */; };
+		257FBDC12D629FDF00F92519 /* bistro2-mesh-instance-positions.bin in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDBD2D629FDF00F92519 /* bistro2-mesh-instance-positions.bin */; };
+		257FBDC22D629FDF00F92519 /* bistro2-mesh-instance-bboxes.bin in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDBE2D629FDF00F92519 /* bistro2-mesh-instance-bboxes.bin */; };
+		257FBDC32D629FDF00F92519 /* bistro2-triangle-positions.bin in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDBF2D629FDF00F92519 /* bistro2-triangle-positions.bin */; };
+		257FBDC62D629FF800F92519 /* bistro2.mat in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDC42D629FF800F92519 /* bistro2.mat */; };
+		257FBDC72D629FF800F92519 /* bistro2.mid in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDC52D629FF800F92519 /* bistro2.mid */; };
+		257FBED32D62A26900F92519 /* Vespa_Odometer_Glass_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDC92D62A25400F92519 /* Vespa_Odometer_Glass_BaseColor.png */; };
+		257FBED42D62A26900F92519 /* MASTER_Wood_Painted3_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDCA2D62A25400F92519 /* MASTER_Wood_Painted3_BaseColor.png */; };
+		257FBED52D62A26900F92519 /* MASTER_Awning_Fabric_Cyan_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDCB2D62A25400F92519 /* MASTER_Awning_Fabric_Cyan_Normal.png */; };
+		257FBED62D62A26900F92519 /* MASTER_Concrete_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDCC2D62A25400F92519 /* MASTER_Concrete_Normal.png */; };
+		257FBED72D62A26900F92519 /* MASTER_Concrete_Yellow_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDCD2D62A25400F92519 /* MASTER_Concrete_Yellow_BaseColor.png */; };
+		257FBED82D62A26900F92519 /* MASTER_Concrete_Yellow_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDCE2D62A25400F92519 /* MASTER_Concrete_Yellow_Normal.png */; };
+		257FBED92D62A26900F92519 /* MASTER_Brick_Small_Red_BLENDSHADER_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDCF2D62A25400F92519 /* MASTER_Brick_Small_Red_BLENDSHADER_Normal.png */; };
+		257FBEDA2D62A26900F92519 /* MASTER_Wood_Painted_Cyan_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDD02D62A25500F92519 /* MASTER_Wood_Painted_Cyan_Normal.png */; };
+		257FBEDB2D62A26900F92519 /* MASTER_Curtains_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDD12D62A25500F92519 /* MASTER_Curtains_BaseColor.png */; };
+		257FBEDC2D62A26900F92519 /* MASTER_Doors_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDD22D62A25500F92519 /* MASTER_Doors_Normal.png */; };
+		257FBEDD2D62A26900F92519 /* Trashcan_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDD32D62A25500F92519 /* Trashcan_BaseColor.png */; };
+		257FBEDE2D62A26900F92519 /* Awnings_Fabric_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDD42D62A25500F92519 /* Awnings_Fabric_BaseColor.png */; };
+		257FBEDF2D62A26900F92519 /* Pavement_Cobble_Leaves_BLENDSHADER_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDD52D62A25500F92519 /* Pavement_Cobble_Leaves_BLENDSHADER_Normal.png */; };
+		257FBEE02D62A26900F92519 /* MASTER_Bistro_Main_Door_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDD62D62A25500F92519 /* MASTER_Bistro_Main_Door_BaseColor.png */; };
+		257FBEE12D62A26900F92519 /* MASTER_Awning_Fabric_Red_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDD72D62A25500F92519 /* MASTER_Awning_Fabric_Red_BaseColor.png */; };
+		257FBEE22D62A26900F92519 /* Pavement_Cobblestone_02_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDD82D62A25500F92519 /* Pavement_Cobblestone_02_BaseColor.png */; };
+		257FBEE32D62A26900F92519 /* Concrete3_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDD92D62A25500F92519 /* Concrete3_BaseColor.png */; };
+		257FBEE42D62A26900F92519 /* Foliage_Linde_Tree_Large_Trunk_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDDA2D62A25500F92519 /* Foliage_Linde_Tree_Large_Trunk_Normal.png */; };
+		257FBEE52D62A26900F92519 /* Paris_StringLights_01_White_Color_Emissive_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDDB2D62A25500F92519 /* Paris_StringLights_01_White_Color_Emissive_Normal.png */; };
+		257FBEE62D62A26900F92519 /* Paris_LiquorBottle_01_Labels_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDDC2D62A25500F92519 /* Paris_LiquorBottle_01_Labels_Normal.png */; };
+		257FBEE72D62A26900F92519 /* Vespa_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDDD2D62A25500F92519 /* Vespa_Normal.png */; };
+		257FBEE82D62A26900F92519 /* Shopsign_Pharmacy_Emissive_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDDE2D62A25500F92519 /* Shopsign_Pharmacy_Emissive_Normal.png */; };
+		257FBEE92D62A26900F92519 /* Awnings_Fabric_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDDF2D62A25500F92519 /* Awnings_Fabric_Normal.png */; };
+		257FBEEA2D62A26900F92519 /* Ashtray_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDE02D62A25500F92519 /* Ashtray_Normal.png */; };
+		257FBEEB2D62A26900F92519 /* Stringlights_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDE12D62A25500F92519 /* Stringlights_Normal.png */; };
+		257FBEEC2D62A26900F92519 /* Paris_StringLights_01_Pink_Color_Emissive_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDE22D62A25500F92519 /* Paris_StringLights_01_Pink_Color_Emissive_Normal.png */; };
+		257FBEED2D62A26900F92519 /* MASTER_Bronze_BLENDSHADER_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDE32D62A25600F92519 /* MASTER_Bronze_BLENDSHADER_Normal.png */; };
+		257FBEEE2D62A26900F92519 /* MASTER_Brick_Large_Beige_BLENDSHADER_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDE42D62A25600F92519 /* MASTER_Brick_Large_Beige_BLENDSHADER_Normal.png */; };
+		257FBEEF2D62A26900F92519 /* Balcony_Ornaments_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDE52D62A25600F92519 /* Balcony_Ornaments_Normal.png */; };
+		257FBEF02D62A26900F92519 /* MASTER_Roofing_Shingle_Grey_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDE62D62A25600F92519 /* MASTER_Roofing_Shingle_Grey_BaseColor.png */; };
+		257FBEF12D62A26900F92519 /* Banner_Metal_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDE72D62A25600F92519 /* Banner_Metal_BaseColor.png */; };
+		257FBEF22D62A26900F92519 /* Awnings_Beams_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDE82D62A25600F92519 /* Awnings_Beams_Normal.png */; };
+		257FBEF32D62A26900F92519 /* MASTER_Wood_Painted_Green_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDE92D62A25600F92519 /* MASTER_Wood_Painted_Green_Normal.png */; };
+		257FBEF42D62A26900F92519 /* MASTER_Brick_Large_White_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDEA2D62A25600F92519 /* MASTER_Brick_Large_White_Normal.png */; };
+		257FBEF52D62A26900F92519 /* Pavement_Cobblestone_Wet_BLENDSHADER_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDEB2D62A25600F92519 /* Pavement_Cobblestone_Wet_BLENDSHADER_Normal.png */; };
+		257FBEF62D62A26900F92519 /* Vespa_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDEC2D62A25600F92519 /* Vespa_BaseColor.png */; };
+		257FBEF72D62A26900F92519 /* Concrete_Striped_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDED2D62A25600F92519 /* Concrete_Striped_BaseColor.png */; };
+		257FBEF82D62A26900F92519 /* Awnings_Hotel_Fabric_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDEE2D62A25600F92519 /* Awnings_Hotel_Fabric_BaseColor.png */; };
+		257FBEF92D62A26900F92519 /* Foliage_Linde_Tree_Large_Orange_Leaves_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDEF2D62A25600F92519 /* Foliage_Linde_Tree_Large_Orange_Leaves_BaseColor.png */; };
+		257FBEFA2D62A26900F92519 /* Shopsign_Book_Store_Emissive_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDF02D62A25600F92519 /* Shopsign_Book_Store_Emissive_Normal.png */; };
+		257FBEFB2D62A26900F92519 /* MASTER_Concrete_White_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDF12D62A25700F92519 /* MASTER_Concrete_White_BaseColor.png */; };
+		257FBEFC2D62A26900F92519 /* albedo-dimensions.txt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDF22D62A25700F92519 /* albedo-dimensions.txt */; };
+		257FBEFD2D62A26900F92519 /* Vespa_Odometer_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDF32D62A25700F92519 /* Vespa_Odometer_BaseColor.png */; };
+		257FBEFE2D62A26900F92519 /* MASTER_Roofing_Metal_01_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDF42D62A25700F92519 /* MASTER_Roofing_Metal_01_BaseColor.png */; };
+		257FBEFF2D62A26900F92519 /* Plaster_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDF52D62A25700F92519 /* Plaster_BaseColor.png */; };
+		257FBF002D62A26900F92519 /* Spotlight_Main_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDF62D62A25700F92519 /* Spotlight_Main_BaseColor.png */; };
+		257FBF012D62A26900F92519 /* Pavement_Cobble_Leaves_BLENDSHADER_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDF72D62A25700F92519 /* Pavement_Cobble_Leaves_BLENDSHADER_BaseColor.png */; };
+		257FBF022D62A26900F92519 /* MASTER_Light_Bulb_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDF82D62A25700F92519 /* MASTER_Light_Bulb_Normal.png */; };
+		257FBF032D62A26900F92519 /* MASTER_Roofing_Metal_01_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDF92D62A25700F92519 /* MASTER_Roofing_Metal_01_Normal.png */; };
+		257FBF042D62A26900F92519 /* MenuSign_02_Glass_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDFA2D62A25700F92519 /* MenuSign_02_Glass_Normal.png */; };
+		257FBF052D62A26900F92519 /* MASTER_Glass_Dirty_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDFB2D62A25700F92519 /* MASTER_Glass_Dirty_Normal.png */; };
+		257FBF062D62A26900F92519 /* MASTER_Focus_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDFC2D62A25700F92519 /* MASTER_Focus_Normal.png */; };
+		257FBF072D62A26900F92519 /* Bistro_Sign_Letters_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDFD2D62A25700F92519 /* Bistro_Sign_Letters_Normal.png */; };
+		257FBF082D62A26900F92519 /* Pavement_Curbstones_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDFE2D62A25700F92519 /* Pavement_Curbstones_BaseColor.png */; };
+		257FBF092D62A26900F92519 /* MASTER_Awning_Beams_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDFF2D62A25700F92519 /* MASTER_Awning_Beams_Normal.png */; };
+		257FBF0A2D62A26900F92519 /* Antenna_Plastic_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE002D62A25800F92519 /* Antenna_Plastic_Normal.png */; };
+		257FBF0B2D62A26900F92519 /* ElectricBox_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE012D62A25800F92519 /* ElectricBox_BaseColor.png */; };
+		257FBF0C2D62A26900F92519 /* LanternEmissive_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE022D62A25800F92519 /* LanternEmissive_BaseColor.png */; };
+		257FBF0D2D62A26900F92519 /* Vespa_Odometer_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE032D62A25800F92519 /* Vespa_Odometer_Normal.png */; };
+		257FBF0E2D62A26900F92519 /* MASTER_Roofing_Shingle_Grey_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE042D62A25800F92519 /* MASTER_Roofing_Shingle_Grey_Normal.png */; };
+		257FBF0F2D62A26900F92519 /* MASTER_Side_Letters_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE052D62A25800F92519 /* MASTER_Side_Letters_Normal.png */; };
+		257FBF102D62A26900F92519 /* Foliage_Ivy_branches_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE062D62A25800F92519 /* Foliage_Ivy_branches_BaseColor.png */; };
+		257FBF112D62A26900F92519 /* Pavement_Brick_BLENDSHADER_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE072D62A25800F92519 /* Pavement_Brick_BLENDSHADER_BaseColor.png */; };
+		257FBF122D62A26900F92519 /* MenuSign_02_Mesh_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE082D62A25800F92519 /* MenuSign_02_Mesh_BaseColor.png */; };
+		257FBF132D62A26900F92519 /* Pavement_Cobblestone_Big_BLENDSHADER_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE092D62A25800F92519 /* Pavement_Cobblestone_Big_BLENDSHADER_Normal.png */; };
+		257FBF142D62A26900F92519 /* Pavement_Cobblestone_Wet_Leaves_BLENDSHADER_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE0A2D62A25800F92519 /* Pavement_Cobblestone_Wet_Leaves_BLENDSHADER_Normal.png */; };
+		257FBF152D62A26900F92519 /* Stringlights_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE0B2D62A25800F92519 /* Stringlights_BaseColor.png */; };
+		257FBF162D62A26900F92519 /* Foliage_Leaves_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE0C2D62A25800F92519 /* Foliage_Leaves_BaseColor.png */; };
+		257FBF172D62A26900F92519 /* MASTER_Awning_Fabric_Cyan_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE0D2D62A25900F92519 /* MASTER_Awning_Fabric_Cyan_BaseColor.png */; };
+		257FBF182D62A26900F92519 /* Chimneys_Metal_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE0E2D62A25900F92519 /* Chimneys_Metal_BaseColor.png */; };
+		257FBF192D62A26900F92519 /* MASTER_Trim_Cornice_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE0F2D62A25900F92519 /* MASTER_Trim_Cornice_Normal.png */; };
+		257FBF1A2D62A26900F92519 /* Vespa_Odometer_Glass_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE102D62A25900F92519 /* Vespa_Odometer_Glass_Normal.png */; };
+		257FBF1B2D62A26900F92519 /* Awnings_Beams_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE112D62A25900F92519 /* Awnings_Beams_BaseColor.png */; };
+		257FBF1C2D62A26900F92519 /* Streetlight_Support_Bulb_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE122D62A25900F92519 /* Streetlight_Support_Bulb_BaseColor.png */; };
+		257FBF1D2D62A26900F92519 /* Foliage_Ivy_leaf_a_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE132D62A25A00F92519 /* Foliage_Ivy_leaf_a_Normal.png */; };
+		257FBF1E2D62A26900F92519 /* MASTER_Concrete_White_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE142D62A25A00F92519 /* MASTER_Concrete_White_Normal.png */; };
+		257FBF1F2D62A26900F92519 /* Foliage_Linde_Tree_Large_Orange_Leaves_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE152D62A25A00F92519 /* Foliage_Linde_Tree_Large_Orange_Leaves_Normal.png */; };
+		257FBF202D62A26900F92519 /* MASTER_Focus_Ornament_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE162D62A25A00F92519 /* MASTER_Focus_Ornament_Normal.png */; };
+		257FBF212D62A26900F92519 /* MASTER_Grain_Metal_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE172D62A25A00F92519 /* MASTER_Grain_Metal_BaseColor.png */; };
+		257FBF222D62A26900F92519 /* MASTER_Brick_Small_Red_BLENDSHADER_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE182D62A25A00F92519 /* MASTER_Brick_Small_Red_BLENDSHADER_BaseColor.png */; };
+		257FBF232D62A26900F92519 /* Paris_StringLights_01_White_Color_Emissive_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE192D62A25A00F92519 /* Paris_StringLights_01_White_Color_Emissive_BaseColor.png */; };
+		257FBF242D62A26900F92519 /* MASTER_Glass_Exterior_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE1A2D62A25A00F92519 /* MASTER_Glass_Exterior_BaseColor.png */; };
+		257FBF252D62A26900F92519 /* Emissive_StreetLight_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE1B2D62A25A00F92519 /* Emissive_StreetLight_BaseColor.png */; };
+		257FBF262D62A26900F92519 /* Paris_Chair_01_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE1C2D62A25A00F92519 /* Paris_Chair_01_Normal.png */; };
+		257FBF272D62A26900F92519 /* Shopsign_Ties_Shop_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE1D2D62A25A00F92519 /* Shopsign_Ties_Shop_Normal.png */; };
+		257FBF282D62A26900F92519 /* Concrete2_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE1E2D62A25A00F92519 /* Concrete2_Normal.png */; };
+		257FBF292D62A26900F92519 /* Bistro_Sign_Letters_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE1F2D62A25A00F92519 /* Bistro_Sign_Letters_BaseColor.png */; };
+		257FBF2A2D62A26900F92519 /* Vespa_Headlight_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE202D62A25B00F92519 /* Vespa_Headlight_BaseColor.png */; };
+		257FBF2B2D62A26900F92519 /* Paris_StringLights_01_Red_Color_Emissive_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE212D62A25B00F92519 /* Paris_StringLights_01_Red_Color_Emissive_Normal.png */; };
+		257FBF2C2D62A26900F92519 /* Pavement_Ground_Wet_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE222D62A25B00F92519 /* Pavement_Ground_Wet_BaseColor.png */; };
+		257FBF2D2D62A26900F92519 /* Bollards_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE232D62A25B00F92519 /* Bollards_Normal.png */; };
+		257FBF2E2D62A26900F92519 /* Foliage_Flowers_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE242D62A25B00F92519 /* Foliage_Flowers_BaseColor.png */; };
+		257FBF2F2D62A26900F92519 /* MASTER_Glass_Dirty_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE252D62A25B00F92519 /* MASTER_Glass_Dirty_BaseColor.png */; };
+		257FBF302D62A26900F92519 /* MASTER_Roofing_Shingle_Green_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE262D62A25B00F92519 /* MASTER_Roofing_Shingle_Green_Normal.png */; };
+		257FBF312D62A26900F92519 /* Spotlight_Emissive_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE272D62A25B00F92519 /* Spotlight_Emissive_BaseColor.png */; };
+		257FBF322D62A26900F92519 /* Streetlight_Metal_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE282D62A25B00F92519 /* Streetlight_Metal_BaseColor.png */; };
+		257FBF332D62A26900F92519 /* MASTER_Frosted_Glass_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE292D62A25B00F92519 /* MASTER_Frosted_Glass_Normal.png */; };
+		257FBF342D62A26900F92519 /* Balcony_Green_Wood_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE2A2D62A25B00F92519 /* Balcony_Green_Wood_Normal.png */; };
+		257FBF352D62A26900F92519 /* Streetlight_Support_Bulb_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE2B2D62A25B00F92519 /* Streetlight_Support_Bulb_Normal.png */; };
+		257FBF362D62A26900F92519 /* MASTER_Rollup_Door_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE2C2D62A25B00F92519 /* MASTER_Rollup_Door_BaseColor.png */; };
+		257FBF372D62A26900F92519 /* MASTER_Concrete_Smooth_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE2D2D62A25B00F92519 /* MASTER_Concrete_Smooth_BaseColor.png */; };
+		257FBF382D62A26900F92519 /* Foliage_Linde_Tree_Large_Green_Leaves_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE2E2D62A25C00F92519 /* Foliage_Linde_Tree_Large_Green_Leaves_BaseColor.png */; };
+		257FBF392D62A26900F92519 /* Pavement_Curbstones_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE2F2D62A25C00F92519 /* Pavement_Curbstones_Normal.png */; };
+		257FBF3A2D62A26900F92519 /* MASTER_Wood_Painted_Green_BLENDSHADER_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE302D62A25C00F92519 /* MASTER_Wood_Painted_Green_BLENDSHADER_Normal.png */; };
+		257FBF3B2D62A26900F92519 /* MASTER_Plastic_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE312D62A25C00F92519 /* MASTER_Plastic_BaseColor.png */; };
+		257FBF3C2D62A26900F92519 /* Ashtray_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE322D62A25C00F92519 /* Ashtray_BaseColor.png */; };
+		257FBF3D2D62A26900F92519 /* Foliage_Trunk_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE332D62A25C00F92519 /* Foliage_Trunk_Normal.png */; };
+		257FBF3E2D62A26900F92519 /* LanternEmissive_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE342D62A25C00F92519 /* LanternEmissive_Normal.png */; };
+		257FBF3F2D62A26900F92519 /* MASTER_Focus_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE352D62A25C00F92519 /* MASTER_Focus_BaseColor.png */; };
+		257FBF402D62A26900F92519 /* Pavement_Cobblestone_01_BLENDSHADER_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE362D62A25C00F92519 /* Pavement_Cobblestone_01_BLENDSHADER_BaseColor.png */; };
+		257FBF412D62A26900F92519 /* Paris_StringLights_01_Green_Color_Emissive_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE372D62A25C00F92519 /* Paris_StringLights_01_Green_Color_Emissive_Normal.png */; };
+		257FBF422D62A26900F92519 /* Pavement_Manhole_Cover_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE382D62A25C00F92519 /* Pavement_Manhole_Cover_BaseColor.png */; };
+		257FBF432D62A26900F92519 /* MASTER_Glass_Exterior_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE392D62A25C00F92519 /* MASTER_Glass_Exterior_Normal.png */; };
+		257FBF442D62A26900F92519 /* Pavement_Cobblestone_Wet_Leaves_BLENDSHADER_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE3A2D62A25C00F92519 /* Pavement_Cobblestone_Wet_Leaves_BLENDSHADER_BaseColor.png */; };
+		257FBF452D62A26900F92519 /* Foliage_Linde_Tree_Large_Trunk_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE3B2D62A25D00F92519 /* Foliage_Linde_Tree_Large_Trunk_BaseColor.png */; };
+		257FBF462D62A26900F92519 /* Spotlight_Emissive_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE3C2D62A25D00F92519 /* Spotlight_Emissive_Normal.png */; };
+		257FBF472D62A26900F92519 /* Paris_StringLights_01_Green_Color_Emissive_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE3D2D62A25D00F92519 /* Paris_StringLights_01_Green_Color_Emissive_BaseColor.png */; };
+		257FBF482D62A26900F92519 /* MASTER_Bistro_Main_Door_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE3E2D62A25D00F92519 /* MASTER_Bistro_Main_Door_Normal.png */; };
+		257FBF492D62A26900F92519 /* Paris_StreetPivot_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE3F2D62A25D00F92519 /* Paris_StreetPivot_BaseColor.png */; };
+		257FBF4A2D62A26900F92519 /* Paris_StringLights_01_Blue_Color_Emissive_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE402D62A25D00F92519 /* Paris_StringLights_01_Blue_Color_Emissive_BaseColor.png */; };
+		257FBF4B2D62A26900F92519 /* MASTER_Wood_Brown_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE412D62A25D00F92519 /* MASTER_Wood_Brown_BaseColor.png */; };
+		257FBF4C2D62A26900F92519 /* MenuSign_02_Mesh_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE422D62A25D00F92519 /* MenuSign_02_Mesh_Normal.png */; };
+		257FBF4D2D62A26900F92519 /* MASTER_Metal_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE432D62A25D00F92519 /* MASTER_Metal_Normal.png */; };
+		257FBF4E2D62A26900F92519 /* Pavement_Brick_BLENDSHADER_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE442D62A25D00F92519 /* Pavement_Brick_BLENDSHADER_Normal.png */; };
+		257FBF4F2D62A26900F92519 /* Paris_StringLights_01_Orange_Color_Emissive_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE452D62A25D00F92519 /* Paris_StringLights_01_Orange_Color_Emissive_Normal.png */; };
+		257FBF502D62A26900F92519 /* MASTER_Concrete_Plaster1_BLENDSHADER_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE462D62A25D00F92519 /* MASTER_Concrete_Plaster1_BLENDSHADER_Normal.png */; };
+		257FBF512D62A26900F92519 /* MASTER_Metal_Pipe_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE472D62A25D00F92519 /* MASTER_Metal_Pipe_BaseColor.png */; };
+		257FBF522D62A26900F92519 /* Shopsign_Bakery_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE482D62A25E00F92519 /* Shopsign_Bakery_BaseColor.png */; };
+		257FBF532D62A26900F92519 /* Bistro_Sign_Main_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE492D62A25E00F92519 /* Bistro_Sign_Main_Normal.png */; };
+		257FBF542D62A26900F92519 /* MASTER_Wood_Painted_Green_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE4A2D62A25E00F92519 /* MASTER_Wood_Painted_Green_BaseColor.png */; };
+		257FBF552D62A26900F92519 /* Paris_StreetSign_01_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE4B2D62A25E00F92519 /* Paris_StreetSign_01_Normal.png */; };
+		257FBF562D62A26900F92519 /* MASTER_Building_Details_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE4C2D62A25E00F92519 /* MASTER_Building_Details_BaseColor.png */; };
+		257FBF572D62A26900F92519 /* Balcony_Trims_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE4D2D62A25E00F92519 /* Balcony_Trims_Normal.png */; };
+		257FBF582D62A26900F92519 /* Shopsign_Bakery_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE4E2D62A25E00F92519 /* Shopsign_Bakery_Normal.png */; };
+		257FBF592D62A26900F92519 /* Paris_StringLights_01_Red_Color_Emissive_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE4F2D62A25E00F92519 /* Paris_StringLights_01_Red_Color_Emissive_BaseColor.png */; };
+		257FBF5A2D62A26900F92519 /* MASTER_Forge_Metal_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE502D62A25E00F92519 /* MASTER_Forge_Metal_BaseColor.png */; };
+		257FBF5B2D62A26900F92519 /* Foliage_Bux_Hedges46_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE512D62A25E00F92519 /* Foliage_Bux_Hedges46_Normal.png */; };
+		257FBF5C2D62A26900F92519 /* Spotlight_Main_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE522D62A25E00F92519 /* Spotlight_Main_Normal.png */; };
+		257FBF5D2D62A26900F92519 /* Concrete_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE532D62A25E00F92519 /* Concrete_Normal.png */; };
+		257FBF5E2D62A26900F92519 /* MASTER_Concrete_Plaster_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE542D62A25E00F92519 /* MASTER_Concrete_Plaster_Normal.png */; };
+		257FBF5F2D62A26900F92519 /* Vespa_Headlight_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE552D62A25F00F92519 /* Vespa_Headlight_Normal.png */; };
+		257FBF602D62A26900F92519 /* Foliage_Leaves_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE562D62A25F00F92519 /* Foliage_Leaves_Normal.png */; };
+		257FBF612D62A26900F92519 /* Antenna_Plastic_Blue_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE572D62A25F00F92519 /* Antenna_Plastic_Blue_BaseColor.png */; };
+		257FBF622D62A26900F92519 /* Paris_StringLights_01_Orange_Color_Emissive_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE582D62A25F00F92519 /* Paris_StringLights_01_Orange_Color_Emissive_BaseColor.png */; };
+		257FBF632D62A26900F92519 /* MASTER_Concrete1_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE592D62A25F00F92519 /* MASTER_Concrete1_BaseColor.png */; };
+		257FBF642D62A26900F92519 /* Paris_Chair_01_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE5A2D62A25F00F92519 /* Paris_Chair_01_BaseColor.png */; };
+		257FBF652D62A26900F92519 /* MASTER_Doors_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE5B2D62A25F00F92519 /* MASTER_Doors_BaseColor.png */; };
+		257FBF662D62A26900F92519 /* MASTER_Room_Interior_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE5C2D62A25F00F92519 /* MASTER_Room_Interior_Normal.png */; };
+		257FBF672D62A26900F92519 /* Concrete3_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE5D2D62A25F00F92519 /* Concrete3_Normal.png */; };
+		257FBF682D62A26900F92519 /* Streetlight_Chains_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE5E2D62A25F00F92519 /* Streetlight_Chains_BaseColor.png */; };
+		257FBF692D62A26900F92519 /* Foliage_Bux_Hedges46_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE5F2D62A25F00F92519 /* Foliage_Bux_Hedges46_BaseColor.png */; };
+		257FBF6A2D62A26900F92519 /* MASTER_Glass_Dirty_MASKED_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE602D62A25F00F92519 /* MASTER_Glass_Dirty_MASKED_Normal.png */; };
+		257FBF6B2D62A26900F92519 /* MenuSign_01_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE612D62A26000F92519 /* MenuSign_01_Normal.png */; };
+		257FBF6C2D62A26900F92519 /* MASTER_Book_Covers_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE622D62A26000F92519 /* MASTER_Book_Covers_Normal.png */; };
+		257FBF6D2D62A26900F92519 /* MASTER_Side_Letters_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE632D62A26000F92519 /* MASTER_Side_Letters_BaseColor.png */; };
+		257FBF6E2D62A26900F92519 /* Paris_StringLights_01_White_Color_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE642D62A26000F92519 /* Paris_StringLights_01_White_Color_BaseColor.png */; };
+		257FBF6F2D62A26900F92519 /* Streetlight_Chains_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE652D62A26000F92519 /* Streetlight_Chains_Normal.png */; };
+		257FBF702D62A26900F92519 /* Banner_Metal_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE662D62A26000F92519 /* Banner_Metal_Normal.png */; };
+		257FBF712D62A26900F92519 /* MASTER_Brick_Small_Red_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE672D62A26000F92519 /* MASTER_Brick_Small_Red_BaseColor.png */; };
+		257FBF722D62A26900F92519 /* MASTER_Rollup_Door_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE682D62A26000F92519 /* MASTER_Rollup_Door_Normal.png */; };
+		257FBF732D62A26900F92519 /* MenuSign_01_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE692D62A26000F92519 /* MenuSign_01_BaseColor.png */; };
+		257FBF742D62A26900F92519 /* Pavement_Cobblestone_Wet_BLENDSHADER_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE6A2D62A26000F92519 /* Pavement_Cobblestone_Wet_BLENDSHADER_BaseColor.png */; };
+		257FBF752D62A26900F92519 /* Paris_TrafficSign_A_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE6B2D62A26000F92519 /* Paris_TrafficSign_A_BaseColor.png */; };
+		257FBF762D62A26900F92519 /* Paris_TrafficSign_A_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE6C2D62A26000F92519 /* Paris_TrafficSign_A_Normal.png */; };
+		257FBF772D62A26900F92519 /* Paris_LiquorBottle_01_Labels_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE6D2D62A26100F92519 /* Paris_LiquorBottle_01_Labels_BaseColor.png */; };
+		257FBF782D62A26900F92519 /* MASTER_Concrete_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE6E2D62A26100F92519 /* MASTER_Concrete_BaseColor.png */; };
+		257FBF792D62A26900F92519 /* Pavement_Manhole_Cover_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE6F2D62A26100F92519 /* Pavement_Manhole_Cover_Normal.png */; };
+		257FBF7A2D62A26900F92519 /* Bistro_Sign_Main_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE702D62A26100F92519 /* Bistro_Sign_Main_BaseColor.png */; };
+		257FBF7B2D62A26900F92519 /* Paris_StreetPivot_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE712D62A26100F92519 /* Paris_StreetPivot_Normal.png */; };
+		257FBF7C2D62A26900F92519 /* MASTER_Grain_Metal_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE722D62A26100F92519 /* MASTER_Grain_Metal_Normal.png */; };
+		257FBF7D2D62A26900F92519 /* Foliage_Flowers_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE732D62A26100F92519 /* Foliage_Flowers_Normal.png */; };
+		257FBF7E2D62A26900F92519 /* MASTER_Concrete_Plaster1_BLENDSHADER_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE742D62A26100F92519 /* MASTER_Concrete_Plaster1_BLENDSHADER_BaseColor.png */; };
+		257FBF7F2D62A26900F92519 /* Pavement_Cobblestone_Big_BLENDSHADER_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE752D62A26100F92519 /* Pavement_Cobblestone_Big_BLENDSHADER_BaseColor.png */; };
+		257FBF802D62A26900F92519 /* Awnings_Hotel_Fabric_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE762D62A26100F92519 /* Awnings_Hotel_Fabric_Normal.png */; };
+		257FBF812D62A26900F92519 /* MASTER_Details_Dark_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE772D62A26100F92519 /* MASTER_Details_Dark_Normal.png */; };
+		257FBF822D62A26900F92519 /* MASTER_Wood_Polished_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE782D62A26100F92519 /* MASTER_Wood_Polished_BaseColor.png */; };
+		257FBF832D62A26900F92519 /* MASTER_Frosted_Glass_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE792D62A26100F92519 /* MASTER_Frosted_Glass_BaseColor.png */; };
+		257FBF842D62A26900F92519 /* Foliage_Ivy_branches_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE7A2D62A26200F92519 /* Foliage_Ivy_branches_Normal.png */; };
+		257FBF852D62A26900F92519 /* Trashcan_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE7B2D62A26200F92519 /* Trashcan_Normal.png */; };
+		257FBF862D62A26900F92519 /* MASTER_Focus_Ornament_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE7C2D62A26200F92519 /* MASTER_Focus_Ornament_BaseColor.png */; };
+		257FBF872D62A26900F92519 /* Streetlight_Metal_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE7D2D62A26200F92519 /* Streetlight_Metal_Normal.png */; };
+		257FBF882D62A26900F92519 /* MASTER_Details_Dark_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE7E2D62A26200F92519 /* MASTER_Details_Dark_BaseColor.png */; };
+		257FBF892D62A26900F92519 /* Concrete_Striped_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE7F2D62A26200F92519 /* Concrete_Striped_Normal.png */; };
+		257FBF8A2D62A26900F92519 /* NapkinHolder_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE802D62A26200F92519 /* NapkinHolder_Normal.png */; };
+		257FBF8B2D62A26900F92519 /* MASTER_Wood_Painted_Green_BLENDSHADER_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE812D62A26200F92519 /* MASTER_Wood_Painted_Green_BLENDSHADER_BaseColor.png */; };
+		257FBF8C2D62A26900F92519 /* MASTER_Concrete_Plaster_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE822D62A26200F92519 /* MASTER_Concrete_Plaster_BaseColor.png */; };
+		257FBF8D2D62A26900F92519 /* Paris_LiquorBottle_01_Caps_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE832D62A26200F92519 /* Paris_LiquorBottle_01_Caps_Normal.png */; };
+		257FBF8E2D62A26900F92519 /* Chimneys_Metal_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE842D62A26200F92519 /* Chimneys_Metal_Normal.png */; };
+		257FBF8F2D62A26900F92519 /* Spotlight_Glass_Emissive_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE852D62A26200F92519 /* Spotlight_Glass_Emissive_Normal.png */; };
+		257FBF902D62A26900F92519 /* MASTER_Awning_Beams_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE862D62A26300F92519 /* MASTER_Awning_Beams_BaseColor.png */; };
+		257FBF912D62A26900F92519 /* Paris_LiquorBottle_01_Caps_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE872D62A26300F92519 /* Paris_LiquorBottle_01_Caps_BaseColor.png */; };
+		257FBF922D62A26900F92519 /* Foliage_Trunk_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE882D62A26300F92519 /* Foliage_Trunk_BaseColor.png */; };
+		257FBF932D62A26900F92519 /* MASTER_Black_Metal_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE892D62A26300F92519 /* MASTER_Black_Metal_Normal.png */; };
+		257FBF942D62A26900F92519 /* MASTER_Boulangerie_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE8A2D62A26300F92519 /* MASTER_Boulangerie_Normal.png */; };
+		257FBF952D62A26900F92519 /* MASTER_Wood_Brown_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE8B2D62A26300F92519 /* MASTER_Wood_Brown_Normal.png */; };
+		257FBF962D62A26900F92519 /* MASTER_Building_Details_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE8C2D62A26300F92519 /* MASTER_Building_Details_Normal.png */; };
+		257FBF972D62A26900F92519 /* Paris_StringLights_01_White_Color_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE8D2D62A26300F92519 /* Paris_StringLights_01_White_Color_Normal.png */; };
+		257FBF982D62A26900F92519 /* Balcony_Trims_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE8E2D62A26300F92519 /* Balcony_Trims_BaseColor.png */; };
+		257FBF992D62A26900F92519 /* MASTER_Curtains_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE8F2D62A26300F92519 /* MASTER_Curtains_Normal.png */; };
+		257FBF9A2D62A26900F92519 /* Paris_Table_Terrace_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE902D62A26300F92519 /* Paris_Table_Terrace_BaseColor.png */; };
+		257FBF9B2D62A26900F92519 /* MASTER_Concrete_Smooth_BLENDSHADER_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE912D62A26300F92519 /* MASTER_Concrete_Smooth_BLENDSHADER_Normal.png */; };
+		257FBF9C2D62A26900F92519 /* MASTER_Trim_Cornice_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE922D62A26400F92519 /* MASTER_Trim_Cornice_BaseColor.png */; };
+		257FBF9D2D62A26900F92519 /* MASTER_Plastic_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE932D62A26400F92519 /* MASTER_Plastic_Normal.png */; };
+		257FBF9E2D62A26900F92519 /* Balcony_Green_Wood_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE942D62A26400F92519 /* Balcony_Green_Wood_BaseColor.png */; };
+		257FBF9F2D62A26900F92519 /* MASTER_Brick_Large_Beige_BLENDSHADER_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE952D62A26400F92519 /* MASTER_Brick_Large_Beige_BLENDSHADER_BaseColor.png */; };
+		257FBFA02D62A26900F92519 /* MASTER_Glass_Dirty_MASKED_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE962D62A26400F92519 /* MASTER_Glass_Dirty_MASKED_BaseColor.png */; };
+		257FBFA12D62A26900F92519 /* MASTER_Room_Interior_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE972D62A26400F92519 /* MASTER_Room_Interior_BaseColor.png */; };
+		257FBFA22D62A26900F92519 /* MASTER_Concrete1_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE982D62A26400F92519 /* MASTER_Concrete1_Normal.png */; };
+		257FBFA32D62A26900F92519 /* Balcony_Concrete_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE992D62A26400F92519 /* Balcony_Concrete_BaseColor.png */; };
+		257FBFA42D62A26900F92519 /* MASTER_Concrete_Smooth_BLENDSHADER_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE9A2D62A26400F92519 /* MASTER_Concrete_Smooth_BLENDSHADER_BaseColor.png */; };
+		257FBFA52D62A26900F92519 /* Pavement_Cobblestone_Small_BLENDSHADER_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE9B2D62A26400F92519 /* Pavement_Cobblestone_Small_BLENDSHADER_BaseColor.png */; };
+		257FBFA62D62A26900F92519 /* MASTER_Metal_Pipe_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE9C2D62A26400F92519 /* MASTER_Metal_Pipe_Normal.png */; };
+		257FBFA72D62A26900F92519 /* Plaster_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE9D2D62A26500F92519 /* Plaster_Normal.png */; };
+		257FBFA82D62A26900F92519 /* MenuSign_02_Glass_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE9E2D62A26500F92519 /* MenuSign_02_Glass_BaseColor.png */; };
+		257FBFA92D62A26900F92519 /* Pavement_Cobblestone_01_BLENDSHADER_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBE9F2D62A26500F92519 /* Pavement_Cobblestone_01_BLENDSHADER_Normal.png */; };
+		257FBFAA2D62A26900F92519 /* Paris_StringLights_01_Pink_Color_Emissive_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEA02D62A26500F92519 /* Paris_StringLights_01_Pink_Color_Emissive_BaseColor.png */; };
+		257FBFAB2D62A26900F92519 /* Foliage_Paris_Flowers_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEA12D62A26500F92519 /* Foliage_Paris_Flowers_BaseColor.png */; };
+		257FBFAC2D62A26900F92519 /* MASTER_Concrete_Smooth_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEA22D62A26500F92519 /* MASTER_Concrete_Smooth_Normal.png */; };
+		257FBFAD2D62A26900F92519 /* MASTER_Black_Metal_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEA32D62A26500F92519 /* MASTER_Black_Metal_BaseColor.png */; };
+		257FBFAE2D62A26900F92519 /* Sidewalkbarrier_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEA42D62A26500F92519 /* Sidewalkbarrier_Normal.png */; };
+		257FBFAF2D62A26900F92519 /* Balcony_Ornaments_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEA52D62A26500F92519 /* Balcony_Ornaments_BaseColor.png */; };
+		257FBFB02D62A26900F92519 /* MASTER_Bronze_BLENDSHADER_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEA62D62A26500F92519 /* MASTER_Bronze_BLENDSHADER_BaseColor.png */; };
+		257FBFB12D62A26900F92519 /* Paris_Table_Terrace_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEA72D62A26500F92519 /* Paris_Table_Terrace_Normal.png */; };
+		257FBFB22D62A26900F92519 /* Sidewalkbarrier_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEA82D62A26600F92519 /* Sidewalkbarrier_BaseColor.png */; };
+		257FBFB32D62A26900F92519 /* MASTER_Brick_Small_Red_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEA92D62A26600F92519 /* MASTER_Brick_Small_Red_Normal.png */; };
+		257FBFB42D62A26900F92519 /* MASTER_Book_Covers_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEAA2D62A26600F92519 /* MASTER_Book_Covers_BaseColor.png */; };
+		257FBFB52D62A26900F92519 /* Concrete2_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEAB2D62A26600F92519 /* Concrete2_BaseColor.png */; };
+		257FBFB62D62A26900F92519 /* Paris_StringLights_01_Blue_Color_Emissive_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEAC2D62A26600F92519 /* Paris_StringLights_01_Blue_Color_Emissive_Normal.png */; };
+		257FBFB72D62A26900F92519 /* NapkinHolder_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEAD2D62A26600F92519 /* NapkinHolder_BaseColor.png */; };
+		257FBFB82D62A26900F92519 /* Paris_LiquorBottle_01_Glass_Wine_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEAE2D62A26600F92519 /* Paris_LiquorBottle_01_Glass_Wine_BaseColor.png */; };
+		257FBFB92D62A26900F92519 /* MASTER_Awning_Fabric_Red_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEAF2D62A26600F92519 /* MASTER_Awning_Fabric_Red_Normal.png */; };
+		257FBFBA2D62A26900F92519 /* Antenna_Plastic_Blue_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEB02D62A26600F92519 /* Antenna_Plastic_Blue_Normal.png */; };
+		257FBFBB2D62A26900F92519 /* Foliage_Linde_Tree_Large_Green_Leaves_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEB12D62A26600F92519 /* Foliage_Linde_Tree_Large_Green_Leaves_Normal.png */; };
+		257FBFBC2D62A26900F92519 /* Paris_LiquorBottle_01_Glass_Wine_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEB22D62A26600F92519 /* Paris_LiquorBottle_01_Glass_Wine_Normal.png */; };
+		257FBFBD2D62A26900F92519 /* MASTER_Light_Bulb_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEB32D62A26600F92519 /* MASTER_Light_Bulb_BaseColor.png */; };
+		257FBFBE2D62A26900F92519 /* Pavement_Cobblestone_02_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEB42D62A26700F92519 /* Pavement_Cobblestone_02_Normal.png */; };
+		257FBFBF2D62A26900F92519 /* Antenna_Metal_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEB52D62A26700F92519 /* Antenna_Metal_BaseColor.png */; };
+		257FBFC02D62A26900F92519 /* Shopsign_Pharmacy_Emissive_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEB62D62A26700F92519 /* Shopsign_Pharmacy_Emissive_BaseColor.png */; };
+		257FBFC12D62A26900F92519 /* Antenna_Plastic_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEB72D62A26700F92519 /* Antenna_Plastic_BaseColor.png */; };
+		257FBFC22D62A26900F92519 /* Spotlight_Glass_Emissive_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEB82D62A26700F92519 /* Spotlight_Glass_Emissive_BaseColor.png */; };
+		257FBFC32D62A26900F92519 /* MASTER_Concrete_Grooved_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEB92D62A26700F92519 /* MASTER_Concrete_Grooved_Normal.png */; };
+		257FBFC42D62A26900F92519 /* Concrete_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEBA2D62A26700F92519 /* Concrete_BaseColor.png */; };
+		257FBFC52D62A26900F92519 /* MASTER_Wood_Polished_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEBB2D62A26700F92519 /* MASTER_Wood_Polished_Normal.png */; };
+		257FBFC62D62A26900F92519 /* Bollards_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEBC2D62A26700F92519 /* Bollards_BaseColor.png */; };
+		257FBFC72D62A26900F92519 /* Shopsign_Ties_Shop_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEBD2D62A26700F92519 /* Shopsign_Ties_Shop_BaseColor.png */; };
+		257FBFC82D62A26900F92519 /* Pavement_Ground_Wet_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEBE2D62A26800F92519 /* Pavement_Ground_Wet_Normal.png */; };
+		257FBFC92D62A26900F92519 /* MASTER_Metal_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEBF2D62A26800F92519 /* MASTER_Metal_BaseColor.png */; };
+		257FBFCA2D62A26900F92519 /* Paris_StreetSign_01_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEC02D62A26800F92519 /* Paris_StreetSign_01_BaseColor.png */; };
+		257FBFCB2D62A26900F92519 /* ElectricBox_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEC12D62A26800F92519 /* ElectricBox_Normal.png */; };
+		257FBFCC2D62A26900F92519 /* Foliage_Paris_Flowers_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEC22D62A26800F92519 /* Foliage_Paris_Flowers_Normal.png */; };
+		257FBFCD2D62A26900F92519 /* MASTER_Forge_Metal_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEC32D62A26800F92519 /* MASTER_Forge_Metal_Normal.png */; };
+		257FBFCE2D62A26900F92519 /* Emissive_StreetLight_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEC42D62A26800F92519 /* Emissive_StreetLight_Normal.png */; };
+		257FBFCF2D62A26900F92519 /* MASTER_Wood_Painted3_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEC52D62A26800F92519 /* MASTER_Wood_Painted3_Normal.png */; };
+		257FBFD02D62A26900F92519 /* Pavement_Cobblestone_Small_BLENDSHADER_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEC62D62A26800F92519 /* Pavement_Cobblestone_Small_BLENDSHADER_Normal.png */; };
+		257FBFD12D62A26900F92519 /* Plantpots_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEC72D62A26800F92519 /* Plantpots_BaseColor.png */; };
+		257FBFD22D62A26900F92519 /* Plantpots_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEC82D62A26800F92519 /* Plantpots_Normal.png */; };
+		257FBFD32D62A26900F92519 /* Shopsign_Book_Store_Emissive_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBEC92D62A26800F92519 /* Shopsign_Book_Store_Emissive_BaseColor.png */; };
+		257FBFD42D62A26900F92519 /* MASTER_Concrete_Grooved_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBECA2D62A26900F92519 /* MASTER_Concrete_Grooved_BaseColor.png */; };
+		257FBFD52D62A26900F92519 /* Foliage_Ivy_leaf_a_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBECB2D62A26900F92519 /* Foliage_Ivy_leaf_a_BaseColor.png */; };
+		257FBFD62D62A26900F92519 /* MASTER_Wood_Painted_Cyan_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBECC2D62A26900F92519 /* MASTER_Wood_Painted_Cyan_BaseColor.png */; };
+		257FBFD72D62A26900F92519 /* MASTER_Boulangerie_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBECD2D62A26900F92519 /* MASTER_Boulangerie_BaseColor.png */; };
+		257FBFD82D62A26900F92519 /* normal-dimensions.txt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBECE2D62A26900F92519 /* normal-dimensions.txt */; };
+		257FBFD92D62A26900F92519 /* Antenna_Metal_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBECF2D62A26900F92519 /* Antenna_Metal_Normal.png */; };
+		257FBFDA2D62A26900F92519 /* Balcony_Concrete_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBED02D62A26900F92519 /* Balcony_Concrete_Normal.png */; };
+		257FBFDB2D62A26900F92519 /* MASTER_Roofing_Shingle_Green_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBED12D62A26900F92519 /* MASTER_Roofing_Shingle_Green_BaseColor.png */; };
+		257FBFDC2D62A26900F92519 /* MASTER_Brick_Large_White_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBED22D62A26900F92519 /* MASTER_Brick_Large_White_BaseColor.png */; };
 		259DF5842D605457007BA6A1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259DF5832D605457007BA6A1 /* ViewController.swift */; };
 		259DF5882D6054A9007BA6A1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259DF5872D6054A9007BA6A1 /* AppDelegate.swift */; };
 		25DECE7F2D6057FF00ED56EE /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DECE7E2D6057FF00ED56EE /* MetalView.swift */; };
@@ -93,18 +366,589 @@
 		25DECF8D2D61532E00ED56EE /* CommandQueueDX12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECED42D61532E00ED56EE /* CommandQueueDX12.cpp */; };
 		25DECF8E2D61532E00ED56EE /* ImageViewVulkan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF1B2D61532E00ED56EE /* ImageViewVulkan.cpp */; };
 		25DECF902D6155AD00ED56EE /* UtilsMetal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF8F2D6155AD00ED56EE /* UtilsMetal.mm */; };
+		25DECF962D6160D200ED56EE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 25DECF922D6160D200ED56EE /* Assets.xcassets */; };
+		25DECF972D6160D200ED56EE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 25DECF942D6160D200ED56EE /* Main.storyboard */; };
+		25DECF992D6162D200ED56EE /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF982D6162D200ED56EE /* Document.swift */; };
+		25DECF9D2D61632700ED56EE /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 25DECF9C2D61632700ED56EE /* Info.plist */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		257FBDB92D61D3C400F92519 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = assets;
+			dstSubfolderSpec = 7;
+			files = (
+				257FBDBA2D61D3CE00F92519 /* bistro2-triangles.bin in CopyFiles */,
+				257FBDC02D629FDF00F92519 /* bistro2-mesh-instance-ids.bin in CopyFiles */,
+				257FBDC12D629FDF00F92519 /* bistro2-mesh-instance-positions.bin in CopyFiles */,
+				257FBDC22D629FDF00F92519 /* bistro2-mesh-instance-bboxes.bin in CopyFiles */,
+				257FBDC32D629FDF00F92519 /* bistro2-triangle-positions.bin in CopyFiles */,
+				257FBDC62D629FF800F92519 /* bistro2.mat in CopyFiles */,
+				257FBDC72D629FF800F92519 /* bistro2.mid in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		257FBDC82D62A22100F92519 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "assets/converted-dds-scaled";
+			dstSubfolderSpec = 7;
+			files = (
+				257FBED32D62A26900F92519 /* Vespa_Odometer_Glass_BaseColor.png in CopyFiles */,
+				257FBED42D62A26900F92519 /* MASTER_Wood_Painted3_BaseColor.png in CopyFiles */,
+				257FBED52D62A26900F92519 /* MASTER_Awning_Fabric_Cyan_Normal.png in CopyFiles */,
+				257FBED62D62A26900F92519 /* MASTER_Concrete_Normal.png in CopyFiles */,
+				257FBED72D62A26900F92519 /* MASTER_Concrete_Yellow_BaseColor.png in CopyFiles */,
+				257FBED82D62A26900F92519 /* MASTER_Concrete_Yellow_Normal.png in CopyFiles */,
+				257FBED92D62A26900F92519 /* MASTER_Brick_Small_Red_BLENDSHADER_Normal.png in CopyFiles */,
+				257FBEDA2D62A26900F92519 /* MASTER_Wood_Painted_Cyan_Normal.png in CopyFiles */,
+				257FBEDB2D62A26900F92519 /* MASTER_Curtains_BaseColor.png in CopyFiles */,
+				257FBEDC2D62A26900F92519 /* MASTER_Doors_Normal.png in CopyFiles */,
+				257FBEDD2D62A26900F92519 /* Trashcan_BaseColor.png in CopyFiles */,
+				257FBEDE2D62A26900F92519 /* Awnings_Fabric_BaseColor.png in CopyFiles */,
+				257FBEDF2D62A26900F92519 /* Pavement_Cobble_Leaves_BLENDSHADER_Normal.png in CopyFiles */,
+				257FBEE02D62A26900F92519 /* MASTER_Bistro_Main_Door_BaseColor.png in CopyFiles */,
+				257FBEE12D62A26900F92519 /* MASTER_Awning_Fabric_Red_BaseColor.png in CopyFiles */,
+				257FBEE22D62A26900F92519 /* Pavement_Cobblestone_02_BaseColor.png in CopyFiles */,
+				257FBEE32D62A26900F92519 /* Concrete3_BaseColor.png in CopyFiles */,
+				257FBEE42D62A26900F92519 /* Foliage_Linde_Tree_Large_Trunk_Normal.png in CopyFiles */,
+				257FBEE52D62A26900F92519 /* Paris_StringLights_01_White_Color_Emissive_Normal.png in CopyFiles */,
+				257FBEE62D62A26900F92519 /* Paris_LiquorBottle_01_Labels_Normal.png in CopyFiles */,
+				257FBEE72D62A26900F92519 /* Vespa_Normal.png in CopyFiles */,
+				257FBEE82D62A26900F92519 /* Shopsign_Pharmacy_Emissive_Normal.png in CopyFiles */,
+				257FBEE92D62A26900F92519 /* Awnings_Fabric_Normal.png in CopyFiles */,
+				257FBEEA2D62A26900F92519 /* Ashtray_Normal.png in CopyFiles */,
+				257FBEEB2D62A26900F92519 /* Stringlights_Normal.png in CopyFiles */,
+				257FBEEC2D62A26900F92519 /* Paris_StringLights_01_Pink_Color_Emissive_Normal.png in CopyFiles */,
+				257FBEED2D62A26900F92519 /* MASTER_Bronze_BLENDSHADER_Normal.png in CopyFiles */,
+				257FBEEE2D62A26900F92519 /* MASTER_Brick_Large_Beige_BLENDSHADER_Normal.png in CopyFiles */,
+				257FBEEF2D62A26900F92519 /* Balcony_Ornaments_Normal.png in CopyFiles */,
+				257FBEF02D62A26900F92519 /* MASTER_Roofing_Shingle_Grey_BaseColor.png in CopyFiles */,
+				257FBEF12D62A26900F92519 /* Banner_Metal_BaseColor.png in CopyFiles */,
+				257FBEF22D62A26900F92519 /* Awnings_Beams_Normal.png in CopyFiles */,
+				257FBEF32D62A26900F92519 /* MASTER_Wood_Painted_Green_Normal.png in CopyFiles */,
+				257FBEF42D62A26900F92519 /* MASTER_Brick_Large_White_Normal.png in CopyFiles */,
+				257FBEF52D62A26900F92519 /* Pavement_Cobblestone_Wet_BLENDSHADER_Normal.png in CopyFiles */,
+				257FBEF62D62A26900F92519 /* Vespa_BaseColor.png in CopyFiles */,
+				257FBEF72D62A26900F92519 /* Concrete_Striped_BaseColor.png in CopyFiles */,
+				257FBEF82D62A26900F92519 /* Awnings_Hotel_Fabric_BaseColor.png in CopyFiles */,
+				257FBEF92D62A26900F92519 /* Foliage_Linde_Tree_Large_Orange_Leaves_BaseColor.png in CopyFiles */,
+				257FBEFA2D62A26900F92519 /* Shopsign_Book_Store_Emissive_Normal.png in CopyFiles */,
+				257FBEFB2D62A26900F92519 /* MASTER_Concrete_White_BaseColor.png in CopyFiles */,
+				257FBEFC2D62A26900F92519 /* albedo-dimensions.txt in CopyFiles */,
+				257FBEFD2D62A26900F92519 /* Vespa_Odometer_BaseColor.png in CopyFiles */,
+				257FBEFE2D62A26900F92519 /* MASTER_Roofing_Metal_01_BaseColor.png in CopyFiles */,
+				257FBEFF2D62A26900F92519 /* Plaster_BaseColor.png in CopyFiles */,
+				257FBF002D62A26900F92519 /* Spotlight_Main_BaseColor.png in CopyFiles */,
+				257FBF012D62A26900F92519 /* Pavement_Cobble_Leaves_BLENDSHADER_BaseColor.png in CopyFiles */,
+				257FBF022D62A26900F92519 /* MASTER_Light_Bulb_Normal.png in CopyFiles */,
+				257FBF032D62A26900F92519 /* MASTER_Roofing_Metal_01_Normal.png in CopyFiles */,
+				257FBF042D62A26900F92519 /* MenuSign_02_Glass_Normal.png in CopyFiles */,
+				257FBF052D62A26900F92519 /* MASTER_Glass_Dirty_Normal.png in CopyFiles */,
+				257FBF062D62A26900F92519 /* MASTER_Focus_Normal.png in CopyFiles */,
+				257FBF072D62A26900F92519 /* Bistro_Sign_Letters_Normal.png in CopyFiles */,
+				257FBF082D62A26900F92519 /* Pavement_Curbstones_BaseColor.png in CopyFiles */,
+				257FBF092D62A26900F92519 /* MASTER_Awning_Beams_Normal.png in CopyFiles */,
+				257FBF0A2D62A26900F92519 /* Antenna_Plastic_Normal.png in CopyFiles */,
+				257FBF0B2D62A26900F92519 /* ElectricBox_BaseColor.png in CopyFiles */,
+				257FBF0C2D62A26900F92519 /* LanternEmissive_BaseColor.png in CopyFiles */,
+				257FBF0D2D62A26900F92519 /* Vespa_Odometer_Normal.png in CopyFiles */,
+				257FBF0E2D62A26900F92519 /* MASTER_Roofing_Shingle_Grey_Normal.png in CopyFiles */,
+				257FBF0F2D62A26900F92519 /* MASTER_Side_Letters_Normal.png in CopyFiles */,
+				257FBF102D62A26900F92519 /* Foliage_Ivy_branches_BaseColor.png in CopyFiles */,
+				257FBF112D62A26900F92519 /* Pavement_Brick_BLENDSHADER_BaseColor.png in CopyFiles */,
+				257FBF122D62A26900F92519 /* MenuSign_02_Mesh_BaseColor.png in CopyFiles */,
+				257FBF132D62A26900F92519 /* Pavement_Cobblestone_Big_BLENDSHADER_Normal.png in CopyFiles */,
+				257FBF142D62A26900F92519 /* Pavement_Cobblestone_Wet_Leaves_BLENDSHADER_Normal.png in CopyFiles */,
+				257FBF152D62A26900F92519 /* Stringlights_BaseColor.png in CopyFiles */,
+				257FBF162D62A26900F92519 /* Foliage_Leaves_BaseColor.png in CopyFiles */,
+				257FBF172D62A26900F92519 /* MASTER_Awning_Fabric_Cyan_BaseColor.png in CopyFiles */,
+				257FBF182D62A26900F92519 /* Chimneys_Metal_BaseColor.png in CopyFiles */,
+				257FBF192D62A26900F92519 /* MASTER_Trim_Cornice_Normal.png in CopyFiles */,
+				257FBF1A2D62A26900F92519 /* Vespa_Odometer_Glass_Normal.png in CopyFiles */,
+				257FBF1B2D62A26900F92519 /* Awnings_Beams_BaseColor.png in CopyFiles */,
+				257FBF1C2D62A26900F92519 /* Streetlight_Support_Bulb_BaseColor.png in CopyFiles */,
+				257FBF1D2D62A26900F92519 /* Foliage_Ivy_leaf_a_Normal.png in CopyFiles */,
+				257FBF1E2D62A26900F92519 /* MASTER_Concrete_White_Normal.png in CopyFiles */,
+				257FBF1F2D62A26900F92519 /* Foliage_Linde_Tree_Large_Orange_Leaves_Normal.png in CopyFiles */,
+				257FBF202D62A26900F92519 /* MASTER_Focus_Ornament_Normal.png in CopyFiles */,
+				257FBF212D62A26900F92519 /* MASTER_Grain_Metal_BaseColor.png in CopyFiles */,
+				257FBF222D62A26900F92519 /* MASTER_Brick_Small_Red_BLENDSHADER_BaseColor.png in CopyFiles */,
+				257FBF232D62A26900F92519 /* Paris_StringLights_01_White_Color_Emissive_BaseColor.png in CopyFiles */,
+				257FBF242D62A26900F92519 /* MASTER_Glass_Exterior_BaseColor.png in CopyFiles */,
+				257FBF252D62A26900F92519 /* Emissive_StreetLight_BaseColor.png in CopyFiles */,
+				257FBF262D62A26900F92519 /* Paris_Chair_01_Normal.png in CopyFiles */,
+				257FBF272D62A26900F92519 /* Shopsign_Ties_Shop_Normal.png in CopyFiles */,
+				257FBF282D62A26900F92519 /* Concrete2_Normal.png in CopyFiles */,
+				257FBF292D62A26900F92519 /* Bistro_Sign_Letters_BaseColor.png in CopyFiles */,
+				257FBF2A2D62A26900F92519 /* Vespa_Headlight_BaseColor.png in CopyFiles */,
+				257FBF2B2D62A26900F92519 /* Paris_StringLights_01_Red_Color_Emissive_Normal.png in CopyFiles */,
+				257FBF2C2D62A26900F92519 /* Pavement_Ground_Wet_BaseColor.png in CopyFiles */,
+				257FBF2D2D62A26900F92519 /* Bollards_Normal.png in CopyFiles */,
+				257FBF2E2D62A26900F92519 /* Foliage_Flowers_BaseColor.png in CopyFiles */,
+				257FBF2F2D62A26900F92519 /* MASTER_Glass_Dirty_BaseColor.png in CopyFiles */,
+				257FBF302D62A26900F92519 /* MASTER_Roofing_Shingle_Green_Normal.png in CopyFiles */,
+				257FBF312D62A26900F92519 /* Spotlight_Emissive_BaseColor.png in CopyFiles */,
+				257FBF322D62A26900F92519 /* Streetlight_Metal_BaseColor.png in CopyFiles */,
+				257FBF332D62A26900F92519 /* MASTER_Frosted_Glass_Normal.png in CopyFiles */,
+				257FBF342D62A26900F92519 /* Balcony_Green_Wood_Normal.png in CopyFiles */,
+				257FBF352D62A26900F92519 /* Streetlight_Support_Bulb_Normal.png in CopyFiles */,
+				257FBF362D62A26900F92519 /* MASTER_Rollup_Door_BaseColor.png in CopyFiles */,
+				257FBF372D62A26900F92519 /* MASTER_Concrete_Smooth_BaseColor.png in CopyFiles */,
+				257FBF382D62A26900F92519 /* Foliage_Linde_Tree_Large_Green_Leaves_BaseColor.png in CopyFiles */,
+				257FBF392D62A26900F92519 /* Pavement_Curbstones_Normal.png in CopyFiles */,
+				257FBF3A2D62A26900F92519 /* MASTER_Wood_Painted_Green_BLENDSHADER_Normal.png in CopyFiles */,
+				257FBF3B2D62A26900F92519 /* MASTER_Plastic_BaseColor.png in CopyFiles */,
+				257FBF3C2D62A26900F92519 /* Ashtray_BaseColor.png in CopyFiles */,
+				257FBF3D2D62A26900F92519 /* Foliage_Trunk_Normal.png in CopyFiles */,
+				257FBF3E2D62A26900F92519 /* LanternEmissive_Normal.png in CopyFiles */,
+				257FBF3F2D62A26900F92519 /* MASTER_Focus_BaseColor.png in CopyFiles */,
+				257FBF402D62A26900F92519 /* Pavement_Cobblestone_01_BLENDSHADER_BaseColor.png in CopyFiles */,
+				257FBF412D62A26900F92519 /* Paris_StringLights_01_Green_Color_Emissive_Normal.png in CopyFiles */,
+				257FBF422D62A26900F92519 /* Pavement_Manhole_Cover_BaseColor.png in CopyFiles */,
+				257FBF432D62A26900F92519 /* MASTER_Glass_Exterior_Normal.png in CopyFiles */,
+				257FBF442D62A26900F92519 /* Pavement_Cobblestone_Wet_Leaves_BLENDSHADER_BaseColor.png in CopyFiles */,
+				257FBF452D62A26900F92519 /* Foliage_Linde_Tree_Large_Trunk_BaseColor.png in CopyFiles */,
+				257FBF462D62A26900F92519 /* Spotlight_Emissive_Normal.png in CopyFiles */,
+				257FBF472D62A26900F92519 /* Paris_StringLights_01_Green_Color_Emissive_BaseColor.png in CopyFiles */,
+				257FBF482D62A26900F92519 /* MASTER_Bistro_Main_Door_Normal.png in CopyFiles */,
+				257FBF492D62A26900F92519 /* Paris_StreetPivot_BaseColor.png in CopyFiles */,
+				257FBF4A2D62A26900F92519 /* Paris_StringLights_01_Blue_Color_Emissive_BaseColor.png in CopyFiles */,
+				257FBF4B2D62A26900F92519 /* MASTER_Wood_Brown_BaseColor.png in CopyFiles */,
+				257FBF4C2D62A26900F92519 /* MenuSign_02_Mesh_Normal.png in CopyFiles */,
+				257FBF4D2D62A26900F92519 /* MASTER_Metal_Normal.png in CopyFiles */,
+				257FBF4E2D62A26900F92519 /* Pavement_Brick_BLENDSHADER_Normal.png in CopyFiles */,
+				257FBF4F2D62A26900F92519 /* Paris_StringLights_01_Orange_Color_Emissive_Normal.png in CopyFiles */,
+				257FBF502D62A26900F92519 /* MASTER_Concrete_Plaster1_BLENDSHADER_Normal.png in CopyFiles */,
+				257FBF512D62A26900F92519 /* MASTER_Metal_Pipe_BaseColor.png in CopyFiles */,
+				257FBF522D62A26900F92519 /* Shopsign_Bakery_BaseColor.png in CopyFiles */,
+				257FBF532D62A26900F92519 /* Bistro_Sign_Main_Normal.png in CopyFiles */,
+				257FBF542D62A26900F92519 /* MASTER_Wood_Painted_Green_BaseColor.png in CopyFiles */,
+				257FBF552D62A26900F92519 /* Paris_StreetSign_01_Normal.png in CopyFiles */,
+				257FBF562D62A26900F92519 /* MASTER_Building_Details_BaseColor.png in CopyFiles */,
+				257FBF572D62A26900F92519 /* Balcony_Trims_Normal.png in CopyFiles */,
+				257FBF582D62A26900F92519 /* Shopsign_Bakery_Normal.png in CopyFiles */,
+				257FBF592D62A26900F92519 /* Paris_StringLights_01_Red_Color_Emissive_BaseColor.png in CopyFiles */,
+				257FBF5A2D62A26900F92519 /* MASTER_Forge_Metal_BaseColor.png in CopyFiles */,
+				257FBF5B2D62A26900F92519 /* Foliage_Bux_Hedges46_Normal.png in CopyFiles */,
+				257FBF5C2D62A26900F92519 /* Spotlight_Main_Normal.png in CopyFiles */,
+				257FBF5D2D62A26900F92519 /* Concrete_Normal.png in CopyFiles */,
+				257FBF5E2D62A26900F92519 /* MASTER_Concrete_Plaster_Normal.png in CopyFiles */,
+				257FBF5F2D62A26900F92519 /* Vespa_Headlight_Normal.png in CopyFiles */,
+				257FBF602D62A26900F92519 /* Foliage_Leaves_Normal.png in CopyFiles */,
+				257FBF612D62A26900F92519 /* Antenna_Plastic_Blue_BaseColor.png in CopyFiles */,
+				257FBF622D62A26900F92519 /* Paris_StringLights_01_Orange_Color_Emissive_BaseColor.png in CopyFiles */,
+				257FBF632D62A26900F92519 /* MASTER_Concrete1_BaseColor.png in CopyFiles */,
+				257FBF642D62A26900F92519 /* Paris_Chair_01_BaseColor.png in CopyFiles */,
+				257FBF652D62A26900F92519 /* MASTER_Doors_BaseColor.png in CopyFiles */,
+				257FBF662D62A26900F92519 /* MASTER_Room_Interior_Normal.png in CopyFiles */,
+				257FBF672D62A26900F92519 /* Concrete3_Normal.png in CopyFiles */,
+				257FBF682D62A26900F92519 /* Streetlight_Chains_BaseColor.png in CopyFiles */,
+				257FBF692D62A26900F92519 /* Foliage_Bux_Hedges46_BaseColor.png in CopyFiles */,
+				257FBF6A2D62A26900F92519 /* MASTER_Glass_Dirty_MASKED_Normal.png in CopyFiles */,
+				257FBF6B2D62A26900F92519 /* MenuSign_01_Normal.png in CopyFiles */,
+				257FBF6C2D62A26900F92519 /* MASTER_Book_Covers_Normal.png in CopyFiles */,
+				257FBF6D2D62A26900F92519 /* MASTER_Side_Letters_BaseColor.png in CopyFiles */,
+				257FBF6E2D62A26900F92519 /* Paris_StringLights_01_White_Color_BaseColor.png in CopyFiles */,
+				257FBF6F2D62A26900F92519 /* Streetlight_Chains_Normal.png in CopyFiles */,
+				257FBF702D62A26900F92519 /* Banner_Metal_Normal.png in CopyFiles */,
+				257FBF712D62A26900F92519 /* MASTER_Brick_Small_Red_BaseColor.png in CopyFiles */,
+				257FBF722D62A26900F92519 /* MASTER_Rollup_Door_Normal.png in CopyFiles */,
+				257FBF732D62A26900F92519 /* MenuSign_01_BaseColor.png in CopyFiles */,
+				257FBF742D62A26900F92519 /* Pavement_Cobblestone_Wet_BLENDSHADER_BaseColor.png in CopyFiles */,
+				257FBF752D62A26900F92519 /* Paris_TrafficSign_A_BaseColor.png in CopyFiles */,
+				257FBF762D62A26900F92519 /* Paris_TrafficSign_A_Normal.png in CopyFiles */,
+				257FBF772D62A26900F92519 /* Paris_LiquorBottle_01_Labels_BaseColor.png in CopyFiles */,
+				257FBF782D62A26900F92519 /* MASTER_Concrete_BaseColor.png in CopyFiles */,
+				257FBF792D62A26900F92519 /* Pavement_Manhole_Cover_Normal.png in CopyFiles */,
+				257FBF7A2D62A26900F92519 /* Bistro_Sign_Main_BaseColor.png in CopyFiles */,
+				257FBF7B2D62A26900F92519 /* Paris_StreetPivot_Normal.png in CopyFiles */,
+				257FBF7C2D62A26900F92519 /* MASTER_Grain_Metal_Normal.png in CopyFiles */,
+				257FBF7D2D62A26900F92519 /* Foliage_Flowers_Normal.png in CopyFiles */,
+				257FBF7E2D62A26900F92519 /* MASTER_Concrete_Plaster1_BLENDSHADER_BaseColor.png in CopyFiles */,
+				257FBF7F2D62A26900F92519 /* Pavement_Cobblestone_Big_BLENDSHADER_BaseColor.png in CopyFiles */,
+				257FBF802D62A26900F92519 /* Awnings_Hotel_Fabric_Normal.png in CopyFiles */,
+				257FBF812D62A26900F92519 /* MASTER_Details_Dark_Normal.png in CopyFiles */,
+				257FBF822D62A26900F92519 /* MASTER_Wood_Polished_BaseColor.png in CopyFiles */,
+				257FBF832D62A26900F92519 /* MASTER_Frosted_Glass_BaseColor.png in CopyFiles */,
+				257FBF842D62A26900F92519 /* Foliage_Ivy_branches_Normal.png in CopyFiles */,
+				257FBF852D62A26900F92519 /* Trashcan_Normal.png in CopyFiles */,
+				257FBF862D62A26900F92519 /* MASTER_Focus_Ornament_BaseColor.png in CopyFiles */,
+				257FBF872D62A26900F92519 /* Streetlight_Metal_Normal.png in CopyFiles */,
+				257FBF882D62A26900F92519 /* MASTER_Details_Dark_BaseColor.png in CopyFiles */,
+				257FBF892D62A26900F92519 /* Concrete_Striped_Normal.png in CopyFiles */,
+				257FBF8A2D62A26900F92519 /* NapkinHolder_Normal.png in CopyFiles */,
+				257FBF8B2D62A26900F92519 /* MASTER_Wood_Painted_Green_BLENDSHADER_BaseColor.png in CopyFiles */,
+				257FBF8C2D62A26900F92519 /* MASTER_Concrete_Plaster_BaseColor.png in CopyFiles */,
+				257FBF8D2D62A26900F92519 /* Paris_LiquorBottle_01_Caps_Normal.png in CopyFiles */,
+				257FBF8E2D62A26900F92519 /* Chimneys_Metal_Normal.png in CopyFiles */,
+				257FBF8F2D62A26900F92519 /* Spotlight_Glass_Emissive_Normal.png in CopyFiles */,
+				257FBF902D62A26900F92519 /* MASTER_Awning_Beams_BaseColor.png in CopyFiles */,
+				257FBF912D62A26900F92519 /* Paris_LiquorBottle_01_Caps_BaseColor.png in CopyFiles */,
+				257FBF922D62A26900F92519 /* Foliage_Trunk_BaseColor.png in CopyFiles */,
+				257FBF932D62A26900F92519 /* MASTER_Black_Metal_Normal.png in CopyFiles */,
+				257FBF942D62A26900F92519 /* MASTER_Boulangerie_Normal.png in CopyFiles */,
+				257FBF952D62A26900F92519 /* MASTER_Wood_Brown_Normal.png in CopyFiles */,
+				257FBF962D62A26900F92519 /* MASTER_Building_Details_Normal.png in CopyFiles */,
+				257FBF972D62A26900F92519 /* Paris_StringLights_01_White_Color_Normal.png in CopyFiles */,
+				257FBF982D62A26900F92519 /* Balcony_Trims_BaseColor.png in CopyFiles */,
+				257FBF992D62A26900F92519 /* MASTER_Curtains_Normal.png in CopyFiles */,
+				257FBF9A2D62A26900F92519 /* Paris_Table_Terrace_BaseColor.png in CopyFiles */,
+				257FBF9B2D62A26900F92519 /* MASTER_Concrete_Smooth_BLENDSHADER_Normal.png in CopyFiles */,
+				257FBF9C2D62A26900F92519 /* MASTER_Trim_Cornice_BaseColor.png in CopyFiles */,
+				257FBF9D2D62A26900F92519 /* MASTER_Plastic_Normal.png in CopyFiles */,
+				257FBF9E2D62A26900F92519 /* Balcony_Green_Wood_BaseColor.png in CopyFiles */,
+				257FBF9F2D62A26900F92519 /* MASTER_Brick_Large_Beige_BLENDSHADER_BaseColor.png in CopyFiles */,
+				257FBFA02D62A26900F92519 /* MASTER_Glass_Dirty_MASKED_BaseColor.png in CopyFiles */,
+				257FBFA12D62A26900F92519 /* MASTER_Room_Interior_BaseColor.png in CopyFiles */,
+				257FBFA22D62A26900F92519 /* MASTER_Concrete1_Normal.png in CopyFiles */,
+				257FBFA32D62A26900F92519 /* Balcony_Concrete_BaseColor.png in CopyFiles */,
+				257FBFA42D62A26900F92519 /* MASTER_Concrete_Smooth_BLENDSHADER_BaseColor.png in CopyFiles */,
+				257FBFA52D62A26900F92519 /* Pavement_Cobblestone_Small_BLENDSHADER_BaseColor.png in CopyFiles */,
+				257FBFA62D62A26900F92519 /* MASTER_Metal_Pipe_Normal.png in CopyFiles */,
+				257FBFA72D62A26900F92519 /* Plaster_Normal.png in CopyFiles */,
+				257FBFA82D62A26900F92519 /* MenuSign_02_Glass_BaseColor.png in CopyFiles */,
+				257FBFA92D62A26900F92519 /* Pavement_Cobblestone_01_BLENDSHADER_Normal.png in CopyFiles */,
+				257FBFAA2D62A26900F92519 /* Paris_StringLights_01_Pink_Color_Emissive_BaseColor.png in CopyFiles */,
+				257FBFAB2D62A26900F92519 /* Foliage_Paris_Flowers_BaseColor.png in CopyFiles */,
+				257FBFAC2D62A26900F92519 /* MASTER_Concrete_Smooth_Normal.png in CopyFiles */,
+				257FBFAD2D62A26900F92519 /* MASTER_Black_Metal_BaseColor.png in CopyFiles */,
+				257FBFAE2D62A26900F92519 /* Sidewalkbarrier_Normal.png in CopyFiles */,
+				257FBFAF2D62A26900F92519 /* Balcony_Ornaments_BaseColor.png in CopyFiles */,
+				257FBFB02D62A26900F92519 /* MASTER_Bronze_BLENDSHADER_BaseColor.png in CopyFiles */,
+				257FBFB12D62A26900F92519 /* Paris_Table_Terrace_Normal.png in CopyFiles */,
+				257FBFB22D62A26900F92519 /* Sidewalkbarrier_BaseColor.png in CopyFiles */,
+				257FBFB32D62A26900F92519 /* MASTER_Brick_Small_Red_Normal.png in CopyFiles */,
+				257FBFB42D62A26900F92519 /* MASTER_Book_Covers_BaseColor.png in CopyFiles */,
+				257FBFB52D62A26900F92519 /* Concrete2_BaseColor.png in CopyFiles */,
+				257FBFB62D62A26900F92519 /* Paris_StringLights_01_Blue_Color_Emissive_Normal.png in CopyFiles */,
+				257FBFB72D62A26900F92519 /* NapkinHolder_BaseColor.png in CopyFiles */,
+				257FBFB82D62A26900F92519 /* Paris_LiquorBottle_01_Glass_Wine_BaseColor.png in CopyFiles */,
+				257FBFB92D62A26900F92519 /* MASTER_Awning_Fabric_Red_Normal.png in CopyFiles */,
+				257FBFBA2D62A26900F92519 /* Antenna_Plastic_Blue_Normal.png in CopyFiles */,
+				257FBFBB2D62A26900F92519 /* Foliage_Linde_Tree_Large_Green_Leaves_Normal.png in CopyFiles */,
+				257FBFBC2D62A26900F92519 /* Paris_LiquorBottle_01_Glass_Wine_Normal.png in CopyFiles */,
+				257FBFBD2D62A26900F92519 /* MASTER_Light_Bulb_BaseColor.png in CopyFiles */,
+				257FBFBE2D62A26900F92519 /* Pavement_Cobblestone_02_Normal.png in CopyFiles */,
+				257FBFBF2D62A26900F92519 /* Antenna_Metal_BaseColor.png in CopyFiles */,
+				257FBFC02D62A26900F92519 /* Shopsign_Pharmacy_Emissive_BaseColor.png in CopyFiles */,
+				257FBFC12D62A26900F92519 /* Antenna_Plastic_BaseColor.png in CopyFiles */,
+				257FBFC22D62A26900F92519 /* Spotlight_Glass_Emissive_BaseColor.png in CopyFiles */,
+				257FBFC32D62A26900F92519 /* MASTER_Concrete_Grooved_Normal.png in CopyFiles */,
+				257FBFC42D62A26900F92519 /* Concrete_BaseColor.png in CopyFiles */,
+				257FBFC52D62A26900F92519 /* MASTER_Wood_Polished_Normal.png in CopyFiles */,
+				257FBFC62D62A26900F92519 /* Bollards_BaseColor.png in CopyFiles */,
+				257FBFC72D62A26900F92519 /* Shopsign_Ties_Shop_BaseColor.png in CopyFiles */,
+				257FBFC82D62A26900F92519 /* Pavement_Ground_Wet_Normal.png in CopyFiles */,
+				257FBFC92D62A26900F92519 /* MASTER_Metal_BaseColor.png in CopyFiles */,
+				257FBFCA2D62A26900F92519 /* Paris_StreetSign_01_BaseColor.png in CopyFiles */,
+				257FBFCB2D62A26900F92519 /* ElectricBox_Normal.png in CopyFiles */,
+				257FBFCC2D62A26900F92519 /* Foliage_Paris_Flowers_Normal.png in CopyFiles */,
+				257FBFCD2D62A26900F92519 /* MASTER_Forge_Metal_Normal.png in CopyFiles */,
+				257FBFCE2D62A26900F92519 /* Emissive_StreetLight_Normal.png in CopyFiles */,
+				257FBFCF2D62A26900F92519 /* MASTER_Wood_Painted3_Normal.png in CopyFiles */,
+				257FBFD02D62A26900F92519 /* Pavement_Cobblestone_Small_BLENDSHADER_Normal.png in CopyFiles */,
+				257FBFD12D62A26900F92519 /* Plantpots_BaseColor.png in CopyFiles */,
+				257FBFD22D62A26900F92519 /* Plantpots_Normal.png in CopyFiles */,
+				257FBFD32D62A26900F92519 /* Shopsign_Book_Store_Emissive_BaseColor.png in CopyFiles */,
+				257FBFD42D62A26900F92519 /* MASTER_Concrete_Grooved_BaseColor.png in CopyFiles */,
+				257FBFD52D62A26900F92519 /* Foliage_Ivy_leaf_a_BaseColor.png in CopyFiles */,
+				257FBFD62D62A26900F92519 /* MASTER_Wood_Painted_Cyan_BaseColor.png in CopyFiles */,
+				257FBFD72D62A26900F92519 /* MASTER_Boulangerie_BaseColor.png in CopyFiles */,
+				257FBFD82D62A26900F92519 /* normal-dimensions.txt in CopyFiles */,
+				257FBFD92D62A26900F92519 /* Antenna_Metal_Normal.png in CopyFiles */,
+				257FBFDA2D62A26900F92519 /* Balcony_Concrete_Normal.png in CopyFiles */,
+				257FBFDB2D62A26900F92519 /* MASTER_Roofing_Shingle_Green_BaseColor.png in CopyFiles */,
+				257FBFDC2D62A26900F92519 /* MASTER_Brick_Large_White_BaseColor.png in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		257FBDB72D61D2E200F92519 /* bistro2-triangles.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = "bistro2-triangles.bin"; path = "../../../scene/Bistro_v4/bistro2-triangles.bin"; sourceTree = "<group>"; };
+		257FBDBC2D629FDF00F92519 /* bistro2-mesh-instance-ids.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = "bistro2-mesh-instance-ids.bin"; path = "../../../scene/Bistro_v4/bistro2-mesh-instance-ids.bin"; sourceTree = "<group>"; };
+		257FBDBD2D629FDF00F92519 /* bistro2-mesh-instance-positions.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = "bistro2-mesh-instance-positions.bin"; path = "../../../scene/Bistro_v4/bistro2-mesh-instance-positions.bin"; sourceTree = "<group>"; };
+		257FBDBE2D629FDF00F92519 /* bistro2-mesh-instance-bboxes.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = "bistro2-mesh-instance-bboxes.bin"; path = "../../../scene/Bistro_v4/bistro2-mesh-instance-bboxes.bin"; sourceTree = "<group>"; };
+		257FBDBF2D629FDF00F92519 /* bistro2-triangle-positions.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = "bistro2-triangle-positions.bin"; path = "../../../scene/Bistro_v4/bistro2-triangle-positions.bin"; sourceTree = "<group>"; };
+		257FBDC42D629FF800F92519 /* bistro2.mat */ = {isa = PBXFileReference; lastKnownFileType = file; name = bistro2.mat; path = ../../../scene/Bistro_v4/bistro2.mat; sourceTree = "<group>"; };
+		257FBDC52D629FF800F92519 /* bistro2.mid */ = {isa = PBXFileReference; lastKnownFileType = audio.midi; name = bistro2.mid; path = ../../../scene/Bistro_v4/bistro2.mid; sourceTree = "<group>"; };
+		257FBDC92D62A25400F92519 /* Vespa_Odometer_Glass_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Vespa_Odometer_Glass_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Vespa_Odometer_Glass_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDCA2D62A25400F92519 /* MASTER_Wood_Painted3_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Wood_Painted3_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Wood_Painted3_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDCB2D62A25400F92519 /* MASTER_Awning_Fabric_Cyan_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Awning_Fabric_Cyan_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Awning_Fabric_Cyan_Normal.png"; sourceTree = "<group>"; };
+		257FBDCC2D62A25400F92519 /* MASTER_Concrete_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Concrete_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Concrete_Normal.png"; sourceTree = "<group>"; };
+		257FBDCD2D62A25400F92519 /* MASTER_Concrete_Yellow_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Concrete_Yellow_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Concrete_Yellow_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDCE2D62A25400F92519 /* MASTER_Concrete_Yellow_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Concrete_Yellow_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Concrete_Yellow_Normal.png"; sourceTree = "<group>"; };
+		257FBDCF2D62A25400F92519 /* MASTER_Brick_Small_Red_BLENDSHADER_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Brick_Small_Red_BLENDSHADER_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Brick_Small_Red_BLENDSHADER_Normal.png"; sourceTree = "<group>"; };
+		257FBDD02D62A25500F92519 /* MASTER_Wood_Painted_Cyan_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Wood_Painted_Cyan_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Wood_Painted_Cyan_Normal.png"; sourceTree = "<group>"; };
+		257FBDD12D62A25500F92519 /* MASTER_Curtains_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Curtains_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Curtains_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDD22D62A25500F92519 /* MASTER_Doors_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Doors_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Doors_Normal.png"; sourceTree = "<group>"; };
+		257FBDD32D62A25500F92519 /* Trashcan_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Trashcan_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Trashcan_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDD42D62A25500F92519 /* Awnings_Fabric_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Awnings_Fabric_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Awnings_Fabric_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDD52D62A25500F92519 /* Pavement_Cobble_Leaves_BLENDSHADER_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Cobble_Leaves_BLENDSHADER_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Cobble_Leaves_BLENDSHADER_Normal.png"; sourceTree = "<group>"; };
+		257FBDD62D62A25500F92519 /* MASTER_Bistro_Main_Door_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Bistro_Main_Door_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Bistro_Main_Door_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDD72D62A25500F92519 /* MASTER_Awning_Fabric_Red_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Awning_Fabric_Red_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Awning_Fabric_Red_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDD82D62A25500F92519 /* Pavement_Cobblestone_02_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Cobblestone_02_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Cobblestone_02_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDD92D62A25500F92519 /* Concrete3_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Concrete3_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Concrete3_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDDA2D62A25500F92519 /* Foliage_Linde_Tree_Large_Trunk_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Linde_Tree_Large_Trunk_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Linde_Tree_Large_Trunk_Normal.png"; sourceTree = "<group>"; };
+		257FBDDB2D62A25500F92519 /* Paris_StringLights_01_White_Color_Emissive_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_StringLights_01_White_Color_Emissive_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_StringLights_01_White_Color_Emissive_Normal.png"; sourceTree = "<group>"; };
+		257FBDDC2D62A25500F92519 /* Paris_LiquorBottle_01_Labels_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_LiquorBottle_01_Labels_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_LiquorBottle_01_Labels_Normal.png"; sourceTree = "<group>"; };
+		257FBDDD2D62A25500F92519 /* Vespa_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Vespa_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Vespa_Normal.png"; sourceTree = "<group>"; };
+		257FBDDE2D62A25500F92519 /* Shopsign_Pharmacy_Emissive_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Shopsign_Pharmacy_Emissive_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Shopsign_Pharmacy_Emissive_Normal.png"; sourceTree = "<group>"; };
+		257FBDDF2D62A25500F92519 /* Awnings_Fabric_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Awnings_Fabric_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Awnings_Fabric_Normal.png"; sourceTree = "<group>"; };
+		257FBDE02D62A25500F92519 /* Ashtray_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Ashtray_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Ashtray_Normal.png"; sourceTree = "<group>"; };
+		257FBDE12D62A25500F92519 /* Stringlights_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Stringlights_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Stringlights_Normal.png"; sourceTree = "<group>"; };
+		257FBDE22D62A25500F92519 /* Paris_StringLights_01_Pink_Color_Emissive_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_StringLights_01_Pink_Color_Emissive_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_StringLights_01_Pink_Color_Emissive_Normal.png"; sourceTree = "<group>"; };
+		257FBDE32D62A25600F92519 /* MASTER_Bronze_BLENDSHADER_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Bronze_BLENDSHADER_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Bronze_BLENDSHADER_Normal.png"; sourceTree = "<group>"; };
+		257FBDE42D62A25600F92519 /* MASTER_Brick_Large_Beige_BLENDSHADER_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Brick_Large_Beige_BLENDSHADER_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Brick_Large_Beige_BLENDSHADER_Normal.png"; sourceTree = "<group>"; };
+		257FBDE52D62A25600F92519 /* Balcony_Ornaments_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Balcony_Ornaments_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Balcony_Ornaments_Normal.png"; sourceTree = "<group>"; };
+		257FBDE62D62A25600F92519 /* MASTER_Roofing_Shingle_Grey_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Roofing_Shingle_Grey_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Roofing_Shingle_Grey_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDE72D62A25600F92519 /* Banner_Metal_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Banner_Metal_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Banner_Metal_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDE82D62A25600F92519 /* Awnings_Beams_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Awnings_Beams_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Awnings_Beams_Normal.png"; sourceTree = "<group>"; };
+		257FBDE92D62A25600F92519 /* MASTER_Wood_Painted_Green_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Wood_Painted_Green_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Wood_Painted_Green_Normal.png"; sourceTree = "<group>"; };
+		257FBDEA2D62A25600F92519 /* MASTER_Brick_Large_White_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Brick_Large_White_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Brick_Large_White_Normal.png"; sourceTree = "<group>"; };
+		257FBDEB2D62A25600F92519 /* Pavement_Cobblestone_Wet_BLENDSHADER_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Cobblestone_Wet_BLENDSHADER_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Cobblestone_Wet_BLENDSHADER_Normal.png"; sourceTree = "<group>"; };
+		257FBDEC2D62A25600F92519 /* Vespa_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Vespa_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Vespa_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDED2D62A25600F92519 /* Concrete_Striped_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Concrete_Striped_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Concrete_Striped_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDEE2D62A25600F92519 /* Awnings_Hotel_Fabric_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Awnings_Hotel_Fabric_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Awnings_Hotel_Fabric_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDEF2D62A25600F92519 /* Foliage_Linde_Tree_Large_Orange_Leaves_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Linde_Tree_Large_Orange_Leaves_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Linde_Tree_Large_Orange_Leaves_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDF02D62A25600F92519 /* Shopsign_Book_Store_Emissive_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Shopsign_Book_Store_Emissive_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Shopsign_Book_Store_Emissive_Normal.png"; sourceTree = "<group>"; };
+		257FBDF12D62A25700F92519 /* MASTER_Concrete_White_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Concrete_White_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Concrete_White_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDF22D62A25700F92519 /* albedo-dimensions.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "albedo-dimensions.txt"; path = "../../../../scene/Bistro_v4/converted-dds-scaled/albedo-dimensions.txt"; sourceTree = "<group>"; };
+		257FBDF32D62A25700F92519 /* Vespa_Odometer_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Vespa_Odometer_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Vespa_Odometer_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDF42D62A25700F92519 /* MASTER_Roofing_Metal_01_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Roofing_Metal_01_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Roofing_Metal_01_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDF52D62A25700F92519 /* Plaster_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Plaster_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Plaster_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDF62D62A25700F92519 /* Spotlight_Main_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Spotlight_Main_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Spotlight_Main_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDF72D62A25700F92519 /* Pavement_Cobble_Leaves_BLENDSHADER_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Cobble_Leaves_BLENDSHADER_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Cobble_Leaves_BLENDSHADER_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDF82D62A25700F92519 /* MASTER_Light_Bulb_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Light_Bulb_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Light_Bulb_Normal.png"; sourceTree = "<group>"; };
+		257FBDF92D62A25700F92519 /* MASTER_Roofing_Metal_01_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Roofing_Metal_01_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Roofing_Metal_01_Normal.png"; sourceTree = "<group>"; };
+		257FBDFA2D62A25700F92519 /* MenuSign_02_Glass_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MenuSign_02_Glass_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MenuSign_02_Glass_Normal.png"; sourceTree = "<group>"; };
+		257FBDFB2D62A25700F92519 /* MASTER_Glass_Dirty_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Glass_Dirty_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Glass_Dirty_Normal.png"; sourceTree = "<group>"; };
+		257FBDFC2D62A25700F92519 /* MASTER_Focus_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Focus_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Focus_Normal.png"; sourceTree = "<group>"; };
+		257FBDFD2D62A25700F92519 /* Bistro_Sign_Letters_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Bistro_Sign_Letters_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Bistro_Sign_Letters_Normal.png"; sourceTree = "<group>"; };
+		257FBDFE2D62A25700F92519 /* Pavement_Curbstones_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Curbstones_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Curbstones_BaseColor.png"; sourceTree = "<group>"; };
+		257FBDFF2D62A25700F92519 /* MASTER_Awning_Beams_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Awning_Beams_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Awning_Beams_Normal.png"; sourceTree = "<group>"; };
+		257FBE002D62A25800F92519 /* Antenna_Plastic_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Antenna_Plastic_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Antenna_Plastic_Normal.png"; sourceTree = "<group>"; };
+		257FBE012D62A25800F92519 /* ElectricBox_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ElectricBox_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/ElectricBox_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE022D62A25800F92519 /* LanternEmissive_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = LanternEmissive_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/LanternEmissive_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE032D62A25800F92519 /* Vespa_Odometer_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Vespa_Odometer_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Vespa_Odometer_Normal.png"; sourceTree = "<group>"; };
+		257FBE042D62A25800F92519 /* MASTER_Roofing_Shingle_Grey_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Roofing_Shingle_Grey_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Roofing_Shingle_Grey_Normal.png"; sourceTree = "<group>"; };
+		257FBE052D62A25800F92519 /* MASTER_Side_Letters_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Side_Letters_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Side_Letters_Normal.png"; sourceTree = "<group>"; };
+		257FBE062D62A25800F92519 /* Foliage_Ivy_branches_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Ivy_branches_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Ivy_branches_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE072D62A25800F92519 /* Pavement_Brick_BLENDSHADER_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Brick_BLENDSHADER_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Brick_BLENDSHADER_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE082D62A25800F92519 /* MenuSign_02_Mesh_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MenuSign_02_Mesh_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MenuSign_02_Mesh_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE092D62A25800F92519 /* Pavement_Cobblestone_Big_BLENDSHADER_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Cobblestone_Big_BLENDSHADER_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Cobblestone_Big_BLENDSHADER_Normal.png"; sourceTree = "<group>"; };
+		257FBE0A2D62A25800F92519 /* Pavement_Cobblestone_Wet_Leaves_BLENDSHADER_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Cobblestone_Wet_Leaves_BLENDSHADER_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Cobblestone_Wet_Leaves_BLENDSHADER_Normal.png"; sourceTree = "<group>"; };
+		257FBE0B2D62A25800F92519 /* Stringlights_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Stringlights_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Stringlights_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE0C2D62A25800F92519 /* Foliage_Leaves_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Leaves_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Leaves_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE0D2D62A25900F92519 /* MASTER_Awning_Fabric_Cyan_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Awning_Fabric_Cyan_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Awning_Fabric_Cyan_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE0E2D62A25900F92519 /* Chimneys_Metal_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Chimneys_Metal_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Chimneys_Metal_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE0F2D62A25900F92519 /* MASTER_Trim_Cornice_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Trim_Cornice_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Trim_Cornice_Normal.png"; sourceTree = "<group>"; };
+		257FBE102D62A25900F92519 /* Vespa_Odometer_Glass_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Vespa_Odometer_Glass_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Vespa_Odometer_Glass_Normal.png"; sourceTree = "<group>"; };
+		257FBE112D62A25900F92519 /* Awnings_Beams_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Awnings_Beams_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Awnings_Beams_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE122D62A25900F92519 /* Streetlight_Support_Bulb_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Streetlight_Support_Bulb_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Streetlight_Support_Bulb_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE132D62A25A00F92519 /* Foliage_Ivy_leaf_a_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Ivy_leaf_a_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Ivy_leaf_a_Normal.png"; sourceTree = "<group>"; };
+		257FBE142D62A25A00F92519 /* MASTER_Concrete_White_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Concrete_White_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Concrete_White_Normal.png"; sourceTree = "<group>"; };
+		257FBE152D62A25A00F92519 /* Foliage_Linde_Tree_Large_Orange_Leaves_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Linde_Tree_Large_Orange_Leaves_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Linde_Tree_Large_Orange_Leaves_Normal.png"; sourceTree = "<group>"; };
+		257FBE162D62A25A00F92519 /* MASTER_Focus_Ornament_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Focus_Ornament_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Focus_Ornament_Normal.png"; sourceTree = "<group>"; };
+		257FBE172D62A25A00F92519 /* MASTER_Grain_Metal_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Grain_Metal_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Grain_Metal_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE182D62A25A00F92519 /* MASTER_Brick_Small_Red_BLENDSHADER_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Brick_Small_Red_BLENDSHADER_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Brick_Small_Red_BLENDSHADER_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE192D62A25A00F92519 /* Paris_StringLights_01_White_Color_Emissive_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_StringLights_01_White_Color_Emissive_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_StringLights_01_White_Color_Emissive_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE1A2D62A25A00F92519 /* MASTER_Glass_Exterior_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Glass_Exterior_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Glass_Exterior_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE1B2D62A25A00F92519 /* Emissive_StreetLight_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Emissive_StreetLight_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Emissive_StreetLight_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE1C2D62A25A00F92519 /* Paris_Chair_01_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_Chair_01_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_Chair_01_Normal.png"; sourceTree = "<group>"; };
+		257FBE1D2D62A25A00F92519 /* Shopsign_Ties_Shop_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Shopsign_Ties_Shop_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Shopsign_Ties_Shop_Normal.png"; sourceTree = "<group>"; };
+		257FBE1E2D62A25A00F92519 /* Concrete2_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Concrete2_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Concrete2_Normal.png"; sourceTree = "<group>"; };
+		257FBE1F2D62A25A00F92519 /* Bistro_Sign_Letters_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Bistro_Sign_Letters_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Bistro_Sign_Letters_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE202D62A25B00F92519 /* Vespa_Headlight_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Vespa_Headlight_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Vespa_Headlight_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE212D62A25B00F92519 /* Paris_StringLights_01_Red_Color_Emissive_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_StringLights_01_Red_Color_Emissive_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_StringLights_01_Red_Color_Emissive_Normal.png"; sourceTree = "<group>"; };
+		257FBE222D62A25B00F92519 /* Pavement_Ground_Wet_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Ground_Wet_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Ground_Wet_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE232D62A25B00F92519 /* Bollards_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Bollards_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Bollards_Normal.png"; sourceTree = "<group>"; };
+		257FBE242D62A25B00F92519 /* Foliage_Flowers_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Flowers_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Flowers_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE252D62A25B00F92519 /* MASTER_Glass_Dirty_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Glass_Dirty_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Glass_Dirty_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE262D62A25B00F92519 /* MASTER_Roofing_Shingle_Green_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Roofing_Shingle_Green_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Roofing_Shingle_Green_Normal.png"; sourceTree = "<group>"; };
+		257FBE272D62A25B00F92519 /* Spotlight_Emissive_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Spotlight_Emissive_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Spotlight_Emissive_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE282D62A25B00F92519 /* Streetlight_Metal_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Streetlight_Metal_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Streetlight_Metal_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE292D62A25B00F92519 /* MASTER_Frosted_Glass_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Frosted_Glass_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Frosted_Glass_Normal.png"; sourceTree = "<group>"; };
+		257FBE2A2D62A25B00F92519 /* Balcony_Green_Wood_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Balcony_Green_Wood_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Balcony_Green_Wood_Normal.png"; sourceTree = "<group>"; };
+		257FBE2B2D62A25B00F92519 /* Streetlight_Support_Bulb_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Streetlight_Support_Bulb_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Streetlight_Support_Bulb_Normal.png"; sourceTree = "<group>"; };
+		257FBE2C2D62A25B00F92519 /* MASTER_Rollup_Door_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Rollup_Door_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Rollup_Door_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE2D2D62A25B00F92519 /* MASTER_Concrete_Smooth_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Concrete_Smooth_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Concrete_Smooth_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE2E2D62A25C00F92519 /* Foliage_Linde_Tree_Large_Green_Leaves_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Linde_Tree_Large_Green_Leaves_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Linde_Tree_Large_Green_Leaves_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE2F2D62A25C00F92519 /* Pavement_Curbstones_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Curbstones_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Curbstones_Normal.png"; sourceTree = "<group>"; };
+		257FBE302D62A25C00F92519 /* MASTER_Wood_Painted_Green_BLENDSHADER_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Wood_Painted_Green_BLENDSHADER_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Wood_Painted_Green_BLENDSHADER_Normal.png"; sourceTree = "<group>"; };
+		257FBE312D62A25C00F92519 /* MASTER_Plastic_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Plastic_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Plastic_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE322D62A25C00F92519 /* Ashtray_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Ashtray_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Ashtray_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE332D62A25C00F92519 /* Foliage_Trunk_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Trunk_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Trunk_Normal.png"; sourceTree = "<group>"; };
+		257FBE342D62A25C00F92519 /* LanternEmissive_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = LanternEmissive_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/LanternEmissive_Normal.png"; sourceTree = "<group>"; };
+		257FBE352D62A25C00F92519 /* MASTER_Focus_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Focus_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Focus_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE362D62A25C00F92519 /* Pavement_Cobblestone_01_BLENDSHADER_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Cobblestone_01_BLENDSHADER_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Cobblestone_01_BLENDSHADER_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE372D62A25C00F92519 /* Paris_StringLights_01_Green_Color_Emissive_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_StringLights_01_Green_Color_Emissive_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_StringLights_01_Green_Color_Emissive_Normal.png"; sourceTree = "<group>"; };
+		257FBE382D62A25C00F92519 /* Pavement_Manhole_Cover_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Manhole_Cover_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Manhole_Cover_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE392D62A25C00F92519 /* MASTER_Glass_Exterior_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Glass_Exterior_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Glass_Exterior_Normal.png"; sourceTree = "<group>"; };
+		257FBE3A2D62A25C00F92519 /* Pavement_Cobblestone_Wet_Leaves_BLENDSHADER_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Cobblestone_Wet_Leaves_BLENDSHADER_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Cobblestone_Wet_Leaves_BLENDSHADER_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE3B2D62A25D00F92519 /* Foliage_Linde_Tree_Large_Trunk_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Linde_Tree_Large_Trunk_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Linde_Tree_Large_Trunk_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE3C2D62A25D00F92519 /* Spotlight_Emissive_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Spotlight_Emissive_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Spotlight_Emissive_Normal.png"; sourceTree = "<group>"; };
+		257FBE3D2D62A25D00F92519 /* Paris_StringLights_01_Green_Color_Emissive_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_StringLights_01_Green_Color_Emissive_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_StringLights_01_Green_Color_Emissive_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE3E2D62A25D00F92519 /* MASTER_Bistro_Main_Door_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Bistro_Main_Door_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Bistro_Main_Door_Normal.png"; sourceTree = "<group>"; };
+		257FBE3F2D62A25D00F92519 /* Paris_StreetPivot_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_StreetPivot_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_StreetPivot_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE402D62A25D00F92519 /* Paris_StringLights_01_Blue_Color_Emissive_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_StringLights_01_Blue_Color_Emissive_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_StringLights_01_Blue_Color_Emissive_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE412D62A25D00F92519 /* MASTER_Wood_Brown_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Wood_Brown_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Wood_Brown_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE422D62A25D00F92519 /* MenuSign_02_Mesh_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MenuSign_02_Mesh_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MenuSign_02_Mesh_Normal.png"; sourceTree = "<group>"; };
+		257FBE432D62A25D00F92519 /* MASTER_Metal_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Metal_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Metal_Normal.png"; sourceTree = "<group>"; };
+		257FBE442D62A25D00F92519 /* Pavement_Brick_BLENDSHADER_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Brick_BLENDSHADER_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Brick_BLENDSHADER_Normal.png"; sourceTree = "<group>"; };
+		257FBE452D62A25D00F92519 /* Paris_StringLights_01_Orange_Color_Emissive_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_StringLights_01_Orange_Color_Emissive_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_StringLights_01_Orange_Color_Emissive_Normal.png"; sourceTree = "<group>"; };
+		257FBE462D62A25D00F92519 /* MASTER_Concrete_Plaster1_BLENDSHADER_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Concrete_Plaster1_BLENDSHADER_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Concrete_Plaster1_BLENDSHADER_Normal.png"; sourceTree = "<group>"; };
+		257FBE472D62A25D00F92519 /* MASTER_Metal_Pipe_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Metal_Pipe_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Metal_Pipe_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE482D62A25E00F92519 /* Shopsign_Bakery_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Shopsign_Bakery_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Shopsign_Bakery_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE492D62A25E00F92519 /* Bistro_Sign_Main_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Bistro_Sign_Main_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Bistro_Sign_Main_Normal.png"; sourceTree = "<group>"; };
+		257FBE4A2D62A25E00F92519 /* MASTER_Wood_Painted_Green_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Wood_Painted_Green_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Wood_Painted_Green_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE4B2D62A25E00F92519 /* Paris_StreetSign_01_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_StreetSign_01_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_StreetSign_01_Normal.png"; sourceTree = "<group>"; };
+		257FBE4C2D62A25E00F92519 /* MASTER_Building_Details_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Building_Details_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Building_Details_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE4D2D62A25E00F92519 /* Balcony_Trims_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Balcony_Trims_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Balcony_Trims_Normal.png"; sourceTree = "<group>"; };
+		257FBE4E2D62A25E00F92519 /* Shopsign_Bakery_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Shopsign_Bakery_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Shopsign_Bakery_Normal.png"; sourceTree = "<group>"; };
+		257FBE4F2D62A25E00F92519 /* Paris_StringLights_01_Red_Color_Emissive_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_StringLights_01_Red_Color_Emissive_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_StringLights_01_Red_Color_Emissive_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE502D62A25E00F92519 /* MASTER_Forge_Metal_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Forge_Metal_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Forge_Metal_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE512D62A25E00F92519 /* Foliage_Bux_Hedges46_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Bux_Hedges46_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Bux_Hedges46_Normal.png"; sourceTree = "<group>"; };
+		257FBE522D62A25E00F92519 /* Spotlight_Main_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Spotlight_Main_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Spotlight_Main_Normal.png"; sourceTree = "<group>"; };
+		257FBE532D62A25E00F92519 /* Concrete_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Concrete_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Concrete_Normal.png"; sourceTree = "<group>"; };
+		257FBE542D62A25E00F92519 /* MASTER_Concrete_Plaster_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Concrete_Plaster_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Concrete_Plaster_Normal.png"; sourceTree = "<group>"; };
+		257FBE552D62A25F00F92519 /* Vespa_Headlight_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Vespa_Headlight_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Vespa_Headlight_Normal.png"; sourceTree = "<group>"; };
+		257FBE562D62A25F00F92519 /* Foliage_Leaves_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Leaves_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Leaves_Normal.png"; sourceTree = "<group>"; };
+		257FBE572D62A25F00F92519 /* Antenna_Plastic_Blue_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Antenna_Plastic_Blue_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Antenna_Plastic_Blue_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE582D62A25F00F92519 /* Paris_StringLights_01_Orange_Color_Emissive_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_StringLights_01_Orange_Color_Emissive_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_StringLights_01_Orange_Color_Emissive_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE592D62A25F00F92519 /* MASTER_Concrete1_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Concrete1_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Concrete1_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE5A2D62A25F00F92519 /* Paris_Chair_01_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_Chair_01_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_Chair_01_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE5B2D62A25F00F92519 /* MASTER_Doors_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Doors_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Doors_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE5C2D62A25F00F92519 /* MASTER_Room_Interior_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Room_Interior_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Room_Interior_Normal.png"; sourceTree = "<group>"; };
+		257FBE5D2D62A25F00F92519 /* Concrete3_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Concrete3_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Concrete3_Normal.png"; sourceTree = "<group>"; };
+		257FBE5E2D62A25F00F92519 /* Streetlight_Chains_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Streetlight_Chains_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Streetlight_Chains_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE5F2D62A25F00F92519 /* Foliage_Bux_Hedges46_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Bux_Hedges46_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Bux_Hedges46_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE602D62A25F00F92519 /* MASTER_Glass_Dirty_MASKED_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Glass_Dirty_MASKED_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Glass_Dirty_MASKED_Normal.png"; sourceTree = "<group>"; };
+		257FBE612D62A26000F92519 /* MenuSign_01_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MenuSign_01_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MenuSign_01_Normal.png"; sourceTree = "<group>"; };
+		257FBE622D62A26000F92519 /* MASTER_Book_Covers_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Book_Covers_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Book_Covers_Normal.png"; sourceTree = "<group>"; };
+		257FBE632D62A26000F92519 /* MASTER_Side_Letters_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Side_Letters_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Side_Letters_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE642D62A26000F92519 /* Paris_StringLights_01_White_Color_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_StringLights_01_White_Color_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_StringLights_01_White_Color_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE652D62A26000F92519 /* Streetlight_Chains_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Streetlight_Chains_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Streetlight_Chains_Normal.png"; sourceTree = "<group>"; };
+		257FBE662D62A26000F92519 /* Banner_Metal_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Banner_Metal_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Banner_Metal_Normal.png"; sourceTree = "<group>"; };
+		257FBE672D62A26000F92519 /* MASTER_Brick_Small_Red_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Brick_Small_Red_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Brick_Small_Red_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE682D62A26000F92519 /* MASTER_Rollup_Door_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Rollup_Door_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Rollup_Door_Normal.png"; sourceTree = "<group>"; };
+		257FBE692D62A26000F92519 /* MenuSign_01_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MenuSign_01_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MenuSign_01_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE6A2D62A26000F92519 /* Pavement_Cobblestone_Wet_BLENDSHADER_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Cobblestone_Wet_BLENDSHADER_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Cobblestone_Wet_BLENDSHADER_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE6B2D62A26000F92519 /* Paris_TrafficSign_A_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_TrafficSign_A_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_TrafficSign_A_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE6C2D62A26000F92519 /* Paris_TrafficSign_A_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_TrafficSign_A_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_TrafficSign_A_Normal.png"; sourceTree = "<group>"; };
+		257FBE6D2D62A26100F92519 /* Paris_LiquorBottle_01_Labels_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_LiquorBottle_01_Labels_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_LiquorBottle_01_Labels_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE6E2D62A26100F92519 /* MASTER_Concrete_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Concrete_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Concrete_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE6F2D62A26100F92519 /* Pavement_Manhole_Cover_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Manhole_Cover_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Manhole_Cover_Normal.png"; sourceTree = "<group>"; };
+		257FBE702D62A26100F92519 /* Bistro_Sign_Main_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Bistro_Sign_Main_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Bistro_Sign_Main_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE712D62A26100F92519 /* Paris_StreetPivot_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_StreetPivot_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_StreetPivot_Normal.png"; sourceTree = "<group>"; };
+		257FBE722D62A26100F92519 /* MASTER_Grain_Metal_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Grain_Metal_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Grain_Metal_Normal.png"; sourceTree = "<group>"; };
+		257FBE732D62A26100F92519 /* Foliage_Flowers_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Flowers_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Flowers_Normal.png"; sourceTree = "<group>"; };
+		257FBE742D62A26100F92519 /* MASTER_Concrete_Plaster1_BLENDSHADER_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Concrete_Plaster1_BLENDSHADER_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Concrete_Plaster1_BLENDSHADER_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE752D62A26100F92519 /* Pavement_Cobblestone_Big_BLENDSHADER_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Cobblestone_Big_BLENDSHADER_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Cobblestone_Big_BLENDSHADER_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE762D62A26100F92519 /* Awnings_Hotel_Fabric_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Awnings_Hotel_Fabric_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Awnings_Hotel_Fabric_Normal.png"; sourceTree = "<group>"; };
+		257FBE772D62A26100F92519 /* MASTER_Details_Dark_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Details_Dark_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Details_Dark_Normal.png"; sourceTree = "<group>"; };
+		257FBE782D62A26100F92519 /* MASTER_Wood_Polished_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Wood_Polished_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Wood_Polished_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE792D62A26100F92519 /* MASTER_Frosted_Glass_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Frosted_Glass_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Frosted_Glass_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE7A2D62A26200F92519 /* Foliage_Ivy_branches_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Ivy_branches_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Ivy_branches_Normal.png"; sourceTree = "<group>"; };
+		257FBE7B2D62A26200F92519 /* Trashcan_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Trashcan_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Trashcan_Normal.png"; sourceTree = "<group>"; };
+		257FBE7C2D62A26200F92519 /* MASTER_Focus_Ornament_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Focus_Ornament_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Focus_Ornament_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE7D2D62A26200F92519 /* Streetlight_Metal_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Streetlight_Metal_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Streetlight_Metal_Normal.png"; sourceTree = "<group>"; };
+		257FBE7E2D62A26200F92519 /* MASTER_Details_Dark_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Details_Dark_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Details_Dark_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE7F2D62A26200F92519 /* Concrete_Striped_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Concrete_Striped_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Concrete_Striped_Normal.png"; sourceTree = "<group>"; };
+		257FBE802D62A26200F92519 /* NapkinHolder_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = NapkinHolder_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/NapkinHolder_Normal.png"; sourceTree = "<group>"; };
+		257FBE812D62A26200F92519 /* MASTER_Wood_Painted_Green_BLENDSHADER_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Wood_Painted_Green_BLENDSHADER_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Wood_Painted_Green_BLENDSHADER_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE822D62A26200F92519 /* MASTER_Concrete_Plaster_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Concrete_Plaster_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Concrete_Plaster_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE832D62A26200F92519 /* Paris_LiquorBottle_01_Caps_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_LiquorBottle_01_Caps_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_LiquorBottle_01_Caps_Normal.png"; sourceTree = "<group>"; };
+		257FBE842D62A26200F92519 /* Chimneys_Metal_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Chimneys_Metal_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Chimneys_Metal_Normal.png"; sourceTree = "<group>"; };
+		257FBE852D62A26200F92519 /* Spotlight_Glass_Emissive_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Spotlight_Glass_Emissive_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Spotlight_Glass_Emissive_Normal.png"; sourceTree = "<group>"; };
+		257FBE862D62A26300F92519 /* MASTER_Awning_Beams_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Awning_Beams_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Awning_Beams_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE872D62A26300F92519 /* Paris_LiquorBottle_01_Caps_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_LiquorBottle_01_Caps_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_LiquorBottle_01_Caps_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE882D62A26300F92519 /* Foliage_Trunk_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Trunk_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Trunk_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE892D62A26300F92519 /* MASTER_Black_Metal_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Black_Metal_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Black_Metal_Normal.png"; sourceTree = "<group>"; };
+		257FBE8A2D62A26300F92519 /* MASTER_Boulangerie_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Boulangerie_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Boulangerie_Normal.png"; sourceTree = "<group>"; };
+		257FBE8B2D62A26300F92519 /* MASTER_Wood_Brown_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Wood_Brown_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Wood_Brown_Normal.png"; sourceTree = "<group>"; };
+		257FBE8C2D62A26300F92519 /* MASTER_Building_Details_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Building_Details_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Building_Details_Normal.png"; sourceTree = "<group>"; };
+		257FBE8D2D62A26300F92519 /* Paris_StringLights_01_White_Color_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_StringLights_01_White_Color_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_StringLights_01_White_Color_Normal.png"; sourceTree = "<group>"; };
+		257FBE8E2D62A26300F92519 /* Balcony_Trims_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Balcony_Trims_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Balcony_Trims_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE8F2D62A26300F92519 /* MASTER_Curtains_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Curtains_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Curtains_Normal.png"; sourceTree = "<group>"; };
+		257FBE902D62A26300F92519 /* Paris_Table_Terrace_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_Table_Terrace_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_Table_Terrace_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE912D62A26300F92519 /* MASTER_Concrete_Smooth_BLENDSHADER_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Concrete_Smooth_BLENDSHADER_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Concrete_Smooth_BLENDSHADER_Normal.png"; sourceTree = "<group>"; };
+		257FBE922D62A26400F92519 /* MASTER_Trim_Cornice_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Trim_Cornice_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Trim_Cornice_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE932D62A26400F92519 /* MASTER_Plastic_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Plastic_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Plastic_Normal.png"; sourceTree = "<group>"; };
+		257FBE942D62A26400F92519 /* Balcony_Green_Wood_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Balcony_Green_Wood_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Balcony_Green_Wood_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE952D62A26400F92519 /* MASTER_Brick_Large_Beige_BLENDSHADER_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Brick_Large_Beige_BLENDSHADER_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Brick_Large_Beige_BLENDSHADER_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE962D62A26400F92519 /* MASTER_Glass_Dirty_MASKED_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Glass_Dirty_MASKED_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Glass_Dirty_MASKED_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE972D62A26400F92519 /* MASTER_Room_Interior_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Room_Interior_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Room_Interior_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE982D62A26400F92519 /* MASTER_Concrete1_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Concrete1_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Concrete1_Normal.png"; sourceTree = "<group>"; };
+		257FBE992D62A26400F92519 /* Balcony_Concrete_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Balcony_Concrete_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Balcony_Concrete_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE9A2D62A26400F92519 /* MASTER_Concrete_Smooth_BLENDSHADER_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Concrete_Smooth_BLENDSHADER_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Concrete_Smooth_BLENDSHADER_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE9B2D62A26400F92519 /* Pavement_Cobblestone_Small_BLENDSHADER_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Cobblestone_Small_BLENDSHADER_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Cobblestone_Small_BLENDSHADER_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE9C2D62A26400F92519 /* MASTER_Metal_Pipe_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Metal_Pipe_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Metal_Pipe_Normal.png"; sourceTree = "<group>"; };
+		257FBE9D2D62A26500F92519 /* Plaster_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Plaster_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Plaster_Normal.png"; sourceTree = "<group>"; };
+		257FBE9E2D62A26500F92519 /* MenuSign_02_Glass_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MenuSign_02_Glass_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MenuSign_02_Glass_BaseColor.png"; sourceTree = "<group>"; };
+		257FBE9F2D62A26500F92519 /* Pavement_Cobblestone_01_BLENDSHADER_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Cobblestone_01_BLENDSHADER_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Cobblestone_01_BLENDSHADER_Normal.png"; sourceTree = "<group>"; };
+		257FBEA02D62A26500F92519 /* Paris_StringLights_01_Pink_Color_Emissive_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_StringLights_01_Pink_Color_Emissive_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_StringLights_01_Pink_Color_Emissive_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEA12D62A26500F92519 /* Foliage_Paris_Flowers_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Paris_Flowers_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Paris_Flowers_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEA22D62A26500F92519 /* MASTER_Concrete_Smooth_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Concrete_Smooth_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Concrete_Smooth_Normal.png"; sourceTree = "<group>"; };
+		257FBEA32D62A26500F92519 /* MASTER_Black_Metal_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Black_Metal_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Black_Metal_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEA42D62A26500F92519 /* Sidewalkbarrier_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Sidewalkbarrier_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Sidewalkbarrier_Normal.png"; sourceTree = "<group>"; };
+		257FBEA52D62A26500F92519 /* Balcony_Ornaments_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Balcony_Ornaments_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Balcony_Ornaments_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEA62D62A26500F92519 /* MASTER_Bronze_BLENDSHADER_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Bronze_BLENDSHADER_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Bronze_BLENDSHADER_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEA72D62A26500F92519 /* Paris_Table_Terrace_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_Table_Terrace_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_Table_Terrace_Normal.png"; sourceTree = "<group>"; };
+		257FBEA82D62A26600F92519 /* Sidewalkbarrier_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Sidewalkbarrier_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Sidewalkbarrier_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEA92D62A26600F92519 /* MASTER_Brick_Small_Red_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Brick_Small_Red_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Brick_Small_Red_Normal.png"; sourceTree = "<group>"; };
+		257FBEAA2D62A26600F92519 /* MASTER_Book_Covers_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Book_Covers_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Book_Covers_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEAB2D62A26600F92519 /* Concrete2_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Concrete2_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Concrete2_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEAC2D62A26600F92519 /* Paris_StringLights_01_Blue_Color_Emissive_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_StringLights_01_Blue_Color_Emissive_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_StringLights_01_Blue_Color_Emissive_Normal.png"; sourceTree = "<group>"; };
+		257FBEAD2D62A26600F92519 /* NapkinHolder_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = NapkinHolder_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/NapkinHolder_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEAE2D62A26600F92519 /* Paris_LiquorBottle_01_Glass_Wine_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_LiquorBottle_01_Glass_Wine_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_LiquorBottle_01_Glass_Wine_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEAF2D62A26600F92519 /* MASTER_Awning_Fabric_Red_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Awning_Fabric_Red_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Awning_Fabric_Red_Normal.png"; sourceTree = "<group>"; };
+		257FBEB02D62A26600F92519 /* Antenna_Plastic_Blue_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Antenna_Plastic_Blue_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Antenna_Plastic_Blue_Normal.png"; sourceTree = "<group>"; };
+		257FBEB12D62A26600F92519 /* Foliage_Linde_Tree_Large_Green_Leaves_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Linde_Tree_Large_Green_Leaves_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Linde_Tree_Large_Green_Leaves_Normal.png"; sourceTree = "<group>"; };
+		257FBEB22D62A26600F92519 /* Paris_LiquorBottle_01_Glass_Wine_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_LiquorBottle_01_Glass_Wine_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_LiquorBottle_01_Glass_Wine_Normal.png"; sourceTree = "<group>"; };
+		257FBEB32D62A26600F92519 /* MASTER_Light_Bulb_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Light_Bulb_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Light_Bulb_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEB42D62A26700F92519 /* Pavement_Cobblestone_02_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Cobblestone_02_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Cobblestone_02_Normal.png"; sourceTree = "<group>"; };
+		257FBEB52D62A26700F92519 /* Antenna_Metal_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Antenna_Metal_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Antenna_Metal_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEB62D62A26700F92519 /* Shopsign_Pharmacy_Emissive_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Shopsign_Pharmacy_Emissive_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Shopsign_Pharmacy_Emissive_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEB72D62A26700F92519 /* Antenna_Plastic_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Antenna_Plastic_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Antenna_Plastic_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEB82D62A26700F92519 /* Spotlight_Glass_Emissive_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Spotlight_Glass_Emissive_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Spotlight_Glass_Emissive_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEB92D62A26700F92519 /* MASTER_Concrete_Grooved_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Concrete_Grooved_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Concrete_Grooved_Normal.png"; sourceTree = "<group>"; };
+		257FBEBA2D62A26700F92519 /* Concrete_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Concrete_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Concrete_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEBB2D62A26700F92519 /* MASTER_Wood_Polished_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Wood_Polished_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Wood_Polished_Normal.png"; sourceTree = "<group>"; };
+		257FBEBC2D62A26700F92519 /* Bollards_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Bollards_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Bollards_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEBD2D62A26700F92519 /* Shopsign_Ties_Shop_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Shopsign_Ties_Shop_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Shopsign_Ties_Shop_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEBE2D62A26800F92519 /* Pavement_Ground_Wet_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Ground_Wet_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Ground_Wet_Normal.png"; sourceTree = "<group>"; };
+		257FBEBF2D62A26800F92519 /* MASTER_Metal_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Metal_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Metal_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEC02D62A26800F92519 /* Paris_StreetSign_01_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Paris_StreetSign_01_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Paris_StreetSign_01_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEC12D62A26800F92519 /* ElectricBox_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = ElectricBox_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/ElectricBox_Normal.png"; sourceTree = "<group>"; };
+		257FBEC22D62A26800F92519 /* Foliage_Paris_Flowers_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Paris_Flowers_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Paris_Flowers_Normal.png"; sourceTree = "<group>"; };
+		257FBEC32D62A26800F92519 /* MASTER_Forge_Metal_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Forge_Metal_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Forge_Metal_Normal.png"; sourceTree = "<group>"; };
+		257FBEC42D62A26800F92519 /* Emissive_StreetLight_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Emissive_StreetLight_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Emissive_StreetLight_Normal.png"; sourceTree = "<group>"; };
+		257FBEC52D62A26800F92519 /* MASTER_Wood_Painted3_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Wood_Painted3_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Wood_Painted3_Normal.png"; sourceTree = "<group>"; };
+		257FBEC62D62A26800F92519 /* Pavement_Cobblestone_Small_BLENDSHADER_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Pavement_Cobblestone_Small_BLENDSHADER_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Pavement_Cobblestone_Small_BLENDSHADER_Normal.png"; sourceTree = "<group>"; };
+		257FBEC72D62A26800F92519 /* Plantpots_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Plantpots_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Plantpots_BaseColor.png"; sourceTree = "<group>"; };
+		257FBEC82D62A26800F92519 /* Plantpots_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Plantpots_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Plantpots_Normal.png"; sourceTree = "<group>"; };
+		257FBEC92D62A26800F92519 /* Shopsign_Book_Store_Emissive_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Shopsign_Book_Store_Emissive_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Shopsign_Book_Store_Emissive_BaseColor.png"; sourceTree = "<group>"; };
+		257FBECA2D62A26900F92519 /* MASTER_Concrete_Grooved_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Concrete_Grooved_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Concrete_Grooved_BaseColor.png"; sourceTree = "<group>"; };
+		257FBECB2D62A26900F92519 /* Foliage_Ivy_leaf_a_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Foliage_Ivy_leaf_a_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Foliage_Ivy_leaf_a_BaseColor.png"; sourceTree = "<group>"; };
+		257FBECC2D62A26900F92519 /* MASTER_Wood_Painted_Cyan_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Wood_Painted_Cyan_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Wood_Painted_Cyan_BaseColor.png"; sourceTree = "<group>"; };
+		257FBECD2D62A26900F92519 /* MASTER_Boulangerie_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Boulangerie_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Boulangerie_BaseColor.png"; sourceTree = "<group>"; };
+		257FBECE2D62A26900F92519 /* normal-dimensions.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = "normal-dimensions.txt"; path = "../../../../scene/Bistro_v4/converted-dds-scaled/normal-dimensions.txt"; sourceTree = "<group>"; };
+		257FBECF2D62A26900F92519 /* Antenna_Metal_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Antenna_Metal_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Antenna_Metal_Normal.png"; sourceTree = "<group>"; };
+		257FBED02D62A26900F92519 /* Balcony_Concrete_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Balcony_Concrete_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Balcony_Concrete_Normal.png"; sourceTree = "<group>"; };
+		257FBED12D62A26900F92519 /* MASTER_Roofing_Shingle_Green_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Roofing_Shingle_Green_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Roofing_Shingle_Green_BaseColor.png"; sourceTree = "<group>"; };
+		257FBED22D62A26900F92519 /* MASTER_Brick_Large_White_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Brick_Large_White_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Brick_Large_White_BaseColor.png"; sourceTree = "<group>"; };
 		259DF54C2D6053C9007BA6A1 /* bistro-example-cpp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "bistro-example-cpp.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		259DF5832D605457007BA6A1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		259DF5872D6054A9007BA6A1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		25DECE7E2D6057FF00ED56EE /* MetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalView.swift; sourceTree = "<group>"; };
-		25DECE832D6058A400ED56EE /* bistro-example-cpp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "bistro-example-cpp-Bridging-Header.h"; sourceTree = "<group>"; };
-		25DECE842D6058E900ED56EE /* Wrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Wrapper.h; sourceTree = "<group>"; };
-		25DECE852D6058E900ED56EE /* Wrapper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Wrapper.mm; sourceTree = "<group>"; };
-		25DECE872D605CAC00ED56EE /* App.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = App.h; sourceTree = "<group>"; };
-		25DECE882D605CAC00ED56EE /* App.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = App.mm; sourceTree = "<group>"; };
+		259DF5832D605457007BA6A1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = ../ViewController.swift; sourceTree = "<group>"; };
+		259DF5872D6054A9007BA6A1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ../AppDelegate.swift; sourceTree = "<group>"; };
+		25DECE7E2D6057FF00ED56EE /* MetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MetalView.swift; path = ../MetalView.swift; sourceTree = "<group>"; };
+		25DECE832D6058A400ED56EE /* bistro-example-cpp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "bistro-example-cpp-Bridging-Header.h"; path = "../bistro-example-cpp-Bridging-Header.h"; sourceTree = "<group>"; };
+		25DECE842D6058E900ED56EE /* Wrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Wrapper.h; path = ../Wrapper.h; sourceTree = "<group>"; };
+		25DECE852D6058E900ED56EE /* Wrapper.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = Wrapper.mm; path = ../Wrapper.mm; sourceTree = "<group>"; };
+		25DECE872D605CAC00ED56EE /* App.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = App.h; path = ../App.h; sourceTree = "<group>"; };
+		25DECE882D605CAC00ED56EE /* App.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = App.mm; path = ../App.mm; sourceTree = "<group>"; };
 		25DECE8A2D60606200ED56EE /* image_utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = image_utils.h; sourceTree = "<group>"; };
 		25DECE8B2D60606200ED56EE /* image_utils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = image_utils.cpp; sourceTree = "<group>"; };
 		25DECE8C2D60606200ED56EE /* JobManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = JobManager.h; sourceTree = "<group>"; };
@@ -275,6 +1119,12 @@
 		25DECF4E2D61532E00ED56EE /* SwapChain.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = SwapChain.cpp; sourceTree = "<group>"; };
 		25DECF4F2D61532E00ED56EE /* Utils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
 		25DECF8F2D6155AD00ED56EE /* UtilsMetal.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = UtilsMetal.mm; sourceTree = "<group>"; };
+		25DECF922D6160D200ED56EE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = SOURCE_ROOT; };
+		25DECF932D6160D200ED56EE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Main.storyboard; sourceTree = "<group>"; };
+		25DECF982D6162D200ED56EE /* Document.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Document.swift; sourceTree = SOURCE_ROOT; };
+		25DECF9A2D61630200ED56EE /* bistro_example_cpp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = bistro_example_cpp.entitlements; sourceTree = SOURCE_ROOT; };
+		25DECF9B2D61631300ED56EE /* bistro-example-cpp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "bistro-example-cpp-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
+		25DECF9C2D61632700ED56EE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -288,18 +1138,300 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		257FBDBB2D61D46B00F92519 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				257FBFDD2D62A27800F92519 /* converted-dds-scale */,
+				257FBDC42D629FF800F92519 /* bistro2.mat */,
+				257FBDC52D629FF800F92519 /* bistro2.mid */,
+				257FBDBE2D629FDF00F92519 /* bistro2-mesh-instance-bboxes.bin */,
+				257FBDBC2D629FDF00F92519 /* bistro2-mesh-instance-ids.bin */,
+				257FBDBD2D629FDF00F92519 /* bistro2-mesh-instance-positions.bin */,
+				257FBDBF2D629FDF00F92519 /* bistro2-triangle-positions.bin */,
+				257FBDB72D61D2E200F92519 /* bistro2-triangles.bin */,
+			);
+			name = Assets;
+			path = "../../render-driver/Assets";
+			sourceTree = "<group>";
+		};
+		257FBFDD2D62A27800F92519 /* converted-dds-scale */ = {
+			isa = PBXGroup;
+			children = (
+				257FBDF22D62A25700F92519 /* albedo-dimensions.txt */,
+				257FBEB52D62A26700F92519 /* Antenna_Metal_BaseColor.png */,
+				257FBECF2D62A26900F92519 /* Antenna_Metal_Normal.png */,
+				257FBEB72D62A26700F92519 /* Antenna_Plastic_BaseColor.png */,
+				257FBE572D62A25F00F92519 /* Antenna_Plastic_Blue_BaseColor.png */,
+				257FBEB02D62A26600F92519 /* Antenna_Plastic_Blue_Normal.png */,
+				257FBE002D62A25800F92519 /* Antenna_Plastic_Normal.png */,
+				257FBE322D62A25C00F92519 /* Ashtray_BaseColor.png */,
+				257FBDE02D62A25500F92519 /* Ashtray_Normal.png */,
+				257FBE112D62A25900F92519 /* Awnings_Beams_BaseColor.png */,
+				257FBDE82D62A25600F92519 /* Awnings_Beams_Normal.png */,
+				257FBDD42D62A25500F92519 /* Awnings_Fabric_BaseColor.png */,
+				257FBDDF2D62A25500F92519 /* Awnings_Fabric_Normal.png */,
+				257FBDEE2D62A25600F92519 /* Awnings_Hotel_Fabric_BaseColor.png */,
+				257FBE762D62A26100F92519 /* Awnings_Hotel_Fabric_Normal.png */,
+				257FBE992D62A26400F92519 /* Balcony_Concrete_BaseColor.png */,
+				257FBED02D62A26900F92519 /* Balcony_Concrete_Normal.png */,
+				257FBE942D62A26400F92519 /* Balcony_Green_Wood_BaseColor.png */,
+				257FBE2A2D62A25B00F92519 /* Balcony_Green_Wood_Normal.png */,
+				257FBEA52D62A26500F92519 /* Balcony_Ornaments_BaseColor.png */,
+				257FBDE52D62A25600F92519 /* Balcony_Ornaments_Normal.png */,
+				257FBE8E2D62A26300F92519 /* Balcony_Trims_BaseColor.png */,
+				257FBE4D2D62A25E00F92519 /* Balcony_Trims_Normal.png */,
+				257FBDE72D62A25600F92519 /* Banner_Metal_BaseColor.png */,
+				257FBE662D62A26000F92519 /* Banner_Metal_Normal.png */,
+				257FBE1F2D62A25A00F92519 /* Bistro_Sign_Letters_BaseColor.png */,
+				257FBDFD2D62A25700F92519 /* Bistro_Sign_Letters_Normal.png */,
+				257FBE702D62A26100F92519 /* Bistro_Sign_Main_BaseColor.png */,
+				257FBE492D62A25E00F92519 /* Bistro_Sign_Main_Normal.png */,
+				257FBEBC2D62A26700F92519 /* Bollards_BaseColor.png */,
+				257FBE232D62A25B00F92519 /* Bollards_Normal.png */,
+				257FBE0E2D62A25900F92519 /* Chimneys_Metal_BaseColor.png */,
+				257FBE842D62A26200F92519 /* Chimneys_Metal_Normal.png */,
+				257FBEBA2D62A26700F92519 /* Concrete_BaseColor.png */,
+				257FBE532D62A25E00F92519 /* Concrete_Normal.png */,
+				257FBDED2D62A25600F92519 /* Concrete_Striped_BaseColor.png */,
+				257FBE7F2D62A26200F92519 /* Concrete_Striped_Normal.png */,
+				257FBEAB2D62A26600F92519 /* Concrete2_BaseColor.png */,
+				257FBE1E2D62A25A00F92519 /* Concrete2_Normal.png */,
+				257FBDD92D62A25500F92519 /* Concrete3_BaseColor.png */,
+				257FBE5D2D62A25F00F92519 /* Concrete3_Normal.png */,
+				257FBE012D62A25800F92519 /* ElectricBox_BaseColor.png */,
+				257FBEC12D62A26800F92519 /* ElectricBox_Normal.png */,
+				257FBE1B2D62A25A00F92519 /* Emissive_StreetLight_BaseColor.png */,
+				257FBEC42D62A26800F92519 /* Emissive_StreetLight_Normal.png */,
+				257FBE5F2D62A25F00F92519 /* Foliage_Bux_Hedges46_BaseColor.png */,
+				257FBE512D62A25E00F92519 /* Foliage_Bux_Hedges46_Normal.png */,
+				257FBE242D62A25B00F92519 /* Foliage_Flowers_BaseColor.png */,
+				257FBE732D62A26100F92519 /* Foliage_Flowers_Normal.png */,
+				257FBE062D62A25800F92519 /* Foliage_Ivy_branches_BaseColor.png */,
+				257FBE7A2D62A26200F92519 /* Foliage_Ivy_branches_Normal.png */,
+				257FBECB2D62A26900F92519 /* Foliage_Ivy_leaf_a_BaseColor.png */,
+				257FBE132D62A25A00F92519 /* Foliage_Ivy_leaf_a_Normal.png */,
+				257FBE0C2D62A25800F92519 /* Foliage_Leaves_BaseColor.png */,
+				257FBE562D62A25F00F92519 /* Foliage_Leaves_Normal.png */,
+				257FBE2E2D62A25C00F92519 /* Foliage_Linde_Tree_Large_Green_Leaves_BaseColor.png */,
+				257FBEB12D62A26600F92519 /* Foliage_Linde_Tree_Large_Green_Leaves_Normal.png */,
+				257FBDEF2D62A25600F92519 /* Foliage_Linde_Tree_Large_Orange_Leaves_BaseColor.png */,
+				257FBE152D62A25A00F92519 /* Foliage_Linde_Tree_Large_Orange_Leaves_Normal.png */,
+				257FBE3B2D62A25D00F92519 /* Foliage_Linde_Tree_Large_Trunk_BaseColor.png */,
+				257FBDDA2D62A25500F92519 /* Foliage_Linde_Tree_Large_Trunk_Normal.png */,
+				257FBEA12D62A26500F92519 /* Foliage_Paris_Flowers_BaseColor.png */,
+				257FBEC22D62A26800F92519 /* Foliage_Paris_Flowers_Normal.png */,
+				257FBE882D62A26300F92519 /* Foliage_Trunk_BaseColor.png */,
+				257FBE332D62A25C00F92519 /* Foliage_Trunk_Normal.png */,
+				257FBE022D62A25800F92519 /* LanternEmissive_BaseColor.png */,
+				257FBE342D62A25C00F92519 /* LanternEmissive_Normal.png */,
+				257FBE862D62A26300F92519 /* MASTER_Awning_Beams_BaseColor.png */,
+				257FBDFF2D62A25700F92519 /* MASTER_Awning_Beams_Normal.png */,
+				257FBE0D2D62A25900F92519 /* MASTER_Awning_Fabric_Cyan_BaseColor.png */,
+				257FBDCB2D62A25400F92519 /* MASTER_Awning_Fabric_Cyan_Normal.png */,
+				257FBDD72D62A25500F92519 /* MASTER_Awning_Fabric_Red_BaseColor.png */,
+				257FBEAF2D62A26600F92519 /* MASTER_Awning_Fabric_Red_Normal.png */,
+				257FBDD62D62A25500F92519 /* MASTER_Bistro_Main_Door_BaseColor.png */,
+				257FBE3E2D62A25D00F92519 /* MASTER_Bistro_Main_Door_Normal.png */,
+				257FBEA32D62A26500F92519 /* MASTER_Black_Metal_BaseColor.png */,
+				257FBE892D62A26300F92519 /* MASTER_Black_Metal_Normal.png */,
+				257FBEAA2D62A26600F92519 /* MASTER_Book_Covers_BaseColor.png */,
+				257FBE622D62A26000F92519 /* MASTER_Book_Covers_Normal.png */,
+				257FBECD2D62A26900F92519 /* MASTER_Boulangerie_BaseColor.png */,
+				257FBE8A2D62A26300F92519 /* MASTER_Boulangerie_Normal.png */,
+				257FBE952D62A26400F92519 /* MASTER_Brick_Large_Beige_BLENDSHADER_BaseColor.png */,
+				257FBDE42D62A25600F92519 /* MASTER_Brick_Large_Beige_BLENDSHADER_Normal.png */,
+				257FBED22D62A26900F92519 /* MASTER_Brick_Large_White_BaseColor.png */,
+				257FBDEA2D62A25600F92519 /* MASTER_Brick_Large_White_Normal.png */,
+				257FBE672D62A26000F92519 /* MASTER_Brick_Small_Red_BaseColor.png */,
+				257FBE182D62A25A00F92519 /* MASTER_Brick_Small_Red_BLENDSHADER_BaseColor.png */,
+				257FBDCF2D62A25400F92519 /* MASTER_Brick_Small_Red_BLENDSHADER_Normal.png */,
+				257FBEA92D62A26600F92519 /* MASTER_Brick_Small_Red_Normal.png */,
+				257FBEA62D62A26500F92519 /* MASTER_Bronze_BLENDSHADER_BaseColor.png */,
+				257FBDE32D62A25600F92519 /* MASTER_Bronze_BLENDSHADER_Normal.png */,
+				257FBE4C2D62A25E00F92519 /* MASTER_Building_Details_BaseColor.png */,
+				257FBE8C2D62A26300F92519 /* MASTER_Building_Details_Normal.png */,
+				257FBE6E2D62A26100F92519 /* MASTER_Concrete_BaseColor.png */,
+				257FBECA2D62A26900F92519 /* MASTER_Concrete_Grooved_BaseColor.png */,
+				257FBEB92D62A26700F92519 /* MASTER_Concrete_Grooved_Normal.png */,
+				257FBDCC2D62A25400F92519 /* MASTER_Concrete_Normal.png */,
+				257FBE822D62A26200F92519 /* MASTER_Concrete_Plaster_BaseColor.png */,
+				257FBE542D62A25E00F92519 /* MASTER_Concrete_Plaster_Normal.png */,
+				257FBE742D62A26100F92519 /* MASTER_Concrete_Plaster1_BLENDSHADER_BaseColor.png */,
+				257FBE462D62A25D00F92519 /* MASTER_Concrete_Plaster1_BLENDSHADER_Normal.png */,
+				257FBE2D2D62A25B00F92519 /* MASTER_Concrete_Smooth_BaseColor.png */,
+				257FBE9A2D62A26400F92519 /* MASTER_Concrete_Smooth_BLENDSHADER_BaseColor.png */,
+				257FBE912D62A26300F92519 /* MASTER_Concrete_Smooth_BLENDSHADER_Normal.png */,
+				257FBEA22D62A26500F92519 /* MASTER_Concrete_Smooth_Normal.png */,
+				257FBDF12D62A25700F92519 /* MASTER_Concrete_White_BaseColor.png */,
+				257FBE142D62A25A00F92519 /* MASTER_Concrete_White_Normal.png */,
+				257FBDCD2D62A25400F92519 /* MASTER_Concrete_Yellow_BaseColor.png */,
+				257FBDCE2D62A25400F92519 /* MASTER_Concrete_Yellow_Normal.png */,
+				257FBE592D62A25F00F92519 /* MASTER_Concrete1_BaseColor.png */,
+				257FBE982D62A26400F92519 /* MASTER_Concrete1_Normal.png */,
+				257FBDD12D62A25500F92519 /* MASTER_Curtains_BaseColor.png */,
+				257FBE8F2D62A26300F92519 /* MASTER_Curtains_Normal.png */,
+				257FBE7E2D62A26200F92519 /* MASTER_Details_Dark_BaseColor.png */,
+				257FBE772D62A26100F92519 /* MASTER_Details_Dark_Normal.png */,
+				257FBE5B2D62A25F00F92519 /* MASTER_Doors_BaseColor.png */,
+				257FBDD22D62A25500F92519 /* MASTER_Doors_Normal.png */,
+				257FBE352D62A25C00F92519 /* MASTER_Focus_BaseColor.png */,
+				257FBDFC2D62A25700F92519 /* MASTER_Focus_Normal.png */,
+				257FBE7C2D62A26200F92519 /* MASTER_Focus_Ornament_BaseColor.png */,
+				257FBE162D62A25A00F92519 /* MASTER_Focus_Ornament_Normal.png */,
+				257FBE502D62A25E00F92519 /* MASTER_Forge_Metal_BaseColor.png */,
+				257FBEC32D62A26800F92519 /* MASTER_Forge_Metal_Normal.png */,
+				257FBE792D62A26100F92519 /* MASTER_Frosted_Glass_BaseColor.png */,
+				257FBE292D62A25B00F92519 /* MASTER_Frosted_Glass_Normal.png */,
+				257FBE252D62A25B00F92519 /* MASTER_Glass_Dirty_BaseColor.png */,
+				257FBE962D62A26400F92519 /* MASTER_Glass_Dirty_MASKED_BaseColor.png */,
+				257FBE602D62A25F00F92519 /* MASTER_Glass_Dirty_MASKED_Normal.png */,
+				257FBDFB2D62A25700F92519 /* MASTER_Glass_Dirty_Normal.png */,
+				257FBE1A2D62A25A00F92519 /* MASTER_Glass_Exterior_BaseColor.png */,
+				257FBE392D62A25C00F92519 /* MASTER_Glass_Exterior_Normal.png */,
+				257FBE172D62A25A00F92519 /* MASTER_Grain_Metal_BaseColor.png */,
+				257FBE722D62A26100F92519 /* MASTER_Grain_Metal_Normal.png */,
+				257FBEB32D62A26600F92519 /* MASTER_Light_Bulb_BaseColor.png */,
+				257FBDF82D62A25700F92519 /* MASTER_Light_Bulb_Normal.png */,
+				257FBEBF2D62A26800F92519 /* MASTER_Metal_BaseColor.png */,
+				257FBE432D62A25D00F92519 /* MASTER_Metal_Normal.png */,
+				257FBE472D62A25D00F92519 /* MASTER_Metal_Pipe_BaseColor.png */,
+				257FBE9C2D62A26400F92519 /* MASTER_Metal_Pipe_Normal.png */,
+				257FBE312D62A25C00F92519 /* MASTER_Plastic_BaseColor.png */,
+				257FBE932D62A26400F92519 /* MASTER_Plastic_Normal.png */,
+				257FBE2C2D62A25B00F92519 /* MASTER_Rollup_Door_BaseColor.png */,
+				257FBE682D62A26000F92519 /* MASTER_Rollup_Door_Normal.png */,
+				257FBDF42D62A25700F92519 /* MASTER_Roofing_Metal_01_BaseColor.png */,
+				257FBDF92D62A25700F92519 /* MASTER_Roofing_Metal_01_Normal.png */,
+				257FBED12D62A26900F92519 /* MASTER_Roofing_Shingle_Green_BaseColor.png */,
+				257FBE262D62A25B00F92519 /* MASTER_Roofing_Shingle_Green_Normal.png */,
+				257FBDE62D62A25600F92519 /* MASTER_Roofing_Shingle_Grey_BaseColor.png */,
+				257FBE042D62A25800F92519 /* MASTER_Roofing_Shingle_Grey_Normal.png */,
+				257FBE972D62A26400F92519 /* MASTER_Room_Interior_BaseColor.png */,
+				257FBE5C2D62A25F00F92519 /* MASTER_Room_Interior_Normal.png */,
+				257FBE632D62A26000F92519 /* MASTER_Side_Letters_BaseColor.png */,
+				257FBE052D62A25800F92519 /* MASTER_Side_Letters_Normal.png */,
+				257FBE922D62A26400F92519 /* MASTER_Trim_Cornice_BaseColor.png */,
+				257FBE0F2D62A25900F92519 /* MASTER_Trim_Cornice_Normal.png */,
+				257FBE412D62A25D00F92519 /* MASTER_Wood_Brown_BaseColor.png */,
+				257FBE8B2D62A26300F92519 /* MASTER_Wood_Brown_Normal.png */,
+				257FBECC2D62A26900F92519 /* MASTER_Wood_Painted_Cyan_BaseColor.png */,
+				257FBDD02D62A25500F92519 /* MASTER_Wood_Painted_Cyan_Normal.png */,
+				257FBE4A2D62A25E00F92519 /* MASTER_Wood_Painted_Green_BaseColor.png */,
+				257FBE812D62A26200F92519 /* MASTER_Wood_Painted_Green_BLENDSHADER_BaseColor.png */,
+				257FBE302D62A25C00F92519 /* MASTER_Wood_Painted_Green_BLENDSHADER_Normal.png */,
+				257FBDE92D62A25600F92519 /* MASTER_Wood_Painted_Green_Normal.png */,
+				257FBDCA2D62A25400F92519 /* MASTER_Wood_Painted3_BaseColor.png */,
+				257FBEC52D62A26800F92519 /* MASTER_Wood_Painted3_Normal.png */,
+				257FBE782D62A26100F92519 /* MASTER_Wood_Polished_BaseColor.png */,
+				257FBEBB2D62A26700F92519 /* MASTER_Wood_Polished_Normal.png */,
+				257FBE692D62A26000F92519 /* MenuSign_01_BaseColor.png */,
+				257FBE612D62A26000F92519 /* MenuSign_01_Normal.png */,
+				257FBE9E2D62A26500F92519 /* MenuSign_02_Glass_BaseColor.png */,
+				257FBDFA2D62A25700F92519 /* MenuSign_02_Glass_Normal.png */,
+				257FBE082D62A25800F92519 /* MenuSign_02_Mesh_BaseColor.png */,
+				257FBE422D62A25D00F92519 /* MenuSign_02_Mesh_Normal.png */,
+				257FBEAD2D62A26600F92519 /* NapkinHolder_BaseColor.png */,
+				257FBE802D62A26200F92519 /* NapkinHolder_Normal.png */,
+				257FBECE2D62A26900F92519 /* normal-dimensions.txt */,
+				257FBE5A2D62A25F00F92519 /* Paris_Chair_01_BaseColor.png */,
+				257FBE1C2D62A25A00F92519 /* Paris_Chair_01_Normal.png */,
+				257FBE872D62A26300F92519 /* Paris_LiquorBottle_01_Caps_BaseColor.png */,
+				257FBE832D62A26200F92519 /* Paris_LiquorBottle_01_Caps_Normal.png */,
+				257FBEAE2D62A26600F92519 /* Paris_LiquorBottle_01_Glass_Wine_BaseColor.png */,
+				257FBEB22D62A26600F92519 /* Paris_LiquorBottle_01_Glass_Wine_Normal.png */,
+				257FBE6D2D62A26100F92519 /* Paris_LiquorBottle_01_Labels_BaseColor.png */,
+				257FBDDC2D62A25500F92519 /* Paris_LiquorBottle_01_Labels_Normal.png */,
+				257FBE3F2D62A25D00F92519 /* Paris_StreetPivot_BaseColor.png */,
+				257FBE712D62A26100F92519 /* Paris_StreetPivot_Normal.png */,
+				257FBEC02D62A26800F92519 /* Paris_StreetSign_01_BaseColor.png */,
+				257FBE4B2D62A25E00F92519 /* Paris_StreetSign_01_Normal.png */,
+				257FBE402D62A25D00F92519 /* Paris_StringLights_01_Blue_Color_Emissive_BaseColor.png */,
+				257FBEAC2D62A26600F92519 /* Paris_StringLights_01_Blue_Color_Emissive_Normal.png */,
+				257FBE3D2D62A25D00F92519 /* Paris_StringLights_01_Green_Color_Emissive_BaseColor.png */,
+				257FBE372D62A25C00F92519 /* Paris_StringLights_01_Green_Color_Emissive_Normal.png */,
+				257FBE582D62A25F00F92519 /* Paris_StringLights_01_Orange_Color_Emissive_BaseColor.png */,
+				257FBE452D62A25D00F92519 /* Paris_StringLights_01_Orange_Color_Emissive_Normal.png */,
+				257FBEA02D62A26500F92519 /* Paris_StringLights_01_Pink_Color_Emissive_BaseColor.png */,
+				257FBDE22D62A25500F92519 /* Paris_StringLights_01_Pink_Color_Emissive_Normal.png */,
+				257FBE4F2D62A25E00F92519 /* Paris_StringLights_01_Red_Color_Emissive_BaseColor.png */,
+				257FBE212D62A25B00F92519 /* Paris_StringLights_01_Red_Color_Emissive_Normal.png */,
+				257FBE642D62A26000F92519 /* Paris_StringLights_01_White_Color_BaseColor.png */,
+				257FBE192D62A25A00F92519 /* Paris_StringLights_01_White_Color_Emissive_BaseColor.png */,
+				257FBDDB2D62A25500F92519 /* Paris_StringLights_01_White_Color_Emissive_Normal.png */,
+				257FBE8D2D62A26300F92519 /* Paris_StringLights_01_White_Color_Normal.png */,
+				257FBE902D62A26300F92519 /* Paris_Table_Terrace_BaseColor.png */,
+				257FBEA72D62A26500F92519 /* Paris_Table_Terrace_Normal.png */,
+				257FBE6B2D62A26000F92519 /* Paris_TrafficSign_A_BaseColor.png */,
+				257FBE6C2D62A26000F92519 /* Paris_TrafficSign_A_Normal.png */,
+				257FBE072D62A25800F92519 /* Pavement_Brick_BLENDSHADER_BaseColor.png */,
+				257FBE442D62A25D00F92519 /* Pavement_Brick_BLENDSHADER_Normal.png */,
+				257FBDF72D62A25700F92519 /* Pavement_Cobble_Leaves_BLENDSHADER_BaseColor.png */,
+				257FBDD52D62A25500F92519 /* Pavement_Cobble_Leaves_BLENDSHADER_Normal.png */,
+				257FBE362D62A25C00F92519 /* Pavement_Cobblestone_01_BLENDSHADER_BaseColor.png */,
+				257FBE9F2D62A26500F92519 /* Pavement_Cobblestone_01_BLENDSHADER_Normal.png */,
+				257FBDD82D62A25500F92519 /* Pavement_Cobblestone_02_BaseColor.png */,
+				257FBEB42D62A26700F92519 /* Pavement_Cobblestone_02_Normal.png */,
+				257FBE752D62A26100F92519 /* Pavement_Cobblestone_Big_BLENDSHADER_BaseColor.png */,
+				257FBE092D62A25800F92519 /* Pavement_Cobblestone_Big_BLENDSHADER_Normal.png */,
+				257FBE9B2D62A26400F92519 /* Pavement_Cobblestone_Small_BLENDSHADER_BaseColor.png */,
+				257FBEC62D62A26800F92519 /* Pavement_Cobblestone_Small_BLENDSHADER_Normal.png */,
+				257FBE6A2D62A26000F92519 /* Pavement_Cobblestone_Wet_BLENDSHADER_BaseColor.png */,
+				257FBDEB2D62A25600F92519 /* Pavement_Cobblestone_Wet_BLENDSHADER_Normal.png */,
+				257FBE3A2D62A25C00F92519 /* Pavement_Cobblestone_Wet_Leaves_BLENDSHADER_BaseColor.png */,
+				257FBE0A2D62A25800F92519 /* Pavement_Cobblestone_Wet_Leaves_BLENDSHADER_Normal.png */,
+				257FBDFE2D62A25700F92519 /* Pavement_Curbstones_BaseColor.png */,
+				257FBE2F2D62A25C00F92519 /* Pavement_Curbstones_Normal.png */,
+				257FBE222D62A25B00F92519 /* Pavement_Ground_Wet_BaseColor.png */,
+				257FBEBE2D62A26800F92519 /* Pavement_Ground_Wet_Normal.png */,
+				257FBE382D62A25C00F92519 /* Pavement_Manhole_Cover_BaseColor.png */,
+				257FBE6F2D62A26100F92519 /* Pavement_Manhole_Cover_Normal.png */,
+				257FBEC72D62A26800F92519 /* Plantpots_BaseColor.png */,
+				257FBEC82D62A26800F92519 /* Plantpots_Normal.png */,
+				257FBDF52D62A25700F92519 /* Plaster_BaseColor.png */,
+				257FBE9D2D62A26500F92519 /* Plaster_Normal.png */,
+				257FBE482D62A25E00F92519 /* Shopsign_Bakery_BaseColor.png */,
+				257FBE4E2D62A25E00F92519 /* Shopsign_Bakery_Normal.png */,
+				257FBEC92D62A26800F92519 /* Shopsign_Book_Store_Emissive_BaseColor.png */,
+				257FBDF02D62A25600F92519 /* Shopsign_Book_Store_Emissive_Normal.png */,
+				257FBEB62D62A26700F92519 /* Shopsign_Pharmacy_Emissive_BaseColor.png */,
+				257FBDDE2D62A25500F92519 /* Shopsign_Pharmacy_Emissive_Normal.png */,
+				257FBEBD2D62A26700F92519 /* Shopsign_Ties_Shop_BaseColor.png */,
+				257FBE1D2D62A25A00F92519 /* Shopsign_Ties_Shop_Normal.png */,
+				257FBEA82D62A26600F92519 /* Sidewalkbarrier_BaseColor.png */,
+				257FBEA42D62A26500F92519 /* Sidewalkbarrier_Normal.png */,
+				257FBE272D62A25B00F92519 /* Spotlight_Emissive_BaseColor.png */,
+				257FBE3C2D62A25D00F92519 /* Spotlight_Emissive_Normal.png */,
+				257FBEB82D62A26700F92519 /* Spotlight_Glass_Emissive_BaseColor.png */,
+				257FBE852D62A26200F92519 /* Spotlight_Glass_Emissive_Normal.png */,
+				257FBDF62D62A25700F92519 /* Spotlight_Main_BaseColor.png */,
+				257FBE522D62A25E00F92519 /* Spotlight_Main_Normal.png */,
+				257FBE5E2D62A25F00F92519 /* Streetlight_Chains_BaseColor.png */,
+				257FBE652D62A26000F92519 /* Streetlight_Chains_Normal.png */,
+				257FBE282D62A25B00F92519 /* Streetlight_Metal_BaseColor.png */,
+				257FBE7D2D62A26200F92519 /* Streetlight_Metal_Normal.png */,
+				257FBE122D62A25900F92519 /* Streetlight_Support_Bulb_BaseColor.png */,
+				257FBE2B2D62A25B00F92519 /* Streetlight_Support_Bulb_Normal.png */,
+				257FBE0B2D62A25800F92519 /* Stringlights_BaseColor.png */,
+				257FBDE12D62A25500F92519 /* Stringlights_Normal.png */,
+				257FBDD32D62A25500F92519 /* Trashcan_BaseColor.png */,
+				257FBE7B2D62A26200F92519 /* Trashcan_Normal.png */,
+				257FBDEC2D62A25600F92519 /* Vespa_BaseColor.png */,
+				257FBE202D62A25B00F92519 /* Vespa_Headlight_BaseColor.png */,
+				257FBE552D62A25F00F92519 /* Vespa_Headlight_Normal.png */,
+				257FBDDD2D62A25500F92519 /* Vespa_Normal.png */,
+				257FBDF32D62A25700F92519 /* Vespa_Odometer_BaseColor.png */,
+				257FBDC92D62A25400F92519 /* Vespa_Odometer_Glass_BaseColor.png */,
+				257FBE102D62A25900F92519 /* Vespa_Odometer_Glass_Normal.png */,
+				257FBE032D62A25800F92519 /* Vespa_Odometer_Normal.png */,
+			);
+			path = "converted-dds-scale";
+			sourceTree = "<group>";
+		};
 		259DF5432D6053C9007BA6A1 = {
 			isa = PBXGroup;
 			children = (
-				259DF5832D605457007BA6A1 /* ViewController.swift */,
-				259DF5872D6054A9007BA6A1 /* AppDelegate.swift */,
-				25DECE7E2D6057FF00ED56EE /* MetalView.swift */,
-				25DECE832D6058A400ED56EE /* bistro-example-cpp-Bridging-Header.h */,
-				259DF54D2D6053C9007BA6A1 /* Products */,
-				25DECE842D6058E900ED56EE /* Wrapper.h */,
-				25DECE852D6058E900ED56EE /* Wrapper.mm */,
-				25DECE872D605CAC00ED56EE /* App.h */,
-				25DECE882D605CAC00ED56EE /* App.mm */,
+				257FBDBB2D61D46B00F92519 /* Assets */,
+				25DECF912D615F1F00ED56EE /* main */,
 				25DECE992D60606200ED56EE /* utils */,
 				25DECEA72D6063D700ED56EE /* math */,
 				25DECEBB2D61373400ED56EE /* render */,
@@ -565,6 +1697,36 @@
 			path = "/Users/dingwings/projects/bistro-example-cpp/render-driver";
 			sourceTree = "<absolute>";
 		};
+		25DECF912D615F1F00ED56EE /* main */ = {
+			isa = PBXGroup;
+			children = (
+				25DECF922D6160D200ED56EE /* Assets.xcassets */,
+				25DECF952D6160D200ED56EE /* Base.lproj */,
+				259DF5832D605457007BA6A1 /* ViewController.swift */,
+				259DF5872D6054A9007BA6A1 /* AppDelegate.swift */,
+				25DECE7E2D6057FF00ED56EE /* MetalView.swift */,
+				25DECE832D6058A400ED56EE /* bistro-example-cpp-Bridging-Header.h */,
+				259DF54D2D6053C9007BA6A1 /* Products */,
+				25DECE842D6058E900ED56EE /* Wrapper.h */,
+				25DECE852D6058E900ED56EE /* Wrapper.mm */,
+				25DECE872D605CAC00ED56EE /* App.h */,
+				25DECE882D605CAC00ED56EE /* App.mm */,
+				25DECF982D6162D200ED56EE /* Document.swift */,
+				25DECF9A2D61630200ED56EE /* bistro_example_cpp.entitlements */,
+				25DECF9B2D61631300ED56EE /* bistro-example-cpp-Bridging-Header.h */,
+				25DECF9C2D61632700ED56EE /* Info.plist */,
+			);
+			path = main;
+			sourceTree = "<group>";
+		};
+		25DECF952D6160D200ED56EE /* Base.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				25DECF942D6160D200ED56EE /* Main.storyboard */,
+			);
+			path = Base.lproj;
+			sourceTree = SOURCE_ROOT;
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -575,6 +1737,8 @@
 				259DF5482D6053C9007BA6A1 /* Sources */,
 				259DF5492D6053C9007BA6A1 /* Frameworks */,
 				259DF54A2D6053C9007BA6A1 /* Resources */,
+				257FBDB92D61D3C400F92519 /* CopyFiles */,
+				257FBDC82D62A22100F92519 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -627,6 +1791,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				25DECF962D6160D200ED56EE /* Assets.xcassets in Resources */,
+				25DECF972D6160D200ED56EE /* Main.storyboard in Resources */,
+				25DECF9D2D61632700ED56EE /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -699,6 +1866,7 @@
 				25DECF7D2D61532E00ED56EE /* BufferMetal.mm in Sources */,
 				25DECF7E2D61532E00ED56EE /* UtilsVulkan.cpp in Sources */,
 				25DECF7F2D61532E00ED56EE /* SwapChainVulkan.cpp in Sources */,
+				25DECF992D6162D200ED56EE /* Document.swift in Sources */,
 				25DECF802D61532E00ED56EE /* CommandQueueMetal.mm in Sources */,
 				25DECF812D61532E00ED56EE /* DeviceDX12.cpp in Sources */,
 				25DECF822D61532E00ED56EE /* DeviceVulkan.cpp in Sources */,
@@ -727,6 +1895,17 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		25DECF942D6160D200ED56EE /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				25DECF932D6160D200ED56EE /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		259DF56F2D6053CA007BA6A1 /* Debug */ = {
