@@ -63,7 +63,6 @@ namespace Render
             mpCopyCommandQueue->setID("Copy Command Queue");
             mpGPUCopyCommandQueue->setID("GPU Copy Command Queue");
             
-            
             mDefaultUniformBuffer = std::make_unique<RenderDriver::Metal::CBuffer>();
 
             RenderDriver::Common::BufferDescriptor bufferCreationDesc = {};
@@ -1099,8 +1098,6 @@ namespace Render
         void CRenderer::platformInitializeRenderJobs(
             std::vector<std::string> const& aRenderJobNames)
         {
-            WTFASSERT(0, "Implement me");
-            
             for(auto const& name : aRenderJobNames)
             {
                 maRenderJobs[name] = std::make_unique<Render::Metal::CRenderJob>();
@@ -1119,27 +1116,29 @@ namespace Render
             std::vector<std::string> const& aRenderJobNames
         )
         {
-            WTFASSERT(0, "Implement me");
-            
             for(auto const& renderJobName : aRenderJobNames)
             {
                 maRenderJobCommandBuffers[renderJobName] = std::make_unique<RenderDriver::Metal::CCommandBuffer>();
                 maRenderJobCommandAllocators[renderJobName] = std::make_unique<RenderDriver::Metal::CCommandAllocator>();
 
                 // creation descriptors
-                RenderDriver::Common::CommandBufferDescriptor desc;
+                RenderDriver::Metal::CommandBufferDescriptor desc;
                 RenderDriver::Common::CommandAllocatorDescriptor allocatorDesc;
                 desc.mType = RenderDriver::Common::CommandBufferType::Graphics;
                 allocatorDesc.mType = RenderDriver::Common::CommandBufferType::Graphics;
+                desc.mpCommandQueue = (__bridge id<MTLCommandQueue>)mpGraphicsCommandQueue->getNativeCommandQueue();
                 if(mapRenderJobs[renderJobName]->mType == Render::Common::JobType::Compute)
                 {
                     desc.mType = RenderDriver::Common::CommandBufferType::Compute;
                     allocatorDesc.mType = RenderDriver::Common::CommandBufferType::Compute;
+                    desc.mpCommandQueue = (__bridge id<MTLCommandQueue>)mpComputeCommandQueue->getNativeCommandQueue();
+                    
                 }
                 else if(mapRenderJobs[renderJobName]->mType == Render::Common::JobType::Copy)
                 {
                     desc.mType = RenderDriver::Common::CommandBufferType::Copy;
                     allocatorDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
+                    desc.mpCommandQueue = (__bridge id<MTLCommandQueue>)mpCopyCommandQueue->getNativeCommandQueue();
                 }
 
                 // create command buffer allocator
@@ -1153,7 +1152,7 @@ namespace Render
                 desc.mpPipelineState = mapRenderJobs[renderJobName]->mpPipelineState;
                 desc.mpCommandAllocator = maRenderJobCommandAllocators[renderJobName].get();
                 maRenderJobCommandBuffers[renderJobName]->create(
-                    desc, 
+                    desc,
                     *mpDevice
                 );
                 maRenderJobCommandBuffers[renderJobName]->reset();
@@ -1195,8 +1194,6 @@ namespace Render
             uint32_t iIndexBufferSize
         )
         {
-            WTFASSERT(0, "Implement me");
-            
             maVertexBuffers[name] = std::make_unique<RenderDriver::Metal::CBuffer>();
             maIndexBuffers[name] = std::make_unique<RenderDriver::Metal::CBuffer>();
             maTrianglePositionBuffers[name] = std::make_unique<RenderDriver::Metal::CBuffer>();

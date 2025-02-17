@@ -317,6 +317,7 @@ namespace SerializeUtils
 			case RenderDriver::Common::Format::R8G8B8A8_UINT:
 			case RenderDriver::Common::Format::R8G8B8A8_SNORM:
 			case RenderDriver::Common::Format::R8G8B8A8_SINT:
+            case RenderDriver::Common::Format::B8G8R8A8_UNORM:
 				iRet = 4;
 				break;
 
@@ -344,6 +345,14 @@ namespace SerializeUtils
 			case RenderDriver::Common::Format::R8G8_SINT:
 				iRet = 2;
 				break;
+            case RenderDriver::Common::Format::R32_FLOAT:
+            case RenderDriver::Common::Format::R16_FLOAT:
+            case RenderDriver::Common::Format::R8_UNORM:
+            case RenderDriver::Common::Format::R8_UINT:
+            case RenderDriver::Common::Format::R8_SNORM:
+            case RenderDriver::Common::Format::R8_SINT:
+                iRet = 1;
+                break;
             default:
                     assert(!"format not handled");
 			}

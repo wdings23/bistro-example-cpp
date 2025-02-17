@@ -27,8 +27,6 @@ namespace Render
 			RenderDriver::Common::Format const& format
 		)
 		{
-            WTFASSERT(0, "Implement me");
-            
 			maOutputImageAttachments[name] = std::make_unique<RenderDriver::Metal::CImage>();
 			
 			RenderDriver::Metal::CImage* pImage = maOutputImageAttachments[name].get();
@@ -70,8 +68,6 @@ namespace Render
 			RenderDriver::Common::BufferUsage const& usage
 		)
 		{
-            WTFASSERT(0, "Implement me");
-            
 			maOutputBufferAttachments[name] = std::make_unique<RenderDriver::Metal::CBuffer>();
 			RenderDriver::Metal::CBuffer* pBuffer = maOutputBufferAttachments[name].get();
 			
@@ -109,8 +105,6 @@ namespace Render
 			RenderDriver::Common::BufferDescriptor const& desc
 		)
 		{
-            WTFASSERT(0, "Implement me");
-            
 			mapBuffers[name] = std::make_unique<RenderDriver::Metal::CBuffer>();
 			
 			RenderDriver::Metal::CBuffer* pBuffer = mapBuffers[name].get();
@@ -553,8 +547,6 @@ namespace Render
 			uint32_t iHeight
 		)
 		{
-            WTFASSERT(0, "Implement me");
-            
 			mDepthImage = std::make_unique<RenderDriver::Metal::CImage>();
 			
 			RenderDriver::Common::Format format = RenderDriver::Common::Format::D32_FLOAT_S8X24_UINT;

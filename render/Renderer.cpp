@@ -27,6 +27,10 @@ std::vector<char> gaReadWriteBufferCopy(1 << 27);
 std::unique_ptr<RenderDriver::Common::CBuffer> gpCopyBuffer;
 #endif // TEST_HLSL_LOCALLY
 
+#if !defined(_MSC_VER)
+    extern void getAssetsDir(std::string& fullPath, std::string const& fileName);
+#endif // _MSC_VER
+
 std::mutex sMutex;
 std::mutex sPresentMutex;
 
@@ -158,8 +162,6 @@ namespace Render
 
             std::vector<std::map<std::string, std::string>> aExtraAttachmentJSONInfo;
 
-            
-
             // output attachments first for attachment linkages
             iJob = 0;
             for(auto const& job : aJobs)
@@ -178,6 +180,10 @@ namespace Render
 
                 std::string fullPath = topDirectory + "\\render-jobs\\" + pipeline;
 
+#if !defined(_MSC_VER)
+                getAssetsDir(fullPath, std::string("render-jobs/") + pipeline);
+#endif // _MSC_VER
+                
                 uint3 dispatchSize(1, 1, 1);
                 Render::Common::CRenderJob::CreateInfo createInfo
                 {
@@ -286,6 +292,10 @@ namespace Render
                     pfnInitDataFunc = mapfnRenderJobData[name];
                 }
 
+#if !defined(_MSC_VER)
+                getAssetsDir(fullPath, std::string("render-jobs/") + pipeline);
+#endif // _MSC_VER
+                
                 Render::Common::CRenderJob::CreateInfo createInfo
                 {
                     name,
@@ -1665,8 +1675,16 @@ namespace Render
         */
         void CRenderer::initData()
         {
+            FILE* fp = nullptr;
+#if defined(_MSC_VER)
+            fp = fopen("d:\\Downloads\\Bistro_v4\\bistro2-triangles.bin", "rb");
+#else
+            std::string fullPath;
+            getAssetsDir(fullPath, "bistro2-triangles.bin");
+            fp = fopen(fullPath.c_str(), "rb");
+#endif // _MSC_VER
+            
             // load binary data
-            FILE* fp = fopen("d:\\Downloads\\Bistro_v4\\bistro2-triangles.bin", "rb");
             fseek(fp, 0, SEEK_END);
             size_t iFileSize = ftell(fp);
             fseek(fp, 0, SEEK_SET);

@@ -280,6 +280,95 @@
 		257FBFDA2D62A26900F92519 /* Balcony_Concrete_Normal.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBED02D62A26900F92519 /* Balcony_Concrete_Normal.png */; };
 		257FBFDB2D62A26900F92519 /* MASTER_Roofing_Shingle_Green_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBED12D62A26900F92519 /* MASTER_Roofing_Shingle_Green_BaseColor.png */; };
 		257FBFDC2D62A26900F92519 /* MASTER_Brick_Large_White_BaseColor.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBED22D62A26900F92519 /* MASTER_Brick_Large_White_BaseColor.png */; };
+		257FC0102D63213800F92519 /* depth-prepass-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFDF2D63213300F92519 /* depth-prepass-graphics.json */; };
+		257FC0112D63213800F92519 /* temporal-accumulation-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFE02D63213400F92519 /* temporal-accumulation-graphics.json */; };
+		257FC0122D63213800F92519 /* secondary-mesh-culling-compute.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFE12D63213400F92519 /* secondary-mesh-culling-compute.json */; };
+		257FC0132D63213800F92519 /* secondary-deferred-indirect-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFE22D63213400F92519 /* secondary-deferred-indirect-graphics.json */; };
+		257FC0142D63213800F92519 /* down-rez-depth-gather.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFE32D63213400F92519 /* down-rez-depth-gather.json */; };
+		257FC0152D63213800F92519 /* atmosphere.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFE42D63213400F92519 /* atmosphere.json */; };
+		257FC0162D63213800F92519 /* down-rez-depth-6.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFE52D63213400F92519 /* down-rez-depth-6.json */; };
+		257FC0172D63213800F92519 /* spatial-restir-emissive-ray-trace.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFE62D63213400F92519 /* spatial-restir-emissive-ray-trace.json */; };
+		257FC0182D63213800F92519 /* specular-svgf-0-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFE72D63213400F92519 /* specular-svgf-0-graphics.json */; };
+		257FC0192D63213800F92519 /* deferred-indirect.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFE82D63213400F92519 /* deferred-indirect.json */; };
+		257FC01A2D63213800F92519 /* diffuse-svgf-1-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFE92D63213400F92519 /* diffuse-svgf-1-graphics.json */; };
+		257FC01B2D63213800F92519 /* test-compute.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFEA2D63213400F92519 /* test-compute.json */; };
+		257FC01C2D63213800F92519 /* swap-chain-bistro-example.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFEB2D63213400F92519 /* swap-chain-bistro-example.json */; };
+		257FC01D2D63213800F92519 /* texture-page-queue-compute.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFEC2D63213400F92519 /* texture-page-queue-compute.json */; };
+		257FC01E2D63213800F92519 /* texture-atlas-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFED2D63213400F92519 /* texture-atlas-graphics.json */; };
+		257FC01F2D63213800F92519 /* ray-traced-ambient-occlusion.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFEE2D63213500F92519 /* ray-traced-ambient-occlusion.json */; };
+		257FC0202D63213800F92519 /* non-ray-trace-render-jobs.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFEF2D63213500F92519 /* non-ray-trace-render-jobs.json */; };
+		257FC0212D63213800F92519 /* copy-render-targets.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFF02D63213500F92519 /* copy-render-targets.json */; };
+		257FC0222D63213800F92519 /* down-rez-depth-7.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFF12D63213500F92519 /* down-rez-depth-7.json */; };
+		257FC0232D63213800F92519 /* down-rez-depth-4.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFF22D63213500F92519 /* down-rez-depth-4.json */; };
+		257FC0242D63213800F92519 /* taa-resolve-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFF32D63213500F92519 /* taa-resolve-graphics.json */; };
+		257FC0252D63213800F92519 /* diffuse-filter-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFF42D63213500F92519 /* diffuse-filter-graphics.json */; };
+		257FC0262D63213800F92519 /* svgf-0-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFF52D63213500F92519 /* svgf-0-graphics.json */; };
+		257FC0272D63213800F92519 /* specular-svgf-1-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFF62D63213500F92519 /* specular-svgf-1-graphics.json */; };
+		257FC0282D63213800F92519 /* specular-temporal-restir-ray-trace.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFF72D63213500F92519 /* specular-temporal-restir-ray-trace.json */; };
+		257FC0292D63213800F92519 /* ray-traced-shadow.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFF82D63213500F92519 /* ray-traced-shadow.json */; };
+		257FC02A2D63213800F92519 /* non-ray-trace-copy-render-targets.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFF92D63213600F92519 /* non-ray-trace-copy-render-targets.json */; };
+		257FC02B2D63213800F92519 /* down-rez-depth-3.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFFA2D63213600F92519 /* down-rez-depth-3.json */; };
+		257FC02C2D63213800F92519 /* non-ray-trace-swap-chain-bistro-example.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFFB2D63213600F92519 /* non-ray-trace-swap-chain-bistro-example.json */; };
+		257FC02D2D63213800F92519 /* build-irradiance-cache.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFFC2D63213600F92519 /* build-irradiance-cache.json */; };
+		257FC02E2D63213800F92519 /* down-rez-depth-2.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFFD2D63213600F92519 /* down-rez-depth-2.json */; };
+		257FC02F2D63213800F92519 /* svgf-2-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFFE2D63213600F92519 /* svgf-2-graphics.json */; };
+		257FC0302D63213800F92519 /* down-rez-depth-5.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBFFF2D63213600F92519 /* down-rez-depth-5.json */; };
+		257FC0312D63213800F92519 /* svgf-1-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0002D63213600F92519 /* svgf-1-graphics.json */; };
+		257FC0322D63213800F92519 /* emissive-svgf-1-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0012D63213600F92519 /* emissive-svgf-1-graphics.json */; };
+		257FC0332D63213800F92519 /* emissive-svgf-0-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0022D63213600F92519 /* emissive-svgf-0-graphics.json */; };
+		257FC0342D63213800F92519 /* down-rez-depth-1.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0032D63213600F92519 /* down-rez-depth-1.json */; };
+		257FC0352D63213800F92519 /* bistro-example-render-jobs.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0042D63213700F92519 /* bistro-example-render-jobs.json */; };
+		257FC0362D63213800F92519 /* test-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0052D63213700F92519 /* test-graphics.json */; };
+		257FC0372D63213800F92519 /* emissive-svgf-2-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0062D63213700F92519 /* emissive-svgf-2-graphics.json */; };
+		257FC0382D63213800F92519 /* temporal-restir-diffuse-ray-trace.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0072D63213700F92519 /* temporal-restir-diffuse-ray-trace.json */; };
+		257FC0392D63213800F92519 /* spatial-restir-diffuse-1-ray-trace.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0082D63213700F92519 /* spatial-restir-diffuse-1-ray-trace.json */; };
+		257FC03A2D63213800F92519 /* compute-test.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0092D63213700F92519 /* compute-test.json */; };
+		257FC03B2D63213800F92519 /* spatial-restir-diffuse-ray-trace.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC00A2D63213700F92519 /* spatial-restir-diffuse-ray-trace.json */; };
+		257FC03C2D63213800F92519 /* diffuse-svgf-2-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC00B2D63213700F92519 /* diffuse-svgf-2-graphics.json */; };
+		257FC03D2D63213800F92519 /* mesh-culling-compute.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC00C2D63213700F92519 /* mesh-culling-compute.json */; };
+		257FC03E2D63213800F92519 /* diffuse-svgf-0-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC00D2D63213700F92519 /* diffuse-svgf-0-graphics.json */; };
+		257FC03F2D63213800F92519 /* temporal-restir-emissive-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC00E2D63213800F92519 /* temporal-restir-emissive-graphics.json */; };
+		257FC0402D63213800F92519 /* light-composite-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC00F2D63213800F92519 /* light-composite-graphics.json */; };
+		257FC06C2D63218D00F92519 /* spatial-restir-emissive-ray-trace.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0442D63218A00F92519 /* spatial-restir-emissive-ray-trace.slang */; };
+		257FC06D2D63218D00F92519 /* random-headers.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0452D63218A00F92519 /* random-headers.slang */; };
+		257FC06E2D63218D00F92519 /* tone-mapping-headers.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0462D63218A00F92519 /* tone-mapping-headers.slang */; };
+		257FC06F2D63218D00F92519 /* taa-resolve-graphics.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0472D63218A00F92519 /* taa-resolve-graphics.slang */; };
+		257FC0702D63218D00F92519 /* diffuse-filter-graphics.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0482D63218A00F92519 /* diffuse-filter-graphics.slang */; };
+		257FC0712D63218D00F92519 /* mesh-culling-compute.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0492D63218A00F92519 /* mesh-culling-compute.slang */; };
+		257FC0722D63218D00F92519 /* mesh-culling-headers.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC04A2D63218A00F92519 /* mesh-culling-headers.slang */; };
+		257FC0732D63218D00F92519 /* spherical-harmonics-headers.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC04B2D63218A00F92519 /* spherical-harmonics-headers.slang */; };
+		257FC0742D63218D00F92519 /* texture-page-queue-compute.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC04C2D63218A00F92519 /* texture-page-queue-compute.slang */; };
+		257FC0752D63218D00F92519 /* depth-prepass-graphics.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC04D2D63218A00F92519 /* depth-prepass-graphics.slang */; };
+		257FC0762D63218D00F92519 /* motion-vector-headers.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC04E2D63218A00F92519 /* motion-vector-headers.slang */; };
+		257FC0772D63218D00F92519 /* lighting-composite-graphics.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC04F2D63218A00F92519 /* lighting-composite-graphics.slang */; };
+		257FC0782D63218D00F92519 /* temporal-restir-diffuse-ray-trace.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0502D63218B00F92519 /* temporal-restir-diffuse-ray-trace.slang */; };
+		257FC0792D63218D00F92519 /* octahedron-map-headers.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0512D63218B00F92519 /* octahedron-map-headers.slang */; };
+		257FC07A2D63218D00F92519 /* spatial-restir-diffuse-ray-trace.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0522D63218B00F92519 /* spatial-restir-diffuse-ray-trace.slang */; };
+		257FC07B2D63218D00F92519 /* compute-test.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0532D63218B00F92519 /* compute-test.slang */; };
+		257FC07C2D63218D00F92519 /* temporal-restir-emissive-graphics.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0542D63218B00F92519 /* temporal-restir-emissive-graphics.slang */; };
+		257FC07D2D63218D00F92519 /* ray-sampling-headers.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0552D63218B00F92519 /* ray-sampling-headers.slang */; };
+		257FC07E2D63218D00F92519 /* test-graphics.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0562D63218B00F92519 /* test-graphics.slang */; };
+		257FC07F2D63218D00F92519 /* texture-atlas-graphics.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0572D63218B00F92519 /* texture-atlas-graphics.slang */; };
+		257FC0802D63218D00F92519 /* vertex-format-headers.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0582D63218B00F92519 /* vertex-format-headers.slang */; };
+		257FC0812D63218D00F92519 /* swap-chain-bistro-example.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0592D63218B00F92519 /* swap-chain-bistro-example.slang */; };
+		257FC0822D63218D00F92519 /* murmur-hash-headers.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC05A2D63218B00F92519 /* murmur-hash-headers.slang */; };
+		257FC0832D63218D00F92519 /* ray-trace-shadow.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC05B2D63218B00F92519 /* ray-trace-shadow.slang */; };
+		257FC0842D63218D00F92519 /* temporal-accumulation-graphics.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC05C2D63218C00F92519 /* temporal-accumulation-graphics.slang */; };
+		257FC0852D63218D00F92519 /* spatial-restir-diffuse-1-ray-trace.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC05D2D63218C00F92519 /* spatial-restir-diffuse-1-ray-trace.slang */; };
+		257FC0862D63218D00F92519 /* frustum-culling-headers.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC05E2D63218C00F92519 /* frustum-culling-headers.slang */; };
+		257FC0872D63218D00F92519 /* secondary-mesh-culling-compute.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC05F2D63218C00F92519 /* secondary-mesh-culling-compute.slang */; };
+		257FC0882D63218D00F92519 /* ray-trace.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0602D63218C00F92519 /* ray-trace.slang */; };
+		257FC0892D63218D00F92519 /* bounced-radiance-headers.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0612D63218C00F92519 /* bounced-radiance-headers.slang */; };
+		257FC08A2D63218D00F92519 /* down-rez-depth-graphics.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0622D63218C00F92519 /* down-rez-depth-graphics.slang */; };
+		257FC08B2D63218D00F92519 /* irradiance-cache-headers.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0632D63218C00F92519 /* irradiance-cache-headers.slang */; };
+		257FC08C2D63218D00F92519 /* barycentric-headers.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0642D63218C00F92519 /* barycentric-headers.slang */; };
+		257FC08D2D63218D00F92519 /* specular-temporal-restir-ray-trace.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0652D63218D00F92519 /* specular-temporal-restir-ray-trace.slang */; };
+		257FC08E2D63218D00F92519 /* build-irradiance-cache.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0662D63218D00F92519 /* build-irradiance-cache.slang */; };
+		257FC08F2D63218D00F92519 /* svgf-graphics.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0672D63218D00F92519 /* svgf-graphics.slang */; };
+		257FC0902D63218D00F92519 /* deferred-indirect.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0682D63218D00F92519 /* deferred-indirect.slang */; };
+		257FC0912D63218D00F92519 /* test-compute.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0692D63218D00F92519 /* test-compute.slang */; };
+		257FC0922D63218D00F92519 /* default-uniform-headers.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC06A2D63218D00F92519 /* default-uniform-headers.slang */; };
+		257FC0932D63218D00F92519 /* atmosphere.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC06B2D63218D00F92519 /* atmosphere.slang */; };
 		259DF5842D605457007BA6A1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259DF5832D605457007BA6A1 /* ViewController.swift */; };
 		259DF5882D6054A9007BA6A1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259DF5872D6054A9007BA6A1 /* AppDelegate.swift */; };
 		25DECE7F2D6057FF00ED56EE /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DECE7E2D6057FF00ED56EE /* MetalView.swift */; };
@@ -664,6 +753,113 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		257FBFDE2D6320E500F92519 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "assets/render-jobs";
+			dstSubfolderSpec = 7;
+			files = (
+				257FC0102D63213800F92519 /* depth-prepass-graphics.json in CopyFiles */,
+				257FC0112D63213800F92519 /* temporal-accumulation-graphics.json in CopyFiles */,
+				257FC0122D63213800F92519 /* secondary-mesh-culling-compute.json in CopyFiles */,
+				257FC0132D63213800F92519 /* secondary-deferred-indirect-graphics.json in CopyFiles */,
+				257FC0142D63213800F92519 /* down-rez-depth-gather.json in CopyFiles */,
+				257FC0152D63213800F92519 /* atmosphere.json in CopyFiles */,
+				257FC0162D63213800F92519 /* down-rez-depth-6.json in CopyFiles */,
+				257FC0172D63213800F92519 /* spatial-restir-emissive-ray-trace.json in CopyFiles */,
+				257FC0182D63213800F92519 /* specular-svgf-0-graphics.json in CopyFiles */,
+				257FC0192D63213800F92519 /* deferred-indirect.json in CopyFiles */,
+				257FC01A2D63213800F92519 /* diffuse-svgf-1-graphics.json in CopyFiles */,
+				257FC01B2D63213800F92519 /* test-compute.json in CopyFiles */,
+				257FC01C2D63213800F92519 /* swap-chain-bistro-example.json in CopyFiles */,
+				257FC01D2D63213800F92519 /* texture-page-queue-compute.json in CopyFiles */,
+				257FC01E2D63213800F92519 /* texture-atlas-graphics.json in CopyFiles */,
+				257FC01F2D63213800F92519 /* ray-traced-ambient-occlusion.json in CopyFiles */,
+				257FC0202D63213800F92519 /* non-ray-trace-render-jobs.json in CopyFiles */,
+				257FC0212D63213800F92519 /* copy-render-targets.json in CopyFiles */,
+				257FC0222D63213800F92519 /* down-rez-depth-7.json in CopyFiles */,
+				257FC0232D63213800F92519 /* down-rez-depth-4.json in CopyFiles */,
+				257FC0242D63213800F92519 /* taa-resolve-graphics.json in CopyFiles */,
+				257FC0252D63213800F92519 /* diffuse-filter-graphics.json in CopyFiles */,
+				257FC0262D63213800F92519 /* svgf-0-graphics.json in CopyFiles */,
+				257FC0272D63213800F92519 /* specular-svgf-1-graphics.json in CopyFiles */,
+				257FC0282D63213800F92519 /* specular-temporal-restir-ray-trace.json in CopyFiles */,
+				257FC0292D63213800F92519 /* ray-traced-shadow.json in CopyFiles */,
+				257FC02A2D63213800F92519 /* non-ray-trace-copy-render-targets.json in CopyFiles */,
+				257FC02B2D63213800F92519 /* down-rez-depth-3.json in CopyFiles */,
+				257FC02C2D63213800F92519 /* non-ray-trace-swap-chain-bistro-example.json in CopyFiles */,
+				257FC02D2D63213800F92519 /* build-irradiance-cache.json in CopyFiles */,
+				257FC02E2D63213800F92519 /* down-rez-depth-2.json in CopyFiles */,
+				257FC02F2D63213800F92519 /* svgf-2-graphics.json in CopyFiles */,
+				257FC0302D63213800F92519 /* down-rez-depth-5.json in CopyFiles */,
+				257FC0312D63213800F92519 /* svgf-1-graphics.json in CopyFiles */,
+				257FC0322D63213800F92519 /* emissive-svgf-1-graphics.json in CopyFiles */,
+				257FC0332D63213800F92519 /* emissive-svgf-0-graphics.json in CopyFiles */,
+				257FC0342D63213800F92519 /* down-rez-depth-1.json in CopyFiles */,
+				257FC0352D63213800F92519 /* bistro-example-render-jobs.json in CopyFiles */,
+				257FC0362D63213800F92519 /* test-graphics.json in CopyFiles */,
+				257FC0372D63213800F92519 /* emissive-svgf-2-graphics.json in CopyFiles */,
+				257FC0382D63213800F92519 /* temporal-restir-diffuse-ray-trace.json in CopyFiles */,
+				257FC0392D63213800F92519 /* spatial-restir-diffuse-1-ray-trace.json in CopyFiles */,
+				257FC03A2D63213800F92519 /* compute-test.json in CopyFiles */,
+				257FC03B2D63213800F92519 /* spatial-restir-diffuse-ray-trace.json in CopyFiles */,
+				257FC03C2D63213800F92519 /* diffuse-svgf-2-graphics.json in CopyFiles */,
+				257FC03D2D63213800F92519 /* mesh-culling-compute.json in CopyFiles */,
+				257FC03E2D63213800F92519 /* diffuse-svgf-0-graphics.json in CopyFiles */,
+				257FC03F2D63213800F92519 /* temporal-restir-emissive-graphics.json in CopyFiles */,
+				257FC0402D63213800F92519 /* light-composite-graphics.json in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		257FC0432D63217300F92519 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = assets/shaders;
+			dstSubfolderSpec = 7;
+			files = (
+				257FC06C2D63218D00F92519 /* spatial-restir-emissive-ray-trace.slang in CopyFiles */,
+				257FC06D2D63218D00F92519 /* random-headers.slang in CopyFiles */,
+				257FC06E2D63218D00F92519 /* tone-mapping-headers.slang in CopyFiles */,
+				257FC06F2D63218D00F92519 /* taa-resolve-graphics.slang in CopyFiles */,
+				257FC0702D63218D00F92519 /* diffuse-filter-graphics.slang in CopyFiles */,
+				257FC0712D63218D00F92519 /* mesh-culling-compute.slang in CopyFiles */,
+				257FC0722D63218D00F92519 /* mesh-culling-headers.slang in CopyFiles */,
+				257FC0732D63218D00F92519 /* spherical-harmonics-headers.slang in CopyFiles */,
+				257FC0742D63218D00F92519 /* texture-page-queue-compute.slang in CopyFiles */,
+				257FC0752D63218D00F92519 /* depth-prepass-graphics.slang in CopyFiles */,
+				257FC0762D63218D00F92519 /* motion-vector-headers.slang in CopyFiles */,
+				257FC0772D63218D00F92519 /* lighting-composite-graphics.slang in CopyFiles */,
+				257FC0782D63218D00F92519 /* temporal-restir-diffuse-ray-trace.slang in CopyFiles */,
+				257FC0792D63218D00F92519 /* octahedron-map-headers.slang in CopyFiles */,
+				257FC07A2D63218D00F92519 /* spatial-restir-diffuse-ray-trace.slang in CopyFiles */,
+				257FC07B2D63218D00F92519 /* compute-test.slang in CopyFiles */,
+				257FC07C2D63218D00F92519 /* temporal-restir-emissive-graphics.slang in CopyFiles */,
+				257FC07D2D63218D00F92519 /* ray-sampling-headers.slang in CopyFiles */,
+				257FC07E2D63218D00F92519 /* test-graphics.slang in CopyFiles */,
+				257FC07F2D63218D00F92519 /* texture-atlas-graphics.slang in CopyFiles */,
+				257FC0802D63218D00F92519 /* vertex-format-headers.slang in CopyFiles */,
+				257FC0812D63218D00F92519 /* swap-chain-bistro-example.slang in CopyFiles */,
+				257FC0822D63218D00F92519 /* murmur-hash-headers.slang in CopyFiles */,
+				257FC0832D63218D00F92519 /* ray-trace-shadow.slang in CopyFiles */,
+				257FC0842D63218D00F92519 /* temporal-accumulation-graphics.slang in CopyFiles */,
+				257FC0852D63218D00F92519 /* spatial-restir-diffuse-1-ray-trace.slang in CopyFiles */,
+				257FC0862D63218D00F92519 /* frustum-culling-headers.slang in CopyFiles */,
+				257FC0872D63218D00F92519 /* secondary-mesh-culling-compute.slang in CopyFiles */,
+				257FC0882D63218D00F92519 /* ray-trace.slang in CopyFiles */,
+				257FC0892D63218D00F92519 /* bounced-radiance-headers.slang in CopyFiles */,
+				257FC08A2D63218D00F92519 /* down-rez-depth-graphics.slang in CopyFiles */,
+				257FC08B2D63218D00F92519 /* irradiance-cache-headers.slang in CopyFiles */,
+				257FC08C2D63218D00F92519 /* barycentric-headers.slang in CopyFiles */,
+				257FC08D2D63218D00F92519 /* specular-temporal-restir-ray-trace.slang in CopyFiles */,
+				257FC08E2D63218D00F92519 /* build-irradiance-cache.slang in CopyFiles */,
+				257FC08F2D63218D00F92519 /* svgf-graphics.slang in CopyFiles */,
+				257FC0902D63218D00F92519 /* deferred-indirect.slang in CopyFiles */,
+				257FC0912D63218D00F92519 /* test-compute.slang in CopyFiles */,
+				257FC0922D63218D00F92519 /* default-uniform-headers.slang in CopyFiles */,
+				257FC0932D63218D00F92519 /* atmosphere.slang in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -940,6 +1136,95 @@
 		257FBED02D62A26900F92519 /* Balcony_Concrete_Normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = Balcony_Concrete_Normal.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/Balcony_Concrete_Normal.png"; sourceTree = "<group>"; };
 		257FBED12D62A26900F92519 /* MASTER_Roofing_Shingle_Green_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Roofing_Shingle_Green_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Roofing_Shingle_Green_BaseColor.png"; sourceTree = "<group>"; };
 		257FBED22D62A26900F92519 /* MASTER_Brick_Large_White_BaseColor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = MASTER_Brick_Large_White_BaseColor.png; path = "../../../../scene/Bistro_v4/converted-dds-scaled/MASTER_Brick_Large_White_BaseColor.png"; sourceTree = "<group>"; };
+		257FBFDF2D63213300F92519 /* depth-prepass-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "depth-prepass-graphics.json"; path = "../../../render-jobs/depth-prepass-graphics.json"; sourceTree = "<group>"; };
+		257FBFE02D63213400F92519 /* temporal-accumulation-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "temporal-accumulation-graphics.json"; path = "../../../render-jobs/temporal-accumulation-graphics.json"; sourceTree = "<group>"; };
+		257FBFE12D63213400F92519 /* secondary-mesh-culling-compute.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "secondary-mesh-culling-compute.json"; path = "../../../render-jobs/secondary-mesh-culling-compute.json"; sourceTree = "<group>"; };
+		257FBFE22D63213400F92519 /* secondary-deferred-indirect-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "secondary-deferred-indirect-graphics.json"; path = "../../../render-jobs/secondary-deferred-indirect-graphics.json"; sourceTree = "<group>"; };
+		257FBFE32D63213400F92519 /* down-rez-depth-gather.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "down-rez-depth-gather.json"; path = "../../../render-jobs/down-rez-depth-gather.json"; sourceTree = "<group>"; };
+		257FBFE42D63213400F92519 /* atmosphere.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = atmosphere.json; path = "../../../render-jobs/atmosphere.json"; sourceTree = "<group>"; };
+		257FBFE52D63213400F92519 /* down-rez-depth-6.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "down-rez-depth-6.json"; path = "../../../render-jobs/down-rez-depth-6.json"; sourceTree = "<group>"; };
+		257FBFE62D63213400F92519 /* spatial-restir-emissive-ray-trace.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "spatial-restir-emissive-ray-trace.json"; path = "../../../render-jobs/spatial-restir-emissive-ray-trace.json"; sourceTree = "<group>"; };
+		257FBFE72D63213400F92519 /* specular-svgf-0-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "specular-svgf-0-graphics.json"; path = "../../../render-jobs/specular-svgf-0-graphics.json"; sourceTree = "<group>"; };
+		257FBFE82D63213400F92519 /* deferred-indirect.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "deferred-indirect.json"; path = "../../../render-jobs/deferred-indirect.json"; sourceTree = "<group>"; };
+		257FBFE92D63213400F92519 /* diffuse-svgf-1-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "diffuse-svgf-1-graphics.json"; path = "../../../render-jobs/diffuse-svgf-1-graphics.json"; sourceTree = "<group>"; };
+		257FBFEA2D63213400F92519 /* test-compute.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "test-compute.json"; path = "../../../render-jobs/test-compute.json"; sourceTree = "<group>"; };
+		257FBFEB2D63213400F92519 /* swap-chain-bistro-example.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "swap-chain-bistro-example.json"; path = "../../../render-jobs/swap-chain-bistro-example.json"; sourceTree = "<group>"; };
+		257FBFEC2D63213400F92519 /* texture-page-queue-compute.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "texture-page-queue-compute.json"; path = "../../../render-jobs/texture-page-queue-compute.json"; sourceTree = "<group>"; };
+		257FBFED2D63213400F92519 /* texture-atlas-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "texture-atlas-graphics.json"; path = "../../../render-jobs/texture-atlas-graphics.json"; sourceTree = "<group>"; };
+		257FBFEE2D63213500F92519 /* ray-traced-ambient-occlusion.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "ray-traced-ambient-occlusion.json"; path = "../../../render-jobs/ray-traced-ambient-occlusion.json"; sourceTree = "<group>"; };
+		257FBFEF2D63213500F92519 /* non-ray-trace-render-jobs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "non-ray-trace-render-jobs.json"; path = "../../../render-jobs/non-ray-trace-render-jobs.json"; sourceTree = "<group>"; };
+		257FBFF02D63213500F92519 /* copy-render-targets.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "copy-render-targets.json"; path = "../../../render-jobs/copy-render-targets.json"; sourceTree = "<group>"; };
+		257FBFF12D63213500F92519 /* down-rez-depth-7.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "down-rez-depth-7.json"; path = "../../../render-jobs/down-rez-depth-7.json"; sourceTree = "<group>"; };
+		257FBFF22D63213500F92519 /* down-rez-depth-4.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "down-rez-depth-4.json"; path = "../../../render-jobs/down-rez-depth-4.json"; sourceTree = "<group>"; };
+		257FBFF32D63213500F92519 /* taa-resolve-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "taa-resolve-graphics.json"; path = "../../../render-jobs/taa-resolve-graphics.json"; sourceTree = "<group>"; };
+		257FBFF42D63213500F92519 /* diffuse-filter-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "diffuse-filter-graphics.json"; path = "../../../render-jobs/diffuse-filter-graphics.json"; sourceTree = "<group>"; };
+		257FBFF52D63213500F92519 /* svgf-0-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "svgf-0-graphics.json"; path = "../../../render-jobs/svgf-0-graphics.json"; sourceTree = "<group>"; };
+		257FBFF62D63213500F92519 /* specular-svgf-1-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "specular-svgf-1-graphics.json"; path = "../../../render-jobs/specular-svgf-1-graphics.json"; sourceTree = "<group>"; };
+		257FBFF72D63213500F92519 /* specular-temporal-restir-ray-trace.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "specular-temporal-restir-ray-trace.json"; path = "../../../render-jobs/specular-temporal-restir-ray-trace.json"; sourceTree = "<group>"; };
+		257FBFF82D63213500F92519 /* ray-traced-shadow.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "ray-traced-shadow.json"; path = "../../../render-jobs/ray-traced-shadow.json"; sourceTree = "<group>"; };
+		257FBFF92D63213600F92519 /* non-ray-trace-copy-render-targets.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "non-ray-trace-copy-render-targets.json"; path = "../../../render-jobs/non-ray-trace-copy-render-targets.json"; sourceTree = "<group>"; };
+		257FBFFA2D63213600F92519 /* down-rez-depth-3.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "down-rez-depth-3.json"; path = "../../../render-jobs/down-rez-depth-3.json"; sourceTree = "<group>"; };
+		257FBFFB2D63213600F92519 /* non-ray-trace-swap-chain-bistro-example.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "non-ray-trace-swap-chain-bistro-example.json"; path = "../../../render-jobs/non-ray-trace-swap-chain-bistro-example.json"; sourceTree = "<group>"; };
+		257FBFFC2D63213600F92519 /* build-irradiance-cache.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "build-irradiance-cache.json"; path = "../../../render-jobs/build-irradiance-cache.json"; sourceTree = "<group>"; };
+		257FBFFD2D63213600F92519 /* down-rez-depth-2.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "down-rez-depth-2.json"; path = "../../../render-jobs/down-rez-depth-2.json"; sourceTree = "<group>"; };
+		257FBFFE2D63213600F92519 /* svgf-2-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "svgf-2-graphics.json"; path = "../../../render-jobs/svgf-2-graphics.json"; sourceTree = "<group>"; };
+		257FBFFF2D63213600F92519 /* down-rez-depth-5.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "down-rez-depth-5.json"; path = "../../../render-jobs/down-rez-depth-5.json"; sourceTree = "<group>"; };
+		257FC0002D63213600F92519 /* svgf-1-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "svgf-1-graphics.json"; path = "../../../render-jobs/svgf-1-graphics.json"; sourceTree = "<group>"; };
+		257FC0012D63213600F92519 /* emissive-svgf-1-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "emissive-svgf-1-graphics.json"; path = "../../../render-jobs/emissive-svgf-1-graphics.json"; sourceTree = "<group>"; };
+		257FC0022D63213600F92519 /* emissive-svgf-0-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "emissive-svgf-0-graphics.json"; path = "../../../render-jobs/emissive-svgf-0-graphics.json"; sourceTree = "<group>"; };
+		257FC0032D63213600F92519 /* down-rez-depth-1.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "down-rez-depth-1.json"; path = "../../../render-jobs/down-rez-depth-1.json"; sourceTree = "<group>"; };
+		257FC0042D63213700F92519 /* bistro-example-render-jobs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "bistro-example-render-jobs.json"; path = "../../../render-jobs/bistro-example-render-jobs.json"; sourceTree = "<group>"; };
+		257FC0052D63213700F92519 /* test-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "test-graphics.json"; path = "../../../render-jobs/test-graphics.json"; sourceTree = "<group>"; };
+		257FC0062D63213700F92519 /* emissive-svgf-2-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "emissive-svgf-2-graphics.json"; path = "../../../render-jobs/emissive-svgf-2-graphics.json"; sourceTree = "<group>"; };
+		257FC0072D63213700F92519 /* temporal-restir-diffuse-ray-trace.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "temporal-restir-diffuse-ray-trace.json"; path = "../../../render-jobs/temporal-restir-diffuse-ray-trace.json"; sourceTree = "<group>"; };
+		257FC0082D63213700F92519 /* spatial-restir-diffuse-1-ray-trace.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "spatial-restir-diffuse-1-ray-trace.json"; path = "../../../render-jobs/spatial-restir-diffuse-1-ray-trace.json"; sourceTree = "<group>"; };
+		257FC0092D63213700F92519 /* compute-test.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "compute-test.json"; path = "../../../render-jobs/compute-test.json"; sourceTree = "<group>"; };
+		257FC00A2D63213700F92519 /* spatial-restir-diffuse-ray-trace.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "spatial-restir-diffuse-ray-trace.json"; path = "../../../render-jobs/spatial-restir-diffuse-ray-trace.json"; sourceTree = "<group>"; };
+		257FC00B2D63213700F92519 /* diffuse-svgf-2-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "diffuse-svgf-2-graphics.json"; path = "../../../render-jobs/diffuse-svgf-2-graphics.json"; sourceTree = "<group>"; };
+		257FC00C2D63213700F92519 /* mesh-culling-compute.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "mesh-culling-compute.json"; path = "../../../render-jobs/mesh-culling-compute.json"; sourceTree = "<group>"; };
+		257FC00D2D63213700F92519 /* diffuse-svgf-0-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "diffuse-svgf-0-graphics.json"; path = "../../../render-jobs/diffuse-svgf-0-graphics.json"; sourceTree = "<group>"; };
+		257FC00E2D63213800F92519 /* temporal-restir-emissive-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "temporal-restir-emissive-graphics.json"; path = "../../../render-jobs/temporal-restir-emissive-graphics.json"; sourceTree = "<group>"; };
+		257FC00F2D63213800F92519 /* light-composite-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "light-composite-graphics.json"; path = "../../../render-jobs/light-composite-graphics.json"; sourceTree = "<group>"; };
+		257FC0442D63218A00F92519 /* spatial-restir-emissive-ray-trace.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "spatial-restir-emissive-ray-trace.slang"; path = "../../../shaders/spatial-restir-emissive-ray-trace.slang"; sourceTree = "<group>"; };
+		257FC0452D63218A00F92519 /* random-headers.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "random-headers.slang"; path = "../../../shaders/random-headers.slang"; sourceTree = "<group>"; };
+		257FC0462D63218A00F92519 /* tone-mapping-headers.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "tone-mapping-headers.slang"; path = "../../../shaders/tone-mapping-headers.slang"; sourceTree = "<group>"; };
+		257FC0472D63218A00F92519 /* taa-resolve-graphics.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "taa-resolve-graphics.slang"; path = "../../../shaders/taa-resolve-graphics.slang"; sourceTree = "<group>"; };
+		257FC0482D63218A00F92519 /* diffuse-filter-graphics.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "diffuse-filter-graphics.slang"; path = "../../../shaders/diffuse-filter-graphics.slang"; sourceTree = "<group>"; };
+		257FC0492D63218A00F92519 /* mesh-culling-compute.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "mesh-culling-compute.slang"; path = "../../../shaders/mesh-culling-compute.slang"; sourceTree = "<group>"; };
+		257FC04A2D63218A00F92519 /* mesh-culling-headers.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "mesh-culling-headers.slang"; path = "../../../shaders/mesh-culling-headers.slang"; sourceTree = "<group>"; };
+		257FC04B2D63218A00F92519 /* spherical-harmonics-headers.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "spherical-harmonics-headers.slang"; path = "../../../shaders/spherical-harmonics-headers.slang"; sourceTree = "<group>"; };
+		257FC04C2D63218A00F92519 /* texture-page-queue-compute.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "texture-page-queue-compute.slang"; path = "../../../shaders/texture-page-queue-compute.slang"; sourceTree = "<group>"; };
+		257FC04D2D63218A00F92519 /* depth-prepass-graphics.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "depth-prepass-graphics.slang"; path = "../../../shaders/depth-prepass-graphics.slang"; sourceTree = "<group>"; };
+		257FC04E2D63218A00F92519 /* motion-vector-headers.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "motion-vector-headers.slang"; path = "../../../shaders/motion-vector-headers.slang"; sourceTree = "<group>"; };
+		257FC04F2D63218A00F92519 /* lighting-composite-graphics.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "lighting-composite-graphics.slang"; path = "../../../shaders/lighting-composite-graphics.slang"; sourceTree = "<group>"; };
+		257FC0502D63218B00F92519 /* temporal-restir-diffuse-ray-trace.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "temporal-restir-diffuse-ray-trace.slang"; path = "../../../shaders/temporal-restir-diffuse-ray-trace.slang"; sourceTree = "<group>"; };
+		257FC0512D63218B00F92519 /* octahedron-map-headers.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "octahedron-map-headers.slang"; path = "../../../shaders/octahedron-map-headers.slang"; sourceTree = "<group>"; };
+		257FC0522D63218B00F92519 /* spatial-restir-diffuse-ray-trace.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "spatial-restir-diffuse-ray-trace.slang"; path = "../../../shaders/spatial-restir-diffuse-ray-trace.slang"; sourceTree = "<group>"; };
+		257FC0532D63218B00F92519 /* compute-test.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "compute-test.slang"; path = "../../../shaders/compute-test.slang"; sourceTree = "<group>"; };
+		257FC0542D63218B00F92519 /* temporal-restir-emissive-graphics.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "temporal-restir-emissive-graphics.slang"; path = "../../../shaders/temporal-restir-emissive-graphics.slang"; sourceTree = "<group>"; };
+		257FC0552D63218B00F92519 /* ray-sampling-headers.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "ray-sampling-headers.slang"; path = "../../../shaders/ray-sampling-headers.slang"; sourceTree = "<group>"; };
+		257FC0562D63218B00F92519 /* test-graphics.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "test-graphics.slang"; path = "../../../shaders/test-graphics.slang"; sourceTree = "<group>"; };
+		257FC0572D63218B00F92519 /* texture-atlas-graphics.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "texture-atlas-graphics.slang"; path = "../../../shaders/texture-atlas-graphics.slang"; sourceTree = "<group>"; };
+		257FC0582D63218B00F92519 /* vertex-format-headers.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "vertex-format-headers.slang"; path = "../../../shaders/vertex-format-headers.slang"; sourceTree = "<group>"; };
+		257FC0592D63218B00F92519 /* swap-chain-bistro-example.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "swap-chain-bistro-example.slang"; path = "../../../shaders/swap-chain-bistro-example.slang"; sourceTree = "<group>"; };
+		257FC05A2D63218B00F92519 /* murmur-hash-headers.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "murmur-hash-headers.slang"; path = "../../../shaders/murmur-hash-headers.slang"; sourceTree = "<group>"; };
+		257FC05B2D63218B00F92519 /* ray-trace-shadow.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "ray-trace-shadow.slang"; path = "../../../shaders/ray-trace-shadow.slang"; sourceTree = "<group>"; };
+		257FC05C2D63218C00F92519 /* temporal-accumulation-graphics.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "temporal-accumulation-graphics.slang"; path = "../../../shaders/temporal-accumulation-graphics.slang"; sourceTree = "<group>"; };
+		257FC05D2D63218C00F92519 /* spatial-restir-diffuse-1-ray-trace.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "spatial-restir-diffuse-1-ray-trace.slang"; path = "../../../shaders/spatial-restir-diffuse-1-ray-trace.slang"; sourceTree = "<group>"; };
+		257FC05E2D63218C00F92519 /* frustum-culling-headers.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "frustum-culling-headers.slang"; path = "../../../shaders/frustum-culling-headers.slang"; sourceTree = "<group>"; };
+		257FC05F2D63218C00F92519 /* secondary-mesh-culling-compute.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "secondary-mesh-culling-compute.slang"; path = "../../../shaders/secondary-mesh-culling-compute.slang"; sourceTree = "<group>"; };
+		257FC0602D63218C00F92519 /* ray-trace.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "ray-trace.slang"; path = "../../../shaders/ray-trace.slang"; sourceTree = "<group>"; };
+		257FC0612D63218C00F92519 /* bounced-radiance-headers.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "bounced-radiance-headers.slang"; path = "../../../shaders/bounced-radiance-headers.slang"; sourceTree = "<group>"; };
+		257FC0622D63218C00F92519 /* down-rez-depth-graphics.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "down-rez-depth-graphics.slang"; path = "../../../shaders/down-rez-depth-graphics.slang"; sourceTree = "<group>"; };
+		257FC0632D63218C00F92519 /* irradiance-cache-headers.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "irradiance-cache-headers.slang"; path = "../../../shaders/irradiance-cache-headers.slang"; sourceTree = "<group>"; };
+		257FC0642D63218C00F92519 /* barycentric-headers.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "barycentric-headers.slang"; path = "../../../shaders/barycentric-headers.slang"; sourceTree = "<group>"; };
+		257FC0652D63218D00F92519 /* specular-temporal-restir-ray-trace.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "specular-temporal-restir-ray-trace.slang"; path = "../../../shaders/specular-temporal-restir-ray-trace.slang"; sourceTree = "<group>"; };
+		257FC0662D63218D00F92519 /* build-irradiance-cache.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "build-irradiance-cache.slang"; path = "../../../shaders/build-irradiance-cache.slang"; sourceTree = "<group>"; };
+		257FC0672D63218D00F92519 /* svgf-graphics.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "svgf-graphics.slang"; path = "../../../shaders/svgf-graphics.slang"; sourceTree = "<group>"; };
+		257FC0682D63218D00F92519 /* deferred-indirect.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "deferred-indirect.slang"; path = "../../../shaders/deferred-indirect.slang"; sourceTree = "<group>"; };
+		257FC0692D63218D00F92519 /* test-compute.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "test-compute.slang"; path = "../../../shaders/test-compute.slang"; sourceTree = "<group>"; };
+		257FC06A2D63218D00F92519 /* default-uniform-headers.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "default-uniform-headers.slang"; path = "../../../shaders/default-uniform-headers.slang"; sourceTree = "<group>"; };
+		257FC06B2D63218D00F92519 /* atmosphere.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = atmosphere.slang; path = ../../../shaders/atmosphere.slang; sourceTree = "<group>"; };
 		259DF54C2D6053C9007BA6A1 /* bistro-example-cpp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "bistro-example-cpp.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		259DF5832D605457007BA6A1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = ../ViewController.swift; sourceTree = "<group>"; };
 		259DF5872D6054A9007BA6A1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ../AppDelegate.swift; sourceTree = "<group>"; };
@@ -1427,15 +1712,120 @@
 			path = "converted-dds-scale";
 			sourceTree = "<group>";
 		};
+		257FC0412D63213E00F92519 /* render-jobs */ = {
+			isa = PBXGroup;
+			children = (
+				257FBFE42D63213400F92519 /* atmosphere.json */,
+				257FC0042D63213700F92519 /* bistro-example-render-jobs.json */,
+				257FBFFC2D63213600F92519 /* build-irradiance-cache.json */,
+				257FC0092D63213700F92519 /* compute-test.json */,
+				257FBFF02D63213500F92519 /* copy-render-targets.json */,
+				257FBFE82D63213400F92519 /* deferred-indirect.json */,
+				257FBFDF2D63213300F92519 /* depth-prepass-graphics.json */,
+				257FBFF42D63213500F92519 /* diffuse-filter-graphics.json */,
+				257FC00D2D63213700F92519 /* diffuse-svgf-0-graphics.json */,
+				257FBFE92D63213400F92519 /* diffuse-svgf-1-graphics.json */,
+				257FC00B2D63213700F92519 /* diffuse-svgf-2-graphics.json */,
+				257FC0032D63213600F92519 /* down-rez-depth-1.json */,
+				257FBFFD2D63213600F92519 /* down-rez-depth-2.json */,
+				257FBFFA2D63213600F92519 /* down-rez-depth-3.json */,
+				257FBFF22D63213500F92519 /* down-rez-depth-4.json */,
+				257FBFFF2D63213600F92519 /* down-rez-depth-5.json */,
+				257FBFE52D63213400F92519 /* down-rez-depth-6.json */,
+				257FBFF12D63213500F92519 /* down-rez-depth-7.json */,
+				257FBFE32D63213400F92519 /* down-rez-depth-gather.json */,
+				257FC0022D63213600F92519 /* emissive-svgf-0-graphics.json */,
+				257FC0012D63213600F92519 /* emissive-svgf-1-graphics.json */,
+				257FC0062D63213700F92519 /* emissive-svgf-2-graphics.json */,
+				257FC00F2D63213800F92519 /* light-composite-graphics.json */,
+				257FC00C2D63213700F92519 /* mesh-culling-compute.json */,
+				257FBFF92D63213600F92519 /* non-ray-trace-copy-render-targets.json */,
+				257FBFEF2D63213500F92519 /* non-ray-trace-render-jobs.json */,
+				257FBFFB2D63213600F92519 /* non-ray-trace-swap-chain-bistro-example.json */,
+				257FBFEE2D63213500F92519 /* ray-traced-ambient-occlusion.json */,
+				257FBFF82D63213500F92519 /* ray-traced-shadow.json */,
+				257FBFE22D63213400F92519 /* secondary-deferred-indirect-graphics.json */,
+				257FBFE12D63213400F92519 /* secondary-mesh-culling-compute.json */,
+				257FC0082D63213700F92519 /* spatial-restir-diffuse-1-ray-trace.json */,
+				257FC00A2D63213700F92519 /* spatial-restir-diffuse-ray-trace.json */,
+				257FBFE62D63213400F92519 /* spatial-restir-emissive-ray-trace.json */,
+				257FBFE72D63213400F92519 /* specular-svgf-0-graphics.json */,
+				257FBFF62D63213500F92519 /* specular-svgf-1-graphics.json */,
+				257FBFF72D63213500F92519 /* specular-temporal-restir-ray-trace.json */,
+				257FBFF52D63213500F92519 /* svgf-0-graphics.json */,
+				257FC0002D63213600F92519 /* svgf-1-graphics.json */,
+				257FBFFE2D63213600F92519 /* svgf-2-graphics.json */,
+				257FBFEB2D63213400F92519 /* swap-chain-bistro-example.json */,
+				257FBFF32D63213500F92519 /* taa-resolve-graphics.json */,
+				257FBFE02D63213400F92519 /* temporal-accumulation-graphics.json */,
+				257FC0072D63213700F92519 /* temporal-restir-diffuse-ray-trace.json */,
+				257FC00E2D63213800F92519 /* temporal-restir-emissive-graphics.json */,
+				257FBFEA2D63213400F92519 /* test-compute.json */,
+				257FC0052D63213700F92519 /* test-graphics.json */,
+				257FBFED2D63213400F92519 /* texture-atlas-graphics.json */,
+				257FBFEC2D63213400F92519 /* texture-page-queue-compute.json */,
+			);
+			path = "render-jobs";
+			sourceTree = "<group>";
+		};
+		257FC0422D63215D00F92519 /* shaders */ = {
+			isa = PBXGroup;
+			children = (
+				257FC06B2D63218D00F92519 /* atmosphere.slang */,
+				257FC0642D63218C00F92519 /* barycentric-headers.slang */,
+				257FC0612D63218C00F92519 /* bounced-radiance-headers.slang */,
+				257FC0662D63218D00F92519 /* build-irradiance-cache.slang */,
+				257FC0532D63218B00F92519 /* compute-test.slang */,
+				257FC06A2D63218D00F92519 /* default-uniform-headers.slang */,
+				257FC0682D63218D00F92519 /* deferred-indirect.slang */,
+				257FC04D2D63218A00F92519 /* depth-prepass-graphics.slang */,
+				257FC0482D63218A00F92519 /* diffuse-filter-graphics.slang */,
+				257FC0622D63218C00F92519 /* down-rez-depth-graphics.slang */,
+				257FC05E2D63218C00F92519 /* frustum-culling-headers.slang */,
+				257FC0632D63218C00F92519 /* irradiance-cache-headers.slang */,
+				257FC04F2D63218A00F92519 /* lighting-composite-graphics.slang */,
+				257FC0492D63218A00F92519 /* mesh-culling-compute.slang */,
+				257FC04A2D63218A00F92519 /* mesh-culling-headers.slang */,
+				257FC04E2D63218A00F92519 /* motion-vector-headers.slang */,
+				257FC05A2D63218B00F92519 /* murmur-hash-headers.slang */,
+				257FC0512D63218B00F92519 /* octahedron-map-headers.slang */,
+				257FC0452D63218A00F92519 /* random-headers.slang */,
+				257FC0552D63218B00F92519 /* ray-sampling-headers.slang */,
+				257FC0602D63218C00F92519 /* ray-trace.slang */,
+				257FC05B2D63218B00F92519 /* ray-trace-shadow.slang */,
+				257FC05F2D63218C00F92519 /* secondary-mesh-culling-compute.slang */,
+				257FC05D2D63218C00F92519 /* spatial-restir-diffuse-1-ray-trace.slang */,
+				257FC0522D63218B00F92519 /* spatial-restir-diffuse-ray-trace.slang */,
+				257FC0442D63218A00F92519 /* spatial-restir-emissive-ray-trace.slang */,
+				257FC0652D63218D00F92519 /* specular-temporal-restir-ray-trace.slang */,
+				257FC04B2D63218A00F92519 /* spherical-harmonics-headers.slang */,
+				257FC0672D63218D00F92519 /* svgf-graphics.slang */,
+				257FC0592D63218B00F92519 /* swap-chain-bistro-example.slang */,
+				257FC0472D63218A00F92519 /* taa-resolve-graphics.slang */,
+				257FC05C2D63218C00F92519 /* temporal-accumulation-graphics.slang */,
+				257FC0502D63218B00F92519 /* temporal-restir-diffuse-ray-trace.slang */,
+				257FC0542D63218B00F92519 /* temporal-restir-emissive-graphics.slang */,
+				257FC0692D63218D00F92519 /* test-compute.slang */,
+				257FC0562D63218B00F92519 /* test-graphics.slang */,
+				257FC0572D63218B00F92519 /* texture-atlas-graphics.slang */,
+				257FC04C2D63218A00F92519 /* texture-page-queue-compute.slang */,
+				257FC0462D63218A00F92519 /* tone-mapping-headers.slang */,
+				257FC0582D63218B00F92519 /* vertex-format-headers.slang */,
+			);
+			path = shaders;
+			sourceTree = "<group>";
+		};
 		259DF5432D6053C9007BA6A1 = {
 			isa = PBXGroup;
 			children = (
+				257FC0412D63213E00F92519 /* render-jobs */,
 				257FBDBB2D61D46B00F92519 /* Assets */,
 				25DECF912D615F1F00ED56EE /* main */,
 				25DECE992D60606200ED56EE /* utils */,
 				25DECEA72D6063D700ED56EE /* math */,
 				25DECEBB2D61373400ED56EE /* render */,
 				25DECF502D61532E00ED56EE /* render-driver */,
+				257FC0422D63215D00F92519 /* shaders */,
 			);
 			sourceTree = "<group>";
 		};
@@ -1739,6 +2129,8 @@
 				259DF54A2D6053C9007BA6A1 /* Resources */,
 				257FBDB92D61D3C400F92519 /* CopyFiles */,
 				257FBDC82D62A22100F92519 /* CopyFiles */,
+				257FBFDE2D6320E500F92519 /* CopyFiles */,
+				257FC0432D63217300F92519 /* CopyFiles */,
 			);
 			buildRules = (
 			);

@@ -13,8 +13,8 @@
 
 #include <filesystem>
 
-#define WINDOW_WIDTH    1024
-#define WINDOW_HEIGHT   1024
+#define WINDOW_WIDTH    512
+#define WINDOW_HEIGHT   512
 
 /*
 **
@@ -410,8 +410,15 @@ void CApp::init(AppDescriptor const& appDesc)
 
     // TODO: move vertex and index buffer out of renderer
     
+#if defined(_MSC_VER)
     pDesc->mRenderJobsFilePath = "/Users/dingwings/projects/bistro-example-cpp/render-jobs/bistro-example-render-jobs.json";
+#else
+    getAssetsDir(pDesc->mRenderJobsFilePath, "render-jobs/bistro-example-render-jobs.json");
+#endif // _MSC_VER
+
     mpRenderer->setup(*pDesc);
+    
+    Render::Common::CRenderer* pRenderer = mpRenderer.get();
     
     std::string trianglePath;
     getAssetsDir(trianglePath, "bistro2-triangles.bin");
@@ -444,8 +451,16 @@ void CApp::init(AppDescriptor const& appDesc)
     std::map<std::string, std::unique_ptr<RenderDriver::Common::CBuffer>> aBufferMap;
     setupExternalDataBuffers(
         aBufferMap,
-        mpRenderer.get()
+        pRenderer
     );
+    
+    // has to ptr of the map into data lambda or else it's a copy which unique_ptr disallow
+    std::map<std::string, std::unique_ptr<RenderDriver::Common::CBuffer>>* paBufferMap = &aBufferMap;
+    
+    pRenderer->initData();
+    pRenderer->loadRenderJobInfo(pDesc->mRenderJobsFilePath);
+    pRenderer->prepareRenderJobData();
+    
 }
 
 /*
