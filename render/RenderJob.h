@@ -112,11 +112,11 @@ namespace Render
 			uint64_t													miWaitSemaphoreValue;
 			uint64_t													miSignalSemaphoreValue;
 
-			RenderDriver::Common::CFence*								mpWaitFence;
-			RenderDriver::Common::CFence*								mpSignalFence;
+			RenderDriver::Common::CFence*								mpWaitFence = nullptr;
+			RenderDriver::Common::CFence*								mpSignalFence = nullptr;
 
-			RenderDriver::Common::CImage*								mpDepthImage;
-			RenderDriver::Common::CImageView*							mpDepthImageView;
+			RenderDriver::Common::CImage*								mpDepthImage = nullptr;
+			RenderDriver::Common::CImageView*							mpDepthImageView = nullptr;
 
 			std::vector<std::pair<std::string, std::pair<std::string, std::string>>>			maCopyAttachmentMapping;
 

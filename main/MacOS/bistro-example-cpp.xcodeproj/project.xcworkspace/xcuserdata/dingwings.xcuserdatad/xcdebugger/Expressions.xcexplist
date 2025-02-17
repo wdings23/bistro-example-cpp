@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VariablesViewState
+   version = "1.0">
+   <ContextStates>
+      <ContextState
+         contextName = "Render::Common::CRenderJob::createOutputAttachments:RenderJob.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "this-&gt;mName">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Render::Common::CRenderJob::handleTextureInput:RenderJob.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "pParentJob-&gt;mpDepthImage">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "RenderDriver::Metal::CCommandBuffer::close:CommandBufferMetal.mm">
+      </ContextState>
+   </ContextStates>
+</VariablesViewState>

@@ -1116,7 +1116,7 @@ namespace Render
             {
                 if(parentName == "Depth Output")
                 {
-                    WTFASSERT(pParentJob->mpDepthImageView, "Parent Job \"%s\" don't have depth output\n", pParentJob->mName.c_str());
+                    WTFASSERT(pParentJob->mpDepthImage, "Parent Job \"%s\" don't have depth output\n", pParentJob->mName.c_str());
                     mapImageAttachments[newAttachmentName] = pParentJob->mpDepthImage;
                     mapImageAttachmentViews[newAttachmentName] = pParentJob->mpDepthImageView;
 

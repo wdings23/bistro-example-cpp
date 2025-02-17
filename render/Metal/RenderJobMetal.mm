@@ -230,8 +230,6 @@ namespace Render
 		*/
 		void CRenderJob::platformInitDescriptorSet()
 		{
-            WTFASSERT(0, "Implement me");
-            
 			mDescriptorSet = std::make_unique<RenderDriver::Metal::CDescriptorSet>();
 			RenderDriver::Common::DescriptorSetDescriptor desc = {};
 			desc.mpaShaderResources = nullptr;
@@ -251,8 +249,6 @@ namespace Render
 		*/
 		void CRenderJob::platformInitPipelineState()
 		{
-            WTFASSERT(0, "Implement me");
-            
 			mPipelineState = std::make_unique<RenderDriver::Metal::CPipelineState>();
 			mpPipelineState = mPipelineState.get();
 
@@ -281,9 +277,7 @@ namespace Render
 		*/
 		RenderDriver::Common::ComputePipelineStateDescriptor* CRenderJob::platformInitComputePipelineStateDescriptor()
 		{
-            WTFASSERT(0, "Implement me");
-            
-			mComputePipelineStateDesc = std::make_unique<RenderDriver::Metal::CPipelineState::ComputePipelineStateDescriptor>();
+            mComputePipelineStateDesc = std::make_unique<RenderDriver::Metal::CPipelineState::ComputePipelineStateDescriptor>();
 			return mComputePipelineStateDesc.get();
 		}
 
@@ -564,7 +558,6 @@ namespace Render
 				*mpDevice);
 			mDepthImage->setID(mName + "-" + "Depth Output");
 			mpDepthImage = mDepthImage.get();
-
 		}
 
 		/*
