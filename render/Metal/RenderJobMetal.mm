@@ -387,6 +387,7 @@ namespace Render
 		{
 			RenderDriver::Metal::CPipelineState::ComputePipelineStateDescriptor* pMetalDesc = (RenderDriver::Metal::CPipelineState::ComputePipelineStateDescriptor*)pDesc;
 
+#if defined(_MSC_VER)
 			// get shaders
 			auto fileNameEnd = shaderPath.find_last_of(".");
 			auto directoryEnd = shaderPath.find_last_of("\\");
@@ -397,23 +398,6 @@ namespace Render
 
             std::string compileExec = "D:\\VulkanSDK\\1.3.296.0\\Bin\\slangc.exe";
             
-#if !defined(_MSC_VER)
-            compileExec = "/Users/dingwings/Downloads/slang-2025.5-macos-aarch64/bin/slangc";
-            getAssetsDir(directory, "shaders");
-            DEBUG_PRINTF("%s\n", directory.c_str());
-            
-            std::string shaderOutputDirectory;
-            getAssetsDir(shaderOutputDirectory, "shader-output");
-            DEBUG_PRINTF("shader output directory: %s\n", shaderOutputDirectory.c_str());
-            
-            getAssetsDir(filePath, "shader-output");
-            filePath = shaderOutputDirectory + "/" + fileName + ".spirv";
-            DEBUG_PRINTF("%s\n", filePath.c_str());
-            
-#endif // _MSC_VER
-            
-            
-            
 			// compile compute shader
 			std::string mainFunctionName = "CSMain";
             std::string compileCommand = compileExec + " -profile glsl_450 -target spirv " +
@@ -423,8 +407,6 @@ namespace Render
 				" -o " +
 				filePath +
 				" -g";
-			DEBUG_PRINTF("%s\n", compileCommand.c_str());
-compileCommand = compileExec;
 			int iRet = system(compileCommand.c_str());
 			if(iRet != 0)
 			{
@@ -438,7 +420,32 @@ compileCommand = compileExec;
 			acShaderBuffer.resize(iFileSize);
 			fread(acShaderBuffer.data(), sizeof(char), iFileSize, fp);
 			fclose(fp);
-
+            
+#else
+            auto fileNameEnd = shaderPath.find_last_of(".");
+            auto directoryEnd = shaderPath.find_last_of("\\");
+            std::string directory = shaderPath.substr(0, directoryEnd);
+            std::string outputDirectory = directory + "-output";
+            std::string fileName = shaderPath.substr(directoryEnd + 1, (fileNameEnd - (directoryEnd + 1)));
+            
+            
+            std::string metalShaderFileName = fileName + ".mtl";
+            
+            std::string filePath;
+            getAssetsDir(filePath, std::string("shader-output/") + metalShaderFileName);
+            
+            DEBUG_PRINTF("%s\n", filePath.c_str());
+            
+            FILE* fp = fopen(filePath.c_str(), "rb");
+            fseek(fp, 0, SEEK_END);
+            size_t iFileSize = ftell(fp);
+            fseek(fp, 0, SEEK_SET);
+            acShaderBuffer.resize(iFileSize);
+            fread(acShaderBuffer.data(), sizeof(char), iFileSize, fp);
+            fclose(fp);
+            
+#endif // _MSC_VER
+            
 			pDesc->miFlags = 0;
 			pDesc->miComputeShaderSize = (uint32_t)iFileSize;
 			pDesc->mpComputeShader = (uint8_t*)acShaderBuffer.data();

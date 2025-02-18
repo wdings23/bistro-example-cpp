@@ -2222,7 +2222,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = " /opt/homebrew/bin/python3 ${SRCROOT}/../../scripts/build-shaders.py ${SRCROOT}/../../\n";
+			shellScript = " echo ${CONTENTS_FOLDER_PATH}\n echo deployment location ${METAL_LIBRARY_OUTPUT_DIR}\n /opt/homebrew/bin/python3 ${SRCROOT}/../../scripts/build-shaders.py ${SRCROOT}/../../ ${METAL_LIBRARY_OUTPUT_DIR}/assets/shader-output\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
