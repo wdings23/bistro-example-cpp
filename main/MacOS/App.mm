@@ -24,7 +24,7 @@ char const* getSaveDir()
     NSArray* paths = NSSearchPathForDirectoriesInDomains(NSApplicationScriptsDirectory, NSUserDomainMask, YES);
     NSString* applicationSupportDirectory = [paths firstObject];
     char const* szDir = [applicationSupportDirectory UTF8String];
-    DEBUG_PRINTF("save directory: \"%s\"\n", szDir);
+    //DEBUG_PRINTF("save directory: \"%s\"\n", szDir);
     
     return szDir;
 }
@@ -36,7 +36,7 @@ void getAssetsDir(std::string& fullPath, std::string const& fileName)
 {
     NSString* resourcePath = [[NSBundle mainBundle] bundlePath];
     char const* szBundleDir = [resourcePath UTF8String];
-    DEBUG_PRINTF("bundle directory: \"%s\"\n", szBundleDir);
+    //DEBUG_PRINTF("bundle directory: \"%s\"\n", szBundleDir);
     
     fullPath = std::string(szBundleDir) + "/Contents/Resources/assets/" + fileName;
 }

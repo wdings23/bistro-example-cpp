@@ -774,7 +774,7 @@ namespace Render
                 
                 std::string shaderPath = doc["Shader"].GetString();
 
-                // fill creation descriptor
+                // fill creation descriptorget
                 std::string fullPath = shaderDirectory + "\\shaders\\" + shaderPath;
                 std::vector<char> acShaderBuffer;
                 pDesc = platformFillOutComputePipelineDescriptor(

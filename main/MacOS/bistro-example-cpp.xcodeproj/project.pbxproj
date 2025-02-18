@@ -369,6 +369,7 @@
 		257FC0912D63218D00F92519 /* test-compute.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0692D63218D00F92519 /* test-compute.slang */; };
 		257FC0922D63218D00F92519 /* default-uniform-headers.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC06A2D63218D00F92519 /* default-uniform-headers.slang */; };
 		257FC0932D63218D00F92519 /* atmosphere.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC06B2D63218D00F92519 /* atmosphere.slang */; };
+		257FC0972D63C97B00F92519 /* spirv-cross-compile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0962D63C97B00F92519 /* spirv-cross-compile */; };
 		259DF5842D605457007BA6A1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259DF5832D605457007BA6A1 /* ViewController.swift */; };
 		259DF5882D6054A9007BA6A1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259DF5872D6054A9007BA6A1 /* AppDelegate.swift */; };
 		25DECE7F2D6057FF00ED56EE /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DECE7E2D6057FF00ED56EE /* MetalView.swift */; };
@@ -860,6 +861,16 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		257FC0952D63C66500F92519 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "assets/shader-output";
+			dstSubfolderSpec = 7;
+			files = (
+				257FC0972D63C97B00F92519 /* spirv-cross-compile in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -1225,6 +1236,7 @@
 		257FC0692D63218D00F92519 /* test-compute.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "test-compute.slang"; path = "../../../shaders/test-compute.slang"; sourceTree = "<group>"; };
 		257FC06A2D63218D00F92519 /* default-uniform-headers.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "default-uniform-headers.slang"; path = "../../../shaders/default-uniform-headers.slang"; sourceTree = "<group>"; };
 		257FC06B2D63218D00F92519 /* atmosphere.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = atmosphere.slang; path = ../../../shaders/atmosphere.slang; sourceTree = "<group>"; };
+		257FC0962D63C97B00F92519 /* spirv-cross-compile */ = {isa = PBXFileReference; lastKnownFileType = text; name = "spirv-cross-compile"; path = "../../../spirv-cross-compile"; sourceTree = "<group>"; };
 		259DF54C2D6053C9007BA6A1 /* bistro-example-cpp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "bistro-example-cpp.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		259DF5832D605457007BA6A1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = ../ViewController.swift; sourceTree = "<group>"; };
 		259DF5872D6054A9007BA6A1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ../AppDelegate.swift; sourceTree = "<group>"; };
@@ -1811,6 +1823,7 @@
 				257FC04C2D63218A00F92519 /* texture-page-queue-compute.slang */,
 				257FC0462D63218A00F92519 /* tone-mapping-headers.slang */,
 				257FC0582D63218B00F92519 /* vertex-format-headers.slang */,
+				257FC0962D63C97B00F92519 /* spirv-cross-compile */,
 			);
 			path = shaders;
 			sourceTree = "<group>";
@@ -2131,6 +2144,8 @@
 				257FBDC82D62A22100F92519 /* CopyFiles */,
 				257FBFDE2D6320E500F92519 /* CopyFiles */,
 				257FC0432D63217300F92519 /* CopyFiles */,
+				257FC0952D63C66500F92519 /* CopyFiles */,
+				257FC0982D63CAA400F92519 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -2190,6 +2205,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		257FC0982D63CAA400F92519 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = " /opt/homebrew/bin/python3 ${SRCROOT}/../../scripts/build-shaders.py ${SRCROOT}/../../\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		259DF5482D6053C9007BA6A1 /* Sources */ = {

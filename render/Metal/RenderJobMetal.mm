@@ -5,10 +5,17 @@
 #include <render-driver/Metal/PipelineStateMetal.h>
 #include <render-driver/Metal/SwapChainMetal.h>
 
-#include <iostream>
-#include <stdio.h>
 #include <utils/LogPrint.h>
 #include <utils/wtfassert.h>
+
+#include <iostream>
+#include <stdio.h>
+
+#include <filesystem>
+
+#if !defined(_MSC_VER)
+    extern void getAssetsDir(std::string& fullPath, std::string const& fileName);
+#endif // _MSC_VER
 
 namespace Render
 {
@@ -378,8 +385,6 @@ namespace Render
 			std::string const& shaderPath
 		)
 		{
-            WTFASSERT(0, "Implement me");
-            
 			RenderDriver::Metal::CPipelineState::ComputePipelineStateDescriptor* pMetalDesc = (RenderDriver::Metal::CPipelineState::ComputePipelineStateDescriptor*)pDesc;
 
 			// get shaders
@@ -390,16 +395,36 @@ namespace Render
 			std::string fileName = shaderPath.substr(directoryEnd + 1, (fileNameEnd - (directoryEnd + 1)));
 			std::string filePath = outputDirectory + "\\" + fileName + "-vs.spirv";
 
+            std::string compileExec = "D:\\VulkanSDK\\1.3.296.0\\Bin\\slangc.exe";
+            
+#if !defined(_MSC_VER)
+            compileExec = "/Users/dingwings/Downloads/slang-2025.5-macos-aarch64/bin/slangc";
+            getAssetsDir(directory, "shaders");
+            DEBUG_PRINTF("%s\n", directory.c_str());
+            
+            std::string shaderOutputDirectory;
+            getAssetsDir(shaderOutputDirectory, "shader-output");
+            DEBUG_PRINTF("shader output directory: %s\n", shaderOutputDirectory.c_str());
+            
+            getAssetsDir(filePath, "shader-output");
+            filePath = shaderOutputDirectory + "/" + fileName + ".spirv";
+            DEBUG_PRINTF("%s\n", filePath.c_str());
+            
+#endif // _MSC_VER
+            
+            
+            
 			// compile compute shader
 			std::string mainFunctionName = "CSMain";
-			std::string compileCommand = "D:\\MetalSDK\\1.3.296.0\\Bin\\slangc.exe -profile glsl_450 -target spirv " +
-				directory + "\\" + fileName + ".slang " +
+            std::string compileCommand = compileExec + " -profile glsl_450 -target spirv " +
+				directory + "/" + fileName + ".slang " +
 				"-fvk-use-entrypoint-name -entry " +
 				mainFunctionName +
 				" -o " +
 				filePath +
 				" -g";
 			DEBUG_PRINTF("%s\n", compileCommand.c_str());
+compileCommand = compileExec;
 			int iRet = system(compileCommand.c_str());
 			if(iRet != 0)
 			{

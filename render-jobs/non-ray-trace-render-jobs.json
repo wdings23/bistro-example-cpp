@@ -78,8 +78,8 @@
         {
             "Name": "Secondary Deferred Indirect Graphics",
             "Pipeline": "secondary-deferred-indirect-graphics.json",
-            "Type": "Compute",
-            "PassType": "Compute",
+            "Type": "Graphics",
+            "PassType": "Draw Meshes",
             "Dispatch": [10, 1, 1]
         },
         {
