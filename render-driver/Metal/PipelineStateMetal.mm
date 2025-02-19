@@ -39,9 +39,9 @@ namespace RenderDriver
             NSError* error = nil;
             
             // load metallib binary data
-            std::string filePath = std::string(szDir) + "/" + metalPipelineDesc.mszLibraryFilePath;
+            std::string filePath = std::string(szDir) + "/" + metalPipelineDesc.mLibraryFilePath;
             FILE* fp = fopen(filePath.c_str(), "rb");
-            WTFASSERT(fp, "can\'t open file \"%s\"", metalPipelineDesc.mszLibraryFilePath);
+            WTFASSERT(fp, "can\'t open file \"%s\"", metalPipelineDesc.mLibraryFilePath.c_str());
             fseek(fp, 0, SEEK_END);
             uint64_t iFileSize = ftell(fp);
             fseek(fp, 0, SEEK_SET);
@@ -64,19 +64,19 @@ namespace RenderDriver
                 assert(0);
             }
             
-            WTFASSERT(library != nil, "Can'\t load library \"%s\"", metalPipelineDesc.mszLibraryFilePath);
+            WTFASSERT(library != nil, "Can'\t load library \"%s\"", metalPipelineDesc.mLibraryFilePath.c_str());
             
-            printf("library: %s\n", metalPipelineDesc.mszLibraryFilePath);
+            printf("library: %s\n", metalPipelineDesc.mLibraryFilePath.c_str());
             
-            NSString* vertexEntryStr = [NSString stringWithUTF8String: metalPipelineDesc.mszVertexEntryName];
-            NSString* fragementEntryStr = [NSString stringWithUTF8String: metalPipelineDesc.mszFragementEntryName];
+            NSString* vertexEntryStr = [NSString stringWithUTF8String: metalPipelineDesc.mVertexEntryName.c_str()];
+            NSString* fragementEntryStr = [NSString stringWithUTF8String: metalPipelineDesc.mFragementEntryName.c_str()];
             
             // pipeline descriptor
             MTLRenderPipelineDescriptor* renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
             renderPipelineDescriptor.vertexFunction = [library newFunctionWithName: vertexEntryStr];
             renderPipelineDescriptor.fragmentFunction = [library newFunctionWithName: fragementEntryStr];
-            WTFASSERT(renderPipelineDescriptor.vertexFunction != nil, "Invalid vertex function name \"%s\"", metalPipelineDesc.mszVertexEntryName);
-            WTFASSERT(renderPipelineDescriptor.fragmentFunction != nil, "Invalid fragment function name \"%s\"", metalPipelineDesc.mszFragementEntryName);
+            WTFASSERT(renderPipelineDescriptor.vertexFunction != nil, "Invalid vertex function name \"%s\"", metalPipelineDesc.mVertexEntryName.c_str());
+            WTFASSERT(renderPipelineDescriptor.fragmentFunction != nil, "Invalid fragment function name \"%s\"", metalPipelineDesc.mFragementEntryName.c_str());
             
             // color attachment format
             for(uint32_t iColorAttachment = 0; iColorAttachment < metalPipelineDesc.miNumRenderTarget; iColorAttachment++)
@@ -289,9 +289,9 @@ renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPix
             mNativeDevice = (__bridge id<MTLDevice>)deviceMetal.getNativeDevice();
             
             // load metallib binary data
-            std::string filePath = std::string(getSaveDir()) + "/" + metalPipelineDesc.mszLibraryFilePath;
+            std::string filePath = std::string(getSaveDir()) + "/" + metalPipelineDesc.mLibraryFilePath.c_str();
             FILE* fp = fopen(filePath.c_str(), "rb");
-            WTFASSERT(fp, "can\'t open file \"%s\"", metalPipelineDesc.mszLibraryFilePath);
+            WTFASSERT(fp, "can\'t open file \"%s\"", metalPipelineDesc.mLibraryFilePath.c_str());
             fseek(fp, 0, SEEK_END);
             uint64_t iFileSize = ftell(fp);
             fseek(fp, 0, SEEK_SET);
@@ -312,7 +312,7 @@ renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPix
                 NSLog(@"error => %@", error);
             }
             
-            NSString* computeEntryStr = [NSString stringWithUTF8String: metalPipelineDesc.mszComputeEntryName];
+            NSString* computeEntryStr = [NSString stringWithUTF8String: metalPipelineDesc.mComputeEntryName.c_str()];
             
             MTLAutoreleasedComputePipelineReflection reflection;
             
@@ -330,15 +330,23 @@ renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPix
                 NSLog(@"error => %@", error);
             }
             
+            //NSArray<id<MTLBinding>>* bindings = [reflection bindings];
+            
+            std::vector<SerializeUtils::Common::ShaderResourceInfo> aShaderResources;
+            
             // shader resource layout reflection
             uint32_t iNumComputeVariables = 0;
             NSArray <MTLArgument *>* csArgs = [reflection arguments];
             for(MTLArgument* arg in csArgs)
+            //for(id<MTLBinding> arg in bindings)
             {
+                SerializeUtils::Common::ShaderResourceInfo shaderResourceInfo;
                 
                 NSString* name = [arg name];
                 MTLArgumentType type = [arg type];
                 //NSLog(@"%@", arg);
+                
+                //MTLBindingType type = [arg type];
                 
                 char const* szVariableName = [name UTF8String];
                 char const* szVariableType = "buffer";
@@ -355,7 +363,16 @@ renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPix
                        iNumComputeVariables,
                        szVariableName,
                        szVariableType);
+
+                shaderResourceInfo.mName = szVariableName;
+                shaderResourceInfo.mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN;
+                if(std::string(szVariableType) == "buffer")
+                {
+                    shaderResourceInfo.mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_IN;
+                }
+                aShaderResources.push_back(shaderResourceInfo);
                 
+
                 // struct member, just list them as individual variable for now
                 if(type == MTLArgumentTypeBuffer)
                 {
@@ -367,17 +384,27 @@ renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPix
                         DEBUG_PRINTF("\t\tmember: %s\n", szMemberName);
                     }
                 }
+    
+                //ShaderResourceReflectionInfo reflectionInfo(szVariableName, type, RenderDriver::Common::ShaderType::Compute);
+                //reflectionInfo.mName = szVariableName;
+                //reflectionInfo.mType = type;
+                //reflectionInfo.mShaderType = RenderDriver::Common::ShaderType::Compute;
+                //maComputeShaderResourceReflectionInfo.push_back(reflectionInfo);
                 
                 maComputeShaderResourceReflectionInfo.emplace_back(
-                    szVariableName,
-                    type,
-                    RenderDriver::Common::ShaderType::Vertex);
+                                                                   szVariableName,
+                                                                   type,
+                                                                   RenderDriver::Common::ShaderType::Compute
+                );
                 
                 ++iNumComputeVariables;
             }
             
             // fillout shader resource indices look for layout indices
-            std::vector<SerializeUtils::Common::ShaderResourceInfo> const& aShaderResources = *desc.mpDescriptor->getDesc().mpaShaderResources;
+            if(desc.mpDescriptor->getDesc().mpaShaderResources)
+            {
+                aShaderResources = *desc.mpDescriptor->getDesc().mpaShaderResources;
+            }
             
             setLayoutMapping(
                 maiComputeShaderResourceLayoutIndices,
@@ -435,7 +462,7 @@ renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPix
                      {
                          std::string fillerName = std::string("(") + reflectionShaderResourceName + ")";
                          return (
-                             shaderResource.mName == reflectionShaderResourceName ||
+                             shaderResource.mShaderResourceName == reflectionShaderResourceName ||
                              shaderResource.mName.find(fillerName) != std::string::npos ||
                              (reflectionShaderResourceName == "_Globals" && shaderResource.mName.find("$Globals") != std::string::npos)
                         );

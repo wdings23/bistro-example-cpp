@@ -457,6 +457,12 @@ void CApp::init(AppDescriptor const& appDesc)
     // has to ptr of the map into data lambda or else it's a copy which unique_ptr disallow
     std::map<std::string, std::unique_ptr<RenderDriver::Common::CBuffer>>* paBufferMap = &aBufferMap;
     
+char const* szSaveDir = getSaveDir();
+DEBUG_PRINTF("%s\n", szSaveDir);
+    std::string fullPath = std::string(szSaveDir) + "/bistro2-triangles.bin";
+    fp = fopen(fullPath.c_str(), "rb");
+    fclose(fp);
+    
     pRenderer->initData();
     pRenderer->loadRenderJobInfo(pDesc->mRenderJobsFilePath);
     pRenderer->prepareRenderJobData();

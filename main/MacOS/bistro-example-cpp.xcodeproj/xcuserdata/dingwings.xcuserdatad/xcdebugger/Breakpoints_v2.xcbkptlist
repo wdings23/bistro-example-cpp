@@ -87,22 +87,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "F6530954-4FDC-4164-AEAC-A9300BA065DC"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "App.mm"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "462"
-            endingLineNumber = "462"
-            landmarkName = "CApp::init(appDesc)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "40DC496F-41B6-4ECD-B995-A698F50DF0BA"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -126,8 +110,8 @@
             filePath = "../../render/RenderJob.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "410"
-            endingLineNumber = "410"
+            startingLineNumber = "421"
+            endingLineNumber = "421"
             landmarkName = "CRenderJob::createPipelineData(doc, apRenderJobs, pCommandQueue, pacConstantBufferData)"
             landmarkType = "7">
          </BreakpointContent>
@@ -158,8 +142,8 @@
             filePath = "../../render/RenderJob.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "762"
-            endingLineNumber = "762"
+            startingLineNumber = "778"
+            endingLineNumber = "778"
             landmarkName = "CRenderJob::initPipelineState(doc, apRenderJobs, iWidth, iHeight, shaderDirectory, pPlatformInstance)"
             landmarkType = "7">
          </BreakpointContent>
@@ -174,8 +158,8 @@
             filePath = "../../render/RenderJob.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "744"
-            endingLineNumber = "744"
+            startingLineNumber = "760"
+            endingLineNumber = "760"
             landmarkName = "CRenderJob::initPipelineState(doc, apRenderJobs, iWidth, iHeight, shaderDirectory, pPlatformInstance)"
             landmarkType = "7">
          </BreakpointContent>
@@ -183,16 +167,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "2964D524-7F30-4A27-9520-EDDD0444ABD2"
+            uuid = "FED424A1-DB27-45B4-9B19-9198247A4251"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "../../render/Metal/RenderJobMetal.mm"
+            filePath = "../../render/RenderJob.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "439"
-            endingLineNumber = "439"
-            landmarkName = "CRenderJob::platformFillOutComputePipelineDescriptor(pDesc, acShaderBuffer, shaderPath)"
+            startingLineNumber = "803"
+            endingLineNumber = "803"
+            landmarkName = "CRenderJob::initPipelineState(doc, apRenderJobs, iWidth, iHeight, shaderDirectory, pPlatformInstance)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

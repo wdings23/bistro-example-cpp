@@ -46,6 +46,158 @@ namespace RenderDriver
             
             [mRootConstant setLabel: [NSString stringWithUTF8String: std::string(id + " Root Constant").c_str()]];
         }
+    
+        /*
+        **
+        */
+        void CDescriptorSet::addImage(
+            RenderDriver::Common::CImage* pImage,
+            RenderDriver::Common::CImageView* pImageView,
+            uint32_t iBindingIndex,
+            uint32_t iGroup,
+            bool bReadOnly)
+        {
+            // filler, need this to keep track of the valid buffers
+            if(maapBuffers.size() <= iGroup)
+            {
+                maapBuffers.resize(iGroup + 1);
+            }
+            if(maapBuffers[iGroup].size() <= iBindingIndex)
+            {
+                maapBuffers[iGroup].resize(iBindingIndex + 1);
+            }
+            maapBuffers[iGroup][iBindingIndex] = nullptr;
+
+            if(maapImages.size() <= iGroup)
+            {
+                maapImages.resize(iGroup + 1);
+            }
+            if(maapImages[iGroup].size() <= iBindingIndex)
+            {
+                maapImages[iGroup].resize(iBindingIndex + 1);
+            }
+            maapImages[iGroup][iBindingIndex] = pImage;
+
+            if(maapImageViews.size() <= iGroup)
+            {
+                maapImageViews.resize(iGroup + 1);
+            }
+            if(maapImageViews[iGroup].size() <= iBindingIndex)
+            {
+                maapImageViews[iGroup].resize(iBindingIndex + 1);
+            }
+            maapImageViews[iGroup][iBindingIndex] = pImageView;
+
+            if(maapAccelerationStructures.size() <= iGroup)
+            {
+                maapAccelerationStructures.resize(iGroup + 1);
+            }
+            if(maapAccelerationStructures[iGroup].size() <= iBindingIndex)
+            {
+                maapAccelerationStructures[iGroup].resize(iBindingIndex + 1);
+            }
+            maapAccelerationStructures[iGroup][iBindingIndex] = nullptr;
+
+        }
+
+        /*
+        **
+        */
+        void CDescriptorSet::addBuffer(
+            RenderDriver::Common::CBuffer* pBuffer,
+            uint32_t iBindingIndex,
+            uint32_t iGroup,
+            bool bReadOnly)
+        {
+            if(maapBuffers.size() <= iGroup)
+            {
+                maapBuffers.resize(iGroup + 1);
+            }
+            if(maapBuffers[iGroup].size() <= iBindingIndex)
+            {
+                maapBuffers[iGroup].resize(iBindingIndex + 1);
+            }
+            maapBuffers[iGroup][iBindingIndex] = pBuffer;
+
+            if(maapImages.size() <= iGroup)
+            {
+                maapImages.resize(iGroup + 1);
+            }
+            if(maapImages[iGroup].size() <= iBindingIndex)
+            {
+                maapImages[iGroup].resize(iBindingIndex + 1);
+            }
+            maapImages[iGroup][iBindingIndex] = nullptr;
+
+            if(maapImageViews.size() <= iGroup)
+            {
+                maapImageViews.resize(iGroup + 1);
+            }
+            if(maapImageViews[iGroup].size() <= iBindingIndex)
+            {
+                maapImageViews[iGroup].resize(iBindingIndex + 1);
+            }
+            maapImageViews[iGroup][iBindingIndex] = nullptr;
+
+            if(maapAccelerationStructures.size() <= iGroup)
+            {
+                maapAccelerationStructures.resize(iGroup + 1);
+            }
+            if(maapAccelerationStructures[iGroup].size() <= iBindingIndex)
+            {
+                maapAccelerationStructures[iGroup].resize(iBindingIndex + 1);
+            }
+            maapAccelerationStructures[iGroup][iBindingIndex] = nullptr;
+        }
+
+        /*
+        **
+        */
+        void CDescriptorSet::addAccelerationStructure(
+            RenderDriver::Common::CAccelerationStructure* pAccelerationStructure,
+            uint32_t iBindingIndex,
+            uint32_t iGroup)
+        {
+            if(maapBuffers.size() <= iGroup)
+            {
+                maapBuffers.resize(iGroup + 1);
+            }
+            if(maapBuffers[iGroup].size() <= iBindingIndex)
+            {
+                maapBuffers[iGroup].resize(iBindingIndex + 1);
+            }
+            maapBuffers[iGroup][iBindingIndex] = nullptr;
+
+            if(maapImages.size() <= iGroup)
+            {
+                maapImages.resize(iGroup + 1);
+            }
+            if(maapImages[iGroup].size() <= iBindingIndex)
+            {
+                maapImages[iGroup].resize(iBindingIndex + 1);
+            }
+            maapImages[iGroup][iBindingIndex] = nullptr;
+
+            if(maapImageViews.size() <= iGroup)
+            {
+                maapImageViews.resize(iGroup + 1);
+            }
+            if(maapImageViews[iGroup].size() <= iBindingIndex)
+            {
+                maapImageViews[iGroup].resize(iBindingIndex + 1);
+            }
+            maapImageViews[iGroup][iBindingIndex] = nullptr;
+
+            if(maapAccelerationStructures.size() <= iGroup)
+            {
+                maapAccelerationStructures.resize(iGroup + 1);
+            }
+            if(maapAccelerationStructures[iGroup].size() <= iBindingIndex)
+            {
+                maapAccelerationStructures[iGroup].resize(iBindingIndex + 1);
+            }
+            maapAccelerationStructures[iGroup][iBindingIndex] = pAccelerationStructure;
+        }
 
     }   // Metal
 

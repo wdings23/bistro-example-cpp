@@ -370,6 +370,38 @@
 		257FC0922D63218D00F92519 /* default-uniform-headers.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC06A2D63218D00F92519 /* default-uniform-headers.slang */; };
 		257FC0932D63218D00F92519 /* atmosphere.slang in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC06B2D63218D00F92519 /* atmosphere.slang */; };
 		257FC0972D63C97B00F92519 /* spirv-cross-compile in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0962D63C97B00F92519 /* spirv-cross-compile */; };
+		257FC0BB2D650A9000F92519 /* down-rez-depth-2.metallibsym in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC09B2D650A8D00F92519 /* down-rez-depth-2.metallibsym */; };
+		257FC0BC2D650A9000F92519 /* texture-atlas-graphics.metallib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC09C2D650A8D00F92519 /* texture-atlas-graphics.metallib */; };
+		257FC0BD2D650A9000F92519 /* secondary-mesh-culling-compute.metallibsym in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC09D2D650A8D00F92519 /* secondary-mesh-culling-compute.metallibsym */; };
+		257FC0BE2D650A9000F92519 /* down-rez-depth-gather.metallib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC09E2D650A8E00F92519 /* down-rez-depth-gather.metallib */; };
+		257FC0BF2D650A9000F92519 /* deferred-indirect.metallibsym in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC09F2D650A8E00F92519 /* deferred-indirect.metallibsym */; };
+		257FC0C02D650A9000F92519 /* down-rez-depth-1.metallib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0A02D650A8E00F92519 /* down-rez-depth-1.metallib */; };
+		257FC0C12D650A9000F92519 /* down-rez-depth-6.metallib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0A12D650A8E00F92519 /* down-rez-depth-6.metallib */; };
+		257FC0C22D650A9000F92519 /* down-rez-depth-6.metallibsym in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0A22D650A8E00F92519 /* down-rez-depth-6.metallibsym */; };
+		257FC0C32D650A9000F92519 /* mesh-culling-compute.metallibsym in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0A32D650A8E00F92519 /* mesh-culling-compute.metallibsym */; };
+		257FC0C42D650A9000F92519 /* down-rez-depth-7.metallibsym in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0A42D650A8E00F92519 /* down-rez-depth-7.metallibsym */; };
+		257FC0C52D650A9000F92519 /* down-rez-depth-3.metallibsym in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0A52D650A8E00F92519 /* down-rez-depth-3.metallibsym */; };
+		257FC0C62D650A9000F92519 /* non-ray-trace-swap-chain-bistro-example.metallib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0A62D650A8E00F92519 /* non-ray-trace-swap-chain-bistro-example.metallib */; };
+		257FC0C72D650A9000F92519 /* down-rez-depth-1.metallibsym in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0A72D650A8E00F92519 /* down-rez-depth-1.metallibsym */; };
+		257FC0C82D650A9000F92519 /* down-rez-depth-4.metallibsym in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0A82D650A8E00F92519 /* down-rez-depth-4.metallibsym */; };
+		257FC0C92D650A9000F92519 /* down-rez-depth-2.metallib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0A92D650A8F00F92519 /* down-rez-depth-2.metallib */; };
+		257FC0CA2D650A9000F92519 /* down-rez-depth-4.metallib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0AA2D650A8F00F92519 /* down-rez-depth-4.metallib */; };
+		257FC0CB2D650A9000F92519 /* texture-page-queue-compute.metallib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0AB2D650A8F00F92519 /* texture-page-queue-compute.metallib */; };
+		257FC0CC2D650A9000F92519 /* down-rez-depth-7.metallib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0AC2D650A8F00F92519 /* down-rez-depth-7.metallib */; };
+		257FC0CD2D650A9000F92519 /* texture-page-queue-compute.metallibsym in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0AD2D650A8F00F92519 /* texture-page-queue-compute.metallibsym */; };
+		257FC0CE2D650A9000F92519 /* down-rez-depth-gather.metallibsym in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0AE2D650A8F00F92519 /* down-rez-depth-gather.metallibsym */; };
+		257FC0CF2D650A9000F92519 /* non-ray-trace-swap-chain-bistro-example.metallibsym in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0AF2D650A8F00F92519 /* non-ray-trace-swap-chain-bistro-example.metallibsym */; };
+		257FC0D02D650A9000F92519 /* texture-atlas-graphics.metallibsym in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0B02D650A8F00F92519 /* texture-atlas-graphics.metallibsym */; };
+		257FC0D12D650A9000F92519 /* down-rez-depth-5.metallibsym in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0B12D650A8F00F92519 /* down-rez-depth-5.metallibsym */; };
+		257FC0D22D650A9000F92519 /* secondary-deferred-indirect-graphics.metallibsym in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0B22D650A9000F92519 /* secondary-deferred-indirect-graphics.metallibsym */; };
+		257FC0D32D650A9000F92519 /* secondary-deferred-indirect-graphics.metallib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0B32D650A9000F92519 /* secondary-deferred-indirect-graphics.metallib */; };
+		257FC0D42D650A9000F92519 /* mesh-culling-compute.metallib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0B42D650A9000F92519 /* mesh-culling-compute.metallib */; };
+		257FC0D52D650A9000F92519 /* deferred-indirect.metallib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0B52D650A9000F92519 /* deferred-indirect.metallib */; };
+		257FC0D62D650A9000F92519 /* atmosphere.metallib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0B62D650A9000F92519 /* atmosphere.metallib */; };
+		257FC0D72D650A9000F92519 /* secondary-mesh-culling-compute.metallib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0B72D650A9000F92519 /* secondary-mesh-culling-compute.metallib */; };
+		257FC0D82D650A9000F92519 /* down-rez-depth-5.metallib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0B82D650A9000F92519 /* down-rez-depth-5.metallib */; };
+		257FC0D92D650A9000F92519 /* atmosphere.metallibsym in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0B92D650A9000F92519 /* atmosphere.metallibsym */; };
+		257FC0DA2D650A9000F92519 /* down-rez-depth-3.metallib in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FC0BA2D650A9000F92519 /* down-rez-depth-3.metallib */; };
 		259DF5842D605457007BA6A1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259DF5832D605457007BA6A1 /* ViewController.swift */; };
 		259DF5882D6054A9007BA6A1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259DF5872D6054A9007BA6A1 /* AppDelegate.swift */; };
 		25DECE7F2D6057FF00ED56EE /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DECE7E2D6057FF00ED56EE /* MetalView.swift */; };
@@ -871,6 +903,47 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		257FC09A2D650A3E00F92519 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "assets/shader-output";
+			dstSubfolderSpec = 7;
+			files = (
+				257FC0BB2D650A9000F92519 /* down-rez-depth-2.metallibsym in CopyFiles */,
+				257FC0BC2D650A9000F92519 /* texture-atlas-graphics.metallib in CopyFiles */,
+				257FC0BD2D650A9000F92519 /* secondary-mesh-culling-compute.metallibsym in CopyFiles */,
+				257FC0BE2D650A9000F92519 /* down-rez-depth-gather.metallib in CopyFiles */,
+				257FC0BF2D650A9000F92519 /* deferred-indirect.metallibsym in CopyFiles */,
+				257FC0C02D650A9000F92519 /* down-rez-depth-1.metallib in CopyFiles */,
+				257FC0C12D650A9000F92519 /* down-rez-depth-6.metallib in CopyFiles */,
+				257FC0C22D650A9000F92519 /* down-rez-depth-6.metallibsym in CopyFiles */,
+				257FC0C32D650A9000F92519 /* mesh-culling-compute.metallibsym in CopyFiles */,
+				257FC0C42D650A9000F92519 /* down-rez-depth-7.metallibsym in CopyFiles */,
+				257FC0C52D650A9000F92519 /* down-rez-depth-3.metallibsym in CopyFiles */,
+				257FC0C62D650A9000F92519 /* non-ray-trace-swap-chain-bistro-example.metallib in CopyFiles */,
+				257FC0C72D650A9000F92519 /* down-rez-depth-1.metallibsym in CopyFiles */,
+				257FC0C82D650A9000F92519 /* down-rez-depth-4.metallibsym in CopyFiles */,
+				257FC0C92D650A9000F92519 /* down-rez-depth-2.metallib in CopyFiles */,
+				257FC0CA2D650A9000F92519 /* down-rez-depth-4.metallib in CopyFiles */,
+				257FC0CB2D650A9000F92519 /* texture-page-queue-compute.metallib in CopyFiles */,
+				257FC0CC2D650A9000F92519 /* down-rez-depth-7.metallib in CopyFiles */,
+				257FC0CD2D650A9000F92519 /* texture-page-queue-compute.metallibsym in CopyFiles */,
+				257FC0CE2D650A9000F92519 /* down-rez-depth-gather.metallibsym in CopyFiles */,
+				257FC0CF2D650A9000F92519 /* non-ray-trace-swap-chain-bistro-example.metallibsym in CopyFiles */,
+				257FC0D02D650A9000F92519 /* texture-atlas-graphics.metallibsym in CopyFiles */,
+				257FC0D12D650A9000F92519 /* down-rez-depth-5.metallibsym in CopyFiles */,
+				257FC0D22D650A9000F92519 /* secondary-deferred-indirect-graphics.metallibsym in CopyFiles */,
+				257FC0D32D650A9000F92519 /* secondary-deferred-indirect-graphics.metallib in CopyFiles */,
+				257FC0D42D650A9000F92519 /* mesh-culling-compute.metallib in CopyFiles */,
+				257FC0D52D650A9000F92519 /* deferred-indirect.metallib in CopyFiles */,
+				257FC0D62D650A9000F92519 /* atmosphere.metallib in CopyFiles */,
+				257FC0D72D650A9000F92519 /* secondary-mesh-culling-compute.metallib in CopyFiles */,
+				257FC0D82D650A9000F92519 /* down-rez-depth-5.metallib in CopyFiles */,
+				257FC0D92D650A9000F92519 /* atmosphere.metallibsym in CopyFiles */,
+				257FC0DA2D650A9000F92519 /* down-rez-depth-3.metallib in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -1237,6 +1310,38 @@
 		257FC06A2D63218D00F92519 /* default-uniform-headers.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "default-uniform-headers.slang"; path = "../../../shaders/default-uniform-headers.slang"; sourceTree = "<group>"; };
 		257FC06B2D63218D00F92519 /* atmosphere.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = atmosphere.slang; path = ../../../shaders/atmosphere.slang; sourceTree = "<group>"; };
 		257FC0962D63C97B00F92519 /* spirv-cross-compile */ = {isa = PBXFileReference; lastKnownFileType = text; name = "spirv-cross-compile"; path = "../../../spirv-cross-compile"; sourceTree = "<group>"; };
+		257FC09B2D650A8D00F92519 /* down-rez-depth-2.metallibsym */ = {isa = PBXFileReference; lastKnownFileType = file; name = "down-rez-depth-2.metallibsym"; path = "../../../shader-output/down-rez-depth-2.metallibsym"; sourceTree = "<group>"; };
+		257FC09C2D650A8D00F92519 /* texture-atlas-graphics.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; name = "texture-atlas-graphics.metallib"; path = "../../../shader-output/texture-atlas-graphics.metallib"; sourceTree = "<group>"; };
+		257FC09D2D650A8D00F92519 /* secondary-mesh-culling-compute.metallibsym */ = {isa = PBXFileReference; lastKnownFileType = file; name = "secondary-mesh-culling-compute.metallibsym"; path = "../../../shader-output/secondary-mesh-culling-compute.metallibsym"; sourceTree = "<group>"; };
+		257FC09E2D650A8E00F92519 /* down-rez-depth-gather.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; name = "down-rez-depth-gather.metallib"; path = "../../../shader-output/down-rez-depth-gather.metallib"; sourceTree = "<group>"; };
+		257FC09F2D650A8E00F92519 /* deferred-indirect.metallibsym */ = {isa = PBXFileReference; lastKnownFileType = file; name = "deferred-indirect.metallibsym"; path = "../../../shader-output/deferred-indirect.metallibsym"; sourceTree = "<group>"; };
+		257FC0A02D650A8E00F92519 /* down-rez-depth-1.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; name = "down-rez-depth-1.metallib"; path = "../../../shader-output/down-rez-depth-1.metallib"; sourceTree = "<group>"; };
+		257FC0A12D650A8E00F92519 /* down-rez-depth-6.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; name = "down-rez-depth-6.metallib"; path = "../../../shader-output/down-rez-depth-6.metallib"; sourceTree = "<group>"; };
+		257FC0A22D650A8E00F92519 /* down-rez-depth-6.metallibsym */ = {isa = PBXFileReference; lastKnownFileType = file; name = "down-rez-depth-6.metallibsym"; path = "../../../shader-output/down-rez-depth-6.metallibsym"; sourceTree = "<group>"; };
+		257FC0A32D650A8E00F92519 /* mesh-culling-compute.metallibsym */ = {isa = PBXFileReference; lastKnownFileType = file; name = "mesh-culling-compute.metallibsym"; path = "../../../shader-output/mesh-culling-compute.metallibsym"; sourceTree = "<group>"; };
+		257FC0A42D650A8E00F92519 /* down-rez-depth-7.metallibsym */ = {isa = PBXFileReference; lastKnownFileType = file; name = "down-rez-depth-7.metallibsym"; path = "../../../shader-output/down-rez-depth-7.metallibsym"; sourceTree = "<group>"; };
+		257FC0A52D650A8E00F92519 /* down-rez-depth-3.metallibsym */ = {isa = PBXFileReference; lastKnownFileType = file; name = "down-rez-depth-3.metallibsym"; path = "../../../shader-output/down-rez-depth-3.metallibsym"; sourceTree = "<group>"; };
+		257FC0A62D650A8E00F92519 /* non-ray-trace-swap-chain-bistro-example.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; name = "non-ray-trace-swap-chain-bistro-example.metallib"; path = "../../../shader-output/non-ray-trace-swap-chain-bistro-example.metallib"; sourceTree = "<group>"; };
+		257FC0A72D650A8E00F92519 /* down-rez-depth-1.metallibsym */ = {isa = PBXFileReference; lastKnownFileType = file; name = "down-rez-depth-1.metallibsym"; path = "../../../shader-output/down-rez-depth-1.metallibsym"; sourceTree = "<group>"; };
+		257FC0A82D650A8E00F92519 /* down-rez-depth-4.metallibsym */ = {isa = PBXFileReference; lastKnownFileType = file; name = "down-rez-depth-4.metallibsym"; path = "../../../shader-output/down-rez-depth-4.metallibsym"; sourceTree = "<group>"; };
+		257FC0A92D650A8F00F92519 /* down-rez-depth-2.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; name = "down-rez-depth-2.metallib"; path = "../../../shader-output/down-rez-depth-2.metallib"; sourceTree = "<group>"; };
+		257FC0AA2D650A8F00F92519 /* down-rez-depth-4.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; name = "down-rez-depth-4.metallib"; path = "../../../shader-output/down-rez-depth-4.metallib"; sourceTree = "<group>"; };
+		257FC0AB2D650A8F00F92519 /* texture-page-queue-compute.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; name = "texture-page-queue-compute.metallib"; path = "../../../shader-output/texture-page-queue-compute.metallib"; sourceTree = "<group>"; };
+		257FC0AC2D650A8F00F92519 /* down-rez-depth-7.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; name = "down-rez-depth-7.metallib"; path = "../../../shader-output/down-rez-depth-7.metallib"; sourceTree = "<group>"; };
+		257FC0AD2D650A8F00F92519 /* texture-page-queue-compute.metallibsym */ = {isa = PBXFileReference; lastKnownFileType = file; name = "texture-page-queue-compute.metallibsym"; path = "../../../shader-output/texture-page-queue-compute.metallibsym"; sourceTree = "<group>"; };
+		257FC0AE2D650A8F00F92519 /* down-rez-depth-gather.metallibsym */ = {isa = PBXFileReference; lastKnownFileType = file; name = "down-rez-depth-gather.metallibsym"; path = "../../../shader-output/down-rez-depth-gather.metallibsym"; sourceTree = "<group>"; };
+		257FC0AF2D650A8F00F92519 /* non-ray-trace-swap-chain-bistro-example.metallibsym */ = {isa = PBXFileReference; lastKnownFileType = file; name = "non-ray-trace-swap-chain-bistro-example.metallibsym"; path = "../../../shader-output/non-ray-trace-swap-chain-bistro-example.metallibsym"; sourceTree = "<group>"; };
+		257FC0B02D650A8F00F92519 /* texture-atlas-graphics.metallibsym */ = {isa = PBXFileReference; lastKnownFileType = file; name = "texture-atlas-graphics.metallibsym"; path = "../../../shader-output/texture-atlas-graphics.metallibsym"; sourceTree = "<group>"; };
+		257FC0B12D650A8F00F92519 /* down-rez-depth-5.metallibsym */ = {isa = PBXFileReference; lastKnownFileType = file; name = "down-rez-depth-5.metallibsym"; path = "../../../shader-output/down-rez-depth-5.metallibsym"; sourceTree = "<group>"; };
+		257FC0B22D650A9000F92519 /* secondary-deferred-indirect-graphics.metallibsym */ = {isa = PBXFileReference; lastKnownFileType = file; name = "secondary-deferred-indirect-graphics.metallibsym"; path = "../../../shader-output/secondary-deferred-indirect-graphics.metallibsym"; sourceTree = "<group>"; };
+		257FC0B32D650A9000F92519 /* secondary-deferred-indirect-graphics.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; name = "secondary-deferred-indirect-graphics.metallib"; path = "../../../shader-output/secondary-deferred-indirect-graphics.metallib"; sourceTree = "<group>"; };
+		257FC0B42D650A9000F92519 /* mesh-culling-compute.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; name = "mesh-culling-compute.metallib"; path = "../../../shader-output/mesh-culling-compute.metallib"; sourceTree = "<group>"; };
+		257FC0B52D650A9000F92519 /* deferred-indirect.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; name = "deferred-indirect.metallib"; path = "../../../shader-output/deferred-indirect.metallib"; sourceTree = "<group>"; };
+		257FC0B62D650A9000F92519 /* atmosphere.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; name = atmosphere.metallib; path = "../../../shader-output/atmosphere.metallib"; sourceTree = "<group>"; };
+		257FC0B72D650A9000F92519 /* secondary-mesh-culling-compute.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; name = "secondary-mesh-culling-compute.metallib"; path = "../../../shader-output/secondary-mesh-culling-compute.metallib"; sourceTree = "<group>"; };
+		257FC0B82D650A9000F92519 /* down-rez-depth-5.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; name = "down-rez-depth-5.metallib"; path = "../../../shader-output/down-rez-depth-5.metallib"; sourceTree = "<group>"; };
+		257FC0B92D650A9000F92519 /* atmosphere.metallibsym */ = {isa = PBXFileReference; lastKnownFileType = file; name = atmosphere.metallibsym; path = "../../../shader-output/atmosphere.metallibsym"; sourceTree = "<group>"; };
+		257FC0BA2D650A9000F92519 /* down-rez-depth-3.metallib */ = {isa = PBXFileReference; lastKnownFileType = "archive.metal-library"; name = "down-rez-depth-3.metallib"; path = "../../../shader-output/down-rez-depth-3.metallib"; sourceTree = "<group>"; };
 		259DF54C2D6053C9007BA6A1 /* bistro-example-cpp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "bistro-example-cpp.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		259DF5832D605457007BA6A1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = ../ViewController.swift; sourceTree = "<group>"; };
 		259DF5872D6054A9007BA6A1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ../AppDelegate.swift; sourceTree = "<group>"; };
@@ -1828,9 +1933,49 @@
 			path = shaders;
 			sourceTree = "<group>";
 		};
+		257FC0DB2D650AA900F92519 /* metal_library */ = {
+			isa = PBXGroup;
+			children = (
+				257FC0B62D650A9000F92519 /* atmosphere.metallib */,
+				257FC0B92D650A9000F92519 /* atmosphere.metallibsym */,
+				257FC0B52D650A9000F92519 /* deferred-indirect.metallib */,
+				257FC09F2D650A8E00F92519 /* deferred-indirect.metallibsym */,
+				257FC0A02D650A8E00F92519 /* down-rez-depth-1.metallib */,
+				257FC0A72D650A8E00F92519 /* down-rez-depth-1.metallibsym */,
+				257FC0A92D650A8F00F92519 /* down-rez-depth-2.metallib */,
+				257FC09B2D650A8D00F92519 /* down-rez-depth-2.metallibsym */,
+				257FC0BA2D650A9000F92519 /* down-rez-depth-3.metallib */,
+				257FC0A52D650A8E00F92519 /* down-rez-depth-3.metallibsym */,
+				257FC0AA2D650A8F00F92519 /* down-rez-depth-4.metallib */,
+				257FC0A82D650A8E00F92519 /* down-rez-depth-4.metallibsym */,
+				257FC0B82D650A9000F92519 /* down-rez-depth-5.metallib */,
+				257FC0B12D650A8F00F92519 /* down-rez-depth-5.metallibsym */,
+				257FC0A12D650A8E00F92519 /* down-rez-depth-6.metallib */,
+				257FC0A22D650A8E00F92519 /* down-rez-depth-6.metallibsym */,
+				257FC0AC2D650A8F00F92519 /* down-rez-depth-7.metallib */,
+				257FC0A42D650A8E00F92519 /* down-rez-depth-7.metallibsym */,
+				257FC09E2D650A8E00F92519 /* down-rez-depth-gather.metallib */,
+				257FC0AE2D650A8F00F92519 /* down-rez-depth-gather.metallibsym */,
+				257FC0B42D650A9000F92519 /* mesh-culling-compute.metallib */,
+				257FC0A32D650A8E00F92519 /* mesh-culling-compute.metallibsym */,
+				257FC0A62D650A8E00F92519 /* non-ray-trace-swap-chain-bistro-example.metallib */,
+				257FC0AF2D650A8F00F92519 /* non-ray-trace-swap-chain-bistro-example.metallibsym */,
+				257FC0B32D650A9000F92519 /* secondary-deferred-indirect-graphics.metallib */,
+				257FC0B22D650A9000F92519 /* secondary-deferred-indirect-graphics.metallibsym */,
+				257FC0B72D650A9000F92519 /* secondary-mesh-culling-compute.metallib */,
+				257FC09D2D650A8D00F92519 /* secondary-mesh-culling-compute.metallibsym */,
+				257FC09C2D650A8D00F92519 /* texture-atlas-graphics.metallib */,
+				257FC0B02D650A8F00F92519 /* texture-atlas-graphics.metallibsym */,
+				257FC0AB2D650A8F00F92519 /* texture-page-queue-compute.metallib */,
+				257FC0AD2D650A8F00F92519 /* texture-page-queue-compute.metallibsym */,
+			);
+			path = metal_library;
+			sourceTree = "<group>";
+		};
 		259DF5432D6053C9007BA6A1 = {
 			isa = PBXGroup;
 			children = (
+				257FC0DB2D650AA900F92519 /* metal_library */,
 				257FC0412D63213E00F92519 /* render-jobs */,
 				257FBDBB2D61D46B00F92519 /* Assets */,
 				25DECF912D615F1F00ED56EE /* main */,
@@ -2146,6 +2291,7 @@
 				257FC0432D63217300F92519 /* CopyFiles */,
 				257FC0952D63C66500F92519 /* CopyFiles */,
 				257FC0982D63CAA400F92519 /* ShellScript */,
+				257FC09A2D650A3E00F92519 /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -2222,7 +2368,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = " echo ${CONTENTS_FOLDER_PATH}\n echo deployment location ${METAL_LIBRARY_OUTPUT_DIR}\n /opt/homebrew/bin/python3 ${SRCROOT}/../../scripts/build-shaders.py ${SRCROOT}/../../ ${METAL_LIBRARY_OUTPUT_DIR}/assets/shader-output\n";
+			shellScript = " echo ${CONTENTS_FOLDER_PATH}\n echo deployment location ${METAL_LIBRARY_OUTPUT_DIR}\n /opt/homebrew/bin/python3 ${SRCROOT}/../../scripts/build-shaders.py ${SRCROOT}/../../ /Users/dingwings/Library/Application\\ Scripts/com.needsnacks.bistro-example-cpp\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

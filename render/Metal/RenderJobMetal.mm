@@ -15,6 +15,7 @@
 
 #if !defined(_MSC_VER)
     extern void getAssetsDir(std::string& fullPath, std::string const& fileName);
+    extern char const* getSaveDir();
 #endif // _MSC_VER
 
 namespace Render
@@ -386,56 +387,18 @@ namespace Render
 		)
 		{
 			RenderDriver::Metal::CPipelineState::ComputePipelineStateDescriptor* pMetalDesc = (RenderDriver::Metal::CPipelineState::ComputePipelineStateDescriptor*)pDesc;
-
-#if defined(_MSC_VER)
-			// get shaders
-			auto fileNameEnd = shaderPath.find_last_of(".");
-			auto directoryEnd = shaderPath.find_last_of("\\");
-			std::string directory = shaderPath.substr(0, directoryEnd);
-			std::string outputDirectory = directory + "-output";
-			std::string fileName = shaderPath.substr(directoryEnd + 1, (fileNameEnd - (directoryEnd + 1)));
-			std::string filePath = outputDirectory + "\\" + fileName + "-vs.spirv";
-
-            std::string compileExec = "D:\\VulkanSDK\\1.3.296.0\\Bin\\slangc.exe";
+            //DEBUG_PRINTF("%s\n", shaderPath.c_str());
             
-			// compile compute shader
-			std::string mainFunctionName = "CSMain";
-            std::string compileCommand = compileExec + " -profile glsl_450 -target spirv " +
-				directory + "/" + fileName + ".slang " +
-				"-fvk-use-entrypoint-name -entry " +
-				mainFunctionName +
-				" -o " +
-				filePath +
-				" -g";
-			int iRet = system(compileCommand.c_str());
-			if(iRet != 0)
-			{
-				WTFASSERT(0, "Error compiling \"%s\"", fileName.c_str());
-			}
-
-			FILE* fp = fopen(filePath.c_str(), "rb");
-			fseek(fp, 0, SEEK_END);
-			size_t iFileSize = ftell(fp);
-			fseek(fp, 0, SEEK_SET);
-			acShaderBuffer.resize(iFileSize);
-			fread(acShaderBuffer.data(), sizeof(char), iFileSize, fp);
-			fclose(fp);
+            std::string shaderOutputPath = std::string(getSaveDir()) + "/shader-output";
             
-#else
             auto fileNameEnd = shaderPath.find_last_of(".");
             auto directoryEnd = shaderPath.find_last_of("\\");
             std::string directory = shaderPath.substr(0, directoryEnd);
             std::string outputDirectory = directory + "-output";
             std::string fileName = shaderPath.substr(directoryEnd + 1, (fileNameEnd - (directoryEnd + 1)));
+            std::string metalShaderFileName = fileName + ".metallib";
             
-            
-            std::string metalShaderFileName = fileName + ".mtl";
-            
-            std::string filePath;
-            getAssetsDir(filePath, std::string("shader-output/") + metalShaderFileName);
-            
-            DEBUG_PRINTF("%s\n", filePath.c_str());
-            
+            std::string filePath = shaderOutputPath + "/" + metalShaderFileName;
             FILE* fp = fopen(filePath.c_str(), "rb");
             fseek(fp, 0, SEEK_END);
             size_t iFileSize = ftell(fp);
@@ -444,13 +407,128 @@ namespace Render
             fread(acShaderBuffer.data(), sizeof(char), iFileSize, fp);
             fclose(fp);
             
-#endif // _MSC_VER
+            pMetalDesc->mLibraryFilePath = std::string("shader-output/") + metalShaderFileName;
+            pMetalDesc->mComputeEntryName = "CSMain";
             
 			pDesc->miFlags = 0;
 			pDesc->miComputeShaderSize = (uint32_t)iFileSize;
 			pDesc->mpComputeShader = (uint8_t*)acShaderBuffer.data();
 			pDesc->mpDescriptor = mpDescriptorSet;
 
+            RenderDriver::Metal::CDescriptorSet* pDescriptorSetMetal = (RenderDriver::Metal::CDescriptorSet*)mpDescriptorSet;
+            
+            std::string bindingFileName = fileName + "-bindings.json";
+            std::string bindingFilePath = std::string(getSaveDir()) + "/shader-output/" + bindingFileName;
+            rapidjson::Document doc;
+            {
+                std::vector<char> acBuffer;
+                FILE* fp = fopen(bindingFilePath.c_str(), "rb");
+                fseek(fp, 0, SEEK_END);
+                size_t iFileSize = ftell(fp);
+                fseek(fp, 0, SEEK_SET);
+                acBuffer.resize(iFileSize + 1);
+                memset(acBuffer.data(), 0, iFileSize + 1);
+                fread(acBuffer.data(), sizeof(char), iFileSize, fp);
+                doc.Parse(acBuffer.data());
+            }
+            auto aBindingInfo = doc.GetArray();
+            for(auto const& bindingInfo : aBindingInfo)
+            {
+                std::string name = bindingInfo["name"].GetString();
+                uint32_t iBindingIndex = bindingInfo["index"].GetInt();
+                uint32_t iBindingSet = bindingInfo["set"].GetInt();
+                
+                SerializeUtils::Common::ShaderResourceInfo shaderResourceInfo;
+                shaderResourceInfo.mShaderResourceName = name;
+                shaderResourceInfo.miResourceIndex = iBindingIndex;
+                shaderResourceInfo.miResourceSet = iBindingSet;
+                
+                pDescriptorSetMetal->maShaderResources.push_back(shaderResourceInfo);
+            }
+            
+            // fill out shader resources
+            // set 0, attachments
+            uint32_t iIndex = 0;
+            for(auto const& mapping : maAttachmentMappings)
+            {
+                auto iter = pDescriptorSetMetal->maShaderResources.begin() + iIndex;
+                WTFASSERT(iter->miResourceSet == 0, "wrong set");
+                
+                iter->mName = mapping.first;
+                if(mapping.second == "texture-input")
+                {
+                    iter->mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN;
+                }
+                else if(mapping.second == "texture-output")
+                {
+                    iter->mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_OUT;
+                }
+                else if(mapping.second == "texture-input-output")
+                {
+                    iter->mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN_OUT;
+                }
+                else if(mapping.second == "buffer-input")
+                {
+                    iter->mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_IN;
+                }
+                else if(mapping.second == "buffer-output")
+                {
+                    iter->mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_OUT;
+                }
+                else if(mapping.second == "buffer-input-output")
+                {
+                    iter->mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_IN_OUT;
+                }
+                
+                ++iIndex;
+            }
+            
+            // skip sampler
+            for(;;)
+            {
+                auto iter = pDescriptorSetMetal->maShaderResources.begin() + iIndex;
+                if(iter->mShaderResourceName != "sampler" || iter->miResourceSet > 0)
+                {
+                    break;
+                }
+                ++iIndex;
+            }
+            
+            // set 1, shader resources
+            for(auto const& mapping : maUniformMappings)
+            {
+                auto iter = pDescriptorSetMetal->maShaderResources.begin() + iIndex;
+                WTFASSERT(iter->miResourceSet == 1, "wrong set");
+                
+                iter->mName = mapping.first;
+                if(mapping.second == "texture-input")
+                {
+                    iter->mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN;
+                }
+                else if(mapping.second == "texture-output")
+                {
+                    iter->mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_OUT;
+                }
+                else if(mapping.second == "texture-input-output")
+                {
+                    iter->mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN_OUT;
+                }
+                else if(mapping.second == "buffer-input")
+                {
+                    iter->mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_IN;
+                }
+                else if(mapping.second == "buffer-output")
+                {
+                    iter->mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_OUT;
+                }
+                else if(mapping.second == "buffer-input-output")
+                {
+                    iter->mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_IN_OUT;
+                }
+            }
+            
+            mpDescriptorSet->getDesc().mpaShaderResources = &pDescriptorSetMetal->maShaderResources;
+            
 			return pMetalDesc;
 		}
 

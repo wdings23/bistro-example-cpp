@@ -25,9 +25,34 @@ namespace RenderDriver
                 return mRootConstant;
             }
             
+            virtual void addImage(
+                RenderDriver::Common::CImage* pImage,
+                RenderDriver::Common::CImageView* pImageView,
+                uint32_t iBindingIndex,
+                uint32_t iGroup,
+                bool bReadOnly);
+            virtual void addBuffer(
+                RenderDriver::Common::CBuffer* pBuffer,
+                uint32_t iBindingIndex,
+                uint32_t iGroup,
+                bool bReadOnly);
+
+            virtual void addAccelerationStructure(
+                RenderDriver::Common::CAccelerationStructure* pAccelerationStructure,
+                uint32_t iBindingIndex,
+                uint32_t iGroup);
+            
+            std::vector<SerializeUtils::Common::ShaderResourceInfo> maShaderResources;
+            
         protected:
             id<MTLBuffer>               mRootConstant;
             id<MTLDevice>               mNativeDevice;
+            
+            std::vector<std::vector<RenderDriver::Common::CBuffer*>> maapBuffers;
+            std::vector<std::vector<RenderDriver::Common::CImage*>> maapImages;
+            std::vector<std::vector<RenderDriver::Common::CImageView*>> maapImageViews;
+            std::vector<std::vector<RenderDriver::Common::CAccelerationStructure*>> maapAccelerationStructures;
+            
         };
 
     }   // Metal

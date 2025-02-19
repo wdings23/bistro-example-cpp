@@ -19,15 +19,15 @@ namespace RenderDriver
                 
                 RenderDriver::Common::CImage*   mpDepthImage;
                 
-                char const*                     mszVertexEntryName;
-                char const*                     mszFragementEntryName;
-                char const*                     mszLibraryFilePath;
+                std::string                     mVertexEntryName;
+                std::string                     mFragementEntryName;
+                std::string                     mLibraryFilePath;
             };
 
             struct ComputePipelineStateDescriptor : public RenderDriver::Common::ComputePipelineStateDescriptor
             {
-                char const*                     mszComputeEntryName;
-                char const*                     mszLibraryFilePath;
+                std::string                    mComputeEntryName;
+                std::string                    mLibraryFilePath;
             };
 
         public:
@@ -75,7 +75,7 @@ namespace RenderDriver
                 }
                 
                 std::string                             mName;
-                MTLArgumentType                         mType;
+                MTLArgumentType                          mType;
                 RenderDriver::Common::ShaderType        mShaderType;
             };
             

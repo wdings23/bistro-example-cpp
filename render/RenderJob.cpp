@@ -386,7 +386,18 @@ namespace Render
                         apRenderJobs
                     );
 
-                    maUniformMappings.push_back(std::make_pair(name, "buffer"));
+                    if(maShaderResourceInfo[name]["usage"] == "uniform")
+                    {
+                        maUniformMappings.push_back(std::make_pair(name, "buffer-input"));
+                    }
+                    else if(maShaderResourceInfo[name]["usage"] == "read_write_storage")
+                    {
+                        maUniformMappings.push_back(std::make_pair(name, "buffer-output"));
+                    }
+                    else
+                    {
+                        WTFASSERT(0, "this case is not handled: %s", maShaderResourceInfo[name]["usage"].c_str());
+                    }
 
                 }  
                 else if(type == "texture2d")
@@ -397,7 +408,7 @@ namespace Render
                         pCommandQueue
                     );
 
-                    maUniformMappings.push_back(std::make_pair(name, "texture"));
+                    maUniformMappings.push_back(std::make_pair(name, "texture-input"));
                 }
 
                 ++iIndex;
@@ -436,8 +447,11 @@ namespace Render
                     *pCommandQueue);
 
                 maShaderResourceInfo[name]["usage"] = "uniform";
-                maUniformMappings.push_back(std::make_pair(name, "buffer"));
+                maUniformMappings.push_back(std::make_pair(name, "buffer-input"));
             }
+            
+            // default uniform buffer at the very end of the descriptor
+            maUniformMappings.push_back(std::make_pair("defaultUniformBuffer", "buffer-input"));
         }
 
         /*
@@ -608,6 +622,7 @@ namespace Render
                 }
             }
 
+#if 0
             mpDescriptorSet->addBuffer(
                 mpDefaultUniformBuffer,
                 iBinding,
@@ -618,7 +633,8 @@ namespace Render
                 mpDefaultUniformBuffer->getID().c_str(),
                 1,
                 iBinding);
-
+#endif // #if 0
+            
             // create the descriptor set and update the buffers
             mpDescriptorSet->finishLayout(
                 createInfo.maSamplers

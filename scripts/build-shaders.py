@@ -4,6 +4,51 @@ import os
 import subprocess
 
 ##
+def get_shader_bindings(slang_shader_file_path):
+    file = open(slang_shader_file_path, 'rb')
+    file_content = str(file.read())
+    file.close()
+
+    bindings = []
+
+    start = 0
+    while True:
+        binding_start = file_content.find('[[vk::binding(', start)
+        if binding_start < 0:
+            break
+        
+        # binding string
+        binding_end = file_content.find(';', binding_start)
+        binding_str = file_content[binding_start:binding_end]
+        binding_index_start = binding_str.find('(') + 1
+        binding_index_end = binding_str.find(',')
+        binding_set_start = binding_index_end + 1
+        binding_set_end = binding_str.find(')', binding_set_start)
+        
+        # binding index and set index
+        index_set_str = binding_str[binding_index_start:binding_set_end]
+        index_set = index_set_str.split(sep = ', ')
+        binding_index = int(index_set[0])
+        binding_set = int(index_set[1])
+
+        # binding name, type, index, and set index
+        variable_str = binding_str[binding_set_end + 3:]
+        variable_tokens = variable_str.split()
+        binding_info = {}
+        binding_info['type'] = variable_tokens[0]
+        binding_info['name'] = variable_tokens[1]
+        binding_info['index'] = binding_index
+        binding_info['set'] = binding_set
+        bindings.append(binding_info)
+
+        start = binding_end + 1
+        if start >= len(file_content):
+            break
+
+    return bindings
+
+
+##
 def execute_command(args):
     proc = subprocess.Popen(args = args,
         stdout = subprocess.PIPE,
@@ -29,8 +74,12 @@ def execute_command(args):
 def compile_pipeline_shaders():
     top_directory = sys.argv[1]
     target_directory = sys.argv[2]
+    shader_lib_target_directory = os.path.join(sys.argv[2], 'shader-output')
     render_job_directory = os.path.join(top_directory, 'render-jobs')
     shader_directory = os.path.join(top_directory, 'shaders')
+
+    print('*** arg 0 {} ***'.format(top_directory))
+    print('*** arg 1 {} ***'.format(shader_lib_target_directory))
 
 
     file_path = os.path.join(render_job_directory, 'non-ray-trace-render-jobs.json')
@@ -63,6 +112,13 @@ def compile_pipeline_shaders():
         slang_shader_name = base_shader_name + '.slang'
         slang_shader_file_path = os.path.join(shader_directory, slang_shader_name)
 
+        bindings = get_shader_bindings(slang_shader_file_path)
+        json_str = json.dumps(bindings, indent=4)
+        json_output_file_path = os.path.join(shader_lib_target_directory, base_shader_name + '-bindings.json')
+        json_output_file = open(json_output_file_path, 'w')
+        json_output_file.write(json_str)
+        json_output_file.close()
+
         # determine main function name
         main_function_name = 'PSMain'
         if shader_type == 'Compute':
@@ -70,7 +126,7 @@ def compile_pipeline_shaders():
 
         # create output shader directory if needed
         output_directory = os.path.join(top_directory, 'shader-output') 
-        os.makedirs(output_directory, exist_ok=True)
+        os.makedirs(shader_lib_target_directory, exist_ok=True)
 
         # slang compile command
         output_file_name = os.path.join(output_directory, base_shader_name + '.spv')
@@ -125,7 +181,7 @@ def compile_pipeline_shaders():
         ir_files.append(output_ir_file)
 
         # create metal library file with the ir
-        metal_lib_file_path = os.path.join(output_directory, pipeline_base_name + '.metallib')
+        metal_lib_file_path = os.path.join(shader_lib_target_directory, pipeline_base_name + '.metallib')
         args = [
             'xcrun', 
             '-sdk', 

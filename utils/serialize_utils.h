@@ -710,9 +710,11 @@ namespace SerializeUtils
 		struct ShaderResourceInfo
 		{
 			std::string									mName;
+            std::string                                 mShaderResourceName;
 			ShaderResourceType							mType;
 			RenderDriver::Common::ResourceDesc			mDesc;
 			uint32_t									miResourceIndex;
+            uint32_t                                    miResourceSet;
 			std::string									mImageFilePath;
 			std::string									mBufferFilePath;
 			RenderDriver::Common::ResourceViewType		mViewType;

@@ -51,7 +51,7 @@ namespace RenderDriver
                 void* pSampler
             );
 
-            inline DescriptorSetDescriptor getDesc() { return mDesc; }
+            inline DescriptorSetDescriptor& getDesc() { return mDesc; }
             
             inline void setComputeLayoutIndices(std::vector<uint32_t> const& aiLayoutIndices)
             {
