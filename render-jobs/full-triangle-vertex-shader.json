@@ -1,0 +1,27 @@
+{
+    "Type": "Graphics",
+    "PassType": "Full Triangle",
+    "Shader": "full-triangle-vertex-shader.shader",
+    "Attachments": [
+    ],
+    "ShaderResources": [   
+    ],
+    "BlendStates": [
+        {
+            "Enabled": "False"
+        }
+    ],
+    "DepthStencilState":
+    {
+        "DepthEnable": "False",
+        "DepthWriteMask": "One",
+        "DepthFunc": "LessEqual",
+        "StencilEnable": "False"
+    },
+    "RasterState":
+    {
+        "FillMode": "Solid",
+        "CullMode": "None",
+        "FrontFace": "CounterClockwise"
+    }
+}

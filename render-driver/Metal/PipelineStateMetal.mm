@@ -58,6 +58,8 @@ namespace RenderDriver
             //id<MTLLibrary> library = [mNativeDevice newLibraryWithURL: url error: &error];
             //id<MTLLibrary> library = [mNativeDevice newLibraryWithFile: libraryFilePathStr error: &error];
             
+            NSArray<NSString *>* functionNames = [library functionNames];
+            
             if(error != nil)
             {
                 NSLog(@"error => %@", error);
@@ -318,6 +320,7 @@ renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPix
             
             // create pipeline with function
             id<MTLFunction> computeFunction = [library newFunctionWithName: computeEntryStr];
+            WTFASSERT(computeFunction != nil, "No compute entry function \"%s\"", metalPipelineDesc.mComputeEntryName.c_str());
             mNativeComputePipelineState = [mNativeDevice
                  newComputePipelineStateWithFunction: computeFunction
                  options: MTLPipelineOptionArgumentInfo | MTLPipelineOptionBufferTypeInfo

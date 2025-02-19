@@ -2,6 +2,7 @@ import sys
 import json
 import os
 import subprocess
+import re
 
 ##
 def get_shader_bindings(slang_shader_file_path):
@@ -10,6 +11,38 @@ def get_shader_bindings(slang_shader_file_path):
     file.close()
 
     bindings = []
+
+    last_render_target_index = -1
+    start = 0
+    while True:
+        output_target_start = file_content.find('SV_TARGET', start)
+        if output_target_start < 0:
+            break
+        
+        output_target_name_start = file_content.rfind('{', start, output_target_start)
+        output_target_name_end = file_content.find('}', output_target_name_start)
+        output_target_struct = file_content[output_target_name_start+1:output_target_name_end]
+        lines = output_target_struct.split(';')
+        for line in lines:
+            tokens = line.split()
+            index = 0
+            for token in tokens:
+                if token.find('SV_TARGET') >= 0:
+                    print('token {}'.format(token))
+                    index_str = token[len('SV_TARGET'):]
+                    binding_index = int(index_str)
+                    last_render_target_index = max(binding_index, last_render_target_index)
+                    name = tokens[index-2]
+
+                    binding_info = {}
+                    binding_info['type'] = 'RWTexture2D<float4>'
+                    binding_info['name'] = name
+                    binding_info['index'] = binding_index
+                    binding_info['set'] = 0
+                    bindings.append(binding_info)
+
+                index += 1
+        start = output_target_name_end
 
     start = 0
     while True:
@@ -39,6 +72,10 @@ def get_shader_bindings(slang_shader_file_path):
         binding_info['name'] = variable_tokens[1]
         binding_info['index'] = binding_index
         binding_info['set'] = binding_set
+
+        if binding_set == 0 and last_render_target_index >= 0:
+            binding_info['index'] = binding_index + last_render_target_index + 1
+
         bindings.append(binding_info)
 
         start = binding_end + 1
@@ -81,7 +118,6 @@ def compile_pipeline_shaders():
     print('*** arg 0 {} ***'.format(top_directory))
     print('*** arg 1 {} ***'.format(shader_lib_target_directory))
 
-
     file_path = os.path.join(render_job_directory, 'non-ray-trace-render-jobs.json')
     file = open(file_path, 'r')
     file_content = file.read()
@@ -91,11 +127,19 @@ def compile_pipeline_shaders():
     metal_files = []
     shader_files = {}
     render_jobs = json.loads(file_content)
+
+    # vertex shaders
+    render_jobs['Jobs'].append({'Name': 'Full Triangle Vertex Shader', 'Pipeline': 'full-triangle-vertex-shader.json', 'Type': 'Vertex'})
+    render_jobs['Jobs'].append({'Name': 'Draw Mesh Vertex Shader', 'Pipeline': 'draw-mesh-vertex-shader.json', 'Type': 'Vertex'})
+
     for job in render_jobs['Jobs']:
         shader_type = job['Type']
         if shader_type == 'Copy':
             continue
         
+        if job['Name'] == 'Draw Mesh Vertex Shader':
+            print('debug')
+
         # open render job file, and get the shader name
         pipeline_file_name = job['Pipeline']
         pipeline_file_extension_start = pipeline_file_name.rfind('.')
@@ -123,6 +167,8 @@ def compile_pipeline_shaders():
         main_function_name = 'PSMain'
         if shader_type == 'Compute':
             main_function_name = 'CSMain'
+        elif shader_type == 'Vertex':
+            main_function_name = 'VSMain'
 
         # create output shader directory if needed
         output_directory = os.path.join(top_directory, 'shader-output') 
