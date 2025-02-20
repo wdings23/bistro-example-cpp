@@ -750,7 +750,7 @@ namespace Render
                 pDesc->miFlags = 0;
                 pDesc->maVertexFormats = pDesc->maInputFormat.data();
                 pDesc->mbOutputPresent = (mPassType == Render::Common::PassType::SwapChain) ? true : false;
-                pDesc->mbFullTrianglePass = (mPassType == Render::Common::PassType::FullTriangle) ? true : false;
+                pDesc->mbFullTrianglePass = (mPassType == Render::Common::PassType::FullTriangle || mPassType == Render::Common::PassType::SwapChain) ? true : false;
                 
                 std::string shaderPath = doc["Shader"].GetString();
 
@@ -945,8 +945,8 @@ namespace Render
                         //parentJobName = "Texture Atlas Graphics";
                         //name = "Albedo Output";
 
-                        parentJobName = "Test Graphics";
-                        name = "Test Graphics Output";
+                        parentJobName = "Deferred Indirect Graphics";
+                        name = "World Position Output";
                     }
 #endif // USE_RAY_TRACING
 
@@ -1101,8 +1101,8 @@ namespace Render
             {
                 //name = "Albedo Output";
                 //parentJobName = "Texture Atlas Graphics";
-                parentJobName = "Test Graphics";
-                name = "Test Graphics Output";
+                parentJobName = "Deferred Indirect Graphics";
+                name = "World Position Output";
                 parentName = name;
             }
 #endif // USE_RAY_TRACING

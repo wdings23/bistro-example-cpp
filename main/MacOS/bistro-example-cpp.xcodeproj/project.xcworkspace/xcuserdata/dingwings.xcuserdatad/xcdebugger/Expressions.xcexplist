@@ -3,12 +3,10 @@
    version = "1.0">
    <ContextStates>
       <ContextState
-         contextName = "Render::Common::CRenderJob::createOutputAttachments:RenderJob.cpp">
-         <PersistentStrings>
-            <PersistentString
-               value = "this-&gt;mName">
-            </PersistentString>
-         </PersistentStrings>
+         contextName = "Render::Common::CRenderJob::create:RenderJob.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Render::Common::CRenderJob::initPipelineState:RenderJob.cpp">
       </ContextState>
       <ContextState
          contextName = "Render::Common::CRenderJob::handleTextureInput:RenderJob.cpp">
@@ -19,7 +17,46 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "RenderDriver::Metal::CPipelineState::create:PipelineStateMetal.mm">
+      </ContextState>
+      <ContextState
+         contextName = "Render::Common::CRenderJob::createOutputAttachments:RenderJob.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "this-&gt;mName">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "MetalView.init(coder:):MetalView.swift">
+         <PersistentStrings>
+            <PersistentString
+               value = "self._bounds">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "closure #1 in MetalView.beginFrame():MetalView.swift">
+      </ContextState>
+      <ContextState
+         contextName = "Render::Metal::CRenderJob::platformFillOutGraphicsPipelineDescriptor:RenderJobMetal.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "this-&gt;mName">
+            </PersistentString>
+            <PersistentString
+               value = "pMetalDesc-&gt;mbFullTrianglePass">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Render::Metal::CRenderJob::platformFillOutComputePipelineDescriptor:RenderJobMetal.mm">
+      </ContextState>
+      <ContextState
          contextName = "RenderDriver::Metal::CCommandBuffer::close:CommandBufferMetal.mm">
+      </ContextState>
+      <ContextState
+         contextName = "Render::Metal::CRenderJob::platformFillOutGraphicsPipelineDescriptor(RenderDriver::Common::GraphicsPipelineStateDescriptor*, std::__1::vector&lt;char, std::__1::allocator&lt;char&gt;&gt;&amp;, std::__1::vector&lt;char, std::__1::allocator&lt;char&gt;&gt;&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt;&gt; const&amp;)::$_1::operator()(SerializeUtils::Common::ShaderResourceInfo const&amp;) const:RenderJobMetal.mm">
       </ContextState>
    </ContextStates>
 </VariablesViewState>

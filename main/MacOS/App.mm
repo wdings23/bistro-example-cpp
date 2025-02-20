@@ -275,12 +275,14 @@ void setupExternalDataBuffers(
             *pDevice
         );
         pBuffer->setID("Material Data");
-
+        
+        uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
         pRenderer->copyCPUToBuffer(
             pBuffer,
             aMaterials.data(),
             0,
-            (uint32_t)iDataSize
+            (uint32_t)iDataSize,
+            iFlags
         );
     }
 
@@ -311,11 +313,13 @@ void setupExternalDataBuffers(
         );
         pBuffer->setID("Material ID");
         
+        uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
         pRenderer->copyCPUToBuffer(
             pBuffer,
             acBuffer.data(),
             0,
-            (uint32_t)iFileSize
+            (uint32_t)iFileSize,
+            iFlags
         );
     }
 
@@ -374,13 +378,14 @@ void setupExternalDataBuffers(
             *pDevice
         );
         pBuffer->setID("Mesh Triangle Index Ranges");
-
+        
+        uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
         pRenderer->copyCPUToBuffer(
             pBuffer,
             aMeshRanges.data(),
             0,
             (uint32_t)iDataSize,
-            uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY)
+            iFlags
         );
 
     }
@@ -413,7 +418,7 @@ void CApp::init(AppDescriptor const& appDesc)
 #if defined(_MSC_VER)
     pDesc->mRenderJobsFilePath = "/Users/dingwings/projects/bistro-example-cpp/render-jobs/bistro-example-render-jobs.json";
 #else
-    getAssetsDir(pDesc->mRenderJobsFilePath, "render-jobs/bistro-example-render-jobs.json");
+    getAssetsDir(pDesc->mRenderJobsFilePath, "render-jobs/non-ray-trace-render-jobs.json");
 #endif // _MSC_VER
 
     mpRenderer->setup(*pDesc);

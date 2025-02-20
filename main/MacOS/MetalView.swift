@@ -15,6 +15,8 @@ class MetalView : NSView
     var _wrapper : Wrapper!
     var _frames : UInt32!
     
+    var _bounds : CGSize!
+    
     var metalLayer : CAMetalLayer?
     {
         get
@@ -66,6 +68,8 @@ class MetalView : NSView
         _wrapper = Wrapper()
         self._device = _wrapper.getDevice()
         
+        _bounds = self.bounds.size
+        
         self._frames = 0
     }
     
@@ -103,8 +107,12 @@ class MetalView : NSView
         {
             self._drawableSize = self.window!.frame.size
             
+            
+            pthread_mutex_lock(&self._mutex!)
             // get the next drawable
             self._drawable = nil
+            pthread_mutex_unlock(&self._mutex!)
+            
             while(self._drawable == nil)
             {
                 pthread_mutex_lock(&self._mutex!)
@@ -114,8 +122,8 @@ class MetalView : NSView
                 self._wrapper.nextDrawable(
                     self._drawable,
                     texture: self._drawable.texture,
-                    width: UInt32(self.bounds.width),
-                    height: UInt32(self.bounds.height))
+                    width: UInt32(self._bounds.width),
+                    height: UInt32(self._bounds.height))
             }
             
         }
@@ -134,14 +142,15 @@ class MetalView : NSView
             self._wrapper.nextDrawable(
                 self._drawable,
                 texture: self._drawable.texture,
-                width: UInt32(bounds.width),
-                height: UInt32(bounds.height))
+                width: UInt32(self._bounds.width),
+                height: UInt32(self._bounds.height))
             pthread_mutex_unlock(&self._mutex!)
         }
     }
     
     func update(time: CGFloat)
     {
+        self._bounds = self.bounds.size
         self._wrapper.update(time)
     }
     
@@ -154,10 +163,14 @@ class MetalView : NSView
     {
         self.inflightSemaphores.signal()
         
+        pthread_mutex_lock(&self._mutex!)
+        
         autoreleasepool
         {
             self._drawable = nil
         }
+        
+        pthread_mutex_unlock(&self._mutex!)
         
         self._frames += 1
     }

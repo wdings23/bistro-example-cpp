@@ -799,8 +799,6 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
 		*/
 		void CRenderJob::platformCreateSemaphore()
 		{
-            WTFASSERT(0, "Implement me");
-            
 			mSignalFence = std::make_unique<RenderDriver::Metal::CFence>();
 
 			RenderDriver::Common::FenceDescriptor desc = {};

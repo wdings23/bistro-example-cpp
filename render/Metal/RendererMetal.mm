@@ -802,8 +802,6 @@ namespace Render
         */
         void CRenderer::platformCreateRenderJobFences()
         {
-            WTFASSERT(0, "Implement me");
-            
             std::string aFenceNames[4] =
             {
                 "Graphics Queue Fence",
@@ -827,8 +825,6 @@ namespace Render
         */
         void CRenderer::platformPostSetup()
         {
-            WTFASSERT(0, "Implement me");
-            
             for(uint32_t i = 0; i < static_cast<uint32_t>(mapQueueGraphicsCommandAllocators.size()); i++)
             {
                 if(mapQueueGraphicsCommandAllocators[i] == nullptr)

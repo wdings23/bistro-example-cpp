@@ -103,16 +103,32 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "100C2B39-B25A-4B01-804C-0449DC9CA080"
+            uuid = "02ADDEC2-3A94-42AE-AE84-D42C93FAA21D"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "../../render/Metal/RenderJobMetal.mm"
+            filePath = "Wrapper.mm"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "420"
-            endingLineNumber = "420"
-            landmarkName = "CRenderJob::platformFillOutGraphicsPipelineDescriptor(pDesc, acShaderBufferVS, acShaderBufferFS, shaderPath)"
+            startingLineNumber = "45"
+            endingLineNumber = "45"
+            landmarkName = "-update:"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "8827B526-2408-43ED-B8C5-FF5F5A6A3957"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MetalView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "154"
+            endingLineNumber = "154"
+            landmarkName = "update(time:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

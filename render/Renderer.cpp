@@ -1850,13 +1850,15 @@ namespace Render
                 pMeshIndexRangeBuffer,
                 maMeshRanges.data(),
                 0,
-                miNumMeshes * sizeof(uint32_t) * 2
+                miNumMeshes * sizeof(uint32_t) * 2,
+                iFlags
             );
             copyCPUToBuffer(
                 pMeshBoundingBoxBuffer,
                 maMeshExtents.data(),
                 0,
-                miNumMeshes * sizeof(float4) * 2
+                miNumMeshes * sizeof(float4) * 2,
+                iFlags
             );
             copyCPUToBuffer(
                 pUniformDataBuffer,
@@ -1869,7 +1871,15 @@ namespace Render
             // material id for texture atlas pages
             {
                 auto& pMaterialIDBuffer = mapRenderJobs["Texture Page Queue Compute"]->mapUniformBuffers["meshMaterialIDs"];
-                FILE* fp = fopen("d:\\downloads\\Bistro_v4\\bistro2.mid", "rb");
+                
+                std::string fullPath;
+#if defined(_MSC_VER)
+                fullPath = "d:\\downloads\\Bistro_v4\\bistro2.mid";
+#else
+                getAssetsDir(fullPath, "bistro2.mid");
+#endif // _MSC_VER
+                
+                FILE* fp = fopen(fullPath.c_str(), "rb");
                 fseek(fp, 0, SEEK_END);
                 size_t iFileSize = ftell(fp);
                 fseek(fp, 0, SEEK_SET);
