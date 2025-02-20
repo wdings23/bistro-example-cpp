@@ -103,64 +103,16 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "991FA019-364C-409A-BFA4-5037595EF965"
+            uuid = "6D063D9E-FFB8-4D32-94C9-F27371350498"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "../../render/RenderJob.cpp"
+            filePath = "../../render/Metal/RenderJobMetal.mm"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "778"
-            endingLineNumber = "778"
-            landmarkName = "CRenderJob::initPipelineState(doc, apRenderJobs, iWidth, iHeight, shaderDirectory, pPlatformInstance)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "65AD3BB2-AD6F-4C7D-ABDC-7E6E3E2F76B8"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../../render-driver/Metal/PipelineStateMetal.mm"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "78"
-            endingLineNumber = "78"
-            landmarkName = "CPipelineState::create(desc, device)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "1AAC71DC-2E0F-4E4C-A60F-2065A30DF0E4"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../../render-driver/Metal/PipelineStateMetal.mm"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "22"
-            endingLineNumber = "22"
-            landmarkName = "CPipelineState::create(desc, device)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "23CA4E90-AA51-4867-AAD5-D9710CD02CAF"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../../render/RenderJob.cpp"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "760"
-            endingLineNumber = "760"
-            landmarkName = "CRenderJob::initPipelineState(doc, apRenderJobs, iWidth, iHeight, shaderDirectory, pPlatformInstance)"
+            startingLineNumber = "314"
+            endingLineNumber = "314"
+            landmarkName = "CRenderJob::platformFillOutGraphicsPipelineDescriptor(pDesc, acShaderBufferVS, acShaderBufferFS, shaderPath)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

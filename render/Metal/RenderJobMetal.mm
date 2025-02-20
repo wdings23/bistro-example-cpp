@@ -309,6 +309,8 @@ namespace Render
 			std::string const& shaderPath
 		)
 		{
+DEBUG_PRINTF("%s\n", shaderPath.c_str());
+            
             RenderDriver::Metal::CPipelineState::GraphicsPipelineStateDescriptor* pMetalDesc = (RenderDriver::Metal::CPipelineState::GraphicsPipelineStateDescriptor*)pDesc;
             //DEBUG_PRINTF("%s\n", shaderPath.c_str());
             
@@ -337,19 +339,23 @@ namespace Render
             // vertex shader
             if(pMetalDesc->mbFullTrianglePass)
             {
-                filePath = shaderOutputPath + "/full-triangle-vertex-shader.metallib"
-                fp = fopen(filePath.c_str(), "rb");
-                fseek(fp, 0, SEEK_END);
-                size_t iFileSize = ftell(fp);
-                fseek(fp, 0, SEEK_SET);
-                acShaderBufferVS.resize(iFileSize);
-                acShaderBufferVS.resize(iFileSize);
-                fread(acShaderBufferVS.data(), sizeof(char), iFileSize, fp);
-                fclose(fp);
+                filePath = shaderOutputPath + "/full-triangle-vertex-shader.metallib";
+            }
+            else
+            {
+                filePath = shaderOutputPath + "/draw-mesh-vertex-shader.metallib";
             }
             
+            fp = fopen(filePath.c_str(), "rb");
+            fseek(fp, 0, SEEK_END);
+            iFileSize = ftell(fp);
+            fseek(fp, 0, SEEK_SET);
+            acShaderBufferVS.resize(iFileSize);
+            fread(acShaderBufferVS.data(), sizeof(char), iFileSize, fp);
+            fclose(fp);
             
-            pMetalDesc->mLibraryFilePath = std::string("shader-output/") + metalShaderFileName;
+            pMetalDesc->mLibraryFilePath = shaderOutputPath + "/" + metalShaderFileName;
+            pMetalDesc->mVertexShaderLibraryFilePath = filePath;
             
             pDesc->miFlags = 0;
             pDesc->miPixelShaderSize = (uint32_t)iFileSize;
@@ -361,7 +367,7 @@ namespace Render
             RenderDriver::Metal::CDescriptorSet* pDescriptorSetMetal = (RenderDriver::Metal::CDescriptorSet*)mpDescriptorSet;
             
             std::string bindingFileName = fileName + "-bindings.json";
-            std::string bindingFilePath = std::string(getSaveDir()) + "/shader-output/" + bindingFileName;
+            std::string bindingFilePath = shaderOutputPath + "/" + bindingFileName;
             rapidjson::Document doc;
             {
                 std::vector<char> acBuffer;
@@ -776,8 +782,6 @@ namespace Render
 			RenderDriver::Common::CSwapChain* pSwapChain
 		)
 		{
-            WTFASSERT(0, "Implement me");
-            
 			//mFrameBuffer = std::make_unique<RenderDriver::Metal::CFrameBuffer>();
 			
 			if(mPassType == Render::Common::PassType::SwapChain)

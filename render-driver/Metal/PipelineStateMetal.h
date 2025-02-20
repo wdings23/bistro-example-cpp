@@ -22,6 +22,7 @@ namespace RenderDriver
                 std::string                     mVertexEntryName;
                 std::string                     mFragementEntryName;
                 std::string                     mLibraryFilePath;
+                std::string                     mVertexShaderLibraryFilePath;
             };
 
             struct ComputePipelineStateDescriptor : public RenderDriver::Common::ComputePipelineStateDescriptor

@@ -27,46 +27,58 @@ namespace RenderDriver
             RenderDriver::Metal::CDevice& deviceMetal = static_cast<RenderDriver::Metal::CDevice&>(device);
             mNativeDevice = (__bridge id<MTLDevice>)deviceMetal.getNativeDevice();
             
-            NSArray* paths = NSSearchPathForDirectoriesInDomains(NSApplicationScriptsDirectory, NSUserDomainMask, YES);
-            NSString* applicationSupportDirectory = [paths firstObject];
-            char const* szDir = [applicationSupportDirectory UTF8String];
-            printf("save directory: \"%s\"\n", szDir);
             
-            NSString* resourcePath = [[NSBundle mainBundle] bundlePath];
-            char const* szBundleDir = [resourcePath UTF8String];
-            printf("bundle directory: \"%s\"\n", szBundleDir);
+            char const* szDir = getSaveDir();
+            std::string shaderOutputDirectory = std::string(szDir) + "/shader-output";
+            printf("save directory: \"%s\"\n", shaderOutputDirectory.c_str());
             
             NSError* error = nil;
             
-            // load metallib binary data
-            std::string filePath = std::string(szDir) + "/" + metalPipelineDesc.mLibraryFilePath;
+            // load fragment shader metallib binary data
+            std::string filePath = metalPipelineDesc.mLibraryFilePath;
             FILE* fp = fopen(filePath.c_str(), "rb");
             WTFASSERT(fp, "can\'t open file \"%s\"", metalPipelineDesc.mLibraryFilePath.c_str());
             fseek(fp, 0, SEEK_END);
-            uint64_t iFileSize = ftell(fp);
+            uint64_t iFragmentShaderFileSize = ftell(fp);
             fseek(fp, 0, SEEK_SET);
-            std::vector<char> acFileContent(iFileSize);
-            fread(acFileContent.data(), sizeof(char), iFileSize, fp);
+            std::vector<char> acFragmentShaderFileContent(iFragmentShaderFileSize);
+            fread(acFragmentShaderFileContent.data(), sizeof(char), iFragmentShaderFileSize, fp);
             fclose(fp);
-            
-            dispatch_data_t data = dispatch_data_create(
-                acFileContent.data(),
-                iFileSize,
+            dispatch_data_t fragmentShaderData = dispatch_data_create(
+                acFragmentShaderFileContent.data(),
+                iFragmentShaderFileSize,
                 dispatch_get_main_queue(),
                 DISPATCH_DATA_DESTRUCTOR_DEFAULT);
-            id<MTLLibrary> library = [mNativeDevice newLibraryWithData: data error: &error];
-            //id<MTLLibrary> library = [mNativeDevice newLibraryWithURL: url error: &error];
-            //id<MTLLibrary> library = [mNativeDevice newLibraryWithFile: libraryFilePathStr error: &error];
-            
-            NSArray<NSString *>* functionNames = [library functionNames];
-            
+            id<MTLLibrary> fragmentShaderLibrary = [mNativeDevice newLibraryWithData: fragmentShaderData error: &error];
             if(error != nil)
             {
                 NSLog(@"error => %@", error);
                 assert(0);
             }
             
-            WTFASSERT(library != nil, "Can'\t load library \"%s\"", metalPipelineDesc.mLibraryFilePath.c_str());
+            // load vertex shader metallib binary data
+            fp = fopen(metalPipelineDesc.mVertexShaderLibraryFilePath.c_str(), "rb");
+            WTFASSERT(fp, "can\'t open file \"%s\"", metalPipelineDesc.mVertexShaderLibraryFilePath.c_str());
+            fseek(fp, 0, SEEK_END);
+            uint64_t iVertexShaderFileSize = ftell(fp);
+            fseek(fp, 0, SEEK_SET);
+            std::vector<char> acVertexShaderFileContent(iVertexShaderFileSize);
+            fread(acVertexShaderFileContent.data(), sizeof(char), iVertexShaderFileSize, fp);
+            fclose(fp);
+            dispatch_data_t vertexShaderData = dispatch_data_create(
+                acVertexShaderFileContent.data(),
+                iVertexShaderFileSize,
+                dispatch_get_main_queue(),
+                DISPATCH_DATA_DESTRUCTOR_DEFAULT);
+            id<MTLLibrary> vertexShaderLibrary = [mNativeDevice newLibraryWithData: vertexShaderData error: &error];
+            if(error != nil)
+            {
+                NSLog(@"error => %@", error);
+                assert(0);
+            }
+            
+            WTFASSERT(vertexShaderLibrary != nil, "Can'\t load library \"%s\"", metalPipelineDesc.mVertexShaderLibraryFilePath.c_str());
+            WTFASSERT(fragmentShaderLibrary != nil, "Can'\t load library \"%s\"", metalPipelineDesc.mLibraryFilePath.c_str());
             
             printf("library: %s\n", metalPipelineDesc.mLibraryFilePath.c_str());
             
@@ -75,8 +87,8 @@ namespace RenderDriver
             
             // pipeline descriptor
             MTLRenderPipelineDescriptor* renderPipelineDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
-            renderPipelineDescriptor.vertexFunction = [library newFunctionWithName: vertexEntryStr];
-            renderPipelineDescriptor.fragmentFunction = [library newFunctionWithName: fragementEntryStr];
+            renderPipelineDescriptor.vertexFunction = [vertexShaderLibrary newFunctionWithName: vertexEntryStr];
+            renderPipelineDescriptor.fragmentFunction = [fragmentShaderLibrary newFunctionWithName: fragementEntryStr];
             WTFASSERT(renderPipelineDescriptor.vertexFunction != nil, "Invalid vertex function name \"%s\"", metalPipelineDesc.mVertexEntryName.c_str());
             WTFASSERT(renderPipelineDescriptor.fragmentFunction != nil, "Invalid fragment function name \"%s\"", metalPipelineDesc.mFragementEntryName.c_str());
             

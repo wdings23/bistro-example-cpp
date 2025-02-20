@@ -137,9 +137,6 @@ def compile_pipeline_shaders():
         if shader_type == 'Copy':
             continue
         
-        if job['Name'] == 'Draw Mesh Vertex Shader':
-            print('debug')
-
         # open render job file, and get the shader name
         pipeline_file_name = job['Pipeline']
         pipeline_file_extension_start = pipeline_file_name.rfind('.')
@@ -227,7 +224,8 @@ def compile_pipeline_shaders():
         ir_files.append(output_ir_file)
 
         # create metal library file with the ir
-        metal_lib_file_path = os.path.join(shader_lib_target_directory, pipeline_base_name + '.metallib')
+        #metal_lib_file_path = os.path.join(shader_lib_target_directory, pipeline_base_name + '.metallib')
+        metal_lib_file_path = os.path.join(shader_lib_target_directory, base_shader_name + '.metallib')
         args = [
             'xcrun', 
             '-sdk', 
