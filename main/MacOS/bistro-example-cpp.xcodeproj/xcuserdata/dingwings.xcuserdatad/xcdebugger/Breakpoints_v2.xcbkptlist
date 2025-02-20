@@ -103,15 +103,15 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "6D063D9E-FFB8-4D32-94C9-F27371350498"
+            uuid = "100C2B39-B25A-4B01-804C-0449DC9CA080"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../render/Metal/RenderJobMetal.mm"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "314"
-            endingLineNumber = "314"
+            startingLineNumber = "420"
+            endingLineNumber = "420"
             landmarkName = "CRenderJob::platformFillOutGraphicsPipelineDescriptor(pDesc, acShaderBufferVS, acShaderBufferFS, shaderPath)"
             landmarkType = "7">
          </BreakpointContent>

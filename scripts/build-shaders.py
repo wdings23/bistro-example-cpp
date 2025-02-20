@@ -5,7 +5,11 @@ import subprocess
 import re
 
 ##
-def get_shader_bindings(slang_shader_file_path):
+def get_shader_bindings(
+        slang_shader_file_path,
+        attachment_names,
+        shader_resource_names):
+    
     file = open(slang_shader_file_path, 'rb')
     file_content = str(file.read())
     file.close()
@@ -36,7 +40,8 @@ def get_shader_bindings(slang_shader_file_path):
 
                     binding_info = {}
                     binding_info['type'] = 'RWTexture2D<float4>'
-                    binding_info['name'] = name
+                    binding_info['shader-name'] = name
+                    binding_info['name'] = attachment_names[binding_index] 
                     binding_info['index'] = binding_index
                     binding_info['set'] = 0
                     bindings.append(binding_info)
@@ -69,12 +74,23 @@ def get_shader_bindings(slang_shader_file_path):
         variable_tokens = variable_str.split()
         binding_info = {}
         binding_info['type'] = variable_tokens[0]
-        binding_info['name'] = variable_tokens[1]
+        binding_info['shader-name'] = variable_tokens[1]
         binding_info['index'] = binding_index
         binding_info['set'] = binding_set
 
+        if variable_tokens[0] == 'SamplerState':
+            binding_info['name'] = 'sampler'
+        elif variable_tokens[0] == 'ConstantBuffer<DefaultUniformData>':
+            binding_info['name'] = 'Default Uniform Buffer'
+
         if binding_set == 0 and last_render_target_index >= 0:
             binding_info['index'] = binding_index + last_render_target_index + 1
+            binding_index = binding_index + last_render_target_index + 1
+
+        if binding_set == 0 and binding_index < len(attachment_names):
+            binding_info['name'] = attachment_names[binding_index]
+        elif binding_set == 1 and binding_index < len(shader_resource_names):
+            binding_info['name'] = shader_resource_names[binding_index] 
 
         bindings.append(binding_info)
 
@@ -153,7 +169,23 @@ def compile_pipeline_shaders():
         slang_shader_name = base_shader_name + '.slang'
         slang_shader_file_path = os.path.join(shader_directory, slang_shader_name)
 
-        bindings = get_shader_bindings(slang_shader_file_path)
+        attachment_names = []
+        shader_resources = []
+        for attachment in render_job_info['Attachments']:
+            name = attachment['Name']
+            type = attachment['Type']
+            if 'ParentJobName' in attachment and (type == 'TextureInput' or type == 'BufferInput'):
+                name = attachment['ParentJobName'] + '-' + attachment['Name']
+            attachment_names.append(name)
+
+        for shader_resource in render_job_info['ShaderResources']:
+            name = shader_resource['name']
+            shader_resources.append(name)
+
+        bindings = get_shader_bindings(
+            slang_shader_file_path,
+            attachment_names,
+            shader_resources)
         json_str = json.dumps(bindings, indent=4)
         json_output_file_path = os.path.join(shader_lib_target_directory, base_shader_name + '-bindings.json')
         json_output_file = open(json_output_file_path, 'w')

@@ -384,97 +384,46 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
             for(auto const& bindingInfo : aBindingInfo)
             {
                 std::string name = bindingInfo["name"].GetString();
+                std::string shaderName = bindingInfo["shader-name"].GetString();
                 uint32_t iBindingIndex = bindingInfo["index"].GetInt();
                 uint32_t iBindingSet = bindingInfo["set"].GetInt();
+                std::string type = bindingInfo["type"].GetString();
                 
                 SerializeUtils::Common::ShaderResourceInfo shaderResourceInfo;
-                shaderResourceInfo.mShaderResourceName = name;
+                shaderResourceInfo.mName = name;
+                shaderResourceInfo.mShaderResourceName = shaderName;
                 shaderResourceInfo.miResourceIndex = iBindingIndex;
                 shaderResourceInfo.miResourceSet = iBindingSet;
+                shaderResourceInfo.mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN;
+                if(type.find("StructuredBuffer") == 0)
+                {
+                    shaderResourceInfo.mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_IN;
+                }
+                else if(type.find("RWStructuredBuffer") == 0)
+                {
+                    shaderResourceInfo.mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_OUT;
+                }
+                else if(type.find("RWTexture") == 0)
+                {
+                    shaderResourceInfo.mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_OUT;
+                }
+                else if(type.find("Texture") == 0)
+                {
+                    shaderResourceInfo.mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN;
+                }
+                else if(type.find("ConstantBuffer") == 0)
+                {
+                    shaderResourceInfo.mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_IN;
+                }
+                else
+                {
+                    if(type != "SamplerState")
+                    {
+                        WTFASSERT(0, "Not handled");
+                    }
+                }
                 
                 pDescriptorSetMetal->maShaderResources.push_back(shaderResourceInfo);
-            }
-            
-            // fill out shader resources
-            // set 0, attachments
-            uint32_t iIndex = 0;
-            for(auto const& mapping : maAttachmentMappings)
-            {
-                auto iter = pDescriptorSetMetal->maShaderResources.begin() + iIndex;
-                WTFASSERT(iter->miResourceSet == 0, "wrong set");
-                
-                iter->mName = mapping.first;
-                if(mapping.second == "texture-input")
-                {
-                    iter->mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN;
-                }
-                else if(mapping.second == "texture-output")
-                {
-                    iter->mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_OUT;
-                }
-                else if(mapping.second == "texture-input-output")
-                {
-                    iter->mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN_OUT;
-                }
-                else if(mapping.second == "buffer-input")
-                {
-                    iter->mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_IN;
-                }
-                else if(mapping.second == "buffer-output")
-                {
-                    iter->mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_OUT;
-                }
-                else if(mapping.second == "buffer-input-output")
-                {
-                    iter->mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_IN_OUT;
-                }
-                
-                ++iIndex;
-            }
-            
-            // skip sampler
-            for(;;)
-            {
-                auto iter = pDescriptorSetMetal->maShaderResources.begin() + iIndex;
-                if(iter->miResourceSet > 0 ||
-                   iter->mShaderResourceName != "textureSampler")
-                {
-                    break;
-                }
-                ++iIndex;
-            }
-            
-            // set 1, shader resources
-            for(auto const& mapping : maUniformMappings)
-            {
-                auto iter = pDescriptorSetMetal->maShaderResources.begin() + iIndex;
-                WTFASSERT(iter->miResourceSet == 1, "wrong set");
-                
-                iter->mName = mapping.first;
-                if(mapping.second == "texture-input")
-                {
-                    iter->mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN;
-                }
-                else if(mapping.second == "texture-output")
-                {
-                    iter->mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_OUT;
-                }
-                else if(mapping.second == "texture-input-output")
-                {
-                    iter->mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN_OUT;
-                }
-                else if(mapping.second == "buffer-input")
-                {
-                    iter->mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_IN;
-                }
-                else if(mapping.second == "buffer-output")
-                {
-                    iter->mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_OUT;
-                }
-                else if(mapping.second == "buffer-input-output")
-                {
-                    iter->mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_IN_OUT;
-                }
             }
             
             mpDescriptorSet->getDesc().mpaShaderResources = &pDescriptorSetMetal->maShaderResources;
@@ -539,12 +488,14 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
             auto aBindingInfo = doc.GetArray();
             for(auto const& bindingInfo : aBindingInfo)
             {
-                std::string name = bindingInfo["name"].GetString();
+                std::string shaderResourceName = bindingInfo["shader-name"].GetString();
                 uint32_t iBindingIndex = bindingInfo["index"].GetInt();
                 uint32_t iBindingSet = bindingInfo["set"].GetInt();
+                std::string name = bindingInfo["name"].GetString();
                 
                 SerializeUtils::Common::ShaderResourceInfo shaderResourceInfo;
-                shaderResourceInfo.mShaderResourceName = name;
+                shaderResourceInfo.mName = name;
+                shaderResourceInfo.mShaderResourceName = shaderResourceName;
                 shaderResourceInfo.miResourceIndex = iBindingIndex;
                 shaderResourceInfo.miResourceSet = iBindingSet;
                 
