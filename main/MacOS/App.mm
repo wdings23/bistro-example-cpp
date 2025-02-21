@@ -462,8 +462,8 @@ void CApp::init(AppDescriptor const& appDesc)
     // has to ptr of the map into data lambda or else it's a copy which unique_ptr disallow
     std::map<std::string, std::unique_ptr<RenderDriver::Common::CBuffer>>* paBufferMap = &aBufferMap;
     
-char const* szSaveDir = getSaveDir();
-DEBUG_PRINTF("%s\n", szSaveDir);
+    char const* szSaveDir = getSaveDir();
+    DEBUG_PRINTF("%s\n", szSaveDir);
     std::string fullPath = std::string(szSaveDir) + "/bistro2-triangles.bin";
     fp = fopen(fullPath.c_str(), "rb");
     fclose(fp);
@@ -472,6 +472,24 @@ DEBUG_PRINTF("%s\n", szSaveDir);
     pRenderer->loadRenderJobInfo(pDesc->mRenderJobsFilePath);
     pRenderer->prepareRenderJobData();
     
+    fullPath = std::string(szSaveDir) + "/LDR_RGBA_0.png";
+    
+    miBlueNoiseWidth = 512;
+    miBlueNoiseHeight = 512;
+    macBlueNoiseImageData.resize(miBlueNoiseWidth*miBlueNoiseHeight*4);
+    
+#if 0
+    int32_t iBlueNoiseWidth = 0, iBlueNoiseHeight = 0, iNumChannels = 0;
+    stbi_uc* pImageData = stbi_load(
+        fullPath.c_str(),
+        &miBlueNoiseWidth,
+        &miBlueNoiseHeight,
+        &iNumChannels,
+        4);
+    memcpy(macBlueNoiseImageData.data(), pImageData, iBlueNoiseWidth * iBlueNoiseHeight * 4);
+    stbi_image_free(pImageData);
+#endif // #if 0
+    
 }
 
 /*
@@ -479,7 +497,36 @@ DEBUG_PRINTF("%s\n", szSaveDir);
 */
 void CApp::update(CGFloat time)
 {
-    
+    float3 up = float3(0.0f, 1.0f, 0.0f);
+    float3 diff = normalize(mCameraLookAt - mCameraPosition);
+    if(fabs(diff.y) > 0.98f)
+    {
+        up = float3(1.0f, 0.0f, 0.0f);
+    }
+
+    float3 viewDir = normalize(mCameraLookAt - mCameraPosition);
+    float3 tangent = cross(up, viewDir);
+    float3 binormal = cross(tangent, viewDir);
+
+    Render::Common::UpdateCameraDescriptor cameraDesc = {};
+    cameraDesc.mfFar = 100.0f;
+    cameraDesc.mfNear = 0.4f;
+    cameraDesc.miCameraIndex = 0;
+    cameraDesc.mUp = up;
+    cameraDesc.mPosition = mCameraPosition;
+    cameraDesc.mLookAt = mCameraLookAt;
+    cameraDesc.mfFov = 3.14159f * 0.5f;
+
+    uint32_t iFrameIndex = mpRenderer->getFrameIndex();
+    uint32_t iBlueNoiseX = iFrameIndex % miBlueNoiseWidth;
+    uint32_t iBlueNoiseY = (iFrameIndex / miBlueNoiseWidth) % miBlueNoiseHeight;
+    uint32_t iImageIndex = (iBlueNoiseY * miBlueNoiseWidth + iBlueNoiseX) * 4;
+    float fFactor = 0.001f;
+    cameraDesc.mJitter.x = (((float)macBlueNoiseImageData[iImageIndex] / 255.0f) * 2.0f - 1.0f) * fFactor;
+    cameraDesc.mJitter.y = (((float)macBlueNoiseImageData[iImageIndex+1] / 255.0f) * 2.0f - 1.0f) * fFactor;
+
+    mpRenderer->updateCamera(cameraDesc);
+    mpRenderer->updateRenderJobData();
 }
 
 /*

@@ -37,4 +37,11 @@ protected:
     std::unique_ptr<RenderDriver::Common::CSwapChain>        mpSwapChain;
     std::unique_ptr<Render::Common::CRenderer>               mpRenderer;
     
+    std::vector<unsigned char> macBlueNoiseImageData;
+    uint32_t miBlueNoiseWidth;
+    uint32_t miBlueNoiseHeight;
+    
+    float3 mCameraPosition;
+    float3 mCameraLookAt;
+    
 };

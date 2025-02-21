@@ -150,12 +150,12 @@ class MetalView : NSView
     
     func update(time: CGFloat)
     {
-        self._bounds = self.bounds.size
         self._wrapper.update(time)
     }
     
     func render()
     {
+        self.update(time: 0.0)
         self._wrapper.render()
     }
     

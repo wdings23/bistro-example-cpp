@@ -1890,7 +1890,8 @@ namespace Render
                     pMaterialIDBuffer,
                     acBuffer.data(),
                     0,
-                    (uint32_t)iFileSize
+                    (uint32_t)iFileSize,
+                    iFlags
                 );
             }
 
@@ -2173,7 +2174,8 @@ namespace Render
                 mpDefaultUniformBuffer,
                 acData.data(),
                 0,
-                (uint32_t)acData.size()
+                (uint32_t)acData.size(),
+                iFlags
             );
 
             // clear number of draw calls for mesh culling pass
