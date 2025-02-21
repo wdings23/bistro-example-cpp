@@ -9,7 +9,7 @@
 [[vk::binding(3, 0)]] Texture2D<float4> sunLightTexture;
 [[vk::binding(4, 0)]] SamplerState textureSampler;
 
-[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData; 
+[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer; 
 
 struct RayPayload
 {
@@ -37,7 +37,7 @@ void rayGen()
         RayDesc ray;
         float3 origin = float3(worldPosition.xyz);
         ray.Origin = origin;
-        ray.Direction = normalize(defaultUniformData.mLightDirection.xyz); 
+        ray.Direction = normalize(defaultUniformBuffer.mLightDirection.xyz); 
         ray.TMin = 0.01f;
         ray.TMax = 1000.0f;
         RayPayload payload = { 

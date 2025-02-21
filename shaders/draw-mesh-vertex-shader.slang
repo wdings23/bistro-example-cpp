@@ -11,7 +11,7 @@ struct VertexStageOutput
     float4 prevClipSpace;
 };
 
-[[vk::binding(3, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData;
+[[vk::binding(3, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
 
 [shader("vertex")]
 VertexStageOutput VSMain(
@@ -20,7 +20,7 @@ VertexStageOutput VSMain(
     VertexStageOutput output;
 
     output.sv_position = mul(
-        defaultUniformData.mJitteredViewProjectionMatrix,
+        defaultUniformBuffer.mJitteredViewProjectionMatrix,
         float4(
             assembledVertex.position.x,
             assembledVertex.position.y,
@@ -32,11 +32,11 @@ VertexStageOutput VSMain(
     output.normal = assembledVertex.normal;
 
     output.currClipSpace = mul(
-        defaultUniformData.mViewProjectionMatrix,
+        defaultUniformBuffer.mViewProjectionMatrix,
         float4(assembledVertex.position.xyz, 1.0f)
     );
     output.prevClipSpace = mul(
-        defaultUniformData.mPrevJitteredViewProjectionMatrix,
+        defaultUniformBuffer.mPrevJitteredViewProjectionMatrix,
         float4(assembledVertex.position.xyz, 1.0f)
     );
 

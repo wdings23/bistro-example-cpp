@@ -1303,7 +1303,13 @@ namespace Render
             {
                 commandBuffer.close();
             }
-
+            
+            // TODO: need platformBeginComputePass() to initialize command buffer and command encode for metal
+            platformBeginComputePass(
+                *pRenderJob,
+                commandBuffer);
+            
+            
             // set pipeline and all the shader resource bindings
             platformSetComputeDescriptorSet(
                 *pRenderJob->mpDescriptorSet, 

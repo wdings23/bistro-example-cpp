@@ -24,7 +24,8 @@ namespace RenderDriver
             mNativeQueue = descMetal.mpCommandQueue;
             
             mType = desc.mType;
-            
+     
+            // encoder creation is done on begin render pass or begin compute pass
 #if 0
             mNativeCommandBuffer = [mNativeQueue commandBuffer];
             

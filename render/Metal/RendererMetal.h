@@ -399,7 +399,9 @@ namespace Render
                 RenderDriver::Common::CCommandBuffer& commandBuffer
             );
             
-            
+            virtual void platformBeginComputePass(
+                  Render::Common::CRenderJob& renderJob,
+                  RenderDriver::Common::CCommandBuffer& commandBuffer);
 
         protected:
             std::map<uint64_t, std::vector<uint8_t>>        mShaderBinariesDB;
@@ -472,7 +474,13 @@ namespace Render
         
                 std::unique_ptr<RenderDriver::Metal::CBuffer>           mDefaultUniformBuffer;
                 //std::map<std::string, std::unique_ptr<RenderDriver::Metal::CAccelerationStructure>> maAccelerationStructures;
-        };
+        
+                id<MTLSamplerState>                           mDefaultNativeLinearSamplerState;
+                id<MTLSamplerState>                           mDefaultNativePointSamplerState;
+                
+                std::unique_ptr<RenderDriver::Metal::CBuffer> mFillerBuffer;
+                std::unique_ptr<RenderDriver::Metal::CImage> mFillerTexture;
+            };
 
     }   // Metal
 

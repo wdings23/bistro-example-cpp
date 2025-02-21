@@ -2,7 +2,7 @@
 #include "mesh-culling-headers.slang"
 #include "vertex-format-headers.slang"
 
-[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData;
+[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
 
 struct PSOutput
 {
@@ -20,8 +20,8 @@ VertexStageOutput VSMain(
 {
     VertexStageOutput output;
 
-    float4x4 viewMatrix = defaultUniformData.mViewMatrix;
-    float4x4 projectionMatrix = defaultUniformData.mProjectionMatrix;
+    float4x4 viewMatrix = defaultUniformBuffer.mViewMatrix;
+    float4x4 projectionMatrix = defaultUniformBuffer.mProjectionMatrix;
 
     projectionMatrix._22 *= -1.0f;
     

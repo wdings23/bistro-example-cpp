@@ -6,10 +6,10 @@ float4 getFrustumPlane(
     float fMult)
 {
     float3 plane = float3(
-        defaultUniformData.mViewProjectionMatrix[iColumn][0] * fMult + defaultUniformData.mViewProjectionMatrix[3][0],
-        defaultUniformData.mViewProjectionMatrix[iColumn][1] * fMult + defaultUniformData.mViewProjectionMatrix[3][1],
-        defaultUniformData.mViewProjectionMatrix[iColumn][2] * fMult + defaultUniformData.mViewProjectionMatrix[3][2]);
-    float fPlaneW = defaultUniformData.mViewProjectionMatrix[iColumn][3] * fMult + defaultUniformData.mViewProjectionMatrix[3][3];
+        defaultUniformBuffer.mViewProjectionMatrix[iColumn][0] * fMult + defaultUniformBuffer.mViewProjectionMatrix[3][0],
+        defaultUniformBuffer.mViewProjectionMatrix[iColumn][1] * fMult + defaultUniformBuffer.mViewProjectionMatrix[3][1],
+        defaultUniformBuffer.mViewProjectionMatrix[iColumn][2] * fMult + defaultUniformBuffer.mViewProjectionMatrix[3][2]);
+    float fPlaneW = defaultUniformBuffer.mViewProjectionMatrix[iColumn][3] * fMult + defaultUniformBuffer.mViewProjectionMatrix[3][3];
     float fLength = length(plane);
     plane = normalize(plane);
     
@@ -120,15 +120,15 @@ bool cullBBoxDepth(
     float3 v6 = float3(minPosition.x, maxPosition.y, maxPosition.z);
     float3 v7 = float3(maxPosition.x, maxPosition.y, maxPosition.z);
 
-    float4 xform0 = mul(float4(v0.xyz, 1.0f), defaultUniformData.mJitteredViewProjectionMatrix);
-    float4 xform1 = mul(float4(v1.xyz, 1.0f), defaultUniformData.mJitteredViewProjectionMatrix);
-    float4 xform2 = mul(float4(v2.xyz, 1.0f), defaultUniformData.mJitteredViewProjectionMatrix);
-    float4 xform3 = mul(float4(v3.xyz, 1.0f), defaultUniformData.mJitteredViewProjectionMatrix);
+    float4 xform0 = mul(float4(v0.xyz, 1.0f), defaultUniformBuffer.mJitteredViewProjectionMatrix);
+    float4 xform1 = mul(float4(v1.xyz, 1.0f), defaultUniformBuffer.mJitteredViewProjectionMatrix);
+    float4 xform2 = mul(float4(v2.xyz, 1.0f), defaultUniformBuffer.mJitteredViewProjectionMatrix);
+    float4 xform3 = mul(float4(v3.xyz, 1.0f), defaultUniformBuffer.mJitteredViewProjectionMatrix);
 
-    float4 xform4 = mul(float4(v4.xyz, 1.0f), defaultUniformData.mJitteredViewProjectionMatrix);
-    float4 xform5 = mul(float4(v5.xyz, 1.0f), defaultUniformData.mJitteredViewProjectionMatrix);
-    float4 xform6 = mul(float4(v6.xyz, 1.0f), defaultUniformData.mJitteredViewProjectionMatrix);
-    float4 xform7 = mul(float4(v7.xyz, 1.0f), defaultUniformData.mJitteredViewProjectionMatrix);
+    float4 xform4 = mul(float4(v4.xyz, 1.0f), defaultUniformBuffer.mJitteredViewProjectionMatrix);
+    float4 xform5 = mul(float4(v5.xyz, 1.0f), defaultUniformBuffer.mJitteredViewProjectionMatrix);
+    float4 xform6 = mul(float4(v6.xyz, 1.0f), defaultUniformBuffer.mJitteredViewProjectionMatrix);
+    float4 xform7 = mul(float4(v7.xyz, 1.0f), defaultUniformBuffer.mJitteredViewProjectionMatrix);
 
     float3 xyz0  = xform0.xyz / xform0.w;
     float3 xyz1  = xform1.xyz / xform1.w;
@@ -156,7 +156,7 @@ bool cullBBoxDepth(
     }
 
     float fMinDepth = minXYZ.z;
-    float fAspectRatio = float(defaultUniformData.miScreenHeight) / float(defaultUniformData.miScreenWidth);
+    float fAspectRatio = float(defaultUniformBuffer.miScreenHeight) / float(defaultUniformBuffer.miScreenWidth);
     float2 diffXY = abs(maxXYZ.xy - minXYZ.xy);
     float fMaxComp = max(diffXY.x, diffXY.y * fAspectRatio) * 512.0f; // compute LOD from 1 to 8
     uint32_t iLOD = min(uint32_t(log2(fMaxComp)), 8u);

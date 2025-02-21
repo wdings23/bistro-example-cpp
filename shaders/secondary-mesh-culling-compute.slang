@@ -42,7 +42,7 @@ struct UniformData
 [[vk::binding(0, 1)]] ConstantBuffer<UniformData> uniformData;
 [[vk::binding(1, 1)]] RWStructuredBuffer<Range> aMeshTriangleIndexRanges;
 [[vk::binding(2, 1)]] RWStructuredBuffer<MeshBBox> aMeshBBox;
-[[vk::binding(3, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData;
+[[vk::binding(3, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
 
 #include "frustum-culling-headers.slang"
 
@@ -81,7 +81,7 @@ void CSMain(
 
     float3 center = (aMeshBBox[iMesh].mMaxPosition.xyz + aMeshBBox[iMesh].mMinPosition.xyz) * 0.5f;
     
-    float4 xformCenter = mul(float4(center.xyz, 1.0f), defaultUniformData.mViewProjectionMatrix);
+    float4 xformCenter = mul(float4(center.xyz, 1.0f), defaultUniformBuffer.mViewProjectionMatrix);
     xformCenter.x /= xformCenter.w;
     xformCenter.y /= xformCenter.w;
     xformCenter.z /= xformCenter.w;

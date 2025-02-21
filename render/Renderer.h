@@ -861,6 +861,10 @@ namespace Render
                 RenderDriver::Common::CCommandBuffer& commandBuffer
             ) = 0;
 
+            virtual void platformBeginComputePass(
+                  Render::Common::CRenderJob& renderJob,
+                  RenderDriver::Common::CCommandBuffer& commandBuffer) {};
+            
             protected:
                 
                 

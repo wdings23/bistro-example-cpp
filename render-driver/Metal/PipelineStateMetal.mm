@@ -400,16 +400,10 @@ renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPix
                     }
                 }
     
-                //ShaderResourceReflectionInfo reflectionInfo(szVariableName, type, RenderDriver::Common::ShaderType::Compute);
-                //reflectionInfo.mName = szVariableName;
-                //reflectionInfo.mType = type;
-                //reflectionInfo.mShaderType = RenderDriver::Common::ShaderType::Compute;
-                //maComputeShaderResourceReflectionInfo.push_back(reflectionInfo);
-                
                 maComputeShaderResourceReflectionInfo.emplace_back(
-                                                                   szVariableName,
-                                                                   type,
-                                                                   RenderDriver::Common::ShaderType::Compute
+                   szVariableName,
+                   type,
+                   RenderDriver::Common::ShaderType::Compute
                 );
                 
                 ++iNumComputeVariables;

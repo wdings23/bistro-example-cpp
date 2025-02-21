@@ -452,6 +452,7 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
             std::string fileName = shaderPath.substr(directoryEnd + 1, (fileNameEnd - (directoryEnd + 1)));
             std::string metalShaderFileName = fileName + ".metallib";
             
+            // shader library data
             std::string filePath = shaderOutputPath + "/" + metalShaderFileName;
             FILE* fp = fopen(filePath.c_str(), "rb");
             fseek(fp, 0, SEEK_END);
@@ -461,9 +462,9 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
             fread(acShaderBuffer.data(), sizeof(char), iFileSize, fp);
             fclose(fp);
             
+            // set data
             pMetalDesc->mLibraryFilePath = std::string("shader-output/") + metalShaderFileName;
             pMetalDesc->mComputeEntryName = "CSMain";
-            
 			pDesc->miFlags = 0;
 			pDesc->miComputeShaderSize = (uint32_t)iFileSize;
 			pDesc->mpComputeShader = (uint8_t*)acShaderBuffer.data();
@@ -471,6 +472,7 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
 
             RenderDriver::Metal::CDescriptorSet* pDescriptorSetMetal = (RenderDriver::Metal::CDescriptorSet*)mpDescriptorSet;
             
+            // shader resource bindings
             std::string bindingFileName = fileName + "-bindings.json";
             std::string bindingFilePath = std::string(getSaveDir()) + "/shader-output/" + bindingFileName;
             rapidjson::Document doc;
@@ -499,18 +501,54 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
                 shaderResourceInfo.miResourceIndex = iBindingIndex;
                 shaderResourceInfo.miResourceSet = iBindingSet;
                 
+                // set the image or buffer ptr
+                if(mapImageAttachments.find(name) != mapImageAttachments.end())
+                {
+                    shaderResourceInfo.mExternalResource.mpImage = mapImageAttachments[name];
+                }
+                else if(mapBufferAttachments.find(name) != mapBufferAttachments.end())
+                {
+                    shaderResourceInfo.mExternalResource.mpBuffer = mapBufferAttachments[name];
+                }
+                else if(mapUniformImages.find(name) != mapUniformImages.end())
+                {
+                    shaderResourceInfo.mExternalResource.mpImage = mapUniformImages[name];
+                }
+                else if(mapUniformBuffers.find(name) != mapUniformBuffers.end())
+                {
+                    shaderResourceInfo.mExternalResource.mpBuffer = mapUniformBuffers[name];
+                }
+                else if(name == "Default Uniform Buffer")
+                {
+                    shaderResourceInfo.mExternalResource.mpBuffer = mpDefaultUniformBuffer;
+                }
+                else
+                {
+                    if(name != "sampler" && name != "textureSampler")
+                    {
+                        WTFASSERT(0, "Can\'t find \"%s\" shader resource in attachments", name.c_str());
+                    }
+                }
+                
                 pDescriptorSetMetal->maShaderResources.push_back(shaderResourceInfo);
             }
-            
+                        
             // fill out shader resources
             // set 0, attachments
             uint32_t iIndex = 0;
             for(auto const& mapping : maAttachmentMappings)
             {
-                auto iter = pDescriptorSetMetal->maShaderResources.begin() + iIndex;
-                WTFASSERT(iter->miResourceSet == 0, "wrong set");
+                // look for the corresponding shader resource
+                auto iter = std::find_if(
+                    pDescriptorSetMetal->maShaderResources.begin(),
+                    pDescriptorSetMetal->maShaderResources.end(),
+                    [&](SerializeUtils::Common::ShaderResourceInfo& shaderResourceInfo)
+                    {
+                        return mapping.first == shaderResourceInfo.mName;
+                        
+                    });
+                WTFASSERT(iter != pDescriptorSetMetal->maShaderResources.end(), "can\'t find \"%s\"", mapping.first.c_str());
                 
-                iter->mName = mapping.first;
                 if(mapping.second == "texture-input")
                 {
                     iter->mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN;
@@ -538,25 +576,21 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
                 
                 ++iIndex;
             }
-            
-            // skip sampler
-            for(;;)
-            {
-                auto iter = pDescriptorSetMetal->maShaderResources.begin() + iIndex;
-                if(iter->mShaderResourceName != "sampler" || iter->miResourceSet > 0)
-                {
-                    break;
-                }
-                ++iIndex;
-            }
-            
+           
             // set 1, shader resources
             for(auto const& mapping : maUniformMappings)
             {
-                auto iter = pDescriptorSetMetal->maShaderResources.begin() + iIndex;
-                WTFASSERT(iter->miResourceSet == 1, "wrong set");
+                // look for the corresponding shader resource
+                std::string name = mapping.first;
+                auto iter = std::find_if(
+                    pDescriptorSetMetal->maShaderResources.begin(),
+                    pDescriptorSetMetal->maShaderResources.end(),
+                    [name](SerializeUtils::Common::ShaderResourceInfo& shaderResourceInfo)
+                    {
+                        return name == shaderResourceInfo.mName;
+                    });
+                WTFASSERT(iter != pDescriptorSetMetal->maShaderResources.end(), "can\'t find \"%s\"", mapping.first.c_str());
                 
-                iter->mName = mapping.first;
                 if(mapping.second == "texture-input")
                 {
                     iter->mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN;

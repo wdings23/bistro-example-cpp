@@ -10,6 +10,8 @@
 //#include <render-driver/Metal/FrameBufferMetal.h>
 //#include <render-driver/Metal/AccelerationStructureMetal.h>
 
+#include <render-driver/Metal/ImageMetal.h>
+
 #include <utils/LogPrint.h>
 #include <utils/wtfassert.h>
 
@@ -143,6 +145,25 @@ namespace Render
             commandAllocatorDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
             mpUploadCommandAllocator->create(commandAllocatorDesc, *mpDevice);
             mpUploadCommandAllocator->setID("Upload Command Allocator");
+            
+            mFillerBuffer = std::make_unique<RenderDriver::Metal::CBuffer>();
+            mFillerTexture = std::make_unique<RenderDriver::Metal::CImage>();
+            
+            RenderDriver::Common::BufferDescriptor bufferDesc = {};
+            bufferDesc.miSize = 64;
+            bufferDesc.mFormat = RenderDriver::Common::Format::R32_FLOAT;
+            
+            RenderDriver::Common::ImageDescriptor imageDesc = {};
+            imageDesc.mFormat = RenderDriver::Common::Format::R32G32B32A32_FLOAT;
+            imageDesc.miWidth = 16;
+            imageDesc.miHeight = 16;
+            imageDesc.miNumImages = 1;
+            
+            mFillerBuffer->create(bufferDesc, *mpDevice);
+            mFillerTexture->create(imageDesc, *mpDevice);
+            
+            mFillerBuffer->setID("Filler Buffer");
+            mFillerTexture->setID("Filler Texture");
             
             mDesc = desc;
         }
@@ -411,7 +432,113 @@ namespace Render
             RenderDriver::Common::CCommandBuffer& commandBuffer,
             RenderDriver::Common::CPipelineState& pipelineState)
         {
-            WTFASSERT(0, "Implement me");
+            RenderDriver::Metal::CCommandBuffer& commandBufferMetal = static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer);
+                        
+            // set buffer and texture shader resources for compute shader
+            id<MTLComputeCommandEncoder> nativeComputeEncoder = commandBufferMetal.getNativeComputeCommandEncoder();
+            WTFASSERT(nativeComputeEncoder != nil, "Invalid compute command encoder");
+            
+            std::vector<SerializeUtils::Common::ShaderResourceInfo> const& aShaderResource = *descriptorSet.getDesc().mpaShaderResources;
+            
+            std::vector<uint32_t> const& aiLayoutIndices = descriptorSet.getComputeLayoutIndices();
+            
+            uint32_t iBufferIndex = 0, iTextureIndex = 0;
+            for(uint32_t iLayoutIndex = 0; iLayoutIndex < static_cast<uint32_t>(aiLayoutIndices.size()); iLayoutIndex++)
+            {
+                uint32_t iShaderResourceIndex = UINT32_MAX;
+                if(iLayoutIndex < aiLayoutIndices.size())
+                {
+                    iShaderResourceIndex = aiLayoutIndices[iLayoutIndex];
+                }
+                
+                if(iShaderResourceIndex == UINT32_MAX)
+                {
+                    id<MTLTexture> nativeImage = (__bridge id<MTLTexture>)mFillerTexture->getNativeImage();
+                    [nativeComputeEncoder
+                     setTexture: nativeImage
+                     atIndex: iBufferIndex];
+                    ++iBufferIndex;
+                    ++iTextureIndex;
+                }
+                else
+                {
+                    auto& shaderResource = aShaderResource[iShaderResourceIndex];
+                    if(shaderResource.mExternalResource.mpBuffer)
+                    {
+                        id<MTLBuffer> nativeShaderBuffer = (__bridge id<MTLBuffer>)shaderResource.mExternalResource.mpBuffer->getNativeBuffer();
+                        [nativeComputeEncoder
+                         setBuffer: nativeShaderBuffer
+                         offset: 0
+                         atIndex: iBufferIndex];
+                        
+                        ++iBufferIndex;
+                    }
+                    else if(shaderResource.mExternalResource.mpImage)
+                    {
+                        id<MTLTexture> nativeTexture = (__bridge id<MTLTexture>)shaderResource.mExternalResource.mpImage->getNativeImage();
+                        [nativeComputeEncoder
+                         setTexture: nativeTexture
+                         atIndex: iTextureIndex];
+                        
+                        ++iTextureIndex;
+                    }
+                    else
+                    {
+                        if(shaderResource.mType == ShaderResourceType::RESOURCE_TYPE_BUFFER_IN)
+                        {
+                            id<MTLBuffer> nativeBuffer = (__bridge id<MTLBuffer>)mFillerBuffer->getNativeBuffer();
+                            [nativeComputeEncoder
+                             setBuffer: nativeBuffer
+                             offset: 0
+                             atIndex: iBufferIndex];
+                            
+                            ++iBufferIndex;
+                        }
+                        else if(shaderResource.mType == ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN)
+                        {
+                            id<MTLTexture> nativeTexture = (__bridge id<MTLTexture>)mFillerTexture->getNativeImage();
+                            [nativeComputeEncoder
+                             setTexture: nativeTexture
+                             atIndex: iTextureIndex];
+                            
+                            ++iTextureIndex;
+                        }
+                        else if(shaderResource.mType == ShaderResourceType::RESOURCE_TYPE_BUFFER_IN_OUT)
+                        {
+                            // root constant
+                            WTFASSERT(shaderResource.mName == "rootConstant", "Buffer In/Out type signifies root constant");
+                            
+                            RenderDriver::Metal::CDescriptorSet& descriptorSetMetal = static_cast<RenderDriver::Metal::CDescriptorSet&>(descriptorSet);
+                            id<MTLBuffer> rootConstantBuffer = descriptorSetMetal.getRootConstant();
+                            
+                            [nativeComputeEncoder
+                             setBuffer: rootConstantBuffer
+                             offset: 0
+                             atIndex: iBufferIndex];
+                            
+                            ++iBufferIndex;
+                        }
+                        else if(shaderResource.mType == ShaderResourceType::RESOURCE_TYPE_BUFFER_OUT)
+                        {
+                            //id<MTLBuffer> nativeShaderBuffer = (__bridge id<MTLBuffer>)shaderResource.mShaderResourceName
+                            //[nativeComputeEncoder
+                            // setBuffer: rootConstantBuffer
+                            // offset: 0
+                            // atIndex: iBufferIndex];
+                            
+                            ++iBufferIndex;
+                        }
+                        else
+                        {
+                            
+                            WTFASSERT(0, "type %d not handled", shaderResource.mType);
+                        }
+                        
+                    }
+                }
+                
+                //++iShaderIndex;
+            }
         }
 
         /*
@@ -1037,7 +1164,7 @@ namespace Render
             std::string const& name,
             RenderDriver::Common::CCommandQueue* pCommandQueue)
         {
-            WTFASSERT(0, "Implement me");
+            // no debug marker
         }
 
         /*
@@ -1056,7 +1183,7 @@ namespace Render
         void CRenderer::platformEndDebugMarker(
             RenderDriver::Common::CCommandQueue* pCommandQueue)
         {
-            WTFASSERT(0, "Implement me");
+            // no debug marker
         }
 
         /*
@@ -1076,7 +1203,7 @@ namespace Render
             float4 const& color,
             RenderDriver::Common::CCommandBuffer* pCommandBuffer)
         {
-            WTFASSERT(0, "Implement me");
+            // no debug marker
         }
 
         /*
@@ -1085,7 +1212,7 @@ namespace Render
         void CRenderer::platformEndDebugMarker3(
             RenderDriver::Common::CCommandBuffer* pCommandBuffer)
         {
-            WTFASSERT(0, "Implement me");
+            // no debug marker
         }
 
         /*
@@ -1575,6 +1702,24 @@ namespace Render
             pDstRenderJob->mapOutputImageAttachments[dstAttachmentName] = pSrcImage;
 
             // update descriptor set
+        }
+    
+        /*
+        **
+        */
+        void CRenderer::platformBeginComputePass(
+            Render::Common::CRenderJob& renderJob,
+            RenderDriver::Common::CCommandBuffer& commandBuffer
+        )
+        {
+            static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer).beginComputePass(nullptr);
+                        
+            RenderDriver::Metal::CCommandBuffer& commandBufferMetal = static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer);
+            id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBufferMetal.getNativeCommandList();
+            id<MTLComputeCommandEncoder> computeCommandEncoder = commandBufferMetal.getNativeComputeCommandEncoder();
+            
+            [nativeCommandBuffer setLabel: [NSString stringWithUTF8String: commandBuffer.getID().c_str()]];
+            [computeCommandEncoder setLabel: [NSString stringWithUTF8String: std::string(renderJob.mName + " Compute Command Encoder").c_str()]];
         }
 
     }   // Metal

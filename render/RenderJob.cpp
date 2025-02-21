@@ -451,7 +451,7 @@ namespace Render
             }
             
             // default uniform buffer at the very end of the descriptor
-            maUniformMappings.push_back(std::make_pair("defaultUniformBuffer", "buffer-input"));
+            maUniformMappings.push_back(std::make_pair("Default Uniform Buffer", "buffer-input"));
         }
 
         /*

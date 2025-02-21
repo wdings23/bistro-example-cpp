@@ -5,7 +5,7 @@
 [[vk::binding(0, 0)]] Texture2D<float4> texture0;
 [[vk::binding(1, 0)]] Texture2D<float4> texture1;
 [[vk::binding(2, 0)]] SamplerState sampler;
-[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData;
+[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
 
 struct AssembledVertex
 {
