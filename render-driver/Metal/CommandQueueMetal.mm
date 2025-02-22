@@ -49,7 +49,22 @@ namespace RenderDriver
         {
             
         }
-
+        
+        /*
+        **
+        */
+        void CCommandQueue::execCommandBuffer3(
+            RenderDriver::Common::CCommandBuffer& commandBuffer,
+            uint64_t* piWaitValue,
+            uint64_t* piSignalValue,
+            RenderDriver::Common::CFence* pWaitFence,
+            RenderDriver::Common::CFence* pSignalFence
+        )
+        {
+            id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBuffer.getNativeCommandList();
+            [nativeCommandBuffer commit];
+        }
+    
         /*
         **
         */

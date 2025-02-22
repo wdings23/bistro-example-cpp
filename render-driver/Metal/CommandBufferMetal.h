@@ -43,9 +43,9 @@ namespace RenderDriver
                 uint32_t iGroupX,
                 uint32_t iGroupY,
                 uint32_t iGroupZ,
-                uint32_t iLocalX,
-                uint32_t iLocalY,
-                uint32_t iLocalZ);
+                uint32_t iLocalX = 256,
+                uint32_t iLocalY = 1,
+                uint32_t iLocalZ = 1);
 
             virtual void drawIndexInstanced(
                 uint32_t iIndexCountPerInstance,

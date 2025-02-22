@@ -186,6 +186,7 @@ namespace Render
 				uint32_t iWidth,
 				uint32_t iHeight,
 				std::string const& shaderDirectory,
+                std::string const& pipelineFilePath,
 				void* pPlatformInstance	// used for getting vulkan function ptr
 			);
 
@@ -289,13 +290,15 @@ namespace Render
 				RenderDriver::Common::GraphicsPipelineStateDescriptor* pDesc,
 				std::vector<char>& acShaderBufferVS,
 				std::vector<char>& acShaderBufferFS,
-				std::string const& shaderPath
+				std::string const& shaderPath,
+                std::string const& pipelineName
 			) = 0;
 			
 			virtual RenderDriver::Common::ComputePipelineStateDescriptor* platformFillOutComputePipelineDescriptor(
 				RenderDriver::Common::ComputePipelineStateDescriptor* pDesc,
 				std::vector<char>& acShaderBuffer,
-				std::string const& shaderPath
+				std::string const& shaderPath,
+                std::string const& pipelineName
 			) = 0;
 
 			virtual RenderDriver::Common::RayTracePipelineStateDescriptor* platformFillOutRayTracePipelineDescriptor(

@@ -47,7 +47,10 @@ namespace Render
 			desc.miHeight = iHeight;
 			desc.miNumImages = 1;
 			desc.mFormat = format;
-			desc.mResourceFlags = RenderDriver::Common::ResourceFlagBits::AllowSimultaneousAccess;
+			desc.mResourceFlags = RenderDriver::Common::ResourceFlagBits(
+                uint32_t(RenderDriver::Common::ResourceFlagBits::AllowSimultaneousAccess) |
+                uint32_t(RenderDriver::Common::ResourceFlagBits::AllowRenderTarget)
+            );
 			desc.mafClearColor = afDefaultClearColor;
 			desc.mImageLayout = RenderDriver::Common::ImageLayout::ATTACHMENT_OPTIMAL;
 			pImage->create(
@@ -306,7 +309,8 @@ namespace Render
 			RenderDriver::Common::GraphicsPipelineStateDescriptor* pDesc,
 			std::vector<char>& acShaderBufferVS,
 			std::vector<char>& acShaderBufferFS,
-			std::string const& shaderPath
+			std::string const& shaderPath,
+            std::string const& pipelineName
 		)
 		{
 DEBUG_PRINTF("%s\n", shaderPath.c_str());
@@ -366,7 +370,7 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
 
             RenderDriver::Metal::CDescriptorSet* pDescriptorSetMetal = (RenderDriver::Metal::CDescriptorSet*)mpDescriptorSet;
             
-            std::string bindingFileName = fileName + "-bindings.json";
+            std::string bindingFileName = pipelineName + "-bindings.json";
             std::string bindingFilePath = shaderOutputPath + "/" + bindingFileName;
             rapidjson::Document doc;
             {
@@ -394,6 +398,40 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
                 shaderResourceInfo.mShaderResourceName = shaderName;
                 shaderResourceInfo.miResourceIndex = iBindingIndex;
                 shaderResourceInfo.miResourceSet = iBindingSet;
+                
+                // set the image or buffer ptr
+                if(mapImageAttachments.find(name) != mapImageAttachments.end())
+                {
+                    shaderResourceInfo.mExternalResource.mpImage = mapImageAttachments[name];
+                }
+                else if(mapBufferAttachments.find(name) != mapBufferAttachments.end())
+                {
+                    shaderResourceInfo.mExternalResource.mpBuffer = mapBufferAttachments[name];
+                }
+                else if(mapUniformImages.find(name) != mapUniformImages.end())
+                {
+                    shaderResourceInfo.mExternalResource.mpImage = mapUniformImages[name];
+                }
+                else if(mapUniformBuffers.find(name) != mapUniformBuffers.end())
+                {
+                    shaderResourceInfo.mExternalResource.mpBuffer = mapUniformBuffers[name];
+                }
+                else if(name == "Default Uniform Buffer")
+                {
+                    shaderResourceInfo.mExternalResource.mpBuffer = mpDefaultUniformBuffer;
+                }
+                else if(name == "Depth Output")
+                {
+                    shaderResourceInfo.mExternalResource.mpImage = mpDepthImage;
+                }
+                else
+                {
+                    if(name != "sampler" && name != "textureSampler")
+                    {
+                        WTFASSERT(0, "Can\'t find \"%s\" shader resource in attachments", name.c_str());
+                    }
+                }
+                
                 shaderResourceInfo.mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN;
                 if(type.find("StructuredBuffer") == 0)
                 {
@@ -437,7 +475,8 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
 		RenderDriver::Common::ComputePipelineStateDescriptor* CRenderJob::platformFillOutComputePipelineDescriptor(
 			RenderDriver::Common::ComputePipelineStateDescriptor* pDesc,
 			std::vector<char>& acShaderBuffer,
-			std::string const& shaderPath
+			std::string const& shaderPath,
+            std::string const& pipelinePath
 		)
 		{
 			RenderDriver::Metal::CPipelineState::ComputePipelineStateDescriptor* pMetalDesc = (RenderDriver::Metal::CPipelineState::ComputePipelineStateDescriptor*)pDesc;
@@ -473,7 +512,7 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
             RenderDriver::Metal::CDescriptorSet* pDescriptorSetMetal = (RenderDriver::Metal::CDescriptorSet*)mpDescriptorSet;
             
             // shader resource bindings
-            std::string bindingFileName = fileName + "-bindings.json";
+            std::string bindingFileName = pipelinePath + "-bindings.json";
             std::string bindingFilePath = std::string(getSaveDir()) + "/shader-output/" + bindingFileName;
             rapidjson::Document doc;
             {

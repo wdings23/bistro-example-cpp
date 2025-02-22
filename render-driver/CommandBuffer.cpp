@@ -47,9 +47,12 @@ namespace RenderDriver
         **
         */
         void CCommandBuffer::dispatch(
-            uint32_t iX,
-            uint32_t iY,
-            uint32_t iZ)
+            uint32_t iGroupX,
+            uint32_t iGroupY,
+            uint32_t iGroupZ,
+            uint32_t iLocalX,
+            uint32_t iLocalY,
+            uint32_t iLocalZ)
         {
         }
 

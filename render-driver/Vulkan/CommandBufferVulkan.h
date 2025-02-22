@@ -32,9 +32,12 @@ namespace RenderDriver
                 RenderDriver::Common::CDevice& device);
 
             virtual void dispatch(
-                uint32_t iX,
-                uint32_t iY,
-                uint32_t iZ);
+                uint32_t iGroupX,
+                uint32_t iGroupY,
+                uint32_t iGroupZ,
+                uint32_t iLocalX = 0,
+                uint32_t iLocalY = 0,
+                uint32_t iLocalZ = 0);
 
             virtual void drawIndexInstanced(
                 uint32_t iIndexCountPerInstance,

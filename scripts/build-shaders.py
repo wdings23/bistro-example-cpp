@@ -187,7 +187,8 @@ def compile_pipeline_shaders():
             attachment_names,
             shader_resources)
         json_str = json.dumps(bindings, indent=4)
-        json_output_file_path = os.path.join(shader_lib_target_directory, base_shader_name + '-bindings.json')
+        #json_output_file_path = os.path.join(shader_lib_target_directory, base_shader_name + '-bindings.json')
+        json_output_file_path = os.path.join(shader_lib_target_directory, pipeline_base_name + '-bindings.json')
         json_output_file = open(json_output_file_path, 'w')
         json_output_file.write(json_str)
         json_output_file.close()

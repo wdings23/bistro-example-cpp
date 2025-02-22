@@ -114,7 +114,7 @@ namespace Render
             {
                 mPassType = Render::Common::PassType::DepthPrepass;
             }
-
+       
             if(mType != JobType::Copy)
             {
                 createAttachments(
@@ -143,6 +143,7 @@ namespace Render
                     createInfo.miScreenWidth,
                     createInfo.miScreenHeight,
                     shaderDirectory,
+                    createInfo.mFilePath,
                     createInfo.mpPlatformInstance
                 );
 
@@ -657,9 +658,19 @@ namespace Render
             uint32_t iWidth,
             uint32_t iHeight,
             std::string const& shaderDirectory,
+            std::string const& pipelineFilePath,
             void* pPlatformInstance
         )
         {
+            auto baseStart = pipelineFilePath.find_last_of("/");
+            if(baseStart == std::string::npos)
+            {
+                baseStart = pipelineFilePath.find_last_of("\\");
+            }
+            std::string pipelineFileName = pipelineFilePath.substr(baseStart + 1);
+            auto pipelineFileExtensionStart = pipelineFileName.rfind(".");
+            std::string pipelineBaseName = pipelineFileName.substr(0, pipelineFileExtensionStart);
+            
             if(mType == JobType::Graphics)
             {
                 platformInitPipelineState();
@@ -761,7 +772,8 @@ namespace Render
                     pDesc,
                     acShaderBufferVS,
                     acShaderBufferFS,
-                    fullPath
+                    fullPath,
+                    pipelineBaseName
                 );
 
                 pDesc->miPixelShaderSize = (uint32_t)acShaderBufferFS.size();
@@ -796,7 +808,8 @@ namespace Render
                 pDesc = platformFillOutComputePipelineDescriptor(
                     pDesc,
                     acShaderBuffer,
-                    fullPath
+                    fullPath,
+                    pipelineBaseName
                 );
 
                 // create compute pipeline
@@ -939,19 +952,8 @@ namespace Render
 
                     std::string parentJobName = attachmentJSON["ParentJobName"].GetString();
 
-#if !defined(USE_RAY_TRACING)
-                    if(mName == "Swap Chain Graphics")
-                    {
-                        //parentJobName = "Texture Atlas Graphics";
-                        //name = "Albedo Output";
-
-                        parentJobName = "Deferred Indirect Graphics";
-                        name = "World Position Output";
-                    }
-#endif // USE_RAY_TRACING
-
-                    std::string newAttachnmentName = parentJobName + "-" + name;
-                    maAttachmentMappings.push_back(std::make_pair(newAttachnmentName, "texture-input"));
+                    std::string newAttachmentName = parentJobName + "-" + name;
+                    maAttachmentMappings.push_back(std::make_pair(newAttachmentName, "texture-input"));
 
                 }   // if TextureInput
                 else if(type == "BufferOutput")
@@ -1095,17 +1097,6 @@ namespace Render
             {
                 parentName = attachmentJSON["ParentName"].GetString();
             }
-
-#if !defined(USE_RAY_TRACING)
-            if(mName == "Swap Chain Graphics")
-            {
-                //name = "Albedo Output";
-                //parentJobName = "Texture Atlas Graphics";
-                parentJobName = "Deferred Indirect Graphics";
-                name = "World Position Output";
-                parentName = name;
-            }
-#endif // USE_RAY_TRACING
 
             CRenderJob* pParentJob = nullptr;
             for(auto& pJob : *apRenderJobs)

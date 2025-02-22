@@ -26,6 +26,7 @@ namespace RenderDriver
             imageDesc.miWidth = desc.miWidth;
             imageDesc.miHeight = desc.miHeight;
             imageDesc.miNumImages = 1;
+            imageDesc.mResourceFlags = RenderDriver::Common::ResourceFlagBits::AllowRenderTarget;
             
             mColorImage->create(imageDesc, device);
             mColorImage->setNativeImage(mNativeDrawableTexture);

@@ -345,7 +345,8 @@ namespace Render
 			RenderDriver::Common::GraphicsPipelineStateDescriptor* pDesc,
 			std::vector<char>& acShaderBufferVS,
 			std::vector<char>& acShaderBufferFS,
-			std::string const& shaderPath
+			std::string const& shaderPath,
+            std::string const& pipelineName
 		)
 		{
 			RenderDriver::Vulkan::CPipelineState::GraphicsPipelineStateDescriptor* pVulkanDesc = (RenderDriver::Vulkan::CPipelineState::GraphicsPipelineStateDescriptor*)pDesc;
@@ -424,7 +425,8 @@ namespace Render
 		RenderDriver::Common::ComputePipelineStateDescriptor* CRenderJob::platformFillOutComputePipelineDescriptor(
 			RenderDriver::Common::ComputePipelineStateDescriptor* pDesc,
 			std::vector<char>& acShaderBuffer,
-			std::string const& shaderPath
+			std::string const& shaderPath,
+            std::string const& pipelineName
 		)
 		{
 			RenderDriver::Vulkan::CPipelineState::ComputePipelineStateDescriptor* pVulkanDesc = (RenderDriver::Vulkan::CPipelineState::ComputePipelineStateDescriptor*)pDesc;

@@ -94,25 +94,9 @@
             filePath = "../../render/RenderJob.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "421"
-            endingLineNumber = "421"
+            startingLineNumber = "422"
+            endingLineNumber = "422"
             landmarkName = "CRenderJob::createPipelineData(doc, apRenderJobs, pCommandQueue, pacConstantBufferData)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "B475CB63-6A95-4508-B625-F0A1F16858F9"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../../render/Metal/RendererMetal.mm"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "435"
-            endingLineNumber = "435"
-            landmarkName = "CRenderer::platformSetComputeDescriptorSet(descriptorSet, commandBuffer, pipelineState)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -135,133 +119,49 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "238C4E6C-599D-48F8-99EB-080AB5FD1E77"
+            uuid = "4AAFEE22-628D-4AD7-BC03-E7A738A36891"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "../../render/Renderer.cpp"
+            filePath = "../../render-driver/Metal/CommandQueueMetal.mm"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1314"
-            endingLineNumber = "1314"
-            landmarkName = "CRenderer::filloutComputeJobCommandBuffer3(pRenderJob, commandBuffer, dispatches)"
+            startingLineNumber = "64"
+            endingLineNumber = "64"
+            landmarkName = "CCommandQueue::execCommandBuffer3(commandBuffer, piWaitValue, piSignalValue, pWaitFence, pSignalFence)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "FE7CD83F-08A0-4821-9D3B-F76CDB09E395"
+            uuid = "A5E5A42C-4A5C-4623-9B89-641AAA2F2554"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "../../render/Metal/RendererMetal.mm"
+            filePath = "../../render/Renderer.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "542"
-            endingLineNumber = "542"
-            landmarkName = "CRenderer::platformSetComputeDescriptorSet(descriptorSet, commandBuffer, pipelineState)"
+            startingLineNumber = "1603"
+            endingLineNumber = "1603"
+            landmarkName = "CRenderer::execRenderJobs3()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "FE7CD83F-08A0-4821-9D3B-F76CDB09E395 - c78fd3b7df18cc1c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Render::Metal::CRenderer::platformSetComputeDescriptorSet(RenderDriver::Common::CDescriptorSet&amp;, RenderDriver::Common::CCommandBuffer&amp;, RenderDriver::Common::CPipelineState&amp;)"
-                  moduleName = "bistro-example-cpp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/dingwings/projects/bistro-example-cpp/render/Metal/RendererMetal.mm"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "542"
-                  endingLineNumber = "542">
-               </Location>
-               <Location
-                  uuid = "FE7CD83F-08A0-4821-9D3B-F76CDB09E395 - c78fd3b7df18cc1c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Render::Metal::CRenderer::platformSetComputeDescriptorSet(RenderDriver::Common::CDescriptorSet&amp;, RenderDriver::Common::CCommandBuffer&amp;, RenderDriver::Common::CPipelineState&amp;)"
-                  moduleName = "bistro-example-cpp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/dingwings/projects/bistro-example-cpp/render/Metal/RendererMetal.mm"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "542"
-                  endingLineNumber = "542">
-               </Location>
-               <Location
-                  uuid = "FE7CD83F-08A0-4821-9D3B-F76CDB09E395 - c78fd3b7df18cc1c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Render::Metal::CRenderer::platformSetComputeDescriptorSet(RenderDriver::Common::CDescriptorSet&amp;, RenderDriver::Common::CCommandBuffer&amp;, RenderDriver::Common::CPipelineState&amp;)"
-                  moduleName = "bistro-example-cpp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/dingwings/projects/bistro-example-cpp/render/Metal/RendererMetal.mm"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "542"
-                  endingLineNumber = "542">
-               </Location>
-               <Location
-                  uuid = "FE7CD83F-08A0-4821-9D3B-F76CDB09E395 - c78fd3b7df18cc1c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Render::Metal::CRenderer::platformSetComputeDescriptorSet(RenderDriver::Common::CDescriptorSet&amp;, RenderDriver::Common::CCommandBuffer&amp;, RenderDriver::Common::CPipelineState&amp;)"
-                  moduleName = "bistro-example-cpp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/dingwings/projects/bistro-example-cpp/render/Metal/RendererMetal.mm"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "542"
-                  endingLineNumber = "542">
-               </Location>
-               <Location
-                  uuid = "FE7CD83F-08A0-4821-9D3B-F76CDB09E395 - c78fd3b7df18cc1c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Render::Metal::CRenderer::platformSetComputeDescriptorSet(RenderDriver::Common::CDescriptorSet&amp;, RenderDriver::Common::CCommandBuffer&amp;, RenderDriver::Common::CPipelineState&amp;)"
-                  moduleName = "bistro-example-cpp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/dingwings/projects/bistro-example-cpp/render/Metal/RendererMetal.mm"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "542"
-                  endingLineNumber = "542">
-               </Location>
-               <Location
-                  uuid = "FE7CD83F-08A0-4821-9D3B-F76CDB09E395 - c78fd3b7df18cc1c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Render::Metal::CRenderer::platformSetComputeDescriptorSet(RenderDriver::Common::CDescriptorSet&amp;, RenderDriver::Common::CCommandBuffer&amp;, RenderDriver::Common::CPipelineState&amp;)"
-                  moduleName = "bistro-example-cpp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/dingwings/projects/bistro-example-cpp/render/Metal/RendererMetal.mm"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "542"
-                  endingLineNumber = "542">
-               </Location>
-               <Location
-                  uuid = "FE7CD83F-08A0-4821-9D3B-F76CDB09E395 - c78fd3b7df18cc1c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "Render::Metal::CRenderer::platformSetComputeDescriptorSet(RenderDriver::Common::CDescriptorSet&amp;, RenderDriver::Common::CCommandBuffer&amp;, RenderDriver::Common::CPipelineState&amp;)"
-                  moduleName = "bistro-example-cpp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/dingwings/projects/bistro-example-cpp/render/Metal/RendererMetal.mm"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "542"
-                  endingLineNumber = "542">
-               </Location>
-            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2B160A51-7DA1-45A8-829E-D7837D9FB1C8"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../render/Renderer.cpp"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1593"
+            endingLineNumber = "1593"
+            landmarkName = "CRenderer::execRenderJobs3()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

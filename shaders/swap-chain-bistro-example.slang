@@ -42,10 +42,10 @@ PSOutput PSMain(VertexStageOutput in)
     PSOutput out;
 
     float2 texCoord = float2(in.texCoord.x, 1.0f - in.texCoord.y);
-    out.mOutput = /*texture0.Sample(
+    out.mOutput = texture0.Sample(
         sampler,
         texCoord
-    ) * */
+    ) * 
     texture1.Sample(
         sampler, 
         texCoord

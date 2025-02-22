@@ -33,6 +33,13 @@ namespace RenderDriver
                 uint64_t iFenceValue,
                 RenderDriver::Common::CDevice& device);
             
+            virtual void execCommandBuffer3(
+                RenderDriver::Common::CCommandBuffer& commandBuffer,
+                uint64_t* piWaitValue,
+                uint64_t* piSignalValue,
+                RenderDriver::Common::CFence* pWaitFence,
+                RenderDriver::Common::CFence* pSignalFence);
+            
             virtual void setID(std::string const& id);
 
             virtual void* getNativeCommandQueue();

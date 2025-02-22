@@ -102,17 +102,20 @@ namespace RenderDriver
         **
         */
         void CCommandBuffer::dispatch(
-            uint32_t iX,
-            uint32_t iY,
-            uint32_t iZ)
+            uint32_t iGroupX,
+            uint32_t iGroupY,
+            uint32_t iGroupZ,
+            uint32_t iLocalX,
+            uint32_t iLocalY,
+            uint32_t iLocalZ)
         {
             mState = RenderDriver::Common::CommandBufferState::Executing;
             
             vkCmdDispatch(
                 mNativeCommandBuffer,
-                iX,
-                iY,
-                iZ);
+                iGroupX,
+                iGroupY,
+                iGroupZ);
 
 #if defined(_DEBUG)
             addCommand(RenderDriver::Common::CCommandBuffer::COMMAND_DISPATCH);

@@ -146,6 +146,20 @@ namespace Render
             mpUploadCommandAllocator->create(commandAllocatorDesc, *mpDevice);
             mpUploadCommandAllocator->setID("Upload Command Allocator");
             
+            id<MTLDevice> nativeDevice = (__bridge id<MTLDevice>)mpDevice->getNativeDevice();
+            
+            // texture samplers
+            MTLSamplerDescriptor* linearSamplerDescriptor = [MTLSamplerDescriptor new];
+            linearSamplerDescriptor.magFilter = MTLSamplerMinMagFilterLinear;
+            linearSamplerDescriptor.minFilter = MTLSamplerMinMagFilterLinear;
+            mDefaultNativeLinearSamplerState = [nativeDevice newSamplerStateWithDescriptor: linearSamplerDescriptor];
+            
+            MTLSamplerDescriptor* pointSamplerDescriptor = [MTLSamplerDescriptor new];
+            pointSamplerDescriptor.magFilter = MTLSamplerMinMagFilterNearest;
+            pointSamplerDescriptor.minFilter = MTLSamplerMinMagFilterNearest;
+            mDefaultNativePointSamplerState = [nativeDevice newSamplerStateWithDescriptor: pointSamplerDescriptor];
+            
+            // filler buffer and textures
             mFillerBuffer = std::make_unique<RenderDriver::Metal::CBuffer>();
             mFillerTexture = std::make_unique<RenderDriver::Metal::CImage>();
             
@@ -484,7 +498,14 @@ namespace Render
                     }
                     else
                     {
-                        if(shaderResource.mType == ShaderResourceType::RESOURCE_TYPE_BUFFER_IN)
+                        // TODO: set texture sampler
+                        if(shaderResource.mName == "sampler" || shaderResource.mName == "textureSampler")
+                        {
+                            [nativeComputeEncoder
+                             setSamplerState: mDefaultNativePointSamplerState
+                             atIndex: 0];
+                        }
+                        else if(shaderResource.mType == ShaderResourceType::RESOURCE_TYPE_BUFFER_IN)
                         {
                             id<MTLBuffer> nativeBuffer = (__bridge id<MTLBuffer>)mFillerBuffer->getNativeBuffer();
                             [nativeComputeEncoder
@@ -562,7 +583,79 @@ namespace Render
             RenderDriver::Common::CCommandBuffer& commandBuffer,
             RenderDriver::Common::CPipelineState& pipelineState)
         {
-            WTFASSERT(0, "Implement me");
+            bool bHasTextures = false;
+            id<MTLRenderCommandEncoder> renderCommandEncoder = static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer).getNativeRenderCommandEncoder();
+            
+            std::vector<uint32_t> const& aiVertexLayoutIndices = descriptorSet.getVertexLayoutIndices();
+            std::vector<uint32_t> const& aiFragmentLayoutIndices = descriptorSet.getFragmentLayoutIndices();
+            
+            std::vector<SerializeUtils::Common::ShaderResourceInfo> const& aShaderResources = *descriptorSet.getDesc().mpaShaderResources;
+            std::vector<uint32_t> aiSet(aShaderResources.size());
+            
+            uint32_t iNumBufferVS = 0, iNumTextureVS = 0, iNumBufferFS = 0, iNumTextureFS = 0;
+            for(uint32_t i = 0; i < static_cast<uint32_t>(aiVertexLayoutIndices.size()); i++)
+            {
+                uint32_t iShaderIndex = aiVertexLayoutIndices[i];
+                SerializeUtils::Common::ShaderResourceInfo const& shaderResource = aShaderResources[iShaderIndex];
+                if(shaderResource.mExternalResource.mpBuffer)
+                {
+                    id<MTLBuffer> nativeBuffer = (__bridge id<MTLBuffer>)shaderResource.mExternalResource.mpBuffer->getNativeBuffer();
+                    [renderCommandEncoder
+                        setVertexBuffer: nativeBuffer
+                        offset: 0
+                        atIndex: iNumBufferVS];
+                    
+                    ++iNumBufferVS;
+                }
+                else if(shaderResource.mExternalResource.mpImage)
+                {
+                    id<MTLTexture> nativeTexture = (__bridge id<MTLTexture>)shaderResource.mExternalResource.mpImage->getNativeImage();
+                    [renderCommandEncoder
+                     setVertexTexture: nativeTexture
+                     atIndex: iNumTextureVS];
+                    
+                    ++iNumTextureVS;
+                }
+            }
+            
+            for(uint32_t i = 0; i < static_cast<uint32_t>(aiFragmentLayoutIndices.size()); i++)
+            {
+                uint32_t iShaderIndex = aiFragmentLayoutIndices[i];
+                SerializeUtils::Common::ShaderResourceInfo const& shaderResource = aShaderResources[iShaderIndex];
+                if(shaderResource.mExternalResource.mpBuffer)
+                {
+                    id<MTLBuffer> nativeBuffer = (__bridge id<MTLBuffer>)shaderResource.mExternalResource.mpBuffer->getNativeBuffer();
+                    [renderCommandEncoder
+                        setFragmentBuffer: nativeBuffer
+                        offset: 0
+                        atIndex: iNumBufferFS];
+                    
+                    ++iNumBufferFS;
+                }
+                else if(shaderResource.mExternalResource.mpImage)
+                {
+                    id<MTLTexture> nativeTexture = (__bridge id<MTLTexture>)shaderResource.mExternalResource.mpImage->getNativeImage();
+                    [renderCommandEncoder
+                     setFragmentTexture: nativeTexture
+                     atIndex: iNumTextureFS];
+                    
+                    ++iNumTextureFS;
+                    
+                    bHasTextures = true;
+                }
+            }
+            
+            // add samplers to the end
+            if(bHasTextures)
+            {
+                [renderCommandEncoder
+                 setFragmentSamplerState: mDefaultNativeLinearSamplerState
+                 atIndex: 0];
+                
+                [renderCommandEncoder
+                 setFragmentSamplerState: mDefaultNativePointSamplerState
+                 atIndex: 1];
+            }
         }
 
         /*
@@ -623,7 +716,7 @@ namespace Render
             RenderDriver::Common::CDescriptorHeap& descriptorHeap,
             RenderDriver::Common::CCommandBuffer& commandBuffer)
         {
-            WTFASSERT(0, "Implement me");
+            // no descriptor heap
         }
 
         /*
@@ -636,7 +729,7 @@ namespace Render
             uint32_t iTripleBufferIndex,
             Render::Common::JobType jobType)
         {
-            WTFASSERT(0, "Implement me");
+            // no resource views, has been set in descriptor function
         }
 
         /*
@@ -1274,6 +1367,11 @@ namespace Render
                 // create command buffer
                 desc.mpPipelineState = mapRenderJobs[renderJobName]->mpPipelineState;
                 desc.mpCommandAllocator = maRenderJobCommandAllocators[renderJobName].get();
+                desc.mType =
+                    (mapRenderJobs[renderJobName]->mType == Render::Common::JobType::Graphics) ?
+                    RenderDriver::Common::CommandBufferType::Graphics :
+                    RenderDriver::Common::CommandBufferType::Compute;
+                
                 maRenderJobCommandBuffers[renderJobName]->create(
                     desc,
                     *mpDevice
@@ -1291,9 +1389,55 @@ namespace Render
             Render::Common::RenderPassDescriptor2 const& renderPassDesc
         )
         {
-            WTFASSERT(0, "Implement me");
+            RenderDriver::Metal::CPipelineState* pPipelineStateMetal = static_cast<RenderDriver::Metal::CPipelineState*>(renderPassDesc.mpPipelineState);
+            MTLRenderPassDescriptor* pNativeRenderPassDescriptor = pPipelineStateMetal->getNativeRenderPassDecriptor();
             
-            RenderDriver::Metal::CPipelineState* pPipelineState = reinterpret_cast<RenderDriver::Metal::CPipelineState*>(renderPassDesc.mpPipelineState);
+            pNativeRenderPassDescriptor.depthAttachment.texture = nil;
+            
+            Render::Metal::RenderPassDescriptor2 const& renderPassDescMetal = static_cast<Render::Metal::RenderPassDescriptor2 const&>(renderPassDesc);
+            
+            // set output attachment info
+            auto const* pRenderJob = renderPassDesc.mpRenderJob;
+
+            bool bSwapChainPass = (pRenderJob->mPassType == Render::Common::PassType::SwapChain);
+            uint32_t iNumAttachments = (bSwapChainPass) ? 1 : static_cast<uint32_t>(pRenderJob->mapOutputImageAttachments.size());
+            uint32_t iAttachmentIndex = 0;
+            for(auto const& keyValue : pRenderJob->mapOutputImageAttachments)
+            {
+                if(keyValue.first == "Depth Output")
+                {
+                    // depth attachment
+                    pNativeRenderPassDescriptor.depthAttachment.texture = (__bridge id<MTLTexture>)keyValue.second->getNativeImage();
+                    pNativeRenderPassDescriptor.depthAttachment.loadAction = MTLLoadActionClear;
+                    pNativeRenderPassDescriptor.depthAttachment.storeAction = MTLStoreActionStore;
+                    pNativeRenderPassDescriptor.depthAttachment.clearDepth = 1.0;
+                }
+                else
+                {
+                    // color attachment
+                    pNativeRenderPassDescriptor.colorAttachments[iAttachmentIndex].texture = (__bridge id<MTLTexture>)keyValue.second->getNativeImage();
+                    pNativeRenderPassDescriptor.colorAttachments[iAttachmentIndex].loadAction = MTLLoadActionClear;
+                    pNativeRenderPassDescriptor.colorAttachments[iAttachmentIndex].storeAction = MTLStoreActionStore;
+                    pNativeRenderPassDescriptor.colorAttachments[iAttachmentIndex].clearColor = MTLClearColorMake(0.0, 0.0, 0.3, 0.0);
+                    ++iAttachmentIndex;
+                }
+            }
+            
+            pNativeRenderPassDescriptor.renderTargetWidth = renderPassDesc.miOutputWidth;
+            pNativeRenderPassDescriptor.renderTargetHeight = renderPassDesc.miOutputHeight;
+            pNativeRenderPassDescriptor.renderTargetArrayLength = 1;
+            pNativeRenderPassDescriptor.defaultRasterSampleCount = 1;
+            
+            RenderDriver::Metal::CCommandBuffer* pCommandBufferMetal = static_cast<RenderDriver::Metal::CCommandBuffer*>(renderPassDesc.mpCommandBuffer);
+            
+            pCommandBufferMetal->beginRenderPass(pNativeRenderPassDescriptor);
+            id<MTLRenderCommandEncoder> nativeRenderCommandEncoder = pCommandBufferMetal->getNativeRenderCommandEncoder();
+            nativeRenderCommandEncoder.label = [NSString stringWithUTF8String: std::string(pRenderJob->mName + " Render Command Encoder").c_str()];
+            
+            [nativeRenderCommandEncoder setDepthStencilState: pPipelineStateMetal->getNativeDepthStencilState()];
+            
+            [nativeRenderCommandEncoder setFrontFacingWinding: MTLWindingCounterClockwise];
+            
             
         }
 
@@ -1658,7 +1802,7 @@ namespace Render
             RenderDriver::Common::CCommandBuffer& commandBuffer,
             bool bReverse)
         {
-            WTFASSERT(0, "Implement me");
+            // no need to transition image barriers
         }
 
         /*
