@@ -1167,7 +1167,7 @@ namespace Render
         */
         void CRenderer::platformSwapChainMoveToNextFrame()
         {
-            WTFASSERT(0, "Implement me");
+            // Done in App thread
         }
 
         /*
@@ -1341,12 +1341,7 @@ namespace Render
         )
         {
             for(auto const& renderJobName : aRenderJobNames)
-            {
-if(renderJobName.find("Copy Render Targets") != std::string::npos)
-{
-    int iDebug = 1;
-}
-                
+            {                
                 maRenderJobCommandBuffers[renderJobName] = std::make_unique<RenderDriver::Metal::CCommandBuffer>();
                 maRenderJobCommandAllocators[renderJobName] = std::make_unique<RenderDriver::Metal::CCommandAllocator>();
 
