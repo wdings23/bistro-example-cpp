@@ -107,16 +107,15 @@ renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPix
                     
                     std::string formatStr;
                     RenderDriver::Metal::Utils::getFormatString(formatStr, colorAttachmentFormat);
-                    DEBUG_PRINTF("\t%d format: %s\n",
-                                 iColorAttachment,
-                                 formatStr.c_str());
-                    int iDebug = 1;
+DEBUG_PRINTF("\t%d format: %s\n",
+             iColorAttachment,
+             formatStr.c_str());
                 }
             }
             
             // depth attachment format, no depth enabled or not swap chain pass ==> invalid pixel format for depth
             renderPipelineDescriptor.depthAttachmentPixelFormat =
-                (desc.mDepthStencilState.mbDepthEnabled || desc.mbOutputPresent) ?
+                (desc.mDepthStencilState.mbDepthEnabled /*|| desc.mbOutputPresent*/) ?
                 RenderDriver::Metal::Utils::convert(metalPipelineDesc.mDepthStencilFormat) :
                 MTLPixelFormatInvalid;
             

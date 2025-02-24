@@ -324,7 +324,7 @@ namespace Render
                     }
                 }
             }
-
+            
             // depth attachment if needed
             // create depth texture if depth stencil%
             if(doc.HasMember("DepthStencilState"))
@@ -786,7 +786,7 @@ namespace Render
                 {
                     pDesc->mpPixelShader = nullptr;
                 }
-
+              
                 // TODO: use output attachments number
 DEBUG_PRINTF("render job: %s\n", mName.c_str());
                 mpPipelineState->create(

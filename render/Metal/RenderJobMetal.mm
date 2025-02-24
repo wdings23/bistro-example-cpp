@@ -38,7 +38,7 @@ namespace Render
 			maOutputImageAttachments[name] = std::make_unique<RenderDriver::Metal::CImage>();
 			
 			RenderDriver::Metal::CImage* pImage = maOutputImageAttachments[name].get();
-			
+			            
 			float afDefaultClearColor[4] = {0.0f, 0.0f, 0.3f, 0.0f};
 			RenderDriver::Common::ImageDescriptor desc = {};
 			uint32_t iNumChannels = SerializeUtils::Common::getBaseComponentSize(format);
@@ -49,7 +49,8 @@ namespace Render
 			desc.mFormat = format;
 			desc.mResourceFlags = RenderDriver::Common::ResourceFlagBits(
                 uint32_t(RenderDriver::Common::ResourceFlagBits::AllowSimultaneousAccess) |
-                uint32_t(RenderDriver::Common::ResourceFlagBits::AllowRenderTarget)
+                uint32_t(RenderDriver::Common::ResourceFlagBits::AllowRenderTarget) |
+                uint32_t(RenderDriver::Common::ResourceFlagBits::AllowUnorderedAccess)
             );
 			desc.mafClearColor = afDefaultClearColor;
 			desc.mImageLayout = RenderDriver::Common::ImageLayout::ATTACHMENT_OPTIMAL;

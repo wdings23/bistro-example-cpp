@@ -1088,7 +1088,7 @@ namespace Render
             );
 
 DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
-
+            
             // queue type
             RenderDriver::Common::CCommandQueue::Type queueType = RenderDriver::Common::CCommandQueue::Type::Graphics;
             if(pRenderJob->mType == Render::Common::JobType::Compute)

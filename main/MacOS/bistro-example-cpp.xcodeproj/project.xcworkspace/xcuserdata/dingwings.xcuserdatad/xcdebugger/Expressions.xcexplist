@@ -30,6 +30,22 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
+         contextName = "RenderDriver::Metal::CImage::create:ImageMetal.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "this-&gt;mID">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Render::Common::CRenderer::filloutGraphicsJobCommandBuffer3:Renderer.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "pRenderJob-&gt;mName">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "Render::Metal::CRenderJob::platformFillOutGraphicsPipelineDescriptor:RenderJobMetal.mm">
          <PersistentStrings>
             <PersistentString
@@ -41,21 +57,7 @@
          </PersistentStrings>
       </ContextState>
       <ContextState
-         contextName = "RenderDriver::Metal::CCommandBuffer::close:CommandBufferMetal.mm">
-      </ContextState>
-      <ContextState
          contextName = "closure #1 in MetalView.beginFrame():MetalView.swift">
-      </ContextState>
-      <ContextState
-         contextName = "Render::Common::CRenderer::filloutGraphicsJobCommandBuffer3:Renderer.cpp">
-         <PersistentStrings>
-            <PersistentString
-               value = "pRenderJob-&gt;mName">
-            </PersistentString>
-         </PersistentStrings>
-      </ContextState>
-      <ContextState
-         contextName = "Render::Common::CRenderJob::create:RenderJob.cpp">
       </ContextState>
       <ContextState
          contextName = "Render::Metal::CRenderer::platformSetup:RendererMetal.mm">
@@ -64,6 +66,12 @@
                value = "metalCommandBufferDesc.mType">
             </PersistentString>
          </PersistentStrings>
+      </ContextState>
+      <ContextState
+         contextName = "Render::Common::CRenderJob::create:RenderJob.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "RenderDriver::Metal::CCommandBuffer::close:CommandBufferMetal.mm">
       </ContextState>
       <ContextState
          contextName = "RenderDriver::Metal::CCommandBuffer::beginCopy:CommandBufferMetal.mm">
@@ -97,6 +105,14 @@
       </ContextState>
       <ContextState
          contextName = "RenderDriver::Metal::CPipelineState::create:PipelineStateMetal.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "desc.mDepthStencilState">
+            </PersistentString>
+            <PersistentString
+               value = "renderPipelineDescriptor.depthAttachmentPixelFormat">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "Render::Metal::CRenderJob::platformFillOutGraphicsPipelineDescriptor(RenderDriver::Common::GraphicsPipelineStateDescriptor*, std::__1::vector&lt;char, std::__1::allocator&lt;char&gt;&gt;&amp;, std::__1::vector&lt;char, std::__1::allocator&lt;char&gt;&gt;&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt;&gt; const&amp;)::$_1::operator()(SerializeUtils::Common::ShaderResourceInfo const&amp;) const:RenderJobMetal.mm">

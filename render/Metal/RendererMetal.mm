@@ -1598,8 +1598,8 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             RenderDriver::Common::CCommandQueue::Type const& queueType
         )
         {
-            WTFASSERT(0, "Implement me");
-            
+            // no barriers
+#if 0
             for(uint32_t i = 0; i < iNumBarriers; i++)
             {
                 if(aBarriers[i].mpImage == nullptr)
@@ -1611,7 +1611,7 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
                 RenderDriver::Metal::CImage* pImageMetal = (RenderDriver::Metal::CImage*)barrierInfo.mpImage;
                 
             }
-
+#endif // #if 0
         }
 
         /*
