@@ -211,11 +211,6 @@ namespace Render
                 ++iJob;
             }
 
-            // create command buffers for render jobs
-            platformCreateRenderJobCommandBuffers(
-                aRenderJobNames
-            );
-
             //platformTransitionOutputAttachments();
 
             // create the rest
@@ -332,7 +327,10 @@ namespace Render
                 ++iJob;
             }
 
-            
+            // create command buffers for render jobs
+            platformCreateRenderJobCommandBuffers(
+                aRenderJobNames
+            );
 
             //separateOutRenderJobsByType();
             
@@ -1241,7 +1239,8 @@ namespace Render
                     1,
                     0,
                     0,
-                    0);
+                    0,
+                    mapIndexBuffers["full-screen-triangle"]);
             }
             else if(pRenderJob->mPassType == PassType::DrawMeshes || pRenderJob->mPassType == PassType::DepthPrepass)
             {

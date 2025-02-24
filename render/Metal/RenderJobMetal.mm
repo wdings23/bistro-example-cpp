@@ -318,7 +318,6 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
             RenderDriver::Metal::CPipelineState::GraphicsPipelineStateDescriptor* pMetalDesc = (RenderDriver::Metal::CPipelineState::GraphicsPipelineStateDescriptor*)pDesc;
             //DEBUG_PRINTF("%s\n", shaderPath.c_str());
             
-            pMetalDesc->miNumRenderTarget = 1;
             pMetalDesc->mVertexEntryName = "VSMain";
             pMetalDesc->mFragementEntryName = "PSMain";
             

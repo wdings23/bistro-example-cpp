@@ -28,6 +28,14 @@
          contextName = "closure #1 in MetalView.beginFrame():MetalView.swift">
       </ContextState>
       <ContextState
+         contextName = "Render::Common::CRenderer::filloutGraphicsJobCommandBuffer3:Renderer.cpp">
+         <PersistentStrings>
+            <PersistentString
+               value = "pRenderJob-&gt;mName">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "Render::Common::CRenderJob::create:RenderJob.cpp">
       </ContextState>
       <ContextState
@@ -62,6 +70,17 @@
       </ContextState>
       <ContextState
          contextName = "RenderDriver::Metal::CPipelineState::create:PipelineStateMetal.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "mName">
+            </PersistentString>
+            <PersistentString
+               value = "renderPipelineDescriptor.colorAttachments[0].pixelFormat">
+            </PersistentString>
+            <PersistentString
+               value = "metalPipelineDesc.miNumRenderTarget">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "Render::Metal::CRenderJob::platformFillOutGraphicsPipelineDescriptor(RenderDriver::Common::GraphicsPipelineStateDescriptor*, std::__1::vector&lt;char, std::__1::allocator&lt;char&gt;&gt;&amp;, std::__1::vector&lt;char, std::__1::allocator&lt;char&gt;&gt;&amp;, std::__1::basic_string&lt;char, std::__1::char_traits&lt;char&gt;, std::__1::allocator&lt;char&gt;&gt; const&amp;)::$_1::operator()(SerializeUtils::Common::ShaderResourceInfo const&amp;) const:RenderJobMetal.mm">

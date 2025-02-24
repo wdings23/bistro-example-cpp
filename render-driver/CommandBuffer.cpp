@@ -64,7 +64,8 @@ namespace RenderDriver
             uint32_t iNumInstances,
             uint32_t iStartIndexLocation,
             uint32_t iBaseVertexLocation,
-            uint32_t iStartInstanceLocation)
+            uint32_t iStartInstanceLocation,
+            RenderDriver::Common::CBuffer* pIndexBuffer)
         {
         }
 

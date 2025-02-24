@@ -119,22 +119,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "4AAFEE22-628D-4AD7-BC03-E7A738A36891"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../../render-driver/Metal/CommandQueueMetal.mm"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "64"
-            endingLineNumber = "64"
-            landmarkName = "CCommandQueue::execCommandBuffer3(commandBuffer, piWaitValue, piSignalValue, pWaitFence, pSignalFence)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "A5E5A42C-4A5C-4623-9B89-641AAA2F2554"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -142,8 +126,8 @@
             filePath = "../../render/Renderer.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1603"
-            endingLineNumber = "1603"
+            startingLineNumber = "1602"
+            endingLineNumber = "1602"
             landmarkName = "CRenderer::execRenderJobs3()"
             landmarkType = "7">
          </BreakpointContent>
@@ -158,9 +142,41 @@
             filePath = "../../render/Renderer.cpp"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "1593"
-            endingLineNumber = "1593"
+            startingLineNumber = "1592"
+            endingLineNumber = "1592"
             landmarkName = "CRenderer::execRenderJobs3()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CBF86D16-4A14-43D5-8CA9-A8EAD62E120A"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../render/Renderer.cpp"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1170"
+            endingLineNumber = "1170"
+            landmarkName = "CRenderer::filloutGraphicsJobCommandBuffer3(pRenderJob, commandBuffer)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CAACF117-3A4C-4A2A-BE5F-668DFD627696"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../render/Renderer.cpp"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1237"
+            endingLineNumber = "1237"
+            landmarkName = "CRenderer::filloutGraphicsJobCommandBuffer3(pRenderJob, commandBuffer)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

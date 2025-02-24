@@ -741,7 +741,17 @@ namespace Render
             float fMaxDepth,
             RenderDriver::Common::CCommandBuffer& commandBuffer)
         {
-            WTFASSERT(0, "Implement me");
+            // viewport
+            MTLViewport viewport;
+            viewport.originX = 0.0;
+            viewport.originY = 0.0;
+            viewport.width = iWidth;
+            viewport.height = iHeight;
+            viewport.zfar = fMaxDepth;
+            viewport.znear = -1.0;
+            
+            id<MTLRenderCommandEncoder> nativeRenderCommandEncoder = static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer).getNativeRenderCommandEncoder();
+            [nativeRenderCommandEncoder setViewport: viewport];
         }
 
         /*
@@ -755,7 +765,7 @@ namespace Render
             std::vector<std::vector<float>> const& aafClearColors,
             std::vector<bool> const& abClear)
         {
-            WTFASSERT(0, "Implement me");
+            // already set in the render pass descriptor passed in for render command encoder
         }
 
         /*
@@ -1448,7 +1458,7 @@ namespace Render
             Render::Common::RenderPassDescriptor2 const& renderPassDesc
         )
         {
-            WTFASSERT(0, "Implement me");
+            // Nothing to be done
             
         }
 
@@ -1520,10 +1530,11 @@ namespace Render
         void CRenderer::platformSetVertexAndIndexBuffers2(
             RenderDriver::Common::CCommandBuffer& commandBuffer,
             std::string const& meshName)
-        {
-            WTFASSERT(0, "Implement me");
+    {
+            id<MTLRenderCommandEncoder> nativeRenderCommandEncoder = static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer).getNativeRenderCommandEncoder();
             
-            
+            id<MTLBuffer> nativeVertexBuffer = (__bridge id<MTLBuffer>)mapVertexBuffers[meshName]->getNativeBuffer();
+            [nativeRenderCommandEncoder setVertexBuffer: nativeVertexBuffer offset: 0 atIndex: 30];
         }
 
         /*

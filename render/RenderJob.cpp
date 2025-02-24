@@ -787,6 +787,8 @@ namespace Render
                     pDesc->mpPixelShader = nullptr;
                 }
 
+                // TODO: use output attachments number
+                
                 mpPipelineState->create(
                     *pDesc,
                     *mpDevice

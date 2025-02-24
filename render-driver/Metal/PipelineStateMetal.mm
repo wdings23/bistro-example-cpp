@@ -27,7 +27,6 @@ namespace RenderDriver
             RenderDriver::Metal::CDevice& deviceMetal = static_cast<RenderDriver::Metal::CDevice&>(device);
             mNativeDevice = (__bridge id<MTLDevice>)deviceMetal.getNativeDevice();
             
-            
             char const* szDir = getSaveDir();
             std::string shaderOutputDirectory = std::string(szDir) + "/shader-output";
             printf("save directory: \"%s\"\n", shaderOutputDirectory.c_str());
@@ -103,7 +102,8 @@ renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPix
                 else
                 {
                     RenderDriver::Common::Format const& colorAttachmentFormat = metalPipelineDesc.maRenderTargetFormats[iColorAttachment];
-                    renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = RenderDriver::Metal::Utils::convert(colorAttachmentFormat);
+                    MTLPixelFormat format = RenderDriver::Metal::Utils::convert(colorAttachmentFormat);
+                    renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = format;
                 }
             }
             
@@ -153,7 +153,7 @@ renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPix
             MTLAutoreleasedRenderPipelineReflection reflection;
             mNativeRenderPipelineState = [mNativeDevice
                 newRenderPipelineStateWithDescriptor: renderPipelineDescriptor 
-                options: MTLPipelineOptionArgumentInfo | MTLPipelineOptionBufferTypeInfo
+                options: MTLPipelineOptionBufferTypeInfo
                 reflection: &reflection
                 error: &error];
             

@@ -21,6 +21,8 @@ namespace RenderDriver
 
             MTLPixelFormat convert(RenderDriver::Common::Format format);
             MTLCompareFunction convert(RenderDriver::Common::ComparisonFunc compareFunc);
+        
+            void getFormatString(std::string& formatStr, RenderDriver::Common::Format format);
 
         }   // Utils
 
