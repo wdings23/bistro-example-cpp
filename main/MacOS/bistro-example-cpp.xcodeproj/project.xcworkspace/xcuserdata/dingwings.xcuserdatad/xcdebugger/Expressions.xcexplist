@@ -3,6 +3,17 @@
    version = "1.0">
    <ContextStates>
       <ContextState
+         contextName = "RenderDriver::Metal::CCommandBuffer::create:CommandBufferMetal.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "descMetal.mType">
+            </PersistentString>
+            <PersistentString
+               value = "desc.mType">
+            </PersistentString>
+         </PersistentStrings>
+      </ContextState>
+      <ContextState
          contextName = "Render::Common::CRenderJob::handleTextureInput:RenderJob.cpp">
          <PersistentStrings>
             <PersistentString
@@ -37,6 +48,14 @@
       </ContextState>
       <ContextState
          contextName = "Render::Common::CRenderJob::create:RenderJob.cpp">
+      </ContextState>
+      <ContextState
+         contextName = "Render::Metal::CRenderer::platformSetup:RendererMetal.mm">
+         <PersistentStrings>
+            <PersistentString
+               value = "metalCommandBufferDesc.mType">
+            </PersistentString>
+         </PersistentStrings>
       </ContextState>
       <ContextState
          contextName = "RenderDriver::Metal::CCommandBuffer::beginCopy:CommandBufferMetal.mm">

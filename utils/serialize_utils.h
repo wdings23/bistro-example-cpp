@@ -600,7 +600,7 @@ namespace RenderDriver
 
 		enum class CommandBufferType
 		{
-			Graphics,
+			Graphics = 0,
 			Compute,
 			Copy,
 		};

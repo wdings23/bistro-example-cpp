@@ -130,7 +130,7 @@ namespace Render
             metalCommandBufferDesc.mpPipelineState = nullptr;
             metalCommandBufferDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
             metalCommandBufferDesc.mpCommandQueue = (__bridge id<MTLCommandQueue>)mpCopyCommandQueue->getNativeCommandQueue();
-            mpUploadCommandBuffer->create(commandBufferDesc, *mpDevice);
+            mpUploadCommandBuffer->create(metalCommandBufferDesc, *mpDevice);
             mpUploadCommandBuffer->setID("Upload Command Buffer");
             mpUploadCommandBuffer->reset();
             
