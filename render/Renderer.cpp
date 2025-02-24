@@ -1546,7 +1546,6 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                         RenderDriver::Common::CImage* pSrcImage = pRenderJob->mapInputImageAttachments[destAttachmentName];
                         RenderDriver::Common::CImage* pDestImage = pRenderJob->mapOutputImageAttachments[copyAttachment.first];
 
-                        RenderDriver::Common::CCommandBuffer& commandBuffer = *mapRenderJobCommandBuffers["Copy Render Targets"];
                         platformCopyImage2(
                             *pDestImage,
                             *pSrcImage,

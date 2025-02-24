@@ -916,19 +916,17 @@ namespace Render
             RenderDriver::Common::CCommandBuffer& commandBuffer,
             bool bSrcWritable)
         {
-            WTFASSERT(0, "Implement me");
+            id<MTLTexture> srcTexture = (__bridge id<MTLTexture>)srcImage.getNativeImage();
+            id<MTLTexture> destTexture = (__bridge id<MTLTexture>)destImage.getNativeImage();
             
-            uint32_t iImageWidth = srcImage.getDescriptor().miWidth;
-            uint32_t iImageHeight = srcImage.getDescriptor().miHeight;
-
-            uint32_t iQueueType = static_cast<uint32_t>(RenderDriver::Common::CCommandQueue::Type::Copy);
-            //RenderDriver::Common::ImageLayout const& oldLayoutSrc = static_cast<RenderDriver::Metal::CImage&>(srcImage).getImageLayout(static_cast<uint32_t>(iQueueType));
-            //RenderDriver::Common::ImageLayout const& oldLayoutDest = static_cast<RenderDriver::Metal::CImage&>(destImage).getImageLayout(iQueueType);
+            RenderDriver::Metal::CCommandBuffer& commandBufferMetal = (RenderDriver::Metal::CCommandBuffer&)commandBuffer;
             
-            // copy image
-            
-
-            // set image layout
+            commandBufferMetal.beginCopy();
+            id<MTLBlitCommandEncoder> nativeBlitCommandEncoder = commandBufferMetal.getNativeBlitCommandEncoder();
+            WTFASSERT(nativeBlitCommandEncoder != nil, "No blit command encoder");
+            [nativeBlitCommandEncoder
+                 copyFromTexture: srcTexture
+                 toTexture: destTexture];
         }
 
         /*
@@ -1344,6 +1342,11 @@ namespace Render
         {
             for(auto const& renderJobName : aRenderJobNames)
             {
+if(renderJobName.find("Copy Render Targets") != std::string::npos)
+{
+    int iDebug = 1;
+}
+                
                 maRenderJobCommandBuffers[renderJobName] = std::make_unique<RenderDriver::Metal::CCommandBuffer>();
                 maRenderJobCommandAllocators[renderJobName] = std::make_unique<RenderDriver::Metal::CCommandAllocator>();
 
@@ -1377,10 +1380,6 @@ namespace Render
                 // create command buffer
                 desc.mpPipelineState = mapRenderJobs[renderJobName]->mpPipelineState;
                 desc.mpCommandAllocator = maRenderJobCommandAllocators[renderJobName].get();
-                desc.mType =
-                    (mapRenderJobs[renderJobName]->mType == Render::Common::JobType::Graphics) ?
-                    RenderDriver::Common::CommandBufferType::Graphics :
-                    RenderDriver::Common::CommandBufferType::Compute;
                 
                 maRenderJobCommandBuffers[renderJobName]->create(
                     desc,
@@ -1413,11 +1412,6 @@ namespace Render
             uint32_t iAttachmentIndex = 0;
             for(uint32_t iAttachment = 0; iAttachment < pRenderJob->maAttachmentMappings.size(); iAttachment++)
             {
-if(pRenderJob->maAttachmentMappings[iAttachment].second == "texture-input-output")
-{
-    int iDebug = 1;
-}
-                
                 if(pRenderJob->maAttachmentMappings[iAttachment].second != "texture-output" &&
                    pRenderJob->maAttachmentMappings[iAttachment].second != "texture-input-output")
                 {
