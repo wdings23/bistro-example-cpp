@@ -104,6 +104,13 @@ renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPix
                     RenderDriver::Common::Format const& colorAttachmentFormat = metalPipelineDesc.maRenderTargetFormats[iColorAttachment];
                     MTLPixelFormat format = RenderDriver::Metal::Utils::convert(colorAttachmentFormat);
                     renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = format;
+                    
+                    std::string formatStr;
+                    RenderDriver::Metal::Utils::getFormatString(formatStr, colorAttachmentFormat);
+                    DEBUG_PRINTF("\t%d format: %s\n",
+                                 iColorAttachment,
+                                 formatStr.c_str());
+                    int iDebug = 1;
                 }
             }
             

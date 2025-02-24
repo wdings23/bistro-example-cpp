@@ -1087,7 +1087,7 @@ namespace Render
                 &commandBuffer
             );
 
-//DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
+DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
 
             // queue type
             RenderDriver::Common::CCommandQueue::Type queueType = RenderDriver::Common::CCommandQueue::Type::Graphics;

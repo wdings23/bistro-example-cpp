@@ -32,11 +32,6 @@ namespace Render
         {
         };
 
-        struct RenderPassDescriptor2 : public Render::Common::RenderPassDescriptor2
-        {
-            Render::Common::CRenderJob*     mpRenderJob;
-        };
-    
         class CRenderer : public Render::Common::CRenderer
         {
         public:

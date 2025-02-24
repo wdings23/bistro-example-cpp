@@ -788,7 +788,7 @@ namespace Render
                 }
 
                 // TODO: use output attachments number
-                
+DEBUG_PRINTF("render job: %s\n", mName.c_str());
                 mpPipelineState->create(
                     *pDesc,
                     *mpDevice

@@ -789,7 +789,10 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
 			desc.miHeight = iHeight;
 			desc.miNumImages = 1;
 			desc.mFormat = format;
-			desc.mResourceFlags = RenderDriver::Common::ResourceFlagBits::AllowSimultaneousAccess;
+			desc.mResourceFlags = RenderDriver::Common::ResourceFlagBits(
+                uint32_t(RenderDriver::Common::ResourceFlagBits::AllowSimultaneousAccess) |
+                uint32_t(RenderDriver::Common::ResourceFlagBits::AllowRenderTarget)
+            );
 			desc.mafClearColor = afDefaultClearColor;
 			mDepthImage->create(
 				desc,

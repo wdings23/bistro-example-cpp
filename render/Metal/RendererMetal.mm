@@ -1404,20 +1404,35 @@ namespace Render
             
             pNativeRenderPassDescriptor.depthAttachment.texture = nil;
             
-            Render::Metal::RenderPassDescriptor2 const& renderPassDescMetal = static_cast<Render::Metal::RenderPassDescriptor2 const&>(renderPassDesc);
+            //Render::Metal::RenderPassDescriptor2 const& renderPassDescMetal = static_cast<Render::Metal::RenderPassDescriptor2 const&>(renderPassDesc);
             
             // set output attachment info
-            auto const* pRenderJob = renderPassDesc.mpRenderJob;
+            Render::Common::CRenderJob* pRenderJob = (Render::Common::CRenderJob*)renderPassDesc.mpRenderJob;
 
             bool bSwapChainPass = (pRenderJob->mPassType == Render::Common::PassType::SwapChain);
-            uint32_t iNumAttachments = (bSwapChainPass) ? 1 : static_cast<uint32_t>(pRenderJob->mapOutputImageAttachments.size());
             uint32_t iAttachmentIndex = 0;
-            for(auto const& keyValue : pRenderJob->mapOutputImageAttachments)
+            for(uint32_t iAttachment = 0; iAttachment < pRenderJob->maAttachmentMappings.size(); iAttachment++)
             {
-                if(keyValue.first == "Depth Output")
+if(pRenderJob->maAttachmentMappings[iAttachment].second == "texture-input-output")
+{
+    int iDebug = 1;
+}
+                
+                if(pRenderJob->maAttachmentMappings[iAttachment].second != "texture-output" &&
+                   pRenderJob->maAttachmentMappings[iAttachment].second != "texture-input-output")
+                {
+                    continue;
+                }
+                
+                std::string const& name = pRenderJob->maAttachmentMappings[iAttachment].first;
+                RenderDriver::Metal::CImage* pImageMetal = (RenderDriver::Metal::CImage*)pRenderJob->mapOutputImageAttachments[name];
+                
+DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
+                
+                if(name == "Depth Output")
                 {
                     // depth attachment
-                    pNativeRenderPassDescriptor.depthAttachment.texture = (__bridge id<MTLTexture>)keyValue.second->getNativeImage();
+                    pNativeRenderPassDescriptor.depthAttachment.texture = (__bridge id<MTLTexture>)pImageMetal->getNativeImage();
                     pNativeRenderPassDescriptor.depthAttachment.loadAction = MTLLoadActionClear;
                     pNativeRenderPassDescriptor.depthAttachment.storeAction = MTLStoreActionStore;
                     pNativeRenderPassDescriptor.depthAttachment.clearDepth = 1.0;
@@ -1425,12 +1440,21 @@ namespace Render
                 else
                 {
                     // color attachment
-                    pNativeRenderPassDescriptor.colorAttachments[iAttachmentIndex].texture = (__bridge id<MTLTexture>)keyValue.second->getNativeImage();
+                    pNativeRenderPassDescriptor.colorAttachments[iAttachmentIndex].texture = (__bridge id<MTLTexture>)pImageMetal->getNativeImage();
                     pNativeRenderPassDescriptor.colorAttachments[iAttachmentIndex].loadAction = MTLLoadActionClear;
                     pNativeRenderPassDescriptor.colorAttachments[iAttachmentIndex].storeAction = MTLStoreActionStore;
                     pNativeRenderPassDescriptor.colorAttachments[iAttachmentIndex].clearColor = MTLClearColorMake(0.0, 0.0, 0.3, 0.0);
                     ++iAttachmentIndex;
                 }
+            }
+            
+            if(pRenderJob->mpDepthImage != nullptr)
+            {
+                // depth attachment
+                pNativeRenderPassDescriptor.depthAttachment.texture = (__bridge id<MTLTexture>)pRenderJob->mpDepthImage->getNativeImage();
+                pNativeRenderPassDescriptor.depthAttachment.loadAction = MTLLoadActionClear;
+                pNativeRenderPassDescriptor.depthAttachment.storeAction = MTLStoreActionStore;
+                pNativeRenderPassDescriptor.depthAttachment.clearDepth = 1.0;
             }
             
             pNativeRenderPassDescriptor.renderTargetWidth = renderPassDesc.miOutputWidth;

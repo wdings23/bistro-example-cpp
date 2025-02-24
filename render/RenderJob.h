@@ -122,6 +122,9 @@ namespace Render
 
 			std::unique_ptr<std::function<void(Render::Common::CRenderJob*)>> mpfnInitExternalData = nullptr;
 
+            std::vector<std::pair<std::string, std::string>>                    maAttachmentMappings;
+            std::map<std::string, RenderDriver::Common::CImage*>        mapImageAttachments;
+            
         protected:
             RenderDriver::Common::CDevice*							mpDevice;
 			RenderDriver::Common::CCommandQueue*					mpCommandQueue;
@@ -131,14 +134,12 @@ namespace Render
 			
 			std::map<std::string, std::string>						mShaderResourceUserData;
 
-			std::map<std::string, RenderDriver::Common::CImage*>		mapImageAttachments;
+			
 			std::map<std::string, RenderDriver::Common::CImageView*>	mapImageAttachmentViews;
 			std::map<std::string, RenderDriver::Common::CBuffer*>		mapBufferAttachments;
 			std::map<std::string, RenderDriver::Common::CBufferView*>	mapBufferAttachmentViews;
 			std::map<std::string, RenderDriver::Common::CAccelerationStructure*> mapAccelerationAttachments;
 
-			std::vector<std::pair<std::string, std::string>>					maAttachmentMappings;
-			
 			std::map<std::string, RenderDriver::Common::Format>			maAttachmentFormats;
 			std::map<std::string, LoadStoreOp>							maAttachmentLoadOps;
 			std::map<std::string, LoadStoreOp>							maAttachmentStoreOps;
