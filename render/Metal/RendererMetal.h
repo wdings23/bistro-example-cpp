@@ -403,6 +403,11 @@ namespace Render
                   Render::Common::CRenderJob& renderJob,
                   RenderDriver::Common::CCommandBuffer& commandBuffer);
 
+           
+            virtual void platformBeginCopyPass(
+                Render::Common::CRenderJob& renderJob,
+                RenderDriver::Common::CCommandBuffer& commandBuffer);
+            
             void platformPreSwapChainPassSubmission(
                 Render::Common::CRenderJob const& renderJob,
                 RenderDriver::Common::CCommandBuffer& commandBuffer);

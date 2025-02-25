@@ -865,8 +865,12 @@ namespace Render
 
             virtual void platformBeginComputePass(
                   Render::Common::CRenderJob& renderJob,
-                  RenderDriver::Common::CCommandBuffer& commandBuffer) {};
+                  RenderDriver::Common::CCommandBuffer& commandBuffer) {}
             
+            virtual void platformBeginCopyPass(
+                Render::Common::CRenderJob& renderJob,
+                RenderDriver::Common::CCommandBuffer& commandBuffer) {}
+                
             virtual void platformPreSwapChainPassSubmission(
                 Render::Common::CRenderJob const& renderJob,
                 RenderDriver::Common::CCommandBuffer& commandBuffer) {}

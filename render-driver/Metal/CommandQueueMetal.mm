@@ -63,6 +63,11 @@ namespace RenderDriver
         {
             id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBuffer.getNativeCommandList();
             [nativeCommandBuffer commit];
+            
+            //if(mType == RenderDriver::Common::CCommandQueue::Type::Copy)
+            {
+                [nativeCommandBuffer waitUntilCompleted];
+            }
         }
     
         /*

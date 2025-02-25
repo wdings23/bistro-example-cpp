@@ -251,6 +251,7 @@ def compile_pipeline_shaders():
             output_ir_file,
             '-c',
             '-frecord-sources',
+            '-gline-tables-only',
             metal_output_file_name
         ]
         execute_command(args)
@@ -265,6 +266,7 @@ def compile_pipeline_shaders():
             'macosx', 
             'metal', 
             '-frecord-sources', 
+            '-gline-tables-only',
             '-o', 
             metal_lib_file_path
         ]
@@ -278,7 +280,7 @@ def compile_pipeline_shaders():
             'macosx', 
             'metal-dsymutil', 
             '-flat', 
-            '-remove-source', 
+            #'-remove-source', 
             metal_lib_file_path
         ]
         execute_command(args)

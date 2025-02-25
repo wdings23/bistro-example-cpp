@@ -351,6 +351,8 @@ namespace Render
             execRenderJobs3();
             miTotalExecRenderJobTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
 
+            DEBUG_PRINTF("frame %d time elapsed: %d us\n", miFrameIndex, miTotalExecRenderJobTime);
+            
 #if 0
             RenderDriver::Common::SwapChainPresentDescriptor desc;
             desc.miSyncInterval = 0;
@@ -1475,6 +1477,11 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
 
                 Render::Common::CRenderJob* pRenderJob = mapRenderJobs[renderJobName];
                 RenderDriver::Common::CCommandBuffer& commandBuffer = *mapRenderJobCommandBuffers[renderJobName];
+
+//if(pRenderJob->mType == Render::Common::JobType::Copy)
+//{
+//    continue;
+//}
                 
                 if(pRenderJob->mPassType == Render::Common::PassType::SwapChain)
                 {
@@ -1523,6 +1530,11 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                         &commandBuffer
                     );
 
+                    platformBeginCopyPass(
+                        *pRenderJob,
+                        commandBuffer
+                    );
+                    
                     for(auto& copyAttachment : pRenderJob->maCopyAttachmentMapping)
                     {
 #if !defined(USE_RAY_TRACING)
@@ -1676,6 +1688,8 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                 {
                     pRenderJob->mpWaitFence->reset2();
                 }
+                
+                mapRenderJobCommandBuffers[pRenderJob->mName]->reset();
             }
 
             ++miFrameIndex;

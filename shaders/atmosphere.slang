@@ -77,7 +77,7 @@ Fragment PSMain(
     float3 directionDiff = defaultUniformBuffer.mLightDirection.xyz - defaultUniformBuffer.mPrevLightDirection.xyz;
     float fLengthSquared = dot(directionDiff, directionDiff);
 
-    if(defaultUniformBuffer.miFrame > 1 && fLengthSquared <= 0.00001f)
+    if(defaultUniformBuffer.miFrame > 10 && fLengthSquared <= 0.00001f)
     {
         float2 uv = float2(
             input.texcoord.x,

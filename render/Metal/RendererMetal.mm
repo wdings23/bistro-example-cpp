@@ -921,7 +921,6 @@ namespace Render
             
             RenderDriver::Metal::CCommandBuffer& commandBufferMetal = (RenderDriver::Metal::CCommandBuffer&)commandBuffer;
             
-            commandBufferMetal.beginCopy();
             id<MTLBlitCommandEncoder> nativeBlitCommandEncoder = commandBufferMetal.getNativeBlitCommandEncoder();
             WTFASSERT(nativeBlitCommandEncoder != nil, "No blit command encoder");
             [nativeBlitCommandEncoder
@@ -1889,7 +1888,27 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             [nativeCommandBuffer setLabel: [NSString stringWithUTF8String: commandBuffer.getID().c_str()]];
             [computeCommandEncoder setLabel: [NSString stringWithUTF8String: std::string(renderJob.mName + " Compute Command Encoder").c_str()]];
         }
+        
+        /*
+        **
+        */
+        void CRenderer::platformBeginCopyPass(
+            Render::Common::CRenderJob& renderJob,
+            RenderDriver::Common::CCommandBuffer& commandBuffer)
+        {
+            static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer).beginCopy();
+            
+            RenderDriver::Metal::CCommandBuffer& commandBufferMetal = static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer);
+            id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBufferMetal.getNativeCommandList();
+            id<MTLBlitCommandEncoder> blitCommandEncoder = commandBufferMetal.getNativeBlitCommandEncoder();
+            
+            [nativeCommandBuffer setLabel: [NSString stringWithUTF8String: commandBuffer.getID().c_str()]];
+            [blitCommandEncoder setLabel: [NSString stringWithUTF8String: std::string(renderJob.mName + " Blit Command Encoder").c_str()]];
+        }
     
+        /*
+        **
+        */
         void CRenderer::platformPreSwapChainPassSubmission(
             Render::Common::CRenderJob const& renderJob,
             RenderDriver::Common::CCommandBuffer& commandBuffer)

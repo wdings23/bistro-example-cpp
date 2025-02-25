@@ -107,7 +107,6 @@ class MetalView : NSView
         {
             self._drawableSize = self.window!.frame.size
             
-            
             pthread_mutex_lock(&self._mutex!)
             // get the next drawable
             self._drawable = nil
