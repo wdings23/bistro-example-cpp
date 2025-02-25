@@ -548,7 +548,11 @@ void CApp::nextDrawable(
     uint32_t iWidth,
     uint32_t iHeight)
 {
-    
+    static_cast<RenderDriver::Metal::CSwapChain*>(mpRenderer->getSwapChain())->setDrawable(
+        drawable,
+        drawableTexture,
+        iWidth,
+        iHeight);
 }
 
 /*

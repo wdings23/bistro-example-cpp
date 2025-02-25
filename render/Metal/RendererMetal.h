@@ -403,6 +403,10 @@ namespace Render
                   Render::Common::CRenderJob& renderJob,
                   RenderDriver::Common::CCommandBuffer& commandBuffer);
 
+            void platformPreSwapChainPassSubmission(
+                Render::Common::CRenderJob const& renderJob,
+                RenderDriver::Common::CCommandBuffer& commandBuffer);
+            
         protected:
             std::map<uint64_t, std::vector<uint8_t>>        mShaderBinariesDB;
             std::map<uint64_t, std::string>                 mShaderBinaryFilePath;

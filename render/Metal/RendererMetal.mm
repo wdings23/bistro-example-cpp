@@ -1375,7 +1375,7 @@ namespace Render
                 // create command buffer
                 desc.mpPipelineState = mapRenderJobs[renderJobName]->mpPipelineState;
                 desc.mpCommandAllocator = maRenderJobCommandAllocators[renderJobName].get();
-                
+                                
                 maRenderJobCommandBuffers[renderJobName]->create(
                     desc,
                     *mpDevice
@@ -1402,7 +1402,7 @@ namespace Render
             
             // set output attachment info
             Render::Common::CRenderJob* pRenderJob = (Render::Common::CRenderJob*)renderPassDesc.mpRenderJob;
-
+            
             bool bSwapChainPass = (pRenderJob->mPassType == Render::Common::PassType::SwapChain);
             uint32_t iAttachmentIndex = 0;
             for(uint32_t iAttachment = 0; iAttachment < pRenderJob->maAttachmentMappings.size(); iAttachment++)
@@ -1888,6 +1888,15 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             
             [nativeCommandBuffer setLabel: [NSString stringWithUTF8String: commandBuffer.getID().c_str()]];
             [computeCommandEncoder setLabel: [NSString stringWithUTF8String: std::string(renderJob.mName + " Compute Command Encoder").c_str()]];
+        }
+    
+        void CRenderer::platformPreSwapChainPassSubmission(
+            Render::Common::CRenderJob const& renderJob,
+            RenderDriver::Common::CCommandBuffer& commandBuffer)
+        {
+            id<MTLDrawable> nativeDrawble = static_cast<RenderDriver::Metal::CSwapChain*>(mpSwapChain.get())->getNativeDrawable();
+            id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBuffer.getNativeCommandList();
+            [nativeCommandBuffer presentDrawable: nativeDrawble];
         }
 
     }   // Metal

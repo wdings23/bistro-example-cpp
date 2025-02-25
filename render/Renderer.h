@@ -407,6 +407,8 @@ namespace Render
                 std::string const& srcAttachmentName
             ) = 0;
 
+            inline RenderDriver::Common::CSwapChain* getSwapChain() { return mpSwapChain.get(); }
+            
         public:
             virtual void platformSetup(Render::Common::RendererDescriptor const& desc) = 0;
 
@@ -864,6 +866,10 @@ namespace Render
             virtual void platformBeginComputePass(
                   Render::Common::CRenderJob& renderJob,
                   RenderDriver::Common::CCommandBuffer& commandBuffer) {};
+            
+            virtual void platformPreSwapChainPassSubmission(
+                Render::Common::CRenderJob const& renderJob,
+                RenderDriver::Common::CCommandBuffer& commandBuffer) {}
             
             protected:
                 

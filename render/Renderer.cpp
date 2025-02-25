@@ -1568,6 +1568,13 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                 // execute the command buffer
                 if(pRenderJob->mType == Render::Common::JobType::Graphics)
                 {
+                    if(pRenderJob->mPassType == Render::Common::PassType::SwapChain)
+                    {
+                        platformPreSwapChainPassSubmission(
+                            *pRenderJob,
+                            commandBuffer);
+                    }
+                    
                     pGraphicsCommandQueue->execCommandBuffer3(
                         commandBuffer,
                         &pRenderJob->miWaitSemaphoreValue,
