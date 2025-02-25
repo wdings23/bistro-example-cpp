@@ -478,6 +478,9 @@ void CApp::init(AppDescriptor const& appDesc)
     miBlueNoiseHeight = 512;
     macBlueNoiseImageData.resize(miBlueNoiseWidth*miBlueNoiseHeight*4);
     
+    mCameraLookAt = float3(-3.44f, 1.53f, 0.625f);
+    mCameraPosition = float3(-7.08f, 1.62f, 0.675f);
+    
 #if 0
     int32_t iBlueNoiseWidth = 0, iBlueNoiseHeight = 0, iNumChannels = 0;
     stbi_uc* pImageData = stbi_load(
