@@ -1992,6 +1992,8 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
            Render::Common::CRenderJob& renderJob,
            RenderDriver::Common::CCommandQueue& commandQueue)
         {
+            // TODO: set correct num meshes
+            
             id<MTLCommandQueue> nativeCommandQueue = (__bridge id<MTLCommandQueue>)commandQueue.getNativeCommandQueue();
             id<MTLCommandBuffer> nativeCommandBuffer = [nativeCommandQueue commandBuffer];
             
@@ -2015,7 +2017,7 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             [computeEncoder setBuffer: indexBuffer offset:0 atIndex:4];
             [computeEncoder setComputePipelineState:mIndirectDrawCommandComputePipeline];
             [computeEncoder useResource:mGenerateIndirectDrawCommandBuffer usage:MTLResourceUsageWrite];
-            [computeEncoder dispatchThreads:MTLSizeMake(8, 1, 1)
+            [computeEncoder dispatchThreads:MTLSizeMake(2500, 1, 1)
                       threadsPerThreadgroup:MTLSizeMake(256, 1, 1)];
             [computeEncoder endEncoding];
             
