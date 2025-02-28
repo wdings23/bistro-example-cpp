@@ -1,5 +1,6 @@
 #include "default-uniform-headers.slang"
 
+#if defined(METAL)
 struct DrawIndexParam
 {
     uint32_t miIndexCount;
@@ -8,6 +9,16 @@ struct DrawIndexParam
     int32_t miBaseVertex;
     uint32_t miFirstInstance;
 };
+#else
+struct DrawIndexParam
+{
+    uint32_t miIndexCount;
+    uint32_t miInstanceCount;
+    uint32_t miFirstIndex;
+    int32_t miBaseVertex;
+    uint32_t miFirstInstance;
+};
+#endif // METAL
 
 struct MeshBBox
 {

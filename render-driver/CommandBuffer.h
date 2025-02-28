@@ -120,6 +120,7 @@ namespace RenderDriver
             virtual void drawIndirectCount(
                 RenderDriver::Common::CBuffer& drawIndexBuffer,
                 RenderDriver::Common::CBuffer& drawCountBuffer,
+                RenderDriver::Common::CBuffer& meshIndexBuffer,
                 uint32_t iCountBufferOffset
             );
 

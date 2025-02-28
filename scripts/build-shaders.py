@@ -267,6 +267,7 @@ def compile_pipeline_shaders():
             'spirv',
             '-fvk-use-entrypoint-name', 
             '-entry',
+            '-DMETAL',
             main_function_name,
             '-o',
             output_file_name,

@@ -115,6 +115,13 @@ namespace RenderDriver
             void beginComputePass(MTLComputePassDescriptor* pComputePassDescriptor);
             void beginCopy();
             
+            virtual void drawIndirectCount(
+                RenderDriver::Common::CBuffer& drawIndexBuffer,
+                RenderDriver::Common::CBuffer& drawCountBuffer,
+                RenderDriver::Common::CBuffer& meshIndexBuffer,
+                uint32_t iCountBufferOffset
+            );
+            
         protected:
             id<MTLCommandBuffer>                mNativeCommandBuffer = nil;
             id<MTLCommandQueue>                 mNativeQueue;

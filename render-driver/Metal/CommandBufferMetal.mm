@@ -316,6 +316,32 @@ namespace RenderDriver
             mNativeBlitCommandEncoder = [mNativeCommandBuffer blitCommandEncoder];
         }
     
+        /*
+        **
+        */
+        void CCommandBuffer::drawIndirectCount(
+            RenderDriver::Common::CBuffer& drawIndexBuffer,
+            RenderDriver::Common::CBuffer& drawCountBuffer,
+            RenderDriver::Common::CBuffer& meshIndexBuffer,
+            uint32_t iCountBufferOffset
+        )
+        {
+            id<MTLBuffer> nativeDrawCommandArgumentBuffer = (__bridge id<MTLBuffer>)drawIndexBuffer.getNativeBuffer();
+            id<MTLBuffer> nativeMeshIndexBuffer = (__bridge id<MTLBuffer>)meshIndexBuffer.getNativeBuffer();
+            
+            for(uint32_t iMesh = 0; iMesh < 2048; iMesh++)
+            {
+                [mNativeRenderCommandEncoder
+                 drawIndexedPrimitives:MTLPrimitiveTypeTriangle
+                 indexType:MTLIndexTypeUInt32
+                 indexBuffer:nativeMeshIndexBuffer
+                 indexBufferOffset:0
+                 indirectBuffer:nativeDrawCommandArgumentBuffer
+                 indirectBufferOffset:iMesh * sizeof(uint32_t) * 5              // 5 arguments for drawIndexed primitives
+                ];
+            }
+        }
+    
     }   // Common
 
 }   // RenderDriver

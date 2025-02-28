@@ -1241,12 +1241,14 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
             {
                 auto& pDrawIndexedCallsBuffer = mapRenderJobs["Mesh Culling Compute"]->mapOutputBufferAttachments["Draw Indexed Calls"];
                 auto& pDrawIndexedCallCountBuffer = mapRenderJobs["Mesh Culling Compute"]->mapOutputBufferAttachments["Draw Indexed Call Count"];
-
+                auto& pMeshIndexBuffer = mapIndexBuffers["bistro"];
+                
                 uint32_t iCountBufferOffset = (pRenderJob->mName == "Secondary Deferred Indirect Graphics") ? sizeof(uint32_t) * 2 : 0;
 
                 commandBuffer.drawIndirectCount(
                     *pDrawIndexedCallsBuffer,
                     *pDrawIndexedCallCountBuffer,
+                    *pMeshIndexBuffer,
                     iCountBufferOffset
                 );
             }
@@ -1485,12 +1487,12 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                 commandBuffer.reset();
                 if(pRenderJob->mType == Render::Common::JobType::Graphics)
                 {
-                    if(pRenderJob->mPassType == Render::Common::PassType::DrawMeshes)
-                    {
-                        platformBeginIndirectCommandBuffer(
-                            *pRenderJob,
-                            *pComputeCommandQueue);
-                    }
+                    //if(pRenderJob->mPassType == Render::Common::PassType::DrawMeshes)
+                    //{
+                    //    platformBeginIndirectCommandBuffer(
+                    //        *pRenderJob,
+                    //        *pComputeCommandQueue);
+                    //}
                     
                     filloutGraphicsJobCommandBuffer3(
                         pRenderJob,
