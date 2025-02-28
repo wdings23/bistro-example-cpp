@@ -412,6 +412,10 @@ namespace Render
                 Render::Common::CRenderJob const& renderJob,
                 RenderDriver::Common::CCommandBuffer& commandBuffer);
             
+            virtual void platformBeginIndirectCommandBuffer(
+                Render::Common::CRenderJob& renderJob,
+                RenderDriver::Common::CCommandQueue& commandQueue);
+            
         protected:
             std::map<uint64_t, std::vector<uint8_t>>        mShaderBinariesDB;
             std::map<uint64_t, std::string>                 mShaderBinaryFilePath;
@@ -489,6 +493,15 @@ namespace Render
                 
                 std::unique_ptr<RenderDriver::Metal::CBuffer> mFillerBuffer;
                 std::unique_ptr<RenderDriver::Metal::CImage> mFillerTexture;
+            
+                id<MTLCommandBuffer>                          mIndirectDrawSetupCommandBuffer;
+                id<MTLIndirectCommandBuffer>                  mGenerateIndirectDrawCommandBuffer;
+                id<MTLComputePipelineState>                   mIndirectDrawCommandComputePipeline;
+                id<MTLLibrary>                                mDrawCommandComputeLibary;
+            
+                // Argument buffer containing the indirect command buffer encoded in the kernel
+                id<MTLBuffer>                                 mIndirectDrawCommandArgumentBuffer;
+            
             };
 
     }   // Metal

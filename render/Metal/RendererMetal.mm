@@ -17,6 +17,8 @@
 
 #include <sstream>
 
+extern char const* getSaveDir();
+
 namespace Render
 {
     namespace Metal
@@ -178,6 +180,62 @@ namespace Render
             
             mFillerBuffer->setID("Filler Buffer");
             mFillerTexture->setID("Filler Texture");
+            
+            // set up indirect command buffer
+            {
+                MTLIndirectCommandBufferDescriptor* icbDescriptor = [MTLIndirectCommandBufferDescriptor new];
+                icbDescriptor.commandTypes = MTLIndirectCommandTypeDraw;
+                icbDescriptor.inheritBuffers = YES;
+                icbDescriptor.maxVertexBufferBindCount = 1;
+                icbDescriptor.maxFragmentBufferBindCount = 1;
+                icbDescriptor.inheritPipelineState = YES;
+                
+                // create command buffer to store the draw commands
+                mGenerateIndirectDrawCommandBuffer = [nativeDevice
+                  newIndirectCommandBufferWithDescriptor: icbDescriptor
+                  maxCommandCount: 4096
+                  options: MTLResourceStorageModePrivate];
+                mGenerateIndirectDrawCommandBuffer.label = @"Generate Indirect Draw Command Buffer";
+                
+                
+                NSError *error;
+                
+                // Load the shaders from default library
+                std::string computeShaderFilePath = std::string(getSaveDir()) + "/shader-output/indirect-draw-command-compute.metallib";
+                DEBUG_PRINTF("%s\n", computeShaderFilePath.c_str());
+                FILE* fp = fopen(computeShaderFilePath.c_str(), "rb");
+                WTFASSERT(fp, "can\'t open file \"%s\"", computeShaderFilePath.c_str());
+                fseek(fp, 0, SEEK_END);
+                uint64_t iShaderFileSize = ftell(fp);
+                fseek(fp, 0, SEEK_SET);
+                std::vector<char> acShaderFileContent(iShaderFileSize);
+                fread(acShaderFileContent.data(), sizeof(char), iShaderFileSize, fp);
+                fclose(fp);
+                dispatch_data_t shaderData = dispatch_data_create(
+                    acShaderFileContent.data(),
+                    iShaderFileSize,
+                    dispatch_get_main_queue(),
+                    DISPATCH_DATA_DESTRUCTOR_DEFAULT);
+                id<MTLLibrary> mDrawCommandComputeLibary = [
+                    nativeDevice newLibraryWithData:
+                        shaderData error: &error];
+                
+                id<MTLFunction> GPUCommandEncodingKernel = [mDrawCommandComputeLibary newFunctionWithName:@"createDrawCommands"];
+                mIndirectDrawCommandComputePipeline = [nativeDevice
+                    newComputePipelineStateWithFunction:GPUCommandEncodingKernel
+                    error:&error];
+                
+                // argument buffer containing the encoded command buffers
+                id<MTLArgumentEncoder> argumentEncoder =
+                    [GPUCommandEncodingKernel newArgumentEncoderWithBufferIndex:1];
+                NSUInteger encodedLength = argumentEncoder.encodedLength;
+                mIndirectDrawCommandArgumentBuffer = [nativeDevice newBufferWithLength:encodedLength
+                                                       options:MTLResourceStorageModeShared];
+                mIndirectDrawCommandArgumentBuffer.label = @"Generating Draw Command Argument Buffer";
+                [argumentEncoder setArgumentBuffer:mIndirectDrawCommandArgumentBuffer offset:0];
+                [argumentEncoder setIndirectCommandBuffer:mGenerateIndirectDrawCommandBuffer
+                                                  atIndex:0];
+            }
             
             mDesc = desc;
         }
@@ -428,6 +486,7 @@ namespace Render
             uploadBuffer.create(uploadBufferDesc, *mpDevice);
             uploadBuffer.setID("UploadBuffer");
 
+            uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
             platformCopyCPUToGPUBuffer(
                 *mpUploadCommandBuffer,
                 &buffer,
@@ -435,7 +494,8 @@ namespace Render
                 pRawSrcData,
                 0,
                 static_cast<uint32_t>(iDestDataOffset),
-                static_cast<uint32_t>(iDataSize));
+                static_cast<uint32_t>(iDataSize),
+                iFlags);
         }
 
         /*
@@ -1180,7 +1240,7 @@ namespace Render
             uint32_t iSrcOffset,
             uint32_t iDestOffset,
             uint32_t iDataSize,
-            uint32_t iFlag)
+            uint32_t iFlags)
         {
             pUploadBuffer->setData(pCPUData, iDataSize);
             pDestBuffer->copy(
@@ -1189,6 +1249,13 @@ namespace Render
                 iDestOffset,
                 iSrcOffset,
                 iDataSize);
+            
+            if((iFlags & static_cast<uint32_t>(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY)) > 0)
+            {
+                platformExecuteCopyCommandBuffer(commandBuffer, iFlags);
+                pUploadBuffer->releaseNativeBuffer();
+                commandBuffer.reset();
+            }
         }
 
         /*
@@ -1918,6 +1985,40 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             [nativeCommandBuffer presentDrawable: nativeDrawble];
         }
 
+        /*
+        **
+        */
+        void CRenderer::platformBeginIndirectCommandBuffer(
+           Render::Common::CRenderJob& renderJob,
+           RenderDriver::Common::CCommandQueue& commandQueue)
+        {
+            id<MTLCommandQueue> nativeCommandQueue = (__bridge id<MTLCommandQueue>)commandQueue.getNativeCommandQueue();
+            id<MTLCommandBuffer> nativeCommandBuffer = [nativeCommandQueue commandBuffer];
+            
+            id<MTLBuffer> meshIndexRangeBuffer = (__bridge id<MTLBuffer>)renderJob.mapUniformBuffers["meshIndexRanges"]->getNativeBuffer();
+            id<MTLBlitCommandEncoder> resetBlitEncoder = [nativeCommandBuffer blitCommandEncoder];
+            resetBlitEncoder.label = @"Reset ICB Blit Encoder";
+            [resetBlitEncoder resetCommandsInBuffer:mGenerateIndirectDrawCommandBuffer
+                                          withRange:NSMakeRange(0, 4096)];
+            [resetBlitEncoder endEncoding];
+            
+            id<MTLBuffer> indexBuffer = (__bridge id<MTLBuffer>)mapIndexBuffers["bistro"]->getNativeBuffer();
+            
+            id<MTLComputeCommandEncoder> computeEncoder = [nativeCommandBuffer computeCommandEncoder];
+            computeEncoder.label = @"Generate Draw Command Encoder";
+            [computeEncoder setBuffer: meshIndexRangeBuffer offset:0 atIndex:0];
+            [computeEncoder setBuffer: mIndirectDrawCommandArgumentBuffer offset:0 atIndex:1];
+            [computeEncoder setBuffer: indexBuffer offset:0 atIndex:2];
+            [computeEncoder setComputePipelineState:mIndirectDrawCommandComputePipeline];
+            [computeEncoder useResource:mGenerateIndirectDrawCommandBuffer usage:MTLResourceUsageWrite];
+            [computeEncoder dispatchThreads:MTLSizeMake(8, 1, 1)
+                      threadsPerThreadgroup:MTLSizeMake(256, 1, 1)];
+            [computeEncoder endEncoding];
+            
+            [nativeCommandBuffer commit];
+            [nativeCommandBuffer waitUntilCompleted];
+        }
+    
     }   // Metal
 
 }   // Render

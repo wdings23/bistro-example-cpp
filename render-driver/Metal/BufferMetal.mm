@@ -115,6 +115,14 @@ namespace RenderDriver
             return 0;
         }
 
+        /*
+        **
+        */
+        void CBuffer::releaseNativeBuffer()
+        {
+            [mNativeBuffer setPurgeableState:MTLPurgeableStateEmpty];
+            mNativeBuffer = nil;
+        }
 
     }   // DX12
 

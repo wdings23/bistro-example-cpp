@@ -875,6 +875,10 @@ namespace Render
                 Render::Common::CRenderJob const& renderJob,
                 RenderDriver::Common::CCommandBuffer& commandBuffer) {}
             
+            virtual void platformBeginIndirectCommandBuffer(
+                Render::Common::CRenderJob& renderJob,
+                RenderDriver::Common::CCommandQueue& commandQueue) {}
+            
             protected:
                 
                 

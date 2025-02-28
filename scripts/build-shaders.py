@@ -124,6 +124,57 @@ def execute_command(args):
         print('{}'.format(str(output[1])))
 
 ##
+def compile_native_metal_shaders(
+        shader_directory,
+        output_directory, 
+        base_shader_name,
+        shader_lib_target_directory):
+
+    metal_file_name = os.path.join(shader_directory, base_shader_name + ".metal")
+
+    # convert to ir
+    output_ir_file = os.path.join(output_directory, base_shader_name + '.air')
+    args = [
+        'xcrun',
+        '-sdk',
+        'macosx',
+        'metal',
+        '-o',
+        output_ir_file,
+        '-c',
+        '-frecord-sources',
+        '-gline-tables-only',
+        metal_file_name
+    ]
+    execute_command(args)
+
+    # create metal library file with the ir
+    metal_lib_file_path = os.path.join(shader_lib_target_directory, base_shader_name + '.metallib')
+    args = [
+        'xcrun', 
+        '-sdk', 
+        'macosx', 
+        'metal', 
+        '-frecord-sources', 
+        '-gline-tables-only',
+        '-o', 
+        metal_lib_file_path
+    ]
+    args.append(output_ir_file)
+    execute_command(args)
+
+    # create symbol file
+    args = [
+        'xcrun', 
+        '-sdk', 
+        'macosx', 
+        'metal-dsymutil', 
+        '-flat', 
+        metal_lib_file_path
+    ]
+    execute_command(args)
+
+##
 def compile_pipeline_shaders():
     top_directory = sys.argv[1]
     target_directory = sys.argv[2]
@@ -285,6 +336,12 @@ def compile_pipeline_shaders():
         ]
         execute_command(args)
 
+
+    compile_native_metal_shaders(
+        shader_directory,
+        output_directory,
+        'indirect-draw-command-compute',
+        shader_lib_target_directory)
 
     
 

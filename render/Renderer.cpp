@@ -863,13 +863,6 @@ namespace Render
                 pData,
                 iDataSize,
                 iDestOffset);
-
-            if((iFlags & static_cast<uint32_t>(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY)) > 0)
-            {
-                platformExecuteCopyCommandBuffer(*mpUploadCommandBuffer, iFlags);
-                mpUploadCommandAllocator->reset();
-                mpUploadCommandBuffer->reset();
-            }
         }
 
         /*
@@ -1492,6 +1485,13 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                 commandBuffer.reset();
                 if(pRenderJob->mType == Render::Common::JobType::Graphics)
                 {
+                    if(pRenderJob->mPassType == Render::Common::PassType::DrawMeshes)
+                    {
+                        platformBeginIndirectCommandBuffer(
+                            *pRenderJob,
+                            *pComputeCommandQueue);
+                    }
+                    
                     filloutGraphicsJobCommandBuffer3(
                         pRenderJob,
                         commandBuffer

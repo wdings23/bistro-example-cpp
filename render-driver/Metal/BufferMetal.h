@@ -38,6 +38,8 @@ namespace RenderDriver
 
             virtual uint64_t getGPUVirtualAddress();
             
+            virtual void releaseNativeBuffer();
+            
         protected:
             id<MTLBuffer>       mNativeBuffer;
             id<MTLDevice>       mNativeDevice;
