@@ -337,7 +337,7 @@ namespace RenderDriver
                  indexBuffer:nativeMeshIndexBuffer
                  indexBufferOffset:0
                  indirectBuffer:nativeDrawCommandArgumentBuffer
-                 indirectBufferOffset:iMesh * sizeof(uint32_t) * 5              // 5 arguments for drawIndexed primitives
+                 indirectBufferOffset:(iMesh * sizeof(uint32_t) * 5)              // 5 arguments for drawIndexed primitives
                 ];
             }
         }

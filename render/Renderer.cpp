@@ -2134,7 +2134,7 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
             float4x4 viewMatrix = Render::Common::gaCameras[0].getViewMatrix();
             float4x4 jitterProjectionMatrix = Render::Common::gaCameras[0].getJitterProjectionMatrix();
 
-            if(this->mRenderDriverType == RenderDriverType::Vulkan)
+            if(this->mRenderDriverType == RenderDriverType::Vulkan || this->mRenderDriverType == RenderDriverType::Metal)
             {
                 jitterProjectionMatrix.mafEntries[5] *= -1.0f;
             }
@@ -2142,7 +2142,7 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
             float4x4 jitterViewProjectionMatrix = jitterProjectionMatrix * viewMatrix;
 
             float4x4* pfMatrixData = (float4x4*)pfData;
-            if(mRenderDriverType == RenderDriverType::Vulkan)
+            if(mRenderDriverType == RenderDriverType::Vulkan || mRenderDriverType == RenderDriverType::Metal)
             {
                 *pfMatrixData++ = transpose(Render::Common::gaCameras[0].getViewProjectionMatrix());
                 *pfMatrixData++ = mPrevViewProjectionMatrix;
