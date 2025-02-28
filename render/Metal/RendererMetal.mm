@@ -185,7 +185,7 @@ namespace Render
             {
                 MTLIndirectCommandBufferDescriptor* icbDescriptor = [MTLIndirectCommandBufferDescriptor new];
                 icbDescriptor.commandTypes = MTLIndirectCommandTypeDraw;
-                icbDescriptor.inheritBuffers = YES;
+                icbDescriptor.inheritBuffers = NO;
                 icbDescriptor.maxVertexBufferBindCount = 1;
                 icbDescriptor.maxFragmentBufferBindCount = 1;
                 icbDescriptor.inheritPipelineState = YES;
@@ -2003,12 +2003,16 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             [resetBlitEncoder endEncoding];
             
             id<MTLBuffer> indexBuffer = (__bridge id<MTLBuffer>)mapIndexBuffers["bistro"]->getNativeBuffer();
+            id<MTLBuffer> vertexBuffer = (__bridge id<MTLBuffer>)mapVertexBuffers["bistro"]->getNativeBuffer();
+            id<MTLBuffer> visibleMeshBuffer = (__bridge id<MTLBuffer>)maRenderJobs["Mesh Culling Compute"]->mapOutputBufferAttachments["Visible Mesh ID"]->getNativeBuffer();
             
             id<MTLComputeCommandEncoder> computeEncoder = [nativeCommandBuffer computeCommandEncoder];
             computeEncoder.label = @"Generate Draw Command Encoder";
             [computeEncoder setBuffer: meshIndexRangeBuffer offset:0 atIndex:0];
             [computeEncoder setBuffer: mIndirectDrawCommandArgumentBuffer offset:0 atIndex:1];
-            [computeEncoder setBuffer: indexBuffer offset:0 atIndex:2];
+            [computeEncoder setBuffer: visibleMeshBuffer offset:0 atIndex:2];
+            [computeEncoder setBuffer: vertexBuffer offset:0 atIndex:3];
+            [computeEncoder setBuffer: indexBuffer offset:0 atIndex:4];
             [computeEncoder setComputePipelineState:mIndirectDrawCommandComputePipeline];
             [computeEncoder useResource:mGenerateIndirectDrawCommandBuffer usage:MTLResourceUsageWrite];
             [computeEncoder dispatchThreads:MTLSizeMake(8, 1, 1)
