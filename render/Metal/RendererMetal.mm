@@ -1480,7 +1480,6 @@ namespace Render
             
             // set output attachment info
             Render::Common::CRenderJob* pRenderJob = (Render::Common::CRenderJob*)renderPassDesc.mpRenderJob;
-            
             bool bSwapChainPass = (pRenderJob->mPassType == Render::Common::PassType::SwapChain);
             uint32_t iAttachmentIndex = 0;
             uint32_t iNumAttachments = (bSwapChainPass) ? 1 : static_cast<uint32_t>(pRenderJob->maAttachmentMappings.size());
@@ -1504,11 +1503,8 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
                     pNativeRenderPassDescriptor.depthAttachment.loadAction = MTLLoadActionClear;
                     pNativeRenderPassDescriptor.depthAttachment.storeAction = MTLStoreActionStore;
                     pNativeRenderPassDescriptor.depthAttachment.clearDepth = 1.0;
+                    pNativeRenderPassDescriptor.depthAttachment.loadAction = MTLLoadActionLoad;
                     
-                    if(pRenderJob->maAttachmentMappings[iAttachment].second == "texture-input-output")
-                    {
-                        pNativeRenderPassDescriptor.depthAttachment.loadAction = MTLLoadActionLoad;
-                    }
                 }
                 else
                 {
@@ -1540,6 +1536,11 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
                 pNativeRenderPassDescriptor.depthAttachment.loadAction = MTLLoadActionClear;
                 pNativeRenderPassDescriptor.depthAttachment.storeAction = MTLStoreActionStore;
                 pNativeRenderPassDescriptor.depthAttachment.clearDepth = 1.0;
+                
+                if(pRenderJob->mbInputOutputDepth)
+                {
+                    pNativeRenderPassDescriptor.depthAttachment.loadAction = MTLLoadActionLoad;
+                }
             }
             
             pNativeRenderPassDescriptor.renderTargetWidth = renderPassDesc.miOutputWidth;

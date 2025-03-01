@@ -125,6 +125,8 @@ namespace Render
             std::vector<std::pair<std::string, std::string>>                    maAttachmentMappings;
             std::map<std::string, RenderDriver::Common::CImage*>        mapImageAttachments;
             
+            bool                                                        mbInputOutputDepth = false;
+            
         protected:
             RenderDriver::Common::CDevice*							mpDevice;
 			RenderDriver::Common::CCommandQueue*					mpCommandQueue;
@@ -156,10 +158,6 @@ namespace Render
 			std::vector<RenderDriver::Common::CBuffer*>							mapCopyBufferDest;
 
 			RenderDriver::Common::CBuffer*								mpDefaultUniformBuffer;
-
-			bool														mbInputOutputDepth = false;
-
-			
 
 		protected:
 			void createAttachments(
