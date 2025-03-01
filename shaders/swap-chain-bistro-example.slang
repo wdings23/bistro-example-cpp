@@ -41,11 +41,15 @@ PSOutput PSMain(VertexStageOutput in)
 {
     PSOutput out;
 
+#if defined(METAL)
+    float2 texCoord = float2(in.texCoord.x, in.texCoord.y);
+#else 
     float2 texCoord = float2(in.texCoord.x, 1.0f - in.texCoord.y);
-    out.mOutput = texture0.Sample(
+#endif // METAL
+    out.mOutput = /*texture0.Sample(
         sampler,
         texCoord
-    ) * 
+    ) * */
     texture1.Sample(
         sampler, 
         texCoord

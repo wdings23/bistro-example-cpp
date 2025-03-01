@@ -1471,7 +1471,8 @@ namespace Render
             
             bool bSwapChainPass = (pRenderJob->mPassType == Render::Common::PassType::SwapChain);
             uint32_t iAttachmentIndex = 0;
-            for(uint32_t iAttachment = 0; iAttachment < pRenderJob->maAttachmentMappings.size(); iAttachment++)
+            uint32_t iNumAttachments = (bSwapChainPass) ? 1 : static_cast<uint32_t>(pRenderJob->maAttachmentMappings.size());
+            for(uint32_t iAttachment = 0; iAttachment < iNumAttachments; iAttachment++)
             {
                 if(pRenderJob->maAttachmentMappings[iAttachment].second != "texture-output" &&
                    pRenderJob->maAttachmentMappings[iAttachment].second != "texture-input-output")
@@ -1494,6 +1495,12 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
                 }
                 else
                 {
+                    // set color image attachment to swap chain's drawable
+                    if(bSwapChainPass)
+                    {
+                        pImageMetal = static_cast<RenderDriver::Metal::CSwapChain*>(mpSwapChain.get())->getColorImage();
+                    }
+                    
                     // color attachment
                     pNativeRenderPassDescriptor.colorAttachments[iAttachmentIndex].texture = (__bridge id<MTLTexture>)pImageMetal->getNativeImage();
                     pNativeRenderPassDescriptor.colorAttachments[iAttachmentIndex].loadAction = MTLLoadActionClear;
