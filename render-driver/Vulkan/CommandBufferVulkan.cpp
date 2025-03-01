@@ -283,7 +283,8 @@ namespace RenderDriver
             RenderDriver::Common::CBuffer& drawIndexBuffer,
             RenderDriver::Common::CBuffer& drawCountBuffer,
             RenderDriver::Common::CBuffer& meshIndexBuffer,
-            uint32_t iCountBufferOffset
+            uint32_t iCountBufferOffset,
+            uint32_t iDrawCommandOffset
         )
         {
             vkCmdDrawIndexedIndirectCount(

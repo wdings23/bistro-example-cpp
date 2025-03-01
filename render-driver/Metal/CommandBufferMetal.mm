@@ -323,7 +323,8 @@ namespace RenderDriver
             RenderDriver::Common::CBuffer& drawIndexBuffer,
             RenderDriver::Common::CBuffer& drawCountBuffer,
             RenderDriver::Common::CBuffer& meshIndexBuffer,
-            uint32_t iCountBufferOffset
+            uint32_t iCountBufferOffset,
+            uint32_t iDrawCommandOffset
         )
         {
             id<MTLBuffer> nativeDrawCommandArgumentBuffer = (__bridge id<MTLBuffer>)drawIndexBuffer.getNativeBuffer();
@@ -337,7 +338,7 @@ namespace RenderDriver
                  indexBuffer:nativeMeshIndexBuffer
                  indexBufferOffset:0
                  indirectBuffer:nativeDrawCommandArgumentBuffer
-                 indirectBufferOffset:(iMesh * sizeof(uint32_t) * 5)              // 5 arguments for drawIndexed primitives
+                 indirectBufferOffset:((iDrawCommandOffset + iMesh) * sizeof(uint32_t) * 5)              // 5 arguments for drawIndexed primitives
                 ];
             }
         }

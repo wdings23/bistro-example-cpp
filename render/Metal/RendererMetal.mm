@@ -849,9 +849,7 @@ namespace Render
             uint64_t iSrcOffset,
             uint64_t iDataSize)
         {
-            WTFASSERT(0, "Implement me");
-            
-            if(mpReadBackBuffer == nullptr)
+            /*if(mpReadBackBuffer == nullptr)
             {
                 mpReadBackBuffer = std::make_unique<RenderDriver::Metal::CBuffer>();
                 RenderDriver::Common::BufferDescriptor desc;
@@ -862,18 +860,32 @@ namespace Render
                     desc,
                     *mpDevice
                 );
-            }
-
-            mpCopyCommandQueue->execCommandBufferSynchronized(
-                *mpUploadCommandBuffer, 
-                *mpDevice,
-                true);
-
+            }*/
+            
+            id<MTLBuffer> nativeBuffer = (__bridge id<MTLBuffer>)pGPUBuffer->getNativeBuffer();
+            
+            RenderDriver::Metal::CBuffer readBackBuffer;
+            RenderDriver::Common::BufferDescriptor desc;
+            desc.miSize = iDataSize;
+            desc.mFormat = RenderDriver::Common::Format::R32_FLOAT;
+            desc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferSrc;
+            readBackBuffer.create(desc, *mpDevice);
+            
+            mpUploadCommandBuffer->reset();
+            readBackBuffer.copy(*pGPUBuffer, *mpUploadCommandBuffer, 0, 0, iDataSize);
+            mpUploadCommandBuffer->close();
+            
+            mpCopyCommandQueue->execCommandBuffer(*mpUploadCommandBuffer, *mpDevice);
+            id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)mpUploadCommandBuffer->getNativeCommandList();
+            [nativeCommandBuffer waitUntilCompleted];
+            
+            id<MTLBuffer> nativeReadBackBuffer = (__bridge id<MTLBuffer>)readBackBuffer.getNativeBuffer();
+            void* pContent = [nativeReadBackBuffer contents];
+            memcpy(pCPUBuffer, ((uint8_t*)pContent) + iSrcOffset, iDataSize);
+            
+            readBackBuffer.releaseNativeBuffer();
             mpUploadCommandBuffer->reset();
         
-            mpReadBackBuffer->releaseNativeBuffer();
-            mpReadBackBuffer.reset();
-            mpReadBackBuffer = nullptr;
         }
 
         /*
@@ -1492,6 +1504,11 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
                     pNativeRenderPassDescriptor.depthAttachment.loadAction = MTLLoadActionClear;
                     pNativeRenderPassDescriptor.depthAttachment.storeAction = MTLStoreActionStore;
                     pNativeRenderPassDescriptor.depthAttachment.clearDepth = 1.0;
+                    
+                    if(pRenderJob->maAttachmentMappings[iAttachment].second == "texture-input-output")
+                    {
+                        pNativeRenderPassDescriptor.depthAttachment.loadAction = MTLLoadActionLoad;
+                    }
                 }
                 else
                 {
@@ -1506,6 +1523,12 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
                     pNativeRenderPassDescriptor.colorAttachments[iAttachmentIndex].loadAction = MTLLoadActionClear;
                     pNativeRenderPassDescriptor.colorAttachments[iAttachmentIndex].storeAction = MTLStoreActionStore;
                     pNativeRenderPassDescriptor.colorAttachments[iAttachmentIndex].clearColor = MTLClearColorMake(0.0, 0.0, 0.3, 0.0);
+                    
+                    if(pRenderJob->maAttachmentMappings[iAttachment].second == "texture-input-output")
+                    {
+                        pNativeRenderPassDescriptor.colorAttachments[iAttachmentIndex].loadAction = MTLLoadActionLoad;
+                    }
+                    
                     ++iAttachmentIndex;
                 }
             }

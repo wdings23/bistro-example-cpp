@@ -1244,12 +1244,25 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                 auto& pMeshIndexBuffer = mapIndexBuffers["bistro"];
                 
                 uint32_t iCountBufferOffset = (pRenderJob->mName == "Secondary Deferred Indirect Graphics") ? sizeof(uint32_t) * 2 : 0;
-
+                
+                uint32_t iDrawCommandOffset = 0;
+                if(pRenderJob->mName == "Secondary Deferred Indirect Graphics")
+                {
+                    std::vector<uint32_t> aiCountData(256);
+                    platformCopyBufferToCPUMemory(
+                      pDrawIndexedCallCountBuffer,
+                      aiCountData.data(),
+                      0,
+                      32);
+                    iDrawCommandOffset = aiCountData[0];
+                }
+                
                 commandBuffer.drawIndirectCount(
                     *pDrawIndexedCallsBuffer,
                     *pDrawIndexedCallCountBuffer,
                     *pMeshIndexBuffer,
-                    iCountBufferOffset
+                    iCountBufferOffset,
+                    iDrawCommandOffset
                 );
             }
 
