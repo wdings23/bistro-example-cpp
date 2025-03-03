@@ -65,11 +65,6 @@ namespace Render
             }
             
             mName = createInfo.mName;
-
-if(mName.find("Ray Trace") != std::string::npos)
-{
-    int iDebug = 1;
-}
             
             std::string typeStr = doc["Type"].GetString();
             std::string passStr = doc["PassType"].GetString();

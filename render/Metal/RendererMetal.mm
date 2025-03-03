@@ -1874,7 +1874,7 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             
             MTLAccelerationStructureTriangleGeometryDescriptor* pGeometryDesc = [MTLAccelerationStructureTriangleGeometryDescriptor descriptor];
             pGeometryDesc.indexBuffer = nativeIndexBuffer;
-            pGeometryDesc.indexType = MTLIndexTypeUInt16;
+            pGeometryDesc.indexType = MTLIndexTypeUInt32;
             pGeometryDesc.vertexBuffer = nativeVertexBuffer;
             pGeometryDesc.vertexStride = sizeof(Render::Common::VertexFormat);
             pGeometryDesc.triangleCount = aiTriangleIndices.size() / 3;
@@ -2005,7 +2005,17 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             uint32_t iScreenHeight
         )
         {
-            WTFASSERT(0, "Implement me");
+            RenderDriver::Metal::CCommandBuffer& commandBufferMetal = (RenderDriver::Metal::CCommandBuffer&)commandBuffer;
+            
+            id<MTLComputeCommandEncoder> nativeComputeEncoder = commandBufferMetal.getNativeComputeCommandEncoder();
+            
+            MTLSize threadsPerThreadgroup = MTLSizeMake(8, 8, 1);
+            MTLSize threadgroups = MTLSizeMake((iScreenWidth  + threadsPerThreadgroup.width  - 1) / threadsPerThreadgroup.width,
+                                               (iScreenHeight + threadsPerThreadgroup.height - 1) / threadsPerThreadgroup.height,
+                                               1);
+            [nativeComputeEncoder
+                dispatchThreads: threadgroups
+                threadsPerThreadgroup: threadsPerThreadgroup];
         }
 
         /*
@@ -2187,8 +2197,8 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             Render::Common::CRenderJob* pRenderJob,
             RenderDriver::Common::CCommandBuffer& commandBuffer)
         {
-            WTFASSERT(0, "Implement me");
-            
+            // no need to transition image barriers
+#if 0
             for(auto& outputAttachmentKeyValue : pRenderJob->mapOutputImageAttachments)
             {
                 if(outputAttachmentKeyValue.second == nullptr)
@@ -2199,6 +2209,7 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
                 RenderDriver::Metal::CImage* pImageMetal = (RenderDriver::Metal::CImage*)outputAttachmentKeyValue.second;
                 
             }
+#endif // #if 0
         }
 
         /*
