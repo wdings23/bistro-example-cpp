@@ -31,6 +31,10 @@ namespace RenderDriver
                 std::string                    mLibraryFilePath;
             };
 
+            struct RayTracePipelineStateDescriptor : public RenderDriver::Common::RayTracePipelineStateDescriptor
+            {
+            };
+            
         public:
             CPipelineState() = default;
             virtual ~CPipelineState() = default;
@@ -41,6 +45,10 @@ namespace RenderDriver
 
             virtual PLATFORM_OBJECT_HANDLE create(
                 RenderDriver::Common::ComputePipelineStateDescriptor const& desc,
+                RenderDriver::Common::CDevice& device);
+            
+            virtual PLATFORM_OBJECT_HANDLE create(
+                RenderDriver::Common::RayTracePipelineStateDescriptor const& desc,
                 RenderDriver::Common::CDevice& device);
 
             virtual void setID(std::string const& name);

@@ -306,6 +306,7 @@ namespace Render
 				std::vector<char>& acCloseHitShaderBuffer,
 				std::vector<char>& acMissShaderBuffer,
 				std::string const& shaderPath,
+                std::string const& pipelineName,
 				void* pPlatformInstance
 			) = 0;
 

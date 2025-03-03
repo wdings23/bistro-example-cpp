@@ -96,6 +96,12 @@
             "PassType": "Full Triangle"
         },
         {
+            "Name": "Ray Traced Shadow",
+            "Pipeline": "ray-traced-shadow.json",
+            "Type": "Ray Trace",
+            "PassType": "Ray Trace"
+        },
+        {
             "Name": "Swap Chain Graphics",
             "Pipeline": "non-ray-trace-swap-chain-bistro-example.json",
             "Type": "Graphics",

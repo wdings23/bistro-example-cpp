@@ -434,6 +434,114 @@ DEBUG_PRINTF("\t%d format: %s\n",
         /*
         **
         */
+        PLATFORM_OBJECT_HANDLE CPipelineState::create(
+            RenderDriver::Common::RayTracePipelineStateDescriptor const& desc,
+            RenderDriver::Common::CDevice& device)
+        {
+            RenderDriver::Common::CPipelineState::create(desc, device);
+            
+            id<MTLDevice> nativeDevice = (__bridge id<MTLDevice>)device.getNativeDevice();
+            
+            dispatch_data_t shaderData = dispatch_data_create(
+                desc.mpRayGenShader,
+                desc.miRayGenShaderSize,
+                dispatch_get_main_queue(),
+                DISPATCH_DATA_DESTRUCTOR_DEFAULT);
+            
+            // Load the shaders from default library
+            NSError *error;
+            id<MTLLibrary> mRayTraceLibrary = [
+                nativeDevice newLibraryWithData: shaderData
+                error: &error];
+            
+            MTLAutoreleasedComputePipelineReflection reflection;
+            id<MTLFunction> rayTracingFunction = [mRayTraceLibrary newFunctionWithName:@"rayGen"];
+            mNativeComputePipelineState = [nativeDevice
+                newComputePipelineStateWithFunction:rayTracingFunction
+                options: MTLPipelineOptionBufferTypeInfo
+                reflection: &reflection
+                error:&error];
+            
+            std::vector<SerializeUtils::Common::ShaderResourceInfo> aShaderResources;
+            
+            // shader resource layout reflection
+            uint32_t iNumComputeVariables = 0;
+            NSArray <MTLArgument *>* csArgs = [reflection arguments];
+            for(MTLArgument* arg in csArgs)
+            {
+                SerializeUtils::Common::ShaderResourceInfo shaderResourceInfo;
+                
+                NSString* name = [arg name];
+                MTLArgumentType type = [arg type];
+                //NSLog(@"%@", arg);
+                
+                //MTLBindingType type = [arg type];
+                
+                char const* szVariableName = [name UTF8String];
+                char const* szVariableType = "buffer";
+                if(type == MTLArgumentTypeTexture)
+                {
+                    szVariableType = "texture";
+                }
+                else if(type == MTLArgumentTypeSampler)
+                {
+                    szVariableType = "sampler";
+                }
+                
+                DEBUG_PRINTF("\t%d argument name: %s type: %s\n",
+                       iNumComputeVariables,
+                       szVariableName,
+                       szVariableType);
+
+                shaderResourceInfo.mName = szVariableName;
+                shaderResourceInfo.mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN;
+                if(std::string(szVariableType) == "buffer")
+                {
+                    shaderResourceInfo.mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_IN;
+                }
+                aShaderResources.push_back(shaderResourceInfo);
+                
+
+                // struct member, just list them as individual variable for now
+                if(type == MTLArgumentTypeBuffer)
+                {
+                    MTLStructType* structType = [arg bufferStructType];
+                    NSArray<MTLStructMember *>* pStructMembers = [structType members];
+                    for(MTLStructMember* pMember in pStructMembers)
+                    {
+                        char const* szMemberName = [[pMember name] UTF8String];
+                        DEBUG_PRINTF("\t\tmember: %s\n", szMemberName);
+                    }
+                }
+    
+                maComputeShaderResourceReflectionInfo.emplace_back(
+                   szVariableName,
+                   type,
+                   RenderDriver::Common::ShaderType::Compute
+                );
+                
+                ++iNumComputeVariables;
+            }
+            
+            // fillout shader resource indices look for layout indices
+            if(desc.mpDescriptor->getDesc().mpaShaderResources)
+            {
+                aShaderResources = *desc.mpDescriptor->getDesc().mpaShaderResources;
+            }
+            
+            setLayoutMapping(
+                maiComputeShaderResourceLayoutIndices,
+                maComputeShaderResourceReflectionInfo,
+                aShaderResources);
+
+            desc.mpDescriptor->setComputeLayoutIndices(maiComputeShaderResourceLayoutIndices);
+            
+            return mHandle;
+        }
+    
+        /*
+        **
+        */
         void CPipelineState::setID(std::string const& id)
         {
             RenderDriver::Common::CObject::setID(id);

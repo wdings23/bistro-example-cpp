@@ -204,6 +204,9 @@ def compile_pipeline_shaders():
         if shader_type == 'Copy':
             continue
         
+        if shader_type == 'Ray Trace':
+            continue
+
         # open render job file, and get the shader name
         pipeline_file_name = job['Pipeline']
         pipeline_file_extension_start = pipeline_file_name.rfind('.')

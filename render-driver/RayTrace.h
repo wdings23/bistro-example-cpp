@@ -1,2 +1,2 @@
 #pragma once
-//#define USE_RAY_TRACING 1
+#define USE_RAY_TRACING 1

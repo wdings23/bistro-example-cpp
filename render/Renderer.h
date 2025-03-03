@@ -871,6 +871,10 @@ namespace Render
                 Render::Common::CRenderJob& renderJob,
                 RenderDriver::Common::CCommandBuffer& commandBuffer) {}
                 
+            virtual void platformBeginRayTracingPass(
+                Render::Common::CRenderJob& renderJob,
+                RenderDriver::Common::CCommandBuffer& commandBuffer) {}
+            
             virtual void platformPreSwapChainPassSubmission(
                 Render::Common::CRenderJob const& renderJob,
                 RenderDriver::Common::CCommandBuffer& commandBuffer) {}

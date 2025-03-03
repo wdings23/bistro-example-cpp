@@ -1416,13 +1416,16 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                 );
             }
 
+            platformBeginRayTracingPass(
+                *pRenderJob,
+                commandBuffer);
+            
             // set pipeline and all the shader resource bindings
             commandBuffer.setPipelineState(
                 *pRenderJob->mpPipelineState,
                 *mpDevice
             );
 
-            
             platformSetRayTraceDescriptorSet(
                 *pRenderJob->mpDescriptorSet,
                 commandBuffer,
@@ -1815,14 +1818,14 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                     iFlags
                 );
 
-#if defined(USE_RAY_TRACING)
+//#if defined(USE_RAY_TRACING)
                 platformCreateAccelerationStructures(
                     aPositions,
                     aiIndexBuffer,
                     maMeshRanges,
                     miNumMeshes
                 );
-#endif // USE_RAY_TRACING
+//#endif // USE_RAY_TRACING
             }
 
 
@@ -2231,14 +2234,17 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
             );
 
 #if defined(USE_RAY_TRACING)
-            auto& pCounterBuffer = mapRenderJobs["Build Irradiance Cache Ray Trace"]->mapOutputBufferAttachments["Counters"];
-            copyCPUToBuffer(
-                pCounterBuffer,
-                aiResetData.data(),
-                0,
-                (uint32_t)(aiResetData.size() * sizeof(uint32_t)),
-                iFlags
-            );
+            if(mapRenderJobs.find("Build Irradiance Cache Ray Trace") != mapRenderJobs.end())
+            {
+                auto& pCounterBuffer = mapRenderJobs["Build Irradiance Cache Ray Trace"]->mapOutputBufferAttachments["Counters"];
+                copyCPUToBuffer(
+                    pCounterBuffer,
+                    aiResetData.data(),
+                    0,
+                    (uint32_t)(aiResetData.size() * sizeof(uint32_t)),
+                    iFlags
+                );
+            }
 #endif // USE_RAY_TRACING
 
             gfClearReservoir = 0.0f;

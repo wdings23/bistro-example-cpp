@@ -31,6 +31,11 @@ namespace RenderDriver
             return mHandle;
         }
 
+    CBuffer::~CBuffer()
+    {
+        releaseNativeBuffer();
+    }
+        
         /*
         **
         */

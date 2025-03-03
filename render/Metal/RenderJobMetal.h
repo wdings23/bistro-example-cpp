@@ -40,7 +40,7 @@ namespace Render
 
 			std::unique_ptr<RenderDriver::Metal::CPipelineState::GraphicsPipelineStateDescriptor>		mGraphicsPipelineStateDesc;
 			std::unique_ptr<RenderDriver::Metal::CPipelineState::ComputePipelineStateDescriptor>		mComputePipelineStateDesc;
-			//std::unique_ptr<RenderDriver::Metal::CPipelineState::RayTracePipelineStateDescriptor>		mRayTracePipelineStateDesc;
+			std::unique_ptr<RenderDriver::Metal::CPipelineState::RayTracePipelineStateDescriptor>		mRayTracePipelineStateDesc;
 
 			std::unique_ptr<RenderDriver::Metal::CImage>					mDepthImage;
 			
@@ -114,6 +114,7 @@ namespace Render
 				std::vector<char>& acCloseHitShaderBuffer,
 				std::vector<char>& acMissShaderBuffer,
 				std::string const& shaderPath,
+                std::string const& pipelineName,
 				void* pPlatformInstance
 			);
 

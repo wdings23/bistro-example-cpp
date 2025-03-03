@@ -11,7 +11,7 @@ namespace RenderDriver
         {
         public:
             CBuffer() = default;
-            virtual ~CBuffer() = default;
+            virtual ~CBuffer();
 
             virtual PLATFORM_OBJECT_HANDLE create(
                 RenderDriver::Common::BufferDescriptor const& desc,

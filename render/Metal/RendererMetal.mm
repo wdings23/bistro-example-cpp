@@ -1,6 +1,7 @@
 #include <render/Metal/RendererMetal.h>
 #include <render/Metal/RenderJobMetal.h>
 
+#include <render-driver/Metal/BufferMetal.h>
 #include <render-driver/Metal/CommandQueueMetal.h>
 #include <render-driver/Metal/PipelineStateMetal.h>
 #include <render-driver/Metal/CommandAllocatorMetal.h>
@@ -484,7 +485,7 @@ namespace Render
             uploadBufferDesc.miSize = iDataSize;
             uploadBufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferSrc;
             uploadBuffer.create(uploadBufferDesc, *mpDevice);
-            uploadBuffer.setID("UploadBuffer");
+            uploadBuffer.setID("Upload Buffer");
 
             uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
             platformCopyCPUToGPUBuffer(
@@ -496,6 +497,8 @@ namespace Render
                 static_cast<uint32_t>(iDestDataOffset),
                 static_cast<uint32_t>(iDataSize),
                 iFlags);
+            
+            uploadBuffer.releaseNativeBuffer();
         }
 
         /*
@@ -630,7 +633,131 @@ namespace Render
             RenderDriver::Common::CCommandBuffer& commandBuffer,
             RenderDriver::Common::CPipelineState& pipelineState)
         {
-            WTFASSERT(0, "Implement me");
+            RenderDriver::Metal::CCommandBuffer& commandBufferMetal = static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer);
+        
+            std::string saveDir = getSaveDir();
+            
+            // set buffer and texture shader resources for compute shader
+            id<MTLComputeCommandEncoder> nativeComputeEncoder = commandBufferMetal.getNativeComputeCommandEncoder();
+            WTFASSERT(nativeComputeEncoder != nil, "Invalid compute command encoder");
+            
+            std::vector<SerializeUtils::Common::ShaderResourceInfo> const& aShaderResource = *descriptorSet.getDesc().mpaShaderResources;
+            
+            std::vector<uint32_t> const& aiLayoutIndices = descriptorSet.getComputeLayoutIndices();
+            
+            uint32_t iBufferIndex = 0, iTextureIndex = 0;
+            for(uint32_t iLayoutIndex = 0; iLayoutIndex < static_cast<uint32_t>(aiLayoutIndices.size()); iLayoutIndex++)
+            {
+                uint32_t iShaderResourceIndex = UINT32_MAX;
+                if(iLayoutIndex < aiLayoutIndices.size())
+                {
+                    iShaderResourceIndex = aiLayoutIndices[iLayoutIndex];
+                }
+                
+                if(iShaderResourceIndex == UINT32_MAX)
+                {
+                    id<MTLTexture> nativeImage = (__bridge id<MTLTexture>)mFillerTexture->getNativeImage();
+                    [nativeComputeEncoder
+                     setTexture: nativeImage
+                     atIndex: iBufferIndex];
+                    ++iBufferIndex;
+                    ++iTextureIndex;
+                }
+                else
+                {
+                    auto& shaderResource = aShaderResource[iShaderResourceIndex];
+                    if(shaderResource.mExternalResource.mpBuffer)
+                    {
+                        id<MTLBuffer> nativeShaderBuffer = (__bridge id<MTLBuffer>)shaderResource.mExternalResource.mpBuffer->getNativeBuffer();
+                        [nativeComputeEncoder
+                         setBuffer: nativeShaderBuffer
+                         offset: 0
+                         atIndex: iBufferIndex];
+                        
+                        ++iBufferIndex;
+                    }
+                    else if(shaderResource.mExternalResource.mpImage)
+                    {
+                        id<MTLTexture> nativeTexture = (__bridge id<MTLTexture>)shaderResource.mExternalResource.mpImage->getNativeImage();
+                        [nativeComputeEncoder
+                         setTexture: nativeTexture
+                         atIndex: iTextureIndex];
+                        
+                        ++iTextureIndex;
+                    }
+                    else
+                    {
+                        // TODO: set texture sampler
+                        if(shaderResource.mName == "sampler" || shaderResource.mName == "textureSampler")
+                        {
+                            [nativeComputeEncoder
+                             setSamplerState: mDefaultNativePointSamplerState
+                             atIndex: 0];
+                        }
+                        else if(shaderResource.mType == ShaderResourceType::RESOURCE_TYPE_BUFFER_IN)
+                        {
+                            id<MTLBuffer> nativeBuffer = (__bridge id<MTLBuffer>)mFillerBuffer->getNativeBuffer();
+                            [nativeComputeEncoder
+                             setBuffer: nativeBuffer
+                             offset: 0
+                             atIndex: iBufferIndex];
+                            
+                            ++iBufferIndex;
+                        }
+                        else if(shaderResource.mType == ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN)
+                        {
+                            id<MTLTexture> nativeTexture = (__bridge id<MTLTexture>)mFillerTexture->getNativeImage();
+                            [nativeComputeEncoder
+                             setTexture: nativeTexture
+                             atIndex: iTextureIndex];
+                            
+                            ++iTextureIndex;
+                        }
+                        else if(shaderResource.mType == ShaderResourceType::RESOURCE_TYPE_BUFFER_IN_OUT)
+                        {
+                            // root constant
+                            WTFASSERT(shaderResource.mName == "rootConstant", "Buffer In/Out type signifies root constant");
+                            
+                            RenderDriver::Metal::CDescriptorSet& descriptorSetMetal = static_cast<RenderDriver::Metal::CDescriptorSet&>(descriptorSet);
+                            id<MTLBuffer> rootConstantBuffer = descriptorSetMetal.getRootConstant();
+                            
+                            [nativeComputeEncoder
+                             setBuffer: rootConstantBuffer
+                             offset: 0
+                             atIndex: iBufferIndex];
+                            
+                            ++iBufferIndex;
+                        }
+                        else if(shaderResource.mType == ShaderResourceType::RESOURCE_TYPE_BUFFER_OUT)
+                        {
+                            //id<MTLBuffer> nativeShaderBuffer = (__bridge id<MTLBuffer>)shaderResource.mShaderResourceName
+                            //[nativeComputeEncoder
+                            // setBuffer: rootConstantBuffer
+                            // offset: 0
+                            // atIndex: iBufferIndex];
+                            
+                            ++iBufferIndex;
+                        }
+                        else if(shaderResource.mType == ShaderResourceType::RESOURCE_TYPE_ACCELERATION_STRUCTURE)
+                        {
+                            id<MTLAccelerationStructure> nativeAccelerationStructure = (__bridge id<MTLAccelerationStructure>)shaderResource.mpAccelerationStructure->getNativeAccelerationStructure();
+                            [nativeComputeEncoder
+                             setAccelerationStructure: nativeAccelerationStructure
+                             atBufferIndex: iBufferIndex];
+                            
+                            ++iBufferIndex;
+                        }
+                        else
+                        {
+                            
+                            WTFASSERT(0, "type %d not handled", shaderResource.mType);
+                        }
+                        
+                    }
+                }
+                
+                //++iShaderIndex;
+            }
             
             
         }
@@ -870,6 +997,7 @@ namespace Render
             desc.mFormat = RenderDriver::Common::Format::R32_FLOAT;
             desc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferSrc;
             readBackBuffer.create(desc, *mpDevice);
+            readBackBuffer.setID("Read Back Buffer");
             
             mpUploadCommandBuffer->reset();
             readBackBuffer.copy(*pGPUBuffer, *mpUploadCommandBuffer, 0, 0, iDataSize);
@@ -1442,6 +1570,12 @@ namespace Render
                     allocatorDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
                     desc.mpCommandQueue = (__bridge id<MTLCommandQueue>)mpCopyCommandQueue->getNativeCommandQueue();
                 }
+                else if(mapRenderJobs[renderJobName]->mType == Render::Common::JobType::RayTrace)
+                {
+                    desc.mType = RenderDriver::Common::CommandBufferType::Compute;
+                    allocatorDesc.mType = RenderDriver::Common::CommandBufferType::Compute;
+                    desc.mpCommandQueue = (__bridge id<MTLCommandQueue>)mpComputeCommandQueue->getNativeCommandQueue();
+                }
 
                 // create command buffer allocator
                 maRenderJobCommandAllocators[renderJobName]->create(
@@ -1732,13 +1866,133 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             uint32_t iNumMeshes
         )
         {
-            WTFASSERT(0, "Implement me");
+            RenderDriver::Metal::CBuffer& vertexBuffer = *((RenderDriver::Metal::CBuffer*)mapVertexBuffers["bistro"]);
+            RenderDriver::Metal::CBuffer& indexBuffer = *((RenderDriver::Metal::CBuffer*)mapIndexBuffers["bistro"]);
             
+            id<MTLBuffer> nativeVertexBuffer = (__bridge id<MTLBuffer>)vertexBuffer.getNativeBuffer();
+            id<MTLBuffer> nativeIndexBuffer = (__bridge id<MTLBuffer>)indexBuffer.getNativeBuffer();
+            
+            MTLAccelerationStructureTriangleGeometryDescriptor* pGeometryDesc = [MTLAccelerationStructureTriangleGeometryDescriptor descriptor];
+            pGeometryDesc.indexBuffer = nativeIndexBuffer;
+            pGeometryDesc.indexType = MTLIndexTypeUInt16;
+            pGeometryDesc.vertexBuffer = nativeVertexBuffer;
+            pGeometryDesc.vertexStride = sizeof(Render::Common::VertexFormat);
+            pGeometryDesc.triangleCount = aiTriangleIndices.size() / 3;
+            
+            MTLPrimitiveAccelerationStructureDescriptor *accelDescriptor = [MTLPrimitiveAccelerationStructureDescriptor descriptor];
+            accelDescriptor.geometryDescriptors = @[ pGeometryDesc ];
 
+            id<MTLDevice> nativeDevice = (__bridge id<MTLDevice>)mpDevice->getNativeDevice();
+            id<MTLCommandQueue> nativeQueue = (__bridge id<MTLCommandQueue>)mpComputeCommandQueue->getNativeCommandQueue();
+            
+            // Query for the sizes needed to store and build the acceleration structure.
+            MTLAccelerationStructureSizes accelSizes = [nativeDevice accelerationStructureSizesWithDescriptor:accelDescriptor];
+            mAccelerationStructure = [nativeDevice newAccelerationStructureWithSize:accelSizes.accelerationStructureSize];
+            mAccelerationStructure.label = @"Acceleration Structure";
+            
+            // Allocate scratch space Metal uses to build the acceleration structure.
+            id <MTLBuffer> scratchBuffer = [nativeDevice newBufferWithLength:accelSizes.buildScratchBufferSize options:MTLResourceStorageModePrivate];
 
-            //maAccelerationStructures["bistro"] = std::make_unique<RenderDriver::Metal::CAccelerationStructure>();
-            //maAccelerationStructures["bistro"]->setNativeAccelerationStructure(&mTLASHandle);
-            //mapAccelerationStructures["bistro"] = maAccelerationStructures["bistro"].get();
+            // command buffer and encoder to build the acceleration structure
+            id <MTLCommandBuffer> commandBuffer = [nativeQueue commandBuffer];
+            id <MTLAccelerationStructureCommandEncoder> commandEncoder = [commandBuffer accelerationStructureCommandEncoder];
+
+            // Allocate a buffer for Metal to write the compacted accelerated structure's size into.
+            id <MTLBuffer> compactedSizeBuffer = [nativeDevice newBufferWithLength:sizeof(uint32_t) options:MTLResourceStorageModeShared];
+
+            // Schedule the actual acceleration structure build.
+            [commandEncoder buildAccelerationStructure:mAccelerationStructure
+                                            descriptor:accelDescriptor
+                                         scratchBuffer:scratchBuffer
+                                   scratchBufferOffset:0];
+
+            // Compute and write the compacted acceleration structure size into the buffer. You
+            // must already have a built acceleration structure because Metal determines the compacted
+            // size based on the final size of the acceleration structure. Compacting an acceleration
+            // structure can potentially reclaim significant amounts of memory because Metal must
+            // create the initial structure using a conservative approach.
+
+            [commandEncoder writeCompactedAccelerationStructureSize:mAccelerationStructure
+                                                           toBuffer:compactedSizeBuffer
+                                                             offset:0];
+
+            // End encoding, and commit the command buffer so the GPU can start building the
+            // acceleration structure.
+            [commandEncoder endEncoding];
+
+            [commandBuffer commit];
+
+            // The sample waits for Metal to finish executing the command buffer so that it can
+            // read back the compacted size.
+
+            // Note: Don't wait for Metal to finish executing the command buffer if you aren't compacting
+            // the acceleration structure, as doing so requires CPU/GPU synchronization. You don't have
+            // to compact acceleration structures, but do so when creating large static acceleration
+            // structures, such as static scene geometry. Avoid compacting acceleration structures that
+            // you rebuild every frame, as the synchronization cost may be significant.
+
+            [commandBuffer waitUntilCompleted];
+
+            uint32_t compactedSize = *(uint32_t *)compactedSizeBuffer.contents;
+
+            // Allocate a smaller acceleration structure based on the returned size.
+            mCompactedAccelerationStructure = [nativeDevice newAccelerationStructureWithSize:compactedSize];
+            mCompactedAccelerationStructure.label = @"Compacted Acceleration Structure";
+            
+            // Create another command buffer and encoder.
+            commandBuffer = [nativeQueue commandBuffer];
+            commandEncoder = [commandBuffer accelerationStructureCommandEncoder];
+
+            // Encode the command to copy and compact the acceleration structure into the
+            // smaller acceleration structure.
+            [commandEncoder copyAndCompactAccelerationStructure:mAccelerationStructure
+                                        toAccelerationStructure:mCompactedAccelerationStructure];
+
+            // End encoding and commit the command buffer. You don't need to wait for Metal to finish
+            // executing this command buffer as long as you synchronize any ray-intersection work
+            // to run after this command buffer completes. The sample relies on Metal's default
+            // dependency tracking on resources to automatically synchronize access to the new
+            // compacted acceleration structure.
+            [commandEncoder endEncoding];
+            [commandBuffer commit];
+            
+            [commandBuffer waitUntilCompleted];
+            
+            maAccelerationStructures["bistro"] = std::make_unique<RenderDriver::Metal::CAccelerationStructure>();
+            maAccelerationStructures["bistro"]->setNativeAccelerationStructure((__bridge void*)mCompactedAccelerationStructure);
+
+            mapAccelerationStructures["bistro"] = maAccelerationStructures["bistro"].get();
+            
+            /*
+            // Load the shaders from default library
+            NSError *error;
+            std::string computeShaderFilePath = std::string(getSaveDir()) + "/shader-output/ray-trace-shadow.metallib";
+            DEBUG_PRINTF("%s\n", computeShaderFilePath.c_str());
+            FILE* fp = fopen(computeShaderFilePath.c_str(), "rb");
+            WTFASSERT(fp, "can\'t open file \"%s\"", computeShaderFilePath.c_str());
+            fseek(fp, 0, SEEK_END);
+            uint64_t iShaderFileSize = ftell(fp);
+            fseek(fp, 0, SEEK_SET);
+            std::vector<char> acShaderFileContent(iShaderFileSize);
+            fread(acShaderFileContent.data(), sizeof(char), iShaderFileSize, fp);
+            fclose(fp);
+            dispatch_data_t shaderData = dispatch_data_create(
+                acShaderFileContent.data(),
+                iShaderFileSize,
+                dispatch_get_main_queue(),
+                DISPATCH_DATA_DESTRUCTOR_DEFAULT);
+            id<MTLLibrary> mRayTraceLibrary = [
+                nativeDevice newLibraryWithData:
+                    shaderData error: &error];
+            
+            id<MTLFunction> rayTracingFunction = [mRayTraceLibrary newFunctionWithName:@"rayGen"];
+            mRayTracingShadowComputePipeline = [nativeDevice
+                newComputePipelineStateWithFunction:rayTracingFunction
+                error:&error];
+
+            int iDebug = 1;
+            */
+            
         }
 
         /*
@@ -1761,7 +2015,7 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             Render::Common::CRenderJob* pRenderJob
         )
         {
-            WTFASSERT(0, "Implement me");
+            // nothing to do
         }
 
         /*
@@ -2002,6 +2256,24 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             
             [nativeCommandBuffer setLabel: [NSString stringWithUTF8String: commandBuffer.getID().c_str()]];
             [blitCommandEncoder setLabel: [NSString stringWithUTF8String: std::string(renderJob.mName + " Blit Command Encoder").c_str()]];
+        }
+        
+        /*
+        **
+        */
+        void CRenderer::platformBeginRayTracingPass(
+            Render::Common::CRenderJob& renderJob,
+            RenderDriver::Common::CCommandBuffer& commandBuffer
+        )
+        {
+            static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer).beginComputePass(nullptr);
+                        
+            RenderDriver::Metal::CCommandBuffer& commandBufferMetal = static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer);
+            id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBufferMetal.getNativeCommandList();
+            id<MTLComputeCommandEncoder> computeCommandEncoder = commandBufferMetal.getNativeComputeCommandEncoder();
+            
+            [nativeCommandBuffer setLabel: [NSString stringWithUTF8String: commandBuffer.getID().c_str()]];
+            [computeCommandEncoder setLabel: [NSString stringWithUTF8String: std::string(renderJob.mName + " Compute Command Encoder").c_str()]];
         }
     
         /*

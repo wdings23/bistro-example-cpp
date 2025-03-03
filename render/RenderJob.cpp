@@ -56,8 +56,21 @@ namespace Render
                 doc.Parse(acBuffer.data());
             }
 
+            if(createInfo.mpapAccelerationStructures)
+            {
+                for(auto const& keyValue : *createInfo.mpapAccelerationStructures)
+                {
+                    mapAccelerationStructures[keyValue.first] = keyValue.second;
+                }
+            }
+            
             mName = createInfo.mName;
 
+if(mName.find("Ray Trace") != std::string::npos)
+{
+    int iDebug = 1;
+}
+            
             std::string typeStr = doc["Type"].GetString();
             std::string passStr = doc["PassType"].GetString();
 
@@ -838,6 +851,7 @@ DEBUG_PRINTF("render job: %s\n", mName.c_str());
                     acCloseHitShaderBuffer,
                     acMissShaderBuffer,
                     fullPath,
+                    pipelineBaseName,
                     pPlatformInstance
                 );
                 pDesc->mpDescriptor = mpDescriptorSet;

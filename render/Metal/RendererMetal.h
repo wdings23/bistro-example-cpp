@@ -6,7 +6,7 @@
 #include <render-driver/Metal/CommandBufferMetal.h>
 #include <render-driver/Metal/CommandAllocatorMetal.h>
 #include <render-driver/Metal/UtilsMetal.h>
-//#include <render-driver/Metal/AccelerationStructureMetal.h>
+#include <render-driver/Metal/AccelerationStructureMetal.h>
 
 #include <render/Metal/RenderJobMetal.h>
 
@@ -408,6 +408,10 @@ namespace Render
                 Render::Common::CRenderJob& renderJob,
                 RenderDriver::Common::CCommandBuffer& commandBuffer);
             
+            virtual void platformBeginRayTracingPass(
+                Render::Common::CRenderJob& renderJob,
+                RenderDriver::Common::CCommandBuffer& commandBuffer);
+            
             void platformPreSwapChainPassSubmission(
                 Render::Common::CRenderJob const& renderJob,
                 RenderDriver::Common::CCommandBuffer& commandBuffer);
@@ -502,6 +506,13 @@ namespace Render
                 // Argument buffer containing the indirect command buffer encoded in the kernel
                 id<MTLBuffer>                                 mIndirectDrawCommandArgumentBuffer;
             
+            
+                // TEST TEST TEST
+                id<MTLAccelerationStructure> mAccelerationStructure;
+                id<MTLAccelerationStructure> mCompactedAccelerationStructure;
+                id<MTLComputePipelineState> mRayTracingShadowComputePipeline;
+            
+                std::map<std::string, std::unique_ptr<RenderDriver::Metal::CAccelerationStructure>> maAccelerationStructures;
             };
 
     }   // Metal

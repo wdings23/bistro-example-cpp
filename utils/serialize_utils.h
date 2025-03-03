@@ -17,6 +17,7 @@
 
 #include <render-driver/Device.h>
 #include <render-driver/Format.h>
+#include <render-driver/AccelerationStructure.h>
 
 #if defined(_MSC_VER)
 #include "vulkan/vulkan.h"
@@ -734,6 +735,8 @@ namespace SerializeUtils
 			uint64_t									maPlatformExtras[4];
 
 			RenderDriver::Common::ShaderType			mShaderType;
+            
+            RenderDriver::Common::CAccelerationStructure* mpAccelerationStructure = nullptr;
 		};
 
 		struct JobResource

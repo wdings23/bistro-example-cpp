@@ -492,6 +492,7 @@
 		25DECF972D6160D200ED56EE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 25DECF942D6160D200ED56EE /* Main.storyboard */; };
 		25DECF992D6162D200ED56EE /* Document.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DECF982D6162D200ED56EE /* Document.swift */; };
 		25DECF9D2D61632700ED56EE /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 25DECF9C2D61632700ED56EE /* Info.plist */; };
+		25FEA6402D755D6800883C6C /* AccelerationStructureMetal.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25FEA63F2D755D6800883C6C /* AccelerationStructureMetal.mm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1527,6 +1528,8 @@
 		25DECF9A2D61630200ED56EE /* bistro_example_cpp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = bistro_example_cpp.entitlements; sourceTree = SOURCE_ROOT; };
 		25DECF9B2D61631300ED56EE /* bistro-example-cpp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "bistro-example-cpp-Bridging-Header.h"; sourceTree = SOURCE_ROOT; };
 		25DECF9C2D61632700ED56EE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = SOURCE_ROOT; };
+		25FEA63C2D755C3300883C6C /* AccelerationStructureMetal.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AccelerationStructureMetal.h; sourceTree = "<group>"; };
+		25FEA63F2D755D6800883C6C /* AccelerationStructureMetal.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AccelerationStructureMetal.mm; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2124,6 +2127,8 @@
 		25DECF032D61532E00ED56EE /* Metal */ = {
 			isa = PBXGroup;
 			children = (
+				25FEA63C2D755C3300883C6C /* AccelerationStructureMetal.h */,
+				25FEA63F2D755D6800883C6C /* AccelerationStructureMetal.mm */,
 				25DECEEC2D61532E00ED56EE /* BufferMetal.h */,
 				25DECEED2D61532E00ED56EE /* BufferMetal.mm */,
 				25DECEEE2D61532E00ED56EE /* CommandAllocatorMetal.h */,
@@ -2380,6 +2385,7 @@
 				25DECEA82D6063D700ED56EE /* quaternion.cpp in Sources */,
 				25DECEA92D6063D700ED56EE /* vec.cpp in Sources */,
 				25DECEAA2D6063D700ED56EE /* mat4.cpp in Sources */,
+				25FEA6402D755D6800883C6C /* AccelerationStructureMetal.mm in Sources */,
 				25DECEBC2D61373400ED56EE /* Renderer.cpp in Sources */,
 				25DECEBD2D61373400ED56EE /* RendererVulkan.cpp in Sources */,
 				25DECEBE2D61373400ED56EE /* RenderJobVulkan.cpp in Sources */,
