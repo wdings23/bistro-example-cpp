@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		254CE3A72D77B5D4003070B3 /* trimmed-ray-trace-copy-render-targets.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 254CE3A52D77B5D4003070B3 /* trimmed-ray-trace-copy-render-targets.json */; };
+		254CE3A82D77B5D4003070B3 /* trimmed-ray-trace-render-jobs.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 254CE3A62D77B5D4003070B3 /* trimmed-ray-trace-render-jobs.json */; };
+		254CE3AE2D77C187003070B3 /* LDR_RGBA_0.png in CopyFiles */ = {isa = PBXBuildFile; fileRef = 254CE3AD2D77C187003070B3 /* LDR_RGBA_0.png */; };
 		257FBDBA2D61D3CE00F92519 /* bistro2-triangles.bin in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDB72D61D2E200F92519 /* bistro2-triangles.bin */; };
 		257FBDC02D629FDF00F92519 /* bistro2-mesh-instance-ids.bin in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDBC2D629FDF00F92519 /* bistro2-mesh-instance-ids.bin */; };
 		257FBDC12D629FDF00F92519 /* bistro2-mesh-instance-positions.bin in CopyFiles */ = {isa = PBXBuildFile; fileRef = 257FBDBD2D629FDF00F92519 /* bistro2-mesh-instance-positions.bin */; };
@@ -502,6 +505,7 @@
 			dstPath = assets;
 			dstSubfolderSpec = 7;
 			files = (
+				254CE3AE2D77C187003070B3 /* LDR_RGBA_0.png in CopyFiles */,
 				257FBDBA2D61D3CE00F92519 /* bistro2-triangles.bin in CopyFiles */,
 				257FBDC02D629FDF00F92519 /* bistro2-mesh-instance-ids.bin in CopyFiles */,
 				257FBDC12D629FDF00F92519 /* bistro2-mesh-instance-positions.bin in CopyFiles */,
@@ -793,6 +797,8 @@
 			dstPath = "assets/render-jobs";
 			dstSubfolderSpec = 7;
 			files = (
+				254CE3A72D77B5D4003070B3 /* trimmed-ray-trace-copy-render-targets.json in CopyFiles */,
+				254CE3A82D77B5D4003070B3 /* trimmed-ray-trace-render-jobs.json in CopyFiles */,
 				257FC0102D63213800F92519 /* depth-prepass-graphics.json in CopyFiles */,
 				257FC0112D63213800F92519 /* temporal-accumulation-graphics.json in CopyFiles */,
 				257FC0122D63213800F92519 /* secondary-mesh-culling-compute.json in CopyFiles */,
@@ -948,6 +954,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		254CE3A52D77B5D4003070B3 /* trimmed-ray-trace-copy-render-targets.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "trimmed-ray-trace-copy-render-targets.json"; path = "../../../render-jobs/trimmed-ray-trace-copy-render-targets.json"; sourceTree = "<group>"; };
+		254CE3A62D77B5D4003070B3 /* trimmed-ray-trace-render-jobs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "trimmed-ray-trace-render-jobs.json"; path = "../../../render-jobs/trimmed-ray-trace-render-jobs.json"; sourceTree = "<group>"; };
+		254CE3AB2D77C023003070B3 /* LDR_RGBA_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = LDR_RGBA_0.png; path = ../../../scene/LDR_RGBA_0.png; sourceTree = "<group>"; };
+		254CE3AD2D77C187003070B3 /* LDR_RGBA_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = LDR_RGBA_0.png; path = ../../../scene/LDR_RGBA_0.png; sourceTree = "<group>"; };
 		257FBDB72D61D2E200F92519 /* bistro2-triangles.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = "bistro2-triangles.bin"; path = "../../../scene/Bistro_v4/bistro2-triangles.bin"; sourceTree = "<group>"; };
 		257FBDBC2D629FDF00F92519 /* bistro2-mesh-instance-ids.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = "bistro2-mesh-instance-ids.bin"; path = "../../../scene/Bistro_v4/bistro2-mesh-instance-ids.bin"; sourceTree = "<group>"; };
 		257FBDBD2D629FDF00F92519 /* bistro2-mesh-instance-positions.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = "bistro2-mesh-instance-positions.bin"; path = "../../../scene/Bistro_v4/bistro2-mesh-instance-positions.bin"; sourceTree = "<group>"; };
@@ -1548,6 +1558,7 @@
 			children = (
 				257FBFDD2D62A27800F92519 /* converted-dds-scale */,
 				257FBDC42D629FF800F92519 /* bistro2.mat */,
+				254CE3AB2D77C023003070B3 /* LDR_RGBA_0.png */,
 				257FBDC52D629FF800F92519 /* bistro2.mid */,
 				257FBDBE2D629FDF00F92519 /* bistro2-mesh-instance-bboxes.bin */,
 				257FBDBC2D629FDF00F92519 /* bistro2-mesh-instance-ids.bin */,
@@ -1835,6 +1846,8 @@
 		257FC0412D63213E00F92519 /* render-jobs */ = {
 			isa = PBXGroup;
 			children = (
+				254CE3A52D77B5D4003070B3 /* trimmed-ray-trace-copy-render-targets.json */,
+				254CE3A62D77B5D4003070B3 /* trimmed-ray-trace-render-jobs.json */,
 				257FBFE42D63213400F92519 /* atmosphere.json */,
 				257FC0042D63213700F92519 /* bistro-example-render-jobs.json */,
 				257FBFFC2D63213600F92519 /* build-irradiance-cache.json */,
@@ -1978,6 +1991,7 @@
 		259DF5432D6053C9007BA6A1 = {
 			isa = PBXGroup;
 			children = (
+				254CE3AD2D77C187003070B3 /* LDR_RGBA_0.png */,
 				257FC0DB2D650AA900F92519 /* metal_library */,
 				257FC0412D63213E00F92519 /* render-jobs */,
 				257FBDBB2D61D46B00F92519 /* Assets */,

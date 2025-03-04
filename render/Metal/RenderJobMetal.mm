@@ -13,6 +13,8 @@
 
 #include <filesystem>
 
+#include <stb_image.h>
+
 #if !defined(_MSC_VER)
     extern void getAssetsDir(std::string& fullPath, std::string const& fileName);
     extern char const* getSaveDir();
@@ -171,8 +173,6 @@ namespace Render
 			RenderDriver::Common::CCommandQueue* pCommandQueue
 		)
 		{
-            WTFASSERT(0, "Implement me");
-            
 			mapImages[name] = std::make_unique<RenderDriver::Metal::CImage>();
 
 			RenderDriver::Metal::CImage* pImage = mapImages[name].get();
@@ -197,13 +197,15 @@ namespace Render
 			commandAllocator.create(commandAllocatorDesc, *mpDevice);
 			
 			// upload command buffer
-			RenderDriver::Common::CommandBufferDescriptor commandBufferDesc = {};
+            RenderDriver::Metal::CommandBufferDescriptor commandBufferDesc = {};
 			commandBufferDesc.mpCommandAllocator = &commandAllocator;
 			commandBufferDesc.mpPipelineState = nullptr;
 			commandBufferDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
+            commandBufferDesc.mpCommandQueue = (__bridge id<MTLCommandQueue>)pCommandQueue->getNativeCommandQueue();
 			RenderDriver::Metal::CCommandBuffer commandBuffer;
 			commandBuffer.create(commandBufferDesc, *mpDevice);
 			commandBuffer.reset();
+            commandBuffer.beginCopy();
 
 			// upload buffer 
 			RenderDriver::Metal::CBuffer uploadBuffer;
@@ -219,6 +221,21 @@ namespace Render
 				(void *)pImageData,
 				iSize);
 
+            id<MTLBuffer> nativeUploadBuffer = (__bridge id<MTLBuffer>)uploadBuffer.getNativeBuffer();
+            id<MTLTexture> nativeDestImage = (__bridge id<MTLTexture>)pImage->getNativeImage();
+            
+            id<MTLBlitCommandEncoder> blitEncoder = commandBuffer.getNativeBlitCommandEncoder();
+            [blitEncoder copyFromBuffer: nativeUploadBuffer
+                           sourceOffset: 0
+                      sourceBytesPerRow: iTextureWidth * 4
+                    sourceBytesPerImage: iTextureWidth * iTextureHeight * 4
+                             sourceSize: MTLSizeMake(iTextureWidth, iTextureHeight, 1)
+                              toTexture: nativeDestImage
+                       destinationSlice: 0
+                       destinationLevel: 0
+                      destinationOrigin:MTLOriginMake(0, 0, 0)
+            ];
+            
 			// copy to image
 			//uploadBuffer.copyToImage(
 			//	uploadBuffer,
@@ -228,11 +245,16 @@ namespace Render
 			//	iTextureHeight
 			//);
 
-			// execute command 
+            commandBuffer.close();
+            
+			// execute command
 			pCommandQueue->execCommandBuffer(
 				commandBuffer,
 				*mpDevice
 			);
+            
+            id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBuffer.getNativeCommandList();
+            [nativeCommandBuffer waitUntilCompleted];
             
             uploadBuffer.releaseNativeBuffer();
 
@@ -1168,7 +1190,45 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
             
 			uploadBuffer.releaseNativeBuffer();
 		}
-
+    
+        /*
+        **
+        */
+        void CRenderJob::platformLoadImage(
+            std::vector<unsigned char>& acImageData,
+            int32_t& iTextureWidth,
+            int32_t& iTextureHeight,
+            std::string const& filePath)
+        {
+            auto start0 = filePath.find_last_of("/");
+            auto start1 = filePath.find_last_of("\\");
+            auto start = start0;
+            if(start0 < 0 || start1 < start0)
+            {
+                start = start1;
+            }
+            if(start >= 0)
+            {
+                start += 1;
+            }
+            
+            std::string fileName = filePath.substr(start);
+            std::string fullPath;
+            getAssetsDir(fullPath, fileName);
+            
+            int32_t iComp = 0;
+            stbi_uc* pImageData = stbi_load(
+                fullPath.c_str(),
+                &iTextureWidth,
+                &iTextureHeight,
+                &iComp,
+                4);
+            WTFASSERT(pImageData != nullptr, "Can\'t open %s\n", fullPath.c_str());
+            acImageData.resize(iTextureWidth * iTextureHeight * 4);
+            memcpy(acImageData.data(), pImageData, acImageData.size());
+            stbi_image_free(pImageData);
+        }
+    
     }	// Metal
 
 }	// Render 

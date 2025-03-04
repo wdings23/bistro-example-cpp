@@ -1472,13 +1472,14 @@ DEBUG_PRINTF("render job: %s\n", mName.c_str());
             {
                 std::string filePath = shaderResource["file_path"].GetString();
                 
-                int32_t iComp = 0;
-                stbi_uc* pImageData = stbi_load(
-                    filePath.c_str(),
-                    &iTextureWidth,
-                    &iTextureHeight,
-                    &iComp,
-                    4);
+                std::vector<unsigned char> acImageData;
+                platformLoadImage(
+                    acImageData,
+                    iTextureWidth,
+                    iTextureHeight,
+                    filePath);
+                
+                unsigned char* pImageData = acImageData.data();
                 RenderDriver::Common::Format format = RenderDriver::Common::Format::R8G8B8A8_UNORM;
                 RenderDriver::Common::CImage* pImage = platformCreateImageWithData(
                     name,

@@ -419,7 +419,7 @@ void CApp::init(AppDescriptor const& appDesc)
 #if defined(_MSC_VER)
     pDesc->mRenderJobsFilePath = "/Users/dingwings/projects/bistro-example-cpp/render-jobs/bistro-example-render-jobs.json";
 #else
-    getAssetsDir(pDesc->mRenderJobsFilePath, "render-jobs/non-ray-trace-render-jobs.json");
+    getAssetsDir(pDesc->mRenderJobsFilePath, "render-jobs/trimmed-ray-trace-render-jobs.json");
 #endif // _MSC_VER
 
     mpRenderer->setup(*pDesc);

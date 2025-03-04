@@ -139,6 +139,13 @@ namespace Render
 				uint32_t iDataSize,
 				RenderDriver::Common::CCommandQueue& commandQueue
 			);
+            
+            virtual void platformLoadImage(
+                std::vector<unsigned char>& acImageData,
+                int32_t& iTextureWidth,
+                int32_t& iTextureHeight,
+                std::string const& filePath
+            );
 		};
 
 	}   // Common

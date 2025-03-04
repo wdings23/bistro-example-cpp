@@ -1013,6 +1013,27 @@ namespace Render
 			uploadBuffer.releaseNativeBuffer();
 		}
 
+        /*
+        **
+        */
+        void CRenderJob::platformLoadImage(
+            std::vector<unsigned char>& acImageData,
+            int32_t& iTextureWidth,
+            int32_t& iTextureHeight,
+            std::string const& filePath)
+        {
+            int32_t iComp = 0;
+            stbi_uc* pImageData = stbi_load(
+                filePath.c_str(),
+                &iTextureWidth,
+                &iTextureHeight,
+                &iComp,
+                4);
+            acImageData.resize(iTextureWidth * iTextureHeight * 4);
+            memcpy(acImageData.data(), pImageData, acImageData.size());
+            stbi_image_free(pImageData);
+        }
+    
     }	// Vulkan
 
 }	// Render 
