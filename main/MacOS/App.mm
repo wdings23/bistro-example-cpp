@@ -409,7 +409,8 @@ void CApp::init(AppDescriptor const& appDesc)
     
     mpRenderer = std::make_unique<Render::Metal::CRenderer>();
     
-    Render::Common::gLightDirection = normalize(float3(-0.703f, 0.5403f, -0.461f));
+    //Render::Common::gLightDirection = normalize(float3(-0.703f, 0.5403f, -0.461f));
+    Render::Common::gLightDirection = normalize(float3(0.3f, 1.0f, 0.0f));
     Render::Common::gfEmissiveRadiance = 0.0f;
     Render::Common::gfClearReservoir = 0.0f;
 
