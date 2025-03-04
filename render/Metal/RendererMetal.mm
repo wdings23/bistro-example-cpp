@@ -1866,100 +1866,198 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             uint32_t iNumMeshes
         )
         {
+            NSMutableArray* primitiveAccelerationStructures = [[NSMutableArray alloc] init];
+            
             RenderDriver::Metal::CBuffer& vertexBuffer = *((RenderDriver::Metal::CBuffer*)mapVertexBuffers["bistro"]);
             RenderDriver::Metal::CBuffer& indexBuffer = *((RenderDriver::Metal::CBuffer*)mapIndexBuffers["bistro"]);
             
             id<MTLBuffer> nativeVertexBuffer = (__bridge id<MTLBuffer>)vertexBuffer.getNativeBuffer();
             id<MTLBuffer> nativeIndexBuffer = (__bridge id<MTLBuffer>)indexBuffer.getNativeBuffer();
             
-            MTLAccelerationStructureTriangleGeometryDescriptor* pGeometryDesc = [MTLAccelerationStructureTriangleGeometryDescriptor descriptor];
-            pGeometryDesc.indexBuffer = nativeIndexBuffer;
-            pGeometryDesc.indexType = MTLIndexTypeUInt32;
-            pGeometryDesc.vertexBuffer = nativeVertexBuffer;
-            pGeometryDesc.vertexStride = sizeof(Render::Common::VertexFormat);
-            pGeometryDesc.triangleCount = aiTriangleIndices.size() / 3;
-            
-            MTLPrimitiveAccelerationStructureDescriptor *accelDescriptor = [MTLPrimitiveAccelerationStructureDescriptor descriptor];
-            accelDescriptor.geometryDescriptors = @[ pGeometryDesc ];
-
             id<MTLDevice> nativeDevice = (__bridge id<MTLDevice>)mpDevice->getNativeDevice();
             id<MTLCommandQueue> nativeQueue = (__bridge id<MTLCommandQueue>)mpComputeCommandQueue->getNativeCommandQueue();
             
-            // Query for the sizes needed to store and build the acceleration structure.
-            MTLAccelerationStructureSizes accelSizes = [nativeDevice accelerationStructureSizesWithDescriptor:accelDescriptor];
-            mAccelerationStructure = [nativeDevice newAccelerationStructureWithSize:accelSizes.accelerationStructureSize];
-            mAccelerationStructure.label = @"Acceleration Structure";
+            for(uint32_t iMesh = 0; iMesh < iNumMeshes; iMesh++)
+            {
+                std::pair<uint32_t, uint32_t> const& range = aMeshRanges[iMesh];
+                uint32_t iNumIndices = range.second - range.first;
+                
+                MTLAccelerationStructureTriangleGeometryDescriptor* pGeometryDesc = [MTLAccelerationStructureTriangleGeometryDescriptor descriptor];
+                pGeometryDesc.indexBuffer = nativeIndexBuffer;
+                pGeometryDesc.indexType = MTLIndexTypeUInt32;
+                pGeometryDesc.vertexBuffer = nativeVertexBuffer;
+                pGeometryDesc.vertexStride = sizeof(Render::Common::VertexFormat);
+                pGeometryDesc.triangleCount = iNumIndices / 3;
+                pGeometryDesc.indexBufferOffset = range.first * sizeof(uint32_t);
+                
+                MTLPrimitiveAccelerationStructureDescriptor *accelDescriptor = [MTLPrimitiveAccelerationStructureDescriptor descriptor];
+                accelDescriptor.geometryDescriptors = @[ pGeometryDesc ];
+                
+                // Query for the sizes needed to store and build the acceleration structure.
+                MTLAccelerationStructureSizes accelSizes = [nativeDevice accelerationStructureSizesWithDescriptor:accelDescriptor];
+                id<MTLAccelerationStructure> accelerationStructure = [nativeDevice newAccelerationStructureWithSize:accelSizes.accelerationStructureSize];
+                
+                std::stringstream oss;
+                oss << "Geometry " << iMesh << " Acceleration Structure";
+                accelerationStructure.label = [NSString stringWithCString: oss.str().c_str()
+                                   encoding: [NSString defaultCStringEncoding]
+                ];
+                
+                // Allocate scratch space Metal uses to build the acceleration structure.
+                id <MTLBuffer> scratchBuffer = [nativeDevice newBufferWithLength:accelSizes.buildScratchBufferSize options:MTLResourceStorageModePrivate];
+
+                // command buffer and encoder to build the acceleration structure
+                id <MTLCommandBuffer> commandBuffer = [nativeQueue commandBuffer];
+                id <MTLAccelerationStructureCommandEncoder> commandEncoder = [commandBuffer accelerationStructureCommandEncoder];
+
+                // Allocate a buffer for Metal to write the compacted accelerated structure's size into.
+                id <MTLBuffer> compactedSizeBuffer = [nativeDevice newBufferWithLength:sizeof(uint32_t) options:MTLResourceStorageModeShared];
+
+                // Schedule the actual acceleration structure build.
+                [commandEncoder buildAccelerationStructure:accelerationStructure
+                                                descriptor:accelDescriptor
+                                             scratchBuffer:scratchBuffer
+                                       scratchBufferOffset:0];
+
+                // Compute and write the compacted acceleration structure size into the buffer. You
+                // must already have a built acceleration structure because Metal determines the compacted
+                // size based on the final size of the acceleration structure. Compacting an acceleration
+                // structure can potentially reclaim significant amounts of memory because Metal must
+                // create the initial structure using a conservative approach.
+
+                [commandEncoder writeCompactedAccelerationStructureSize:accelerationStructure
+                                                               toBuffer:compactedSizeBuffer
+                                                                 offset:0];
+                
+                // End encoding, and commit the command buffer so the GPU can start building the
+                // acceleration structure.
+                [commandEncoder endEncoding];
+                [commandBuffer commit];
+                [commandBuffer waitUntilCompleted];
+                
+                // build compact acceleration structure
+                // get the size
+                uint32_t compactedSize = *(uint32_t *)compactedSizeBuffer.contents;
+
+                // Allocate a smaller acceleration structure based on the returned size.
+                id<MTLAccelerationStructure> compactedAccelerationStructure = [nativeDevice newAccelerationStructureWithSize:compactedSize];
+                
+                oss << "Geometry " << iMesh << " Compacted Acceleration Structure";
+                compactedAccelerationStructure.label = [NSString stringWithCString: oss.str().c_str()
+                                   encoding: [NSString defaultCStringEncoding]
+                ];
+                
+                // Create another command buffer and encoder.
+                commandBuffer = [nativeQueue commandBuffer];
+                commandEncoder = [commandBuffer accelerationStructureCommandEncoder];
+
+                // Encode the command to copy and compact the acceleration structure into the
+                // smaller acceleration structure.
+                [commandEncoder copyAndCompactAccelerationStructure:accelerationStructure
+                                            toAccelerationStructure:compactedAccelerationStructure];
+
+                // End encoding and commit the command buffer. You don't need to wait for Metal to finish
+                // executing this command buffer as long as you synchronize any ray-intersection work
+                // to run after this command buffer completes. The sample relies on Metal's default
+                // dependency tracking on resources to automatically synchronize access to the new
+                // compacted acceleration structure.
+                [commandEncoder endEncoding];
+                [commandBuffer commit];
+                
+                [commandBuffer waitUntilCompleted];
+                
+                [primitiveAccelerationStructures addObject:accelerationStructure];
+            }
             
-            // Allocate scratch space Metal uses to build the acceleration structure.
-            id <MTLBuffer> scratchBuffer = [nativeDevice newBufferWithLength:accelSizes.buildScratchBufferSize options:MTLResourceStorageModePrivate];
+            id<MTLBuffer> instanceBuffer = [nativeDevice newBufferWithLength:sizeof(MTLAccelerationStructureInstanceDescriptor) * iNumMeshes options: MTLResourceStorageModeManaged];
+            MTLAccelerationStructureInstanceDescriptor* instanceDescriptors = (MTLAccelerationStructureInstanceDescriptor *)instanceBuffer.contents;
 
-            // command buffer and encoder to build the acceleration structure
-            id <MTLCommandBuffer> commandBuffer = [nativeQueue commandBuffer];
-            id <MTLAccelerationStructureCommandEncoder> commandEncoder = [commandBuffer accelerationStructureCommandEncoder];
-
-            // Allocate a buffer for Metal to write the compacted accelerated structure's size into.
-            id <MTLBuffer> compactedSizeBuffer = [nativeDevice newBufferWithLength:sizeof(uint32_t) options:MTLResourceStorageModeShared];
-
-            // Schedule the actual acceleration structure build.
-            [commandEncoder buildAccelerationStructure:mAccelerationStructure
-                                            descriptor:accelDescriptor
-                                         scratchBuffer:scratchBuffer
-                                   scratchBufferOffset:0];
-
-            // Compute and write the compacted acceleration structure size into the buffer. You
-            // must already have a built acceleration structure because Metal determines the compacted
-            // size based on the final size of the acceleration structure. Compacting an acceleration
-            // structure can potentially reclaim significant amounts of memory because Metal must
-            // create the initial structure using a conservative approach.
-
-            [commandEncoder writeCompactedAccelerationStructureSize:mAccelerationStructure
-                                                           toBuffer:compactedSizeBuffer
-                                                             offset:0];
-
-            // End encoding, and commit the command buffer so the GPU can start building the
-            // acceleration structure.
-            [commandEncoder endEncoding];
-
-            [commandBuffer commit];
-
-            // The sample waits for Metal to finish executing the command buffer so that it can
-            // read back the compacted size.
-
-            // Note: Don't wait for Metal to finish executing the command buffer if you aren't compacting
-            // the acceleration structure, as doing so requires CPU/GPU synchronization. You don't have
-            // to compact acceleration structures, but do so when creating large static acceleration
-            // structures, such as static scene geometry. Avoid compacting acceleration structures that
-            // you rebuild every frame, as the synchronization cost may be significant.
-
-            [commandBuffer waitUntilCompleted];
-
-            uint32_t compactedSize = *(uint32_t *)compactedSizeBuffer.contents;
-
-            // Allocate a smaller acceleration structure based on the returned size.
-            mCompactedAccelerationStructure = [nativeDevice newAccelerationStructureWithSize:compactedSize];
-            mCompactedAccelerationStructure.label = @"Compacted Acceleration Structure";
+            // Fill out instance descriptors.
+            for(uint32_t iInstance = 0; iInstance < iNumMeshes; iInstance++)
+            {
+                instanceDescriptors[iInstance].accelerationStructureIndex = iInstance;
+                instanceDescriptors[iInstance].options = MTLAccelerationStructureInstanceOptionOpaque;
+                instanceDescriptors[iInstance].intersectionFunctionTableOffset = 0;
+                instanceDescriptors[iInstance].mask = 0xff;
+                instanceDescriptors[iInstance].transformationMatrix.columns[0] = MTLPackedFloat3Make(1.0f, 0.0f, 0.0f);
+                instanceDescriptors[iInstance].transformationMatrix.columns[1] = MTLPackedFloat3Make(0.0f, 1.0f, 0.0f);
+                instanceDescriptors[iInstance].transformationMatrix.columns[2] = MTLPackedFloat3Make(0.0f, 0.0f, 1.0f);
+                instanceDescriptors[iInstance].transformationMatrix.columns[3] = MTLPackedFloat3Make(0.0f, 0.0f, 0.0f);
+            }
             
-            // Create another command buffer and encoder.
-            commandBuffer = [nativeQueue commandBuffer];
-            commandEncoder = [commandBuffer accelerationStructureCommandEncoder];
-
-            // Encode the command to copy and compact the acceleration structure into the
-            // smaller acceleration structure.
-            [commandEncoder copyAndCompactAccelerationStructure:mAccelerationStructure
-                                        toAccelerationStructure:mCompactedAccelerationStructure];
-
-            // End encoding and commit the command buffer. You don't need to wait for Metal to finish
-            // executing this command buffer as long as you synchronize any ray-intersection work
-            // to run after this command buffer completes. The sample relies on Metal's default
-            // dependency tracking on resources to automatically synchronize access to the new
-            // compacted acceleration structure.
-            [commandEncoder endEncoding];
-            [commandBuffer commit];
+            MTLInstanceAccelerationStructureDescriptor* accelDescriptor = [MTLInstanceAccelerationStructureDescriptor descriptor];
+            accelDescriptor.instancedAccelerationStructures = primitiveAccelerationStructures;
+            accelDescriptor.instanceCount = iNumMeshes;
+            accelDescriptor.instanceDescriptorBuffer = instanceBuffer;
             
-            [commandBuffer waitUntilCompleted];
+            {
+                // Query for the sizes needed to store and build the acceleration structure.
+                MTLAccelerationStructureSizes accelSizes = [nativeDevice accelerationStructureSizesWithDescriptor:accelDescriptor];
+                mInstanceAccelerationStructure = [nativeDevice newAccelerationStructureWithSize:accelSizes.accelerationStructureSize];
+                mInstanceAccelerationStructure.label = @"Instance Acceleration Structure";
+                
+                // Allocate scratch space Metal uses to build the acceleration structure.
+                id <MTLBuffer> scratchBuffer = [nativeDevice newBufferWithLength:accelSizes.buildScratchBufferSize options:MTLResourceStorageModePrivate];
+                
+                // command buffer and encoder to build the acceleration structure
+                id <MTLCommandBuffer> commandBuffer = [nativeQueue commandBuffer];
+                id <MTLAccelerationStructureCommandEncoder> commandEncoder = [commandBuffer accelerationStructureCommandEncoder];
+                
+                // Allocate a buffer for Metal to write the compacted accelerated structure's size into.
+                id <MTLBuffer> compactedSizeBuffer = [nativeDevice newBufferWithLength:sizeof(uint32_t) options:MTLResourceStorageModeShared];
+                
+                // Schedule the actual acceleration structure build.
+                [commandEncoder buildAccelerationStructure:mInstanceAccelerationStructure
+                                                descriptor:accelDescriptor
+                                             scratchBuffer:scratchBuffer
+                                       scratchBufferOffset:0];
+                
+                // Compute and write the compacted acceleration structure size into the buffer. You
+                // must already have a built acceleration structure because Metal determines the compacted
+                // size based on the final size of the acceleration structure. Compacting an acceleration
+                // structure can potentially reclaim significant amounts of memory because Metal must
+                // create the initial structure using a conservative approach.
+                
+                [commandEncoder writeCompactedAccelerationStructureSize:mInstanceAccelerationStructure
+                                                               toBuffer:compactedSizeBuffer
+                                                                 offset:0];
+                
+                // End encoding, and commit the command buffer so the GPU can start building the
+                // acceleration structure.
+                [commandEncoder endEncoding];
+                [commandBuffer commit];
+                [commandBuffer waitUntilCompleted];
+                
+                // build compact acceleration structure
+                // get the size
+                uint32_t compactedSize = *(uint32_t *)compactedSizeBuffer.contents;
+                
+                // Allocate a smaller acceleration structure based on the returned size.
+                mCompactedInstanceAccelerationStructure = [nativeDevice newAccelerationStructureWithSize:compactedSize];
+                mCompactedInstanceAccelerationStructure.label = @"Compacted Acceleration Structure";
+                
+                // Create another command buffer and encoder.
+                commandBuffer = [nativeQueue commandBuffer];
+                commandEncoder = [commandBuffer accelerationStructureCommandEncoder];
+                
+                // Encode the command to copy and compact the acceleration structure into the
+                // smaller acceleration structure.
+                [commandEncoder copyAndCompactAccelerationStructure:mInstanceAccelerationStructure
+                                            toAccelerationStructure:mCompactedInstanceAccelerationStructure];
+                
+                // End encoding and commit the command buffer. You don't need to wait for Metal to finish
+                // executing this command buffer as long as you synchronize any ray-intersection work
+                // to run after this command buffer completes. The sample relies on Metal's default
+                // dependency tracking on resources to automatically synchronize access to the new
+                // compacted acceleration structure.
+                [commandEncoder endEncoding];
+                [commandBuffer commit];
+                
+                [commandBuffer waitUntilCompleted];
+            }
             
             maAccelerationStructures["bistro"] = std::make_unique<RenderDriver::Metal::CAccelerationStructure>();
-            maAccelerationStructures["bistro"]->setNativeAccelerationStructure((__bridge void*)mCompactedAccelerationStructure);
+            maAccelerationStructures["bistro"]->setNativeAccelerationStructure((__bridge void*)mInstanceAccelerationStructure);
 
             mapAccelerationStructures["bistro"] = maAccelerationStructures["bistro"].get();
             
@@ -2010,8 +2108,8 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             id<MTLComputeCommandEncoder> nativeComputeEncoder = commandBufferMetal.getNativeComputeCommandEncoder();
             
             MTLSize threadsPerThreadgroup = MTLSizeMake(8, 8, 1);
-            MTLSize threadgroups = MTLSizeMake((iScreenWidth  + threadsPerThreadgroup.width  - 1) / threadsPerThreadgroup.width,
-                                               (iScreenHeight + threadsPerThreadgroup.height - 1) / threadsPerThreadgroup.height,
+            MTLSize threadgroups = MTLSizeMake(iScreenWidth,
+                                               iScreenHeight,
                                                1);
             [nativeComputeEncoder
                 dispatchThreads: threadgroups

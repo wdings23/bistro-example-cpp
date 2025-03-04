@@ -508,9 +508,12 @@ namespace Render
             
             
                 // TEST TEST TEST
-                id<MTLAccelerationStructure> mAccelerationStructure;
-                id<MTLAccelerationStructure> mCompactedAccelerationStructure;
-                id<MTLComputePipelineState> mRayTracingShadowComputePipeline;
+                //id<MTLAccelerationStructure> mAccelerationStructure;
+                //id<MTLAccelerationStructure> mCompactedAccelerationStructure;
+            
+                id<MTLAccelerationStructure> mCompactedInstanceAccelerationStructure;
+                id<MTLAccelerationStructure> mInstanceAccelerationStructure;
+                //id<MTLComputePipelineState> mRayTracingShadowComputePipeline;
             
                 std::map<std::string, std::unique_ptr<RenderDriver::Metal::CAccelerationStructure>> maAccelerationStructures;
             };
