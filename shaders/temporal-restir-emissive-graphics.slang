@@ -136,18 +136,6 @@ struct VertexStageOutput
 
 [[vk::binding(6, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
 
-struct PSOutput
-{
-    float4 mRadiance : SV_TARGET0;
-    float4 mReservoir : SV_TARGET1;
-    float4 mHitPosition : SV_TARGET2;
-    float4 mHitNormal : SV_TARGET3;
-    float4 mSphericalHarmonic0 : SV_TARGET4;
-    float4 mSphericalHarmonic1 : SV_TARGET5;
-    float4 mSphericalHarmonic2 : SV_TARGET6;
-    float4 mDecodedSphericalHarmonic : SV_TARGET6;
-};
-
 [shader("vertex")]
 VertexStageOutput VSMain(
     AssembledVertex assembledVertex)

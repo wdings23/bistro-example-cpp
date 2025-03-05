@@ -40,16 +40,6 @@ struct VertexStageOutput
     float4 sv_position : SV_Position;
     float4 texCoord;
 };
-struct FragmentOutput {
-    float4 radianceOutput : SV_TARGET0;
-    float4 temporalReservoir : SV_TARGET1;
-    float4 ambientOcclusionOutput : SV_TARGET2;
-    float4 hitPosition : SV_TARGET3;
-    float4 hitNormal : SV_TARGET4;
-    float4 sampleRayHitPosition : SV_TARGET5;
-    float4 sampleRayDirection : SV_TARGET6;
-    float4 rayDirection : SV_TARGET7;
-};
 
 struct UniformData
 {
