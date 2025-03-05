@@ -1250,7 +1250,7 @@ namespace Render
         /*
         **
         */
-        void CRenderer::platformPostSetup()
+        void CRenderer::platformPostSetup(std::map<std::string, std::unique_ptr<RenderDriver::Common::CBuffer>>& aExternalBufferMap)
         {
             for(uint32_t i = 0; i < static_cast<uint32_t>(mapQueueGraphicsCommandAllocators.size()); i++)
             {
@@ -1357,6 +1357,46 @@ namespace Render
                     gpuCopyCommandBufferName << "GPU Copy Command Buffer " << i;
                     mapQueueGPUCopyCommandBuffers[i]->setID(gpuCopyCommandBufferName.str());
                     mapQueueGPUCopyCommandBuffers[i]->reset();
+                }
+            }
+            
+            
+            
+            // set up any vertex and index buffer in job descriptor
+            for(auto& keyValue : mapRenderJobs)
+            {
+                Render::Metal::CRenderJob* pRenderJob = (Render::Metal::CRenderJob*)keyValue.second;
+                if(pRenderJob->mType == Render::Common::JobType::Copy)
+                {
+                    continue;
+                }
+                
+                RenderDriver::Metal::CDescriptorSet* pDescriptorSetMetal = (RenderDriver::Metal::CDescriptorSet*)pRenderJob->mpDescriptorSet;
+                uint32_t iNumShaderResources = (uint32_t)pDescriptorSetMetal->maShaderResources.size();
+                for(uint32_t iShaderResource = 0; iShaderResource < iNumShaderResources; iShaderResource++)
+                {
+                    auto& shaderResource = pDescriptorSetMetal->maShaderResources[iShaderResource];
+                    if(shaderResource.mName == "vertexBuffer")
+                    {
+                        shaderResource.mExternalResource.mpBuffer = mapVertexBuffers["bistro"];
+                    }
+                    else if(shaderResource.mName == "indexBuffer")
+                    {
+                        shaderResource.mExternalResource.mpBuffer = mapIndexBuffers["bistro"];
+                    }
+                    else if(shaderResource.mName == "materialData")
+                    {
+                        shaderResource.mExternalResource.mpBuffer = aExternalBufferMap["Material Data"].get();
+                    }
+                    else if(shaderResource.mName == "materialID")
+                    {
+                        shaderResource.mExternalResource.mpBuffer = aExternalBufferMap["Material ID"].get();
+                    }
+                    else if(shaderResource.mName == "meshTriangleRangeData")
+                    {
+                        shaderResource.mExternalResource.mpBuffer = aExternalBufferMap["Mesh Triangle Index Ranges"].get();
+                        WTFASSERT(shaderResource.mExternalResource.mpBuffer != nullptr, "Invalid mesh triangle index range buffer");
+                    }
                 }
             }
         }

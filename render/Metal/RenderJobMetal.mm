@@ -441,15 +441,11 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
                 {
                     shaderResourceInfo.mExternalResource.mpBuffer = mpDefaultUniformBuffer;
                 }
-                else if(name == "Depth Output")
-                {
-                    shaderResourceInfo.mExternalResource.mpImage = mpDepthImage;
-                }
                 else
                 {
                     if(name != "sampler" && name != "textureSampler")
                     {
-                        WTFASSERT(0, "Can\'t find \"%s\" shader resource in attachments", name.c_str());
+                        DEBUG_PRINTF("*** Need to set shader resource \"%s\"\n", name.c_str());
                     }
                 }
                 
@@ -784,7 +780,7 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
                 {
                     if(name != "sampler" && name != "textureSampler")
                     {
-                        WTFASSERT(0, "Can\'t find \"%s\" shader resource in attachments", name.c_str());
+                        DEBUG_PRINTF("*** Need to set shader resource \"%s\"\n", name.c_str());
                     }
                 }
                 
@@ -1092,7 +1088,7 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
 			std::string const& name,
 			RenderDriver::Common::ImageViewDescriptor const& imageViewDesc)
 		{
-            WTFASSERT(0, "Implement me");
+            //WTFASSERT(0, "Implement me");
 		}
 
 		/*

@@ -387,7 +387,6 @@ void setupExternalDataBuffers(
             (uint32_t)iDataSize,
             iFlags
         );
-
     }
 }
 
@@ -454,14 +453,10 @@ void CApp::init(AppDescriptor const& appDesc)
         mpRenderer.get());
     
     // set up buffers used for all the passes
-    std::map<std::string, std::unique_ptr<RenderDriver::Common::CBuffer>> aBufferMap;
     setupExternalDataBuffers(
-        aBufferMap,
+        maBufferMap,
         pRenderer
     );
-    
-    // has to ptr of the map into data lambda or else it's a copy which unique_ptr disallow
-    std::map<std::string, std::unique_ptr<RenderDriver::Common::CBuffer>>* paBufferMap = &aBufferMap;
     
     char const* szSaveDir = getSaveDir();
     DEBUG_PRINTF("%s\n", szSaveDir);
@@ -470,7 +465,7 @@ void CApp::init(AppDescriptor const& appDesc)
     fclose(fp);
     
     pRenderer->initData();
-    pRenderer->loadRenderJobInfo(pDesc->mRenderJobsFilePath);
+    pRenderer->loadRenderJobInfo(pDesc->mRenderJobsFilePath, maBufferMap);
     pRenderer->prepareRenderJobData();
     
     fullPath = std::string(szSaveDir) + "/LDR_RGBA_0.png";

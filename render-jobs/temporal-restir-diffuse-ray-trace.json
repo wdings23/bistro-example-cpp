@@ -193,7 +193,7 @@
         },
         {
             "Name" : "Irradiance Cache",
-            "Type": "BufferInputOutput",
+            "Type": "BufferInput",
             "ParentJobName": "Build Irradiance Cache Ray Trace"
         },
         {

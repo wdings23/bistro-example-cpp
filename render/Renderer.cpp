@@ -86,7 +86,8 @@ namespace Render
         **
         */
         void CRenderer::loadRenderJobInfo(
-            std::string const& renderJobFilePath)
+            std::string const& renderJobFilePath,
+            std::map<std::string, std::unique_ptr<RenderDriver::Common::CBuffer>>& aExternalBufferMap)
         {
             auto directoryEnd = renderJobFilePath.find_last_of("\\") - 1;
             std::string renderJobDirectory = renderJobFilePath.substr(0, directoryEnd);
@@ -337,7 +338,7 @@ namespace Render
             // create fences for each render jobs
             platformCreateRenderJobFences();
 
-            platformPostSetup();
+            platformPostSetup(aExternalBufferMap);
         }
 
         /*

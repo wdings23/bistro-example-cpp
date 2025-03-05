@@ -1491,8 +1491,7 @@ DEBUG_PRINTF("render job: %s\n", mName.c_str());
                 );
 
                 mapUniformImages[name] = pImage;
-                stbi_image_free(pImageData);
-
+                
                 // image view
                 RenderDriver::Common::ImageViewDescriptor imageViewDesc = {};
                 imageViewDesc.mFormat = format;

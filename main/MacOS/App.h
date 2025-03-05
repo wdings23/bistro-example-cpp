@@ -44,4 +44,5 @@ protected:
     float3 mCameraPosition;
     float3 mCameraLookAt;
     
+    std::map<std::string, std::unique_ptr<RenderDriver::Common::CBuffer>> maBufferMap;
 };

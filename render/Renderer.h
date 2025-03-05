@@ -172,6 +172,7 @@ namespace Render
 
         class CRenderer
         {
+            friend class CRenderJob;
         public:
             CRenderer() = default;
             virtual ~CRenderer() = default;
@@ -180,7 +181,9 @@ namespace Render
             virtual void draw();
             virtual void postDraw();
 
-            void loadRenderJobInfo(std::string const& renderJobFilePath);
+            void loadRenderJobInfo(
+                std::string const& renderJobFilePath,
+                std::map<std::string, std::unique_ptr<RenderDriver::Common::CBuffer>>& aExternalBufferMap);
 
             virtual void uploadMeshData(Render::Common::UploadMeshDescriptor const& desc);
             virtual void updateCamera(UpdateCameraDescriptor const& desc);
@@ -737,7 +740,7 @@ namespace Render
 
             virtual void platformCreateRenderJobFences() = 0;
 
-            virtual void platformPostSetup() = 0;
+            virtual void platformPostSetup(std::map<std::string, std::unique_ptr<RenderDriver::Common::CBuffer>>& aExternalBufferMap) = 0;
 
             virtual void platformSwapChainMoveToNextFrame() = 0;
 

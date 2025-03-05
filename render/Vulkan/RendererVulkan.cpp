@@ -1691,7 +1691,7 @@ namespace Render
         /*
         **
         */
-        void CRenderer::platformPostSetup()
+        void CRenderer::platformPostSetup(std::map<std::string, std::unique_ptr<RenderDriver::Common::CBuffer>>& aExternalBufferMap)
         {
             for(uint32_t i = 0; i < static_cast<uint32_t>(mapQueueGraphicsCommandAllocators.size()); i++)
             {

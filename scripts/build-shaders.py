@@ -36,7 +36,7 @@ def get_shader_bindings(
                     index_str = token[len('SV_TARGET'):]
                     binding_index = int(index_str)
                     last_render_target_index = max(binding_index, last_render_target_index)
-                    name = tokens[index-2]
+                    name = tokens[index-2].strip()
 
                     binding_info = {}
                     binding_info['type'] = 'RWTexture2D<float4>'
@@ -69,12 +69,23 @@ def get_shader_bindings(
         binding_index = int(index_set[0])
         binding_set = int(index_set[1])
 
+        binding_data_type_start = binding_set_end + 3
+        if binding_str.find('\\n') >= 0:
+            binding_data_type_start = binding_str.find('\\n') + 2
+
         # binding name, type, index, and set index
-        variable_str = binding_str[binding_set_end + 3:]
-        variable_tokens = variable_str.split()
+        variable_str = binding_str[binding_data_type_start:]
+        #variable_tokens = variable_str.split(sep = ' \n')
+        delimiters = r"[ \n]"
+        tokens = variable_str.split()
+        variable_tokens = []
+        for index in range(len(tokens)):
+            if len(tokens[index]) > 0:
+                variable_tokens.append(tokens[index])
+
         binding_info = {}
-        binding_info['type'] = variable_tokens[0]
-        binding_info['shader-name'] = variable_tokens[1]
+        binding_info['type'] = variable_tokens[0].strip()
+        binding_info['shader-name'] = variable_tokens[1].strip()
         binding_info['index'] = binding_index
         binding_info['set'] = binding_set
 
@@ -185,7 +196,7 @@ def compile_pipeline_shaders():
     print('*** arg 0 {} ***'.format(top_directory))
     print('*** arg 1 {} ***'.format(shader_lib_target_directory))
 
-    file_path = os.path.join(render_job_directory, 'non-ray-trace-render-jobs.json')
+    file_path = os.path.join(render_job_directory, 'trimmed-ray-trace-render-jobs.json')
     file = open(file_path, 'r')
     file_content = file.read()
     file.close()
@@ -204,8 +215,8 @@ def compile_pipeline_shaders():
         if shader_type == 'Copy':
             continue
         
-        if shader_type == 'Ray Trace':
-            continue
+        #if shader_type == 'Ray Trace':
+        #    continue
 
         # open render job file, and get the shader name
         pipeline_file_name = job['Pipeline']
@@ -294,6 +305,9 @@ def compile_pipeline_shaders():
         if not metal_output_file_name in shader_files:
             metal_files.append(metal_output_file_name)
         shader_files[metal_output_file_name] = 1
+
+        if shader_type == 'Ray Trace':
+            continue
 
         # convert to ir
         output_ir_file = os.path.join(output_directory, base_shader_name + '.air')

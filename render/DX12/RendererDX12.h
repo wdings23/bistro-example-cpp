@@ -204,7 +204,7 @@ namespace Render
 
             virtual void platformCreateRenderJobFences();
 
-            virtual void platformPostSetup();
+            virtual void platformPostSetup(std::map<std::string, std::unique_ptr<RenderDriver::Common::CBuffer>>& aExternalBufferMap);
 
             virtual void platformSwapChainMoveToNextFrame();
 

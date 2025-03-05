@@ -14,7 +14,7 @@ namespace RenderDriver
 
         struct DescriptorSetDescriptor
         {
-            std::vector<SerializeUtils::Common::ShaderResourceInfo> const*      mpaShaderResources;
+            std::vector<SerializeUtils::Common::ShaderResourceInfo>*      mpaShaderResources;
             PipelineType                                                        mPipelineType;
             uint32_t                                                            miNumRootConstants;
         };
