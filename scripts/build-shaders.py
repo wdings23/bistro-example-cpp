@@ -4,6 +4,9 @@ import os
 import subprocess
 import re
 
+from get_metal_arguments import *
+from fix_up_metal_shader import *
+
 ##
 def get_shader_bindings(
         slang_shader_file_path,
@@ -222,7 +225,8 @@ def compile_pipeline_shaders():
         pipeline_file_name = job['Pipeline']
         pipeline_file_extension_start = pipeline_file_name.rfind('.')
         pipeline_base_name = pipeline_file_name[:pipeline_file_extension_start]
-        
+        pipeline_type = job['Type']
+
         full_path = os.path.join(render_job_directory, pipeline_file_name)
         render_job_file = open(full_path, 'r')
         render_job_file_content = render_job_file.read()
@@ -264,6 +268,8 @@ def compile_pipeline_shaders():
             main_function_name = 'CSMain'
         elif shader_type == 'Vertex':
             main_function_name = 'VSMain'
+        elif shader_type == 'Ray Trace':
+            main_function_name = 'rayGen'
 
         # create output shader directory if needed
         output_directory = os.path.join(top_directory, 'shader-output') 
@@ -284,12 +290,11 @@ def compile_pipeline_shaders():
             '-entry',
             main_function_name,
             '-o',
-            output_file_name,
-            '-g'
+            output_file_name
         ]
         execute_command(args)
         
-        # spirv-cross
+        # spirv-cross to metal
         metal_output_file_name = os.path.join(output_directory, base_shader_name + '.metal')
         args = [
             '/Users/dingwings/projects/SPIRV-Cross/build/Release/spirv-cross',
@@ -302,14 +307,46 @@ def compile_pipeline_shaders():
         ]
         execute_command(args)
 
+        # spirv-cross reflection
+        metal_reflection_file_name = os.path.join(output_directory, base_shader_name + '-reflection.json')
+        args = [
+            '/Users/dingwings/projects/SPIRV-Cross/build/Release/spirv-cross',
+            output_file_name,
+            '--output',
+            metal_reflection_file_name,
+            '--reflect'
+        ]
+        execute_command(args)
+
         if not metal_output_file_name in shader_files:
             metal_files.append(metal_output_file_name)
         shader_files[metal_output_file_name] = 1
 
+        # fix up ray tracing shader, re-order the arguments, replace traceRayEXT() and replace payload with intersection
         if shader_type == 'Ray Trace':
-            continue
+            file_name_end = metal_output_file_name.rfind('.')
+            fixed_output_file_path = metal_output_file_name[:file_name_end] + '-fixed.metal'
+            
+            # shader arguments from the reflection file
+            shader_argument_info = fill_output_reflection_info(
+                metal_reflection_file_name,
+                full_path
+            )
 
-        # convert to ir
+            # fix the shader 
+            fixed_output = output_fixed_shader(
+                metal_output_file_name,
+                shader_argument_info[0]
+            )
+
+            # set the fixed up shader to the metal shader  
+            file = open(fixed_output_file_path, 'w')
+            file.write(fixed_output)
+            file.close()
+            metal_output_file_name = fixed_output_file_path
+            print('use fixed up ray tracing shader: \"{}\"'.format(metal_output_file_name))
+
+        # convert metal shader to ir
         output_ir_file = os.path.join(output_directory, base_shader_name + '.air')
         args = [
             'xcrun',
@@ -327,7 +364,6 @@ def compile_pipeline_shaders():
         ir_files.append(output_ir_file)
 
         # create metal library file with the ir
-        #metal_lib_file_path = os.path.join(shader_lib_target_directory, pipeline_base_name + '.metallib')
         metal_lib_file_path = os.path.join(shader_lib_target_directory, base_shader_name + '.metallib')
         args = [
             'xcrun', 
@@ -353,14 +389,15 @@ def compile_pipeline_shaders():
             metal_lib_file_path
         ]
         execute_command(args)
+        
 
-
+    '''
     compile_native_metal_shaders(
         shader_directory,
         output_directory,
         'indirect-draw-command-compute',
         shader_lib_target_directory)
-
+    '''
     
 
 ##
