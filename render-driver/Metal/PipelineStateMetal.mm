@@ -29,7 +29,7 @@ namespace RenderDriver
             
             char const* szDir = getSaveDir();
             std::string shaderOutputDirectory = std::string(szDir) + "/shader-output";
-            printf("save directory: \"%s\"\n", shaderOutputDirectory.c_str());
+            //printf("save directory: \"%s\"\n", shaderOutputDirectory.c_str());
             
             NSError* error = nil;
             
@@ -79,7 +79,7 @@ namespace RenderDriver
             WTFASSERT(vertexShaderLibrary != nil, "Can'\t load library \"%s\"", metalPipelineDesc.mVertexShaderLibraryFilePath.c_str());
             WTFASSERT(fragmentShaderLibrary != nil, "Can'\t load library \"%s\"", metalPipelineDesc.mLibraryFilePath.c_str());
             
-            printf("library: %s\n", metalPipelineDesc.mLibraryFilePath.c_str());
+            //printf("library: %s\n", metalPipelineDesc.mLibraryFilePath.c_str());
             
             NSString* vertexEntryStr = [NSString stringWithUTF8String: metalPipelineDesc.mVertexEntryName.c_str()];
             NSString* fragementEntryStr = [NSString stringWithUTF8String: metalPipelineDesc.mFragementEntryName.c_str()];
@@ -380,7 +380,7 @@ DEBUG_PRINTF("\t%d format: %s\n",
                     szVariableType = "sampler";
                 }
                 
-                DEBUG_PRINTF("\t%d argument name: %s type: %s\n",
+                DEBUG_PRINTF("\t%d argument name: \"%s\" type: %s\n",
                        iNumComputeVariables,
                        szVariableName,
                        szVariableType);
@@ -441,7 +441,6 @@ DEBUG_PRINTF("\t%d format: %s\n",
             RenderDriver::Common::CPipelineState::create(desc, device);
             
             id<MTLDevice> nativeDevice = (__bridge id<MTLDevice>)device.getNativeDevice();
-            
             dispatch_data_t shaderData = dispatch_data_create(
                 desc.mpRayGenShader,
                 desc.miRayGenShaderSize,
@@ -463,6 +462,64 @@ DEBUG_PRINTF("\t%d format: %s\n",
                 error:&error];
             
             std::vector<SerializeUtils::Common::ShaderResourceInfo> aShaderResources;
+            
+#if 0
+            {
+                uint32_t iNumComputeVariables = 0;
+                NSArray<id<MTLBinding>>* bindings = [reflection bindings];
+                for(id<MTLBinding> arg in bindings)
+                {
+                    NSString* name = [arg name];
+                    MTLBindingType type = [arg type];
+                    char const* szVariableName = [name UTF8String];
+                    char const* szVariableType = "buffer";
+                    
+                    if(type == MTLBindingTypeTexture)
+                    {
+                        szVariableType = "texture";
+                    }
+                    else if(type == MTLBindingTypeSampler)
+                    {
+                        szVariableType = "sampler";
+                    }
+                    else if(type == MTLBindingTypeInstanceAccelerationStructure)
+                    {
+                        szVariableType = "acceleration structure";
+                    }
+                    
+                    DEBUG_PRINTF("\t%d argument name: \"%s\" type: %s\n",
+                        iNumComputeVariables,
+                        szVariableName,
+                        szVariableType);
+                    
+                    SerializeUtils::Common::ShaderResourceInfo shaderResourceInfo;
+                    shaderResourceInfo.mName = szVariableName;
+                    shaderResourceInfo.mType = ShaderResourceType::RESOURCE_TYPE_TEXTURE_IN;
+                    if(std::string(szVariableType) == "buffer")
+                    {
+                        shaderResourceInfo.mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_IN;
+                    }
+                    else if(std::string(szVariableType) == "acceleration structure")
+                    {
+                        shaderResourceInfo.mType = ShaderResourceType::RESOURCE_TYPE_ACCELERATION_STRUCTURE;
+                    }
+                    aShaderResources.push_back(shaderResourceInfo);
+                    
+                    ShaderResourceReflectionInfo reflectionInfo;
+                    reflectionInfo.mName = szVariableName;
+                    reflectionInfo.mType = type;
+                    reflectionInfo.mShaderType = RenderDriver::Common::ShaderType::Compute;
+                    maComputeShaderResourceReflectionInfo.push_back(reflectionInfo);
+                    //maComputeShaderResourceReflectionInfo.emplace_back(
+                    //   szVariableName,
+                    //   type,
+                    //   RenderDriver::Common::ShaderType::Compute
+                    //);
+                    
+                    ++iNumComputeVariables;
+                }
+            }
+#endif // #if 0
             
             // shader resource layout reflection
             uint32_t iNumComputeVariables = 0;
@@ -487,6 +544,10 @@ DEBUG_PRINTF("\t%d format: %s\n",
                 {
                     szVariableType = "sampler";
                 }
+                else if(type == MTLArgumentTypeInstanceAccelerationStructure)
+                {
+                    szVariableType = "acceleration structure";
+                }
                 
                 DEBUG_PRINTF("\t%d argument name: %s type: %s\n",
                        iNumComputeVariables,
@@ -498,6 +559,10 @@ DEBUG_PRINTF("\t%d format: %s\n",
                 if(std::string(szVariableType) == "buffer")
                 {
                     shaderResourceInfo.mType = ShaderResourceType::RESOURCE_TYPE_BUFFER_IN;
+                }
+                else if(std::string(szVariableType) == "acceleration structure")
+                {
+                    shaderResourceInfo.mType = ShaderResourceType::RESOURCE_TYPE_ACCELERATION_STRUCTURE;
                 }
                 aShaderResources.push_back(shaderResourceInfo);
                 

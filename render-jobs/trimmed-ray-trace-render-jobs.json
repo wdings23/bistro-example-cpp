@@ -108,6 +108,12 @@
             "PassType": "Ray Trace"
         },
         {
+            "Name": "Build Irradiance Cache Ray Trace",
+            "Pipeline": "build-irradiance-cache.json",
+            "Type": "Ray Trace",
+            "PassType": "Ray Trace"
+        },
+        {
             "Name": "Swap Chain Graphics",
             "Pipeline": "non-ray-trace-swap-chain-bistro-example.json",
             "Type": "Graphics",

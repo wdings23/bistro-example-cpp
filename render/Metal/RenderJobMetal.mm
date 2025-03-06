@@ -701,6 +701,7 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
             
             std::string saveDir = getSaveDir();
             std::string fullPath = saveDir + "/shader-output/" + baseName + ".metallib";
+            DEBUG_PRINTF("metal lib: %s\n", fullPath.c_str());
             
             FILE* fp = fopen(fullPath.c_str(), "rb");
             fseek(fp, 0, SEEK_END);
@@ -740,6 +741,8 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
                 uint32_t iBindingIndex = bindingInfo["index"].GetInt();
                 uint32_t iBindingSet = bindingInfo["set"].GetInt();
                 std::string name = bindingInfo["name"].GetString();
+                
+                DEBUG_PRINTF("\tshader resource %d (set %d): \"%s\"\n", iBindingIndex, iBindingSet, name.c_str());
                 
                 SerializeUtils::Common::ShaderResourceInfo shaderResourceInfo;
                 shaderResourceInfo.mName = name;

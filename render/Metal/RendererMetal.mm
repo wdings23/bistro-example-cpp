@@ -645,7 +645,7 @@ namespace Render
             
             std::vector<uint32_t> const& aiLayoutIndices = descriptorSet.getComputeLayoutIndices();
             
-            uint32_t iBufferIndex = 0, iTextureIndex = 0;
+            uint32_t iBufferIndex = 0, iTextureIndex = 0, iAccelerationStructureIndex = 0;
             for(uint32_t iLayoutIndex = 0; iLayoutIndex < static_cast<uint32_t>(aiLayoutIndices.size()); iLayoutIndex++)
             {
                 uint32_t iShaderResourceIndex = UINT32_MAX;
@@ -1395,7 +1395,6 @@ namespace Render
                     else if(shaderResource.mName == "meshTriangleRangeData")
                     {
                         shaderResource.mExternalResource.mpBuffer = aExternalBufferMap["Mesh Triangle Index Ranges"].get();
-                        WTFASSERT(shaderResource.mExternalResource.mpBuffer != nullptr, "Invalid mesh triangle index range buffer");
                     }
                 }
             }
