@@ -102,10 +102,11 @@ namespace RenderDriver
                     {
                         pixelFormat = MTLPixelFormatRGB10A2Unorm;
                     }
-                    
-// temp temp temp
-//renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPixelFormatBGRA8Unorm;
-                    
+                    else if(desc.maRenderTargetFormats[0] == RenderDriver::Common::Format::B8G8R8A8_UNORM)
+                    {
+                        pixelFormat = MTLPixelFormatBGRA8Unorm;
+                    }
+        
                     renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = pixelFormat;
                 }
                 else
