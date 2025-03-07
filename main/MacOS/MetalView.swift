@@ -8,6 +8,8 @@ class MetalView : NSView
     
     var _condition : NSCondition!
     var _mutex : pthread_mutex_t!
+    var _pthread_cond : pthread_cond_t!
+    
     var inflightSemaphores : DispatchSemaphore!         // semaphore for drawable
     
     var _drawable : CAMetalDrawable!        // render context
@@ -16,7 +18,7 @@ class MetalView : NSView
     var _frames : UInt32!
     
     var _bounds : CGSize!
-    
+
     var metalLayer : CAMetalLayer?
     {
         get
@@ -95,7 +97,7 @@ class MetalView : NSView
         let layer: CAMetalLayer = CAMetalLayer.init()
         layer.bounds = self.bounds
         layer.device = self._device
-        layer.pixelFormat = MTLPixelFormat.bgra8Unorm
+        layer.pixelFormat = MTLPixelFormat.bgra8Unorm_srgb //  MTLPixelFormat.bgra8Unorm
         layer.displaySyncEnabled = true
         
         return layer
@@ -103,34 +105,73 @@ class MetalView : NSView
     
     func beginFrame()
     {
-        DispatchQueue.main.async
+        self._drawable = self.metalLayer!.nextDrawable()
+        self._wrapper.nextDrawable(
+            self._drawable,
+            texture: self._drawable.texture,
+            width: UInt32(self._bounds.width),
+            height: UInt32(self._bounds.height))
+        
+        /*DispatchQueue.main.async
         {
             self._drawableSize = self.window!.frame.size
             
-            pthread_mutex_lock(&self._mutex!)
-            // get the next drawable
-            self._drawable = nil
-            pthread_mutex_unlock(&self._mutex!)
-            
+            pthread_mutex_lock(&self._mutex)
             while(self._drawable == nil)
             {
-                pthread_mutex_lock(&self._mutex!)
                 self._drawable = self.metalLayer!.nextDrawable()
-                pthread_mutex_unlock(&self._mutex!)
-                
                 self._wrapper.nextDrawable(
                     self._drawable,
                     texture: self._drawable.texture,
                     width: UInt32(self._bounds.width),
                     height: UInt32(self._bounds.height))
             }
+            pthread_cond_signal(&self._pthread_cond)
+            pthread_mutex_unlock(&self._mutex)
             
-        }
+            
+            //pthread_mutex_lock(&self._mutex!)
+            // get the next drawable
+            //self._drawable = nil
+            //pthread_mutex_unlock(&self._mutex!)
+            
+            //while(self._drawable == nil)
+            //{
+            //    pthread_mutex_lock(&self._mutex!)
+            //    self._drawable = self.metalLayer!.nextDrawable()
+            //    pthread_mutex_unlock(&self._mutex!)
+                
+            //    self._wrapper.nextDrawable(
+            //        self._drawable,
+            //        texture: self._drawable.texture,
+            //        width: UInt32(self._bounds.width),
+            //        height: UInt32(self._bounds.height))
+            //}
+            
+        }*/
         
-        autoreleasepool
+        // worker thread
+        /*autoreleasepool
         {
-            // wait until we have a valid drawable
             self.inflightSemaphores.wait()
+            
+            // wait for signal on main thread
+            while(self._drawable == nil)
+            {
+                pthread_cond_wait(&_pthread_cond, &_mutex)
+            }
+            
+            // wake up from signal on the main thread
+            pthread_mutex_lock(&self._mutex)
+            self._wrapper.nextDrawable(
+                self._drawable,
+                texture: self._drawable.texture,
+                width: UInt32(self._bounds.width),
+                height: UInt32(self._bounds.height))
+            pthread_mutex_unlock(&self._mutex)
+            
+            // wait until we have a valid drawable
+            /*self.inflightSemaphores.wait()
             while(self._drawable == nil)
             {
                 usleep(1)
@@ -143,8 +184,8 @@ class MetalView : NSView
                 texture: self._drawable.texture,
                 width: UInt32(self._bounds.width),
                 height: UInt32(self._bounds.height))
-            pthread_mutex_unlock(&self._mutex!)
-        }
+            pthread_mutex_unlock(&self._mutex!)*/
+        }*/
     }
     
     func update(time: CGFloat)
@@ -162,14 +203,14 @@ class MetalView : NSView
     {
         self.inflightSemaphores.signal()
         
-        pthread_mutex_lock(&self._mutex!)
+        //pthread_mutex_lock(&self._mutex!)
         
         autoreleasepool
         {
             self._drawable = nil
         }
         
-        pthread_mutex_unlock(&self._mutex!)
+        //pthread_mutex_unlock(&self._mutex!)
         
         self._frames += 1
     }

@@ -6,19 +6,18 @@
         {
             "Name" : "Output",
             "Type": "TextureOutput",
-            "Format": "bgra8unorm"
+            "Format": "rgba8unorm"
         },
 
-
         {
-            "Name" : "World Position Output",
+            "Name" : "Direct Sun Light Output",
             "Type": "TextureInput",
-            "ParentJobName": "Deferred Indirect Graphics"
+            "ParentJobName": "Ray Traced Shadow"
         },
         {
-            "Name" : "Normal Output",
+            "Name" : "Decoded Spherical Harmonics Output",
             "Type": "TextureInput",
-            "ParentJobName": "Deferred Indirect Graphics"
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
         }
     ],
     "ShaderResources": [

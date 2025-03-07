@@ -1565,6 +1565,7 @@
 				257FBDBD2D629FDF00F92519 /* bistro2-mesh-instance-positions.bin */,
 				257FBDBF2D629FDF00F92519 /* bistro2-triangle-positions.bin */,
 				257FBDB72D61D2E200F92519 /* bistro2-triangles.bin */,
+				254CE3AD2D77C187003070B3 /* LDR_RGBA_0.png */,
 			);
 			name = Assets;
 			path = "../../render-driver/Assets";
@@ -1991,7 +1992,6 @@
 		259DF5432D6053C9007BA6A1 = {
 			isa = PBXGroup;
 			children = (
-				254CE3AD2D77C187003070B3 /* LDR_RGBA_0.png */,
 				257FC0DB2D650AA900F92519 /* metal_library */,
 				257FC0412D63213E00F92519 /* render-jobs */,
 				257FBDBB2D61D46B00F92519 /* Assets */,

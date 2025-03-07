@@ -30,6 +30,7 @@ namespace RenderDriver
             
             mColorImage->create(imageDesc, device);
             mColorImage->setNativeImage(mNativeDrawableTexture);
+            mColorImage->setID("Output Color Image");
             
             imageDesc.mFormat = RenderDriver::Common::Format::D32_FLOAT;
             mDepthImage->create(imageDesc, device);
@@ -52,7 +53,9 @@ namespace RenderDriver
         */
         void CSwapChain::present(RenderDriver::Common::SwapChainPresentDescriptor const& desc)
         {
-            //[mNativeSwapChainPassCommandBuffer presentDrawable: mNativeDrawable];
+            [mNativeSwapChainPassCommandBuffer presentDrawable: mNativeDrawable];
+            [mNativeSwapChainPassCommandBuffer commit];
+            [mNativeSwapChainPassCommandBuffer waitUntilCompleted];
         }
 
         /*

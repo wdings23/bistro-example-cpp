@@ -97,7 +97,8 @@ namespace RenderDriver
                 if(metalPipelineDesc.mbOutputPresent)
                 {
 // temp temp temp
-renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPixelFormatBGRA8Unorm;
+//renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPixelFormatBGRA8Unorm;
+                    renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
                 }
                 else
                 {

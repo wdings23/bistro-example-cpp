@@ -278,7 +278,6 @@ namespace RenderDriver
             {
                 WTFASSERT(0, "no native command buffer");
             }
-            
         }
 
         /*

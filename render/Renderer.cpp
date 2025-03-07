@@ -1599,20 +1599,23 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                 // execute the command buffer
                 if(pRenderJob->mType == Render::Common::JobType::Graphics)
                 {
-                    if(pRenderJob->mPassType == Render::Common::PassType::SwapChain)
+                    if(mRenderDriverType == RenderDriverType::Metal &&
+                       pRenderJob->mPassType == Render::Common::PassType::SwapChain)
                     {
                         platformPreSwapChainPassSubmission(
                             *pRenderJob,
                             commandBuffer);
                     }
-                    
-                    pGraphicsCommandQueue->execCommandBuffer3(
-                        commandBuffer,
-                        &pRenderJob->miWaitSemaphoreValue,
-                        &pRenderJob->miSignalSemaphoreValue,
-                        pRenderJob->mpWaitFence,
-                        pRenderJob->mpSignalFence
-                    );
+                    else
+                    {
+                        pGraphicsCommandQueue->execCommandBuffer3(
+                            commandBuffer,
+                            &pRenderJob->miWaitSemaphoreValue,
+                            &pRenderJob->miSignalSemaphoreValue,
+                            pRenderJob->mpWaitFence,
+                            pRenderJob->mpSignalFence
+                            );
+                    }
                 }
                 else if(pRenderJob->mType == Render::Common::JobType::Compute)
                 {
@@ -1648,7 +1651,7 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                 ++iJobIndex;
 
             }
-
+            
             // transition swap chain image to present if no swap chain pass is listed
             if(!bHasSwapChainPass)
             {

@@ -6,8 +6,9 @@
 [[vk::binding(0, 0)]] RaytracingAccelerationStructure scene;
 [[vk::binding(1, 0)]] RWTexture2D<float4> renderTarget;
 [[vk::binding(2, 0)]] Texture2D<float4> worldPositionTexture;
-[[vk::binding(3, 0)]] Texture2D<float4> sunLightTexture;
-[[vk::binding(4, 0)]] SamplerState textureSampler;
+[[vk::binding(3, 0)]] Texture2D<float4> normalTexture;
+[[vk::binding(4, 0)]] Texture2D<float4> sunLightTexture;
+[[vk::binding(5, 0)]] SamplerState textureSampler;
 
 [[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer; 
 
@@ -22,8 +23,10 @@ void rayGen()
     uint2 rayIndex = DispatchRaysIndex().xy;
 
     float4 worldPosition = worldPositionTexture[rayIndex];
+    float3 normal = normalTexture[rayIndex].xyz;
     float3 lightDirection = normalize(float3(-0.5f, 1.0f, 0.0f));
 
+    renderTarget[rayIndex] = float4(0.0f, 0.0f, 0.0f, 0.0f);
     if(worldPosition.w <= 0.0f)
     {
         renderTarget[rayIndex] = float4(0.0f, 1.0f, 0.0f, 1.0f);
@@ -55,10 +58,12 @@ void rayGen()
             payload
         );
 
-        float3 radianceOutput = (payload.mOutput.x > 0.0f) ? 
-            sunLightTexture[int2(0, 0)].xyz :
-            float3(0.0f, 0.0f, 0.0f);
-        renderTarget[rayIndex] = float4(radianceOutput.xyz, 1.0f);
+        float fDP = max(dot(normal, ray.Direction), 0.0f);
+        float4 radianceOutput = (payload.mOutput.x <= 0.0f) ? 
+            //sunLightTexture[int2(0, 0)].xyz :
+            float4(1.0f, 1.0f, 1.0f, 1.0f) * float4(fDP, fDP, fDP, 1.0f) :
+            float4(0.0f, 0.0f, 0.0f, 0.0f);
+        renderTarget[rayIndex] = radianceOutput;
     }
 }
 

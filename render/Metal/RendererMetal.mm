@@ -2431,9 +2431,11 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             Render::Common::CRenderJob const& renderJob,
             RenderDriver::Common::CCommandBuffer& commandBuffer)
         {
-            id<MTLDrawable> nativeDrawble = static_cast<RenderDriver::Metal::CSwapChain*>(mpSwapChain.get())->getNativeDrawable();
-            id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBuffer.getNativeCommandList();
-            [nativeCommandBuffer presentDrawable: nativeDrawble];
+            //id<MTLDrawable> nativeDrawble = static_cast<RenderDriver::Metal::CSwapChain*>(mpSwapChain.get())->getNativeDrawable();
+            //id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBuffer.getNativeCommandList();
+            //[nativeCommandBuffer presentDrawable: nativeDrawble];
+            RenderDriver::Metal::CSwapChain* pSwapChainMetal = (RenderDriver::Metal::CSwapChain*)mpSwapChain.get();
+            pSwapChainMetal->setCommandBuffer(commandBuffer);
         }
 
         /*

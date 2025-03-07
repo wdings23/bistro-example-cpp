@@ -3,6 +3,7 @@
 
 #include <render-driver/SwapChain.h>
 #include <render-driver/Metal/ImageMetal.h>
+#include <render-driver/Metal/CommandBufferMetal.h>
 #import <Metal/Metal.h>
 
 namespace RenderDriver
@@ -51,6 +52,11 @@ namespace RenderDriver
             inline RenderDriver::Metal::CImage* getDepthImage()
             {
                 return mDepthImage.get();
+            }
+            
+            inline void setCommandBuffer(RenderDriver::Common::CCommandBuffer& commandBuffer)
+            {
+                mNativeSwapChainPassCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBuffer.getNativeCommandList();
             }
             
         protected:
