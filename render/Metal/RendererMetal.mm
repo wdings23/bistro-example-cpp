@@ -2146,7 +2146,7 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             
             id<MTLComputeCommandEncoder> nativeComputeEncoder = commandBufferMetal.getNativeComputeCommandEncoder();
             
-            MTLSize threadsPerThreadgroup = MTLSizeMake(8, 8, 1);
+            MTLSize threadsPerThreadgroup = MTLSizeMake(16, 16, 1);
             MTLSize threadgroups = MTLSizeMake(iScreenWidth,
                                                iScreenHeight,
                                                1);
