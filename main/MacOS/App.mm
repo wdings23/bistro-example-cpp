@@ -533,9 +533,12 @@ void CApp::update(CGFloat time)
 */
 void CApp::render()
 {
-    mpRenderer->draw();
-    mpRenderer->presentSwapChain();
-    mpRenderer->postDraw();
+    @autoreleasepool
+    {
+        mpRenderer->draw();
+        mpRenderer->presentSwapChain();
+        mpRenderer->postDraw();
+    }
 }
 
 /*
