@@ -5,6 +5,7 @@
 
 #include <utils/wtfassert.h>
 #include <utils/LogPrint.h>
+#include <utils/serialize_utils.h>
 
 extern char const* getSaveDir();
 
@@ -96,9 +97,16 @@ namespace RenderDriver
             {
                 if(metalPipelineDesc.mbOutputPresent)
                 {
+                    MTLPixelFormat pixelFormat = MTLPixelFormatRGBA8Unorm;
+                    if(desc.maRenderTargetFormats[0] == RenderDriver::Common::Format::R10G10B10A2_UNORM)
+                    {
+                        pixelFormat = MTLPixelFormatRGB10A2Unorm;
+                    }
+                    
 // temp temp temp
 //renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPixelFormatBGRA8Unorm;
-                    renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
+                    
+                    renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = pixelFormat;
                 }
                 else
                 {

@@ -4,9 +4,9 @@
     "Shader": "swap-chain-bistro-example.shader",
     "Attachments": [
         {
-            "Name" : "Output",
+            "Name" : "Swap Chain Output",
             "Type": "TextureOutput",
-            "Format": "rgba8unorm"
+            "Format": "rgb10a2unorm"
         },
 
         {

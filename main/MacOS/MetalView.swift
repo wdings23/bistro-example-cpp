@@ -85,9 +85,7 @@ class MetalView : NSView
             scale = window!.screen!.backingScaleFactor
         }
         
-        var drawableSize: CGSize = bounds.size
-        //drawableSize.width *= scale
-        //drawableSize.height *= scale
+        let drawableSize: CGSize = bounds.size
         
         self.metalLayer?.drawableSize = drawableSize
     }
@@ -97,7 +95,7 @@ class MetalView : NSView
         let layer: CAMetalLayer = CAMetalLayer.init()
         layer.bounds = self.bounds
         layer.device = self._device
-        layer.pixelFormat = MTLPixelFormat.bgra8Unorm_srgb //  MTLPixelFormat.bgra8Unorm
+        layer.pixelFormat = MTLPixelFormat.rgb10a2Unorm //  MTLPixelFormat.bgra8Unorm
         layer.displaySyncEnabled = true
         
         return layer
@@ -111,81 +109,6 @@ class MetalView : NSView
             texture: self._drawable.texture,
             width: UInt32(self._bounds.width),
             height: UInt32(self._bounds.height))
-        
-        /*DispatchQueue.main.async
-        {
-            self._drawableSize = self.window!.frame.size
-            
-            pthread_mutex_lock(&self._mutex)
-            while(self._drawable == nil)
-            {
-                self._drawable = self.metalLayer!.nextDrawable()
-                self._wrapper.nextDrawable(
-                    self._drawable,
-                    texture: self._drawable.texture,
-                    width: UInt32(self._bounds.width),
-                    height: UInt32(self._bounds.height))
-            }
-            pthread_cond_signal(&self._pthread_cond)
-            pthread_mutex_unlock(&self._mutex)
-            
-            
-            //pthread_mutex_lock(&self._mutex!)
-            // get the next drawable
-            //self._drawable = nil
-            //pthread_mutex_unlock(&self._mutex!)
-            
-            //while(self._drawable == nil)
-            //{
-            //    pthread_mutex_lock(&self._mutex!)
-            //    self._drawable = self.metalLayer!.nextDrawable()
-            //    pthread_mutex_unlock(&self._mutex!)
-                
-            //    self._wrapper.nextDrawable(
-            //        self._drawable,
-            //        texture: self._drawable.texture,
-            //        width: UInt32(self._bounds.width),
-            //        height: UInt32(self._bounds.height))
-            //}
-            
-        }*/
-        
-        // worker thread
-        /*autoreleasepool
-        {
-            self.inflightSemaphores.wait()
-            
-            // wait for signal on main thread
-            while(self._drawable == nil)
-            {
-                pthread_cond_wait(&_pthread_cond, &_mutex)
-            }
-            
-            // wake up from signal on the main thread
-            pthread_mutex_lock(&self._mutex)
-            self._wrapper.nextDrawable(
-                self._drawable,
-                texture: self._drawable.texture,
-                width: UInt32(self._bounds.width),
-                height: UInt32(self._bounds.height))
-            pthread_mutex_unlock(&self._mutex)
-            
-            // wait until we have a valid drawable
-            /*self.inflightSemaphores.wait()
-            while(self._drawable == nil)
-            {
-                usleep(1)
-            }
-            
-            // inform wrapper of the new drawable
-            pthread_mutex_lock(&self._mutex!)
-            self._wrapper.nextDrawable(
-                self._drawable,
-                texture: self._drawable.texture,
-                width: UInt32(self._bounds.width),
-                height: UInt32(self._bounds.height))
-            pthread_mutex_unlock(&self._mutex!)*/
-        }*/
     }
     
     func update(time: CGFloat)
@@ -202,15 +125,11 @@ class MetalView : NSView
     func endFrame()
     {
         self.inflightSemaphores.signal()
-        
-        //pthread_mutex_lock(&self._mutex!)
-        
+    
         autoreleasepool
         {
             self._drawable = nil
         }
-        
-        //pthread_mutex_unlock(&self._mutex!)
         
         self._frames += 1
     }

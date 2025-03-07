@@ -1063,7 +1063,9 @@ DEBUG_PRINTF("render job: %s\n", mName.c_str());
                 attachmentFormat = RenderDriver::Common::Format::R16G16_FLOAT;
             else if(attachmentFormatStr == "r32float")
                 attachmentFormat = RenderDriver::Common::Format::R32_FLOAT;
-
+            else if(attachmentFormatStr == "rgb10a2unorm")
+                attachmentFormat = RenderDriver::Common::Format::R10G10B10A2_UNORM;
+            
             platformCreateAttachmentImage(
                 attachmentName,
                 iImageWidth,

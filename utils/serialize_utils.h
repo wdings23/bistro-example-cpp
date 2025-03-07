@@ -890,5 +890,4 @@ namespace SerializeUtils
 	}	// Vulkan
 #endif // _MSC_VER
 
-
 }	// SerializeUtils
