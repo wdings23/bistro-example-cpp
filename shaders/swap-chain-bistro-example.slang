@@ -47,9 +47,11 @@ PSOutput PSMain(VertexStageOutput in)
     float2 texCoord = float2(in.texCoord.x, 1.0f - in.texCoord.y);
 #endif // METAL
 
+
+
     out.mOutput.xyz =
-        texture0.Sample(sampler, texCoord).xyz;/* +
-        texture1.Sample(sampler, texCoord).xyz;*/
+        texture0.Sample(sampler, texCoord).xyz +
+        texture1.Sample(sampler, texCoord).xyz;
 
     //out.mOutput.xyz = ACESFilm(
     //    clamp(out.mOutput.xyz, 0.0f, 1.0f)

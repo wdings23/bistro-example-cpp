@@ -98,8 +98,9 @@ class MetalView : NSView
         layer.device = self._device
         layer.pixelFormat = MTLPixelFormat.rgb10a2Unorm //  MTLPixelFormat.bgra8Unorm
         layer.displaySyncEnabled = false
+        layer.presentsWithTransaction = false
         
-        let name = CGColorSpace.extendedLinearSRGB
+        let name = CGColorSpace.linearDisplayP3
         layer.colorspace = CGColorSpace(name: name)
         
         layer.edrMetadata = CAEDRMetadata.hdr10(minLuminance: 0.0, maxLuminance: 10.0, opticalOutputScale: 1.0)
@@ -110,15 +111,12 @@ class MetalView : NSView
     
     func beginFrame()
     {
-        DispatchQueue.main.sync
-        {
-            self._drawable = self.metalLayer!.nextDrawable()
-            self._wrapper.nextDrawable(
-                self._drawable,
-                texture: self._drawable.texture,
-                width: UInt32(self._bounds.width),
-                height: UInt32(self._bounds.height))
-        }
+        self._drawable = self.metalLayer!.nextDrawable()
+        self._wrapper.nextDrawable(
+            self._drawable,
+            texture: self._drawable.texture,
+            width: UInt32(self._bounds.width),
+            height: UInt32(self._bounds.height))
     }
     
     func update(time: CGFloat)
