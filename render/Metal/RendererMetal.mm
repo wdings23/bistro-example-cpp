@@ -2431,8 +2431,8 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             Render::Common::CRenderJob const& renderJob,
             RenderDriver::Common::CCommandBuffer& commandBuffer)
         {
-            RenderDriver::Metal::CSwapChain* pSwapChainMetal = (RenderDriver::Metal::CSwapChain*)mpSwapChain.get();
-            pSwapChainMetal->setCommandBuffer(commandBuffer);
+            //RenderDriver::Metal::CSwapChain* pSwapChainMetal = (RenderDriver::Metal::CSwapChain*)mpSwapChain.get();
+            //pSwapChainMetal->setCommandBuffer(commandBuffer);
         }
 
         /*

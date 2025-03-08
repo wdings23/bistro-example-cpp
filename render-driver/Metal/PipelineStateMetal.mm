@@ -108,6 +108,13 @@ namespace RenderDriver
                     }
         
                     renderPipelineDescriptor.colorAttachments[iColorAttachment].pixelFormat = pixelFormat;
+                    renderPipelineDescriptor.colorAttachments[iColorAttachment].alphaBlendOperation = MTLBlendOperationAdd;
+                    renderPipelineDescriptor.colorAttachments[iColorAttachment].rgbBlendOperation = MTLBlendOperationAdd;
+                    renderPipelineDescriptor.colorAttachments[iColorAttachment].sourceRGBBlendFactor = MTLBlendFactorZero;
+                    renderPipelineDescriptor.colorAttachments[iColorAttachment].destinationRGBBlendFactor = MTLBlendFactorOne;
+                    renderPipelineDescriptor.colorAttachments[iColorAttachment].sourceAlphaBlendFactor = MTLBlendFactorZero;
+                    renderPipelineDescriptor.colorAttachments[iColorAttachment].destinationAlphaBlendFactor = MTLBlendFactorOne;
+                    renderPipelineDescriptor.colorAttachments[iColorAttachment].blendingEnabled = false;
                 }
                 else
                 {

@@ -53,9 +53,14 @@ namespace RenderDriver
         */
         void CSwapChain::present(RenderDriver::Common::SwapChainPresentDescriptor const& desc)
         {
-            [mNativeSwapChainPassCommandBuffer presentDrawable: mNativeDrawable];
-            [mNativeSwapChainPassCommandBuffer commit];
-            [mNativeSwapChainPassCommandBuffer waitUntilCompleted];
+            id<MTLCommandQueue> nativeCommandQueue = (__bridge id<MTLCommandQueue>)desc.mpPresentQueue->getNativeCommandQueue();
+            id<MTLCommandBuffer> nativeCommandBuffer = [nativeCommandQueue commandBuffer];
+            nativeCommandBuffer.label = @"Present Swap Chain Command Buffer";
+            [nativeCommandBuffer presentDrawable: mNativeDrawable];
+            [nativeCommandBuffer commit];
+            [nativeCommandBuffer waitUntilCompleted];
+            
+            nativeCommandBuffer = nil;
         }
 
         /*

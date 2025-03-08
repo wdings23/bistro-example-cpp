@@ -496,6 +496,9 @@ void CApp::init(AppDescriptor const& appDesc)
 */
 void CApp::update(CGFloat time)
 {
+    //mCameraPosition.x += 0.01f;
+    //mCameraLookAt.x += 0.01f;
+    
     float3 up = float3(0.0f, 1.0f, 0.0f);
     float3 diff = normalize(mCameraLookAt - mCameraPosition);
     if(fabs(diff.y) > 0.98f)

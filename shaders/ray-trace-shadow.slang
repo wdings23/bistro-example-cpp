@@ -62,7 +62,7 @@ void rayGen()
         float4 radianceOutput = (payload.mOutput.x <= 0.0f) ? 
             //sunLightTexture[int2(0, 0)].xyz :
             float4(1.0f, 1.0f, 1.0f, 1.0f) * float4(fDP, fDP, fDP, 1.0f) :
-            float4(0.0f, 0.0f, 0.0f, 0.0f);
+            float4(0.01f, 0.01f, 0.01f, 1.0f);
         renderTarget[rayIndex] = radianceOutput;
     }
 }

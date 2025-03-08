@@ -93,22 +93,32 @@ class MetalView : NSView
     override func makeBackingLayer() -> CALayer 
     {
         let layer: CAMetalLayer = CAMetalLayer.init()
+        layer.wantsExtendedDynamicRangeContent = true
         layer.bounds = self.bounds
         layer.device = self._device
         layer.pixelFormat = MTLPixelFormat.rgb10a2Unorm //  MTLPixelFormat.bgra8Unorm
-        layer.displaySyncEnabled = true
+        layer.displaySyncEnabled = false
+        
+        let name = CGColorSpace.extendedLinearSRGB
+        layer.colorspace = CGColorSpace(name: name)
+        
+        layer.edrMetadata = CAEDRMetadata.hdr10(minLuminance: 0.0, maxLuminance: 10.0, opticalOutputScale: 1.0)
+        layer.framebufferOnly = true
         
         return layer
     }
     
     func beginFrame()
     {
-        self._drawable = self.metalLayer!.nextDrawable()
-        self._wrapper.nextDrawable(
-            self._drawable,
-            texture: self._drawable.texture,
-            width: UInt32(self._bounds.width),
-            height: UInt32(self._bounds.height))
+        DispatchQueue.main.sync
+        {
+            self._drawable = self.metalLayer!.nextDrawable()
+            self._wrapper.nextDrawable(
+                self._drawable,
+                texture: self._drawable.texture,
+                width: UInt32(self._bounds.width),
+                height: UInt32(self._bounds.height))
+        }
     }
     
     func update(time: CGFloat)

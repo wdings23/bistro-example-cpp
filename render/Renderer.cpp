@@ -412,6 +412,10 @@ namespace Render
                 std::lock_guard lock(sPresentMutex);
                 beginDebugMarker("Present");
                 mpSwapChain->present(desc);
+                if(mRenderDriverType == RenderDriverType::Metal)
+                {
+                    mapRenderJobCommandBuffers["Swap Chain Graphics"]->reset();
+                }
                 endDebugMarker();
             }
 
@@ -1606,16 +1610,15 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                             *pRenderJob,
                             commandBuffer);
                     }
-                    else
-                    {
-                        pGraphicsCommandQueue->execCommandBuffer3(
-                            commandBuffer,
-                            &pRenderJob->miWaitSemaphoreValue,
-                            &pRenderJob->miSignalSemaphoreValue,
-                            pRenderJob->mpWaitFence,
-                            pRenderJob->mpSignalFence
-                            );
-                    }
+                    
+                    pGraphicsCommandQueue->execCommandBuffer3(
+                        commandBuffer,
+                        &pRenderJob->miWaitSemaphoreValue,
+                        &pRenderJob->miSignalSemaphoreValue,
+                        pRenderJob->mpWaitFence,
+                        pRenderJob->mpSignalFence
+                        );
+                    
                 }
                 else if(pRenderJob->mType == Render::Common::JobType::Compute)
                 {
