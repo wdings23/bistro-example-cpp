@@ -420,6 +420,8 @@ namespace Render
                 Render::Common::CRenderJob& renderJob,
                 RenderDriver::Common::CCommandQueue& commandQueue);
             
+            virtual void platformPrepSwapChain();
+            
         protected:
             std::map<uint64_t, std::vector<uint8_t>>        mShaderBinariesDB;
             std::map<uint64_t, std::string>                 mShaderBinaryFilePath;

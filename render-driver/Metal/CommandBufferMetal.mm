@@ -292,9 +292,12 @@ namespace RenderDriver
         **
         */
         void CCommandBuffer::beginRenderPass(MTLRenderPassDescriptor* pRenderPassDescriptor)
-        {
+    {
             mNativeCommandBuffer = [mNativeQueue commandBuffer];
             mNativeRenderCommandEncoder = [mNativeCommandBuffer renderCommandEncoderWithDescriptor: pRenderPassDescriptor];
+            
+            mNativeCommandBuffer.label = [NSString stringWithUTF8String: mID.c_str()];
+            mNativeRenderCommandEncoder.label = [NSString stringWithUTF8String: std::string(mID + " Render Command Encoder").c_str()];
         }
     
         /*
@@ -304,6 +307,9 @@ namespace RenderDriver
         {
             mNativeCommandBuffer = [mNativeQueue commandBuffer];
             mNativeComputeCommandEncoder = [mNativeCommandBuffer computeCommandEncoder];
+            
+            mNativeCommandBuffer.label = [NSString stringWithUTF8String: mID.c_str()];
+            mNativeRenderCommandEncoder.label = [NSString stringWithUTF8String: std::string(mID + " Compute Command Encoder").c_str()];
         }
     
         /*
@@ -313,6 +319,9 @@ namespace RenderDriver
         {
             mNativeCommandBuffer = [mNativeQueue commandBuffer];
             mNativeBlitCommandEncoder = [mNativeCommandBuffer blitCommandEncoder];
+            
+            mNativeCommandBuffer.label = [NSString stringWithUTF8String: mID.c_str()];
+            mNativeRenderCommandEncoder.label = [NSString stringWithUTF8String: std::string(mID + " Blit Command Encoder").c_str()];
         }
     
         /*

@@ -10,11 +10,12 @@
 [[vk::binding(4, 0)]] Texture2D<float4> sunLightTexture;
 [[vk::binding(5, 0)]] SamplerState textureSampler;
 
-[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer; 
+[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
 
 struct RayPayload
 {
     float4 mOutput;
+    float4 mBarycentricCoord;
 };
 
 [shader("raygeneration")]
@@ -59,10 +60,9 @@ void rayGen()
         );
 
         float fDP = max(dot(normal, ray.Direction), 0.0f);
-        float4 radianceOutput = (payload.mOutput.x <= 0.0f) ? 
-            //sunLightTexture[int2(0, 0)].xyz :
-            float4(1.0f, 1.0f, 1.0f, 1.0f) * float4(fDP, fDP, fDP, 1.0f) :
-            float4(0.01f, 0.01f, 0.01f, 1.0f);
+        float4 radianceOutput = (payload.mOutput.w > 0.0f) ? 
+            float4(0.81f, 0.01f, 0.81f, 1.0f) :
+            float4(1.0f, 1.0f, 1.0f, 1.0f) * float4(fDP, fDP, fDP, 1.0f);
         renderTarget[rayIndex] = radianceOutput;
     }
 }
@@ -73,10 +73,12 @@ void hitTriangle(
     in BuiltInTriangleIntersectionAttributes attr
 )
 {
-    float3 barycentrics = float3(1.0f - attr.barycentrics.x - attr.barycentrics.y, attr.barycentrics.x, attr.barycentrics.y);
-    //payload.mOutput = float4(barycentrics, 1.0f);
+    payload.mBarycentricCoord = float4(1.0f - attr.barycentrics.x - attr.barycentrics.y, attr.barycentrics.x, attr.barycentrics.y, 0.0f);
 
-    payload.mOutput = float4(0.0f, 0.0f, 0.0f, 1.0f);
+    float fT = RayTCurrent();
+    float fPrimitiveIndex = float(PrimitiveIndex());
+    float fGeometry = float(GeometryIndex());
+    payload.mOutput = float4(fT, fPrimitiveIndex, fGeometry, 1.0f);
 }
 
 [shader("miss")]
@@ -84,7 +86,8 @@ void missShader(
     inout RayPayload payload
 )
 {
-    payload.mOutput = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    payload.mBarycentricCoord = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    payload.mOutput = float4(0.0f, 0.0f, 0.0f, 0.0f);
 }
 
 /*

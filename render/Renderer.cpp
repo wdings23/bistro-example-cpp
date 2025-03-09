@@ -411,11 +411,16 @@ namespace Render
             {
                 std::lock_guard lock(sPresentMutex);
                 beginDebugMarker("Present");
-                mpSwapChain->present(desc);
+                
                 if(mRenderDriverType == RenderDriverType::Metal)
                 {
                     mapRenderJobCommandBuffers["Swap Chain Graphics"]->reset();
                 }
+                else
+                {
+                    mpSwapChain->present(desc);
+                }
+                
                 endDebugMarker();
             }
 
@@ -1587,7 +1592,7 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                             commandBuffer
                         );
                     }
-
+                
                     platformEndDebugMarker3(&commandBuffer);
                 }
                 else if(pRenderJob->mType == Render::Common::JobType::RayTrace)
@@ -1619,6 +1624,28 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                         pRenderJob->mpSignalFence
                         );
                     
+                    /*for(auto& keyValue : pRenderJob->mapOutputImageAttachments)
+                    {
+                        if(keyValue.second == nullptr)
+                        {
+                            continue;
+                        }
+                        
+                        RenderDriver::Common::CImage* pImage = keyValue.second;
+                        std::string baseName = pRenderJob->mName + "-" + keyValue.first;
+                        std::replace(baseName.begin(), baseName.end(), ' ', '-');
+                        
+                        std::vector<float> afImageData;
+                        platformCopyImageToCPUMemory(pImage, afImageData);
+                        
+                        int32_t iImageWidth = pImage->getDescriptor().miWidth;
+                        int32_t iImageHeight = pImage->getDescriptor().miHeight;
+                        std::string outputDir = std::string("/Users/dingwings/Downloads/debug-output-attachments/") + baseName + ".hdr";
+                        int32_t iRet = stbi_write_hdr(outputDir.c_str(), iImageWidth, iImageHeight, 4, afImageData.data());
+                        WTFASSERT(iRet > 0, "can\'t write file: %s", outputDir.c_str());
+                        DEBUG_PRINTF("wrote to: %s\n", outputDir.c_str());
+                    }*/
+            
                 }
                 else if(pRenderJob->mType == Render::Common::JobType::Compute)
                 {
@@ -1649,6 +1676,28 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                         pRenderJob->mpWaitFence,
                         pRenderJob->mpSignalFence
                     );
+                    
+                    /*for(auto& keyValue : pRenderJob->mapOutputImageAttachments)
+                    {
+                        if(keyValue.second == nullptr)
+                        {
+                            continue;
+                        }
+                        
+                        RenderDriver::Common::CImage* pImage = keyValue.second;
+                        std::string baseName = pRenderJob->mName + "-" + keyValue.first;
+                        std::replace(baseName.begin(), baseName.end(), ' ', '-');
+                        
+                        std::vector<float> afImageData;
+                        platformCopyImageToCPUMemory(pImage, afImageData);
+                        
+                        int32_t iImageWidth = pImage->getDescriptor().miWidth;
+                        int32_t iImageHeight = pImage->getDescriptor().miHeight;
+                        std::string outputDir = std::string("/Users/dingwings/Downloads/debug-output-attachments/") + baseName + ".hdr";
+                        int32_t iRet = stbi_write_hdr(outputDir.c_str(), iImageWidth, iImageHeight, 4, afImageData.data());
+                        WTFASSERT(iRet > 0, "can\'t write file: %s", outputDir.c_str());
+                        DEBUG_PRINTF("wrote to: %s\n", outputDir.c_str());
+                    }*/
                 }
 
                 ++iJobIndex;
@@ -1695,6 +1744,11 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                 pComputeCommandQueue
             );
 
+            if(mRenderDriverType == RenderDriverType::Metal)
+            {
+                platformPrepSwapChain();
+            }
+            
             // reset all render job fences
             for(auto const& renderJobName : maRenderJobNames)
             {

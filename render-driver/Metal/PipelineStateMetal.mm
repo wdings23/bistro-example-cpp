@@ -95,7 +95,7 @@ namespace RenderDriver
             // color attachment format
             for(uint32_t iColorAttachment = 0; iColorAttachment < metalPipelineDesc.miNumRenderTarget; iColorAttachment++)
             {
-                if(metalPipelineDesc.mbOutputPresent)
+                /*if(metalPipelineDesc.mbOutputPresent)
                 {
                     MTLPixelFormat pixelFormat = MTLPixelFormatRGBA8Unorm;
                     if(desc.maRenderTargetFormats[0] == RenderDriver::Common::Format::R10G10B10A2_UNORM)
@@ -116,7 +116,7 @@ namespace RenderDriver
                     renderPipelineDescriptor.colorAttachments[iColorAttachment].destinationAlphaBlendFactor = MTLBlendFactorOne;
                     renderPipelineDescriptor.colorAttachments[iColorAttachment].blendingEnabled = false;
                 }
-                else
+                else*/
                 {
                     RenderDriver::Common::Format const& colorAttachmentFormat = metalPipelineDesc.maRenderTargetFormats[iColorAttachment];
                     MTLPixelFormat format = RenderDriver::Metal::Utils::convert(colorAttachmentFormat);

@@ -96,15 +96,15 @@ class MetalView : NSView
         layer.wantsExtendedDynamicRangeContent = true
         layer.bounds = self.bounds
         layer.device = self._device
-        layer.pixelFormat = MTLPixelFormat.rgb10a2Unorm //  MTLPixelFormat.bgra8Unorm
+        layer.pixelFormat = MTLPixelFormat.bgr10a2Unorm //  MTLPixelFormat.bgra8Unorm
         layer.displaySyncEnabled = false
-        layer.presentsWithTransaction = false
+        layer.presentsWithTransaction = true
         
-        let name = CGColorSpace.linearDisplayP3
+        let name = CGColorSpace.acescgLinear
         layer.colorspace = CGColorSpace(name: name)
         
         layer.edrMetadata = CAEDRMetadata.hdr10(minLuminance: 0.0, maxLuminance: 10.0, opticalOutputScale: 1.0)
-        layer.framebufferOnly = true
+        layer.framebufferOnly = false
         
         return layer
     }
@@ -112,6 +112,7 @@ class MetalView : NSView
     func beginFrame()
     {
         self._drawable = self.metalLayer!.nextDrawable()
+        self._drawable.texture.label = String(format: "Drawable Texture %d", self._frames)
         self._wrapper.nextDrawable(
             self._drawable,
             texture: self._drawable.texture,
@@ -126,14 +127,20 @@ class MetalView : NSView
     
     func render()
     {
+        let _ = self.inflightSemaphores.wait(timeout: DispatchTime.distantFuture)
+        
+        self.beginFrame()
+        
         self.update(time: 0.0)
         self._wrapper.render()
     }
     
     func endFrame()
     {
+        self._drawable.present()
+        
         self.inflightSemaphores.signal()
-    
+        
         autoreleasepool
         {
             self._drawable = nil

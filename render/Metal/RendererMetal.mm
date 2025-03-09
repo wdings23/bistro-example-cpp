@@ -18,6 +18,8 @@
 
 #include <sstream>
 
+#include "stb_image_write.h"
+
 extern char const* getSaveDir();
 
 namespace Render
@@ -962,7 +964,38 @@ namespace Render
             RenderDriver::Common::CImage* pGPUImage,
             std::vector<float>& afImageData)
         {
-            WTFASSERT(0, "Implement me");
+            int32_t iImageWidth = (int32_t)pGPUImage->getDescriptor().miWidth;
+            int32_t iImageHeight = (int32_t)pGPUImage->getDescriptor().miHeight;
+            
+            int32_t iImageSize = iImageWidth * iImageHeight * sizeof(float4);
+            id<MTLDevice> nativeDevice = (__bridge id<MTLDevice>)mpDevice->getNativeDevice();
+            id<MTLBuffer> nativeBuffer = [nativeDevice newBufferWithLength: iImageSize options: MTLResourceStorageModeShared];
+            
+            id<MTLTexture> nativeTexture = (__bridge id<MTLTexture>)pGPUImage->getNativeImage();
+            id<MTLCommandQueue> nativeQueue = (__bridge id<MTLCommandQueue>)mpCopyCommandQueue->getNativeCommandQueue();
+            id<MTLCommandBuffer> nativeCommandBuffer = [nativeQueue commandBuffer];
+            id<MTLBlitCommandEncoder> nativeBlitCommandEncoder = [nativeCommandBuffer blitCommandEncoder];
+            [nativeBlitCommandEncoder
+             copyFromTexture: nativeTexture
+             sourceSlice:0
+             sourceLevel:0
+             sourceOrigin:MTLOriginMake(0, 0, 0)
+             sourceSize:MTLSizeMake(iImageWidth, iImageHeight, 1)
+             toBuffer:nativeBuffer
+             destinationOffset:0
+             destinationBytesPerRow: iImageWidth * sizeof(float4)
+             destinationBytesPerImage: iImageSize
+            ];
+            [nativeBlitCommandEncoder endEncoding];
+            [nativeCommandBuffer commit];
+            [nativeCommandBuffer waitUntilCompleted];
+            
+            void* pData = [nativeBuffer contents];
+            afImageData.resize(iImageSize);
+            memcpy(afImageData.data(), pData, iImageSize);
+            
+            [nativeBuffer setPurgeableState: MTLPurgeableStateEmpty];
+            
         }
 
         std::mutex sMutex;
@@ -1549,7 +1582,9 @@ namespace Render
             float4 const& color,
             RenderDriver::Common::CCommandBuffer* pCommandBuffer)
         {
-            // no debug marker
+            id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)pCommandBuffer->getNativeCommandList();
+            NSString* debugGroupName = [NSString stringWithCString: name.c_str() encoding: [NSString defaultCStringEncoding]];
+            [nativeCommandBuffer pushDebugGroup: debugGroupName];
         }
 
         /*
@@ -1558,7 +1593,8 @@ namespace Render
         void CRenderer::platformEndDebugMarker3(
             RenderDriver::Common::CCommandBuffer* pCommandBuffer)
         {
-            // no debug marker
+            id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)pCommandBuffer->getNativeCommandList();
+            [nativeCommandBuffer popDebugGroup];
         }
 
         /*
@@ -1682,10 +1718,10 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
                 else
                 {
                     // set color image attachment to swap chain's drawable
-                    if(bSwapChainPass)
+                    /*if(bSwapChainPass)
                     {
                         pImageMetal = static_cast<RenderDriver::Metal::CSwapChain*>(mpSwapChain.get())->getColorImage();
-                    }
+                    }*/
                     
                     // color attachment
                     pNativeRenderPassDescriptor.colorAttachments[iAttachmentIndex].texture = (__bridge id<MTLTexture>)pImageMetal->getNativeImage();
@@ -1725,12 +1761,11 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             
             pCommandBufferMetal->beginRenderPass(pNativeRenderPassDescriptor);
             id<MTLRenderCommandEncoder> nativeRenderCommandEncoder = pCommandBufferMetal->getNativeRenderCommandEncoder();
-            nativeRenderCommandEncoder.label = [NSString stringWithUTF8String: std::string(pRenderJob->mName + " Render Command Encoder").c_str()];
+            //nativeRenderCommandEncoder.label = [NSString stringWithUTF8String: std::string(pRenderJob->mName + " Render Command Encoder").c_str()];
             
             [nativeRenderCommandEncoder setDepthStencilState: pPipelineStateMetal->getNativeDepthStencilState()];
             
             [nativeRenderCommandEncoder setFrontFacingWinding: MTLWindingCounterClockwise];
-            
             
         }
 
@@ -2378,9 +2413,9 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             Render::Common::CRenderJob& renderJob,
             RenderDriver::Common::CCommandBuffer& commandBuffer
         )
-        {
+    {
             static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer).beginComputePass(nullptr);
-                        
+            
             RenderDriver::Metal::CCommandBuffer& commandBufferMetal = static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer);
             id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBufferMetal.getNativeCommandList();
             id<MTLComputeCommandEncoder> computeCommandEncoder = commandBufferMetal.getNativeComputeCommandEncoder();
@@ -2413,15 +2448,21 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             Render::Common::CRenderJob& renderJob,
             RenderDriver::Common::CCommandBuffer& commandBuffer
         )
-        {
+    {
             static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer).beginComputePass(nullptr);
-                        
+            
             RenderDriver::Metal::CCommandBuffer& commandBufferMetal = static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer);
             id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBufferMetal.getNativeCommandList();
             id<MTLComputeCommandEncoder> computeCommandEncoder = commandBufferMetal.getNativeComputeCommandEncoder();
             
-            [nativeCommandBuffer setLabel: [NSString stringWithUTF8String: commandBuffer.getID().c_str()]];
-            [computeCommandEncoder setLabel: [NSString stringWithUTF8String: std::string(renderJob.mName + " Compute Command Encoder").c_str()]];
+            [computeCommandEncoder memoryBarrierWithScope:MTLBarrierScopeTextures];
+            
+            if(renderJob.mName.find("Shadow") != std::string::npos)
+            {
+                id<MTLTexture> nativeImage = (__bridge id<MTLTexture>)renderJob.mapOutputImageAttachments["Direct Sun Light Output"]->getNativeImage();
+                id<MTLResource> resources[] = { nativeImage };
+                [computeCommandEncoder memoryBarrierWithResources:resources count: 1];
+            }
         }
     
         /*
@@ -2473,6 +2514,43 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             
             [nativeCommandBuffer commit];
             [nativeCommandBuffer waitUntilCompleted];
+        }
+    
+        /*
+        **
+        */
+        void CRenderer::platformPrepSwapChain()
+        {
+            id<MTLCommandQueue> nativeCommandQueue = (__bridge id<MTLCommandQueue>)mpCopyCommandQueue->getNativeCommandQueue();
+            id<MTLCommandBuffer> nativeCommandBuffer = [nativeCommandQueue commandBuffer];
+            id<MTLBlitCommandEncoder> nativeBlitCommandEncoder = [nativeCommandBuffer blitCommandEncoder];
+            
+            nativeCommandBuffer.label = @"Copy Swap Chain To Drawable Command Buffer";
+            nativeBlitCommandEncoder.label = @"Copy Swap Chain To Drawable Blit Command Encoder";
+            
+            id<MTLTexture> srcTexture = (__bridge id<MTLTexture>)mapRenderJobs["Swap Chain Graphics"]->mapOutputImageAttachments["Swap Chain Output"]->getNativeImage();
+            id<MTLTexture> dstTexture = (__bridge id<MTLTexture>)mpSwapChain->getDrawableTexture()->getNativeImage();
+            
+            [nativeBlitCommandEncoder
+             copyFromTexture: srcTexture
+             sourceSlice: 0
+             sourceLevel: 0
+             toTexture: dstTexture
+             destinationSlice: 0
+             destinationLevel: 0
+             sliceCount: 1
+             levelCount: 1
+            ];
+            
+            [nativeBlitCommandEncoder endEncoding];
+            [nativeCommandBuffer commit];
+            //[nativeCommandBuffer waitUntilCompleted];
+            [nativeCommandBuffer waitUntilScheduled];
+            
+            RenderDriver::Common::SwapChainPresentDescriptor desc = {};
+            mpSwapChain->present(desc);
+            
+            nativeCommandBuffer = nil;
         }
     
     }   // Metal

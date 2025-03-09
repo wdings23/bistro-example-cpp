@@ -38,7 +38,9 @@ namespace RenderDriver
                 textureDescriptor.usage;
             
             textureDescriptor.storageMode = (bRenderTarget) ? MTLStorageModePrivate : MTLStorageModeManaged;
+            textureDescriptor.compressionType = MTLTextureCompressionTypeLossless;
             mNativeImage = [mNativeDevice newTextureWithDescriptor:textureDescriptor];
+            
             
             return mHandle;
         }

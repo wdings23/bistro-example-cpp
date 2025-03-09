@@ -56,8 +56,9 @@ namespace Render
             );
 			desc.mafClearColor = afDefaultClearColor;
 			desc.mImageLayout = RenderDriver::Common::ImageLayout::ATTACHMENT_OPTIMAL;
-			pImage->create(
-				desc, 
+			
+            pImage->create(
+				desc,
 				*mpDevice
 			);
 			pImage->setID(name);

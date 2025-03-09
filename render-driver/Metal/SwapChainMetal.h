@@ -59,6 +59,11 @@ namespace RenderDriver
                 mNativeSwapChainPassCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBuffer.getNativeCommandList();
             }
             
+            virtual RenderDriver::Common::CImage* getDrawableTexture()
+            {
+                return mColorImage.get();
+            }
+            
         protected:
             id<MTLDrawable>            mNativeDrawable;
             id<MTLTexture>             mNativeDrawableTexture;

@@ -886,6 +886,8 @@ namespace Render
                 Render::Common::CRenderJob& renderJob,
                 RenderDriver::Common::CCommandQueue& commandQueue) {}
             
+            virtual void platformPrepSwapChain() {}
+            
             protected:
                 
                 

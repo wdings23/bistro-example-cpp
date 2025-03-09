@@ -77,6 +77,11 @@ namespace RenderDriver
             {
                 return mpDepthStencilRenderTarget;
             }
+            
+            virtual RenderDriver::Common::CImage* getDrawableTexture()
+            {
+                return nullptr;
+            }
 
         protected:
             SwapChainDescriptor                                     mDesc;

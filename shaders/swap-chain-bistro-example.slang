@@ -50,8 +50,12 @@ PSOutput PSMain(VertexStageOutput in)
 
 
     out.mOutput.xyz =
-        texture0.Sample(sampler, texCoord).xyz +
-        texture1.Sample(sampler, texCoord).xyz;
+        clamp(
+            texture0.Sample(sampler, texCoord).xyz +
+            texture1.Sample(sampler, texCoord).xyz,
+            float3(0.0f),
+            float3(1.0f)
+        );
 
     //out.mOutput.xyz = ACESFilm(
     //    clamp(out.mOutput.xyz, 0.0f, 1.0f)
