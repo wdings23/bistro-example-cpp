@@ -888,6 +888,9 @@ namespace Render
             
             virtual void platformPrepSwapChain() {}
             
+            virtual void platformPreRenderJobExec() {}
+            virtual void platformPostRenderJobExec() {}
+            
             protected:
                 
                 

@@ -293,10 +293,11 @@ namespace RenderDriver
         */
         void CCommandBuffer::beginRenderPass(MTLRenderPassDescriptor* pRenderPassDescriptor)
     {
-            mNativeCommandBuffer = [mNativeQueue commandBuffer];
+            WTFASSERT(mNativeCommandBuffer != nil, "No MTLCommandBuffer is set");
+            //mNativeCommandBuffer = [mNativeQueue commandBuffer];
             mNativeRenderCommandEncoder = [mNativeCommandBuffer renderCommandEncoderWithDescriptor: pRenderPassDescriptor];
             
-            mNativeCommandBuffer.label = [NSString stringWithUTF8String: mID.c_str()];
+            //mNativeCommandBuffer.label = [NSString stringWithUTF8String: mID.c_str()];
             mNativeRenderCommandEncoder.label = [NSString stringWithUTF8String: std::string(mID + " Render Command Encoder").c_str()];
         }
     
@@ -305,10 +306,11 @@ namespace RenderDriver
         */
         void CCommandBuffer::beginComputePass(MTLComputePassDescriptor* pComputePassDescriptor)
         {
-            mNativeCommandBuffer = [mNativeQueue commandBuffer];
+            WTFASSERT(mNativeCommandBuffer != nil, "No MTLCommandBuffer is set");
+            //mNativeCommandBuffer = [mNativeQueue commandBuffer];
             mNativeComputeCommandEncoder = [mNativeCommandBuffer computeCommandEncoder];
             
-            mNativeCommandBuffer.label = [NSString stringWithUTF8String: mID.c_str()];
+            //mNativeCommandBuffer.label = [NSString stringWithUTF8String: mID.c_str()];
             mNativeRenderCommandEncoder.label = [NSString stringWithUTF8String: std::string(mID + " Compute Command Encoder").c_str()];
         }
     
@@ -317,11 +319,16 @@ namespace RenderDriver
         */
         void CCommandBuffer::beginCopy()
         {
-            mNativeCommandBuffer = [mNativeQueue commandBuffer];
+            //WTFASSERT(mNativeCommandBuffer != nil, "No MTLCommandBuffer is set");
+            if(mNativeCommandBuffer == nil)
+            {
+                mNativeCommandBuffer = [mNativeQueue commandBuffer];
+                mNativeCommandBuffer.label = [NSString stringWithUTF8String: mID.c_str()];
+            }
+            
             mNativeBlitCommandEncoder = [mNativeCommandBuffer blitCommandEncoder];
             
-            mNativeCommandBuffer.label = [NSString stringWithUTF8String: mID.c_str()];
-            mNativeRenderCommandEncoder.label = [NSString stringWithUTF8String: std::string(mID + " Blit Command Encoder").c_str()];
+            mNativeBlitCommandEncoder.label = [NSString stringWithUTF8String: std::string(mID + " Blit Command Encoder").c_str()];
         }
     
         /*

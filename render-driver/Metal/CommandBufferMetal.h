@@ -107,6 +107,11 @@ namespace RenderDriver
                 return mNativeBlitCommandEncoder;
             }
             
+            inline void setNativeCommandBuffer(id<MTLCommandBuffer> nativeCommandBuffer)
+            {
+                mNativeCommandBuffer = nativeCommandBuffer;
+            }
+            
             void createBlitComandEncoder();
             void createComputeCommandEncoder();
             void createRenderCommandEncoder();

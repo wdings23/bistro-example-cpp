@@ -1761,12 +1761,9 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             
             pCommandBufferMetal->beginRenderPass(pNativeRenderPassDescriptor);
             id<MTLRenderCommandEncoder> nativeRenderCommandEncoder = pCommandBufferMetal->getNativeRenderCommandEncoder();
-            //nativeRenderCommandEncoder.label = [NSString stringWithUTF8String: std::string(pRenderJob->mName + " Render Command Encoder").c_str()];
             
             [nativeRenderCommandEncoder setDepthStencilState: pPipelineStateMetal->getNativeDepthStencilState()];
-            
             [nativeRenderCommandEncoder setFrontFacingWinding: MTLWindingCounterClockwise];
-            
         }
 
         /*
@@ -2417,10 +2414,10 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer).beginComputePass(nullptr);
             
             RenderDriver::Metal::CCommandBuffer& commandBufferMetal = static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer);
-            id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBufferMetal.getNativeCommandList();
+            //id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBufferMetal.getNativeCommandList();
             id<MTLComputeCommandEncoder> computeCommandEncoder = commandBufferMetal.getNativeComputeCommandEncoder();
             
-            [nativeCommandBuffer setLabel: [NSString stringWithUTF8String: commandBuffer.getID().c_str()]];
+            //[nativeCommandBuffer setLabel: [NSString stringWithUTF8String: commandBuffer.getID().c_str()]];
             [computeCommandEncoder setLabel: [NSString stringWithUTF8String: std::string(renderJob.mName + " Compute Command Encoder").c_str()]];
         }
         
@@ -2434,10 +2431,10 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer).beginCopy();
             
             RenderDriver::Metal::CCommandBuffer& commandBufferMetal = static_cast<RenderDriver::Metal::CCommandBuffer&>(commandBuffer);
-            id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBufferMetal.getNativeCommandList();
+            //id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBufferMetal.getNativeCommandList();
             id<MTLBlitCommandEncoder> blitCommandEncoder = commandBufferMetal.getNativeBlitCommandEncoder();
             
-            [nativeCommandBuffer setLabel: [NSString stringWithUTF8String: commandBuffer.getID().c_str()]];
+            //[nativeCommandBuffer setLabel: [NSString stringWithUTF8String: commandBuffer.getID().c_str()]];
             [blitCommandEncoder setLabel: [NSString stringWithUTF8String: std::string(renderJob.mName + " Blit Command Encoder").c_str()]];
         }
         
@@ -2551,6 +2548,67 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             mpSwapChain->present(desc);
             
             nativeCommandBuffer = nil;
+        }
+    
+        /*
+        **
+        */
+        void CRenderer::platformPreRenderJobExec()
+        {
+            id<MTLCommandQueue> nativeCommandQueueCopy = (__bridge id<MTLCommandQueue>)mpCopyCommandQueue->getNativeCommandQueue();
+            id<MTLCommandQueue> nativeCommandQueueGraphics = (__bridge id<MTLCommandQueue>)mpGraphicsCommandQueue->getNativeCommandQueue();
+            id<MTLCommandQueue> nativeCommandQueueCompute = (__bridge id<MTLCommandQueue>)mpComputeCommandQueue->getNativeCommandQueue();
+            
+            mNativeCommandBufferCopy = [nativeCommandQueueCopy commandBuffer];
+            mNativeCommandBufferGraphics = [nativeCommandQueueGraphics commandBuffer];
+            mNativeCommandBufferCompute = [nativeCommandQueueCompute commandBuffer];
+            
+            mNativeCommandBufferCopy.label = @"Copy Command Buffer";
+            mNativeCommandBufferCompute.label = @"Compute Command Buffer";
+            mNativeCommandBufferGraphics.label = @"Graphics Command Buffer";
+            
+            for(auto const& renderJobKeyValue : maRenderJobs)
+            {
+                RenderDriver::Metal::CCommandBuffer* pCommandBuffer = (RenderDriver::Metal::CCommandBuffer*)mapRenderJobCommandBuffers[renderJobKeyValue.first];
+                if(renderJobKeyValue.second->mType == Render::Common::JobType::Graphics)
+                {
+                    pCommandBuffer->setNativeCommandBuffer(mNativeCommandBufferGraphics);
+                }
+                else if(renderJobKeyValue.second->mType == Render::Common::JobType::Compute)
+                {
+                    pCommandBuffer->setNativeCommandBuffer(mNativeCommandBufferCompute);
+                }
+                else if(renderJobKeyValue.second->mType == Render::Common::JobType::Copy)
+                {
+                    pCommandBuffer->setNativeCommandBuffer(mNativeCommandBufferCopy);
+                }
+                else if(renderJobKeyValue.second->mType == Render::Common::JobType::RayTrace)
+                {
+                    pCommandBuffer->setNativeCommandBuffer(mNativeCommandBufferCompute);
+                }
+                else
+                {
+                    WTFASSERT(0, "job type %d not handled\n", renderJobKeyValue.second->mType);
+                }
+            }
+        }
+    
+        /*
+        **
+        */
+        void CRenderer::platformPostRenderJobExec()
+        {
+            [mNativeCommandBufferGraphics commit];
+            [mNativeCommandBufferCompute commit];
+            [mNativeCommandBufferCopy commit];
+            
+            [mNativeCommandBufferGraphics waitUntilCompleted];
+            [mNativeCommandBufferCompute waitUntilCompleted];
+            [mNativeCommandBufferCopy waitUntilCompleted];
+            
+            mNativeCommandBufferGraphics = nil;
+            mNativeCommandBufferCompute = nil;
+            mNativeCommandBufferCopy = nil;
         }
     
     }   // Metal

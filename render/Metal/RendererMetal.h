@@ -422,6 +422,9 @@ namespace Render
             
             virtual void platformPrepSwapChain();
             
+            virtual void platformPreRenderJobExec();
+            virtual void platformPostRenderJobExec();
+            
         protected:
             std::map<uint64_t, std::vector<uint8_t>>        mShaderBinariesDB;
             std::map<uint64_t, std::string>                 mShaderBinaryFilePath;
@@ -429,6 +432,8 @@ namespace Render
             std::map<uint64_t, std::vector<uint8_t>>        mShaderDebugSourceInfo;
             std::map<uint64_t, std::vector<uint8_t>>        mShaderBinaryPDB;
 
+            
+            
         public:
             std::vector<uint8_t> const* getShaderBinary(uint64_t iHash)
             {
@@ -481,6 +486,10 @@ namespace Render
             }
                 
             protected:
+                id<MTLCommandBuffer> mNativeCommandBufferCopy;
+                id<MTLCommandBuffer> mNativeCommandBufferGraphics;
+                id<MTLCommandBuffer> mNativeCommandBufferCompute;
+                
                 std::map<std::string, std::unique_ptr<Render::Metal::CRenderJob>> maRenderJobs;
                 std::map<std::string, std::unique_ptr<RenderDriver::Metal::CCommandBuffer>> maRenderJobCommandBuffers;
                 std::map<std::string, std::unique_ptr<RenderDriver::Metal::CCommandAllocator>> maRenderJobCommandAllocators;

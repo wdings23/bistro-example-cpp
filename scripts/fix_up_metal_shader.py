@@ -329,7 +329,7 @@ def output_trace_ray(
             parsed_output += file_content[ray_trace_function_end + 1:intersect_condition_start]
             start_statement = file_content.find('{', intersect_condition_start)
 
-            parsed_output += 'if (intersection.type == raytracing::intersection_type::triangle) '
+            parsed_output += 'if (intersection.distance > 0.0) '
             start = start_statement
         else:
             parsed_output += file_content[start:]

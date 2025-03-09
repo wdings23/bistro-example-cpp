@@ -1482,7 +1482,8 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
             RenderDriver::Common::CCommandQueue* pComputeCommandQueue = mpComputeCommandQueue.get();
             RenderDriver::Common::CCommandQueue* pCopyCommandQueue = mpCopyCommandQueue.get();
 
-
+            platformPreRenderJobExec();
+            
             uint32_t iJobIndex = 0;
             bool bHasSwapChainPass = false;
             for(auto const& renderJobName : maRenderJobNames)
@@ -1498,28 +1499,20 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
 
                 Render::Common::CRenderJob* pRenderJob = mapRenderJobs[renderJobName];
                 RenderDriver::Common::CCommandBuffer& commandBuffer = *mapRenderJobCommandBuffers[renderJobName];
-
-//if(pRenderJob->mType == Render::Common::JobType::Copy)
-//{
-//    continue;
-//}
                 
                 if(pRenderJob->mPassType == Render::Common::PassType::SwapChain)
                 {
                     bHasSwapChainPass = true;
                 }
 
+                if(mRenderDriverType != RenderDriverType::Metal)
+                {
+                    commandBuffer.reset();
+                }
+                
                 // fill out command buffers
-                commandBuffer.reset();
                 if(pRenderJob->mType == Render::Common::JobType::Graphics)
                 {
-                    //if(pRenderJob->mPassType == Render::Common::PassType::DrawMeshes)
-                    //{
-                    //    platformBeginIndirectCommandBuffer(
-                    //        *pRenderJob,
-                    //        *pComputeCommandQueue);
-                    //}
-                    
                     filloutGraphicsJobCommandBuffer3(
                         pRenderJob,
                         commandBuffer
@@ -1605,6 +1598,11 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
 
                 commandBuffer.close();
 
+                if(mRenderDriverType == RenderDriverType::Metal)
+                {
+                    continue;
+                }
+                
                 // execute the command buffer
                 if(pRenderJob->mType == Render::Common::JobType::Graphics)
                 {
@@ -1732,6 +1730,11 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                     *mpSwapChainCommandBuffer,
                     *mpDevice
                 );
+            }
+            
+            if(mRenderDriverType == Render::Common::RenderDriverType::Metal)
+            {
+                platformPostRenderJobExec();
             }
             
             // final wait for queue to finish
