@@ -26,6 +26,16 @@
             "Name" : "Sun Light Output",
             "Type": "TextureInput",
             "ParentJobName": "Atmosphere Graphics"
+        },
+        {
+            "Name": "Debug 0",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Debug 1",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
         }
     ],
     "ShaderResources": []

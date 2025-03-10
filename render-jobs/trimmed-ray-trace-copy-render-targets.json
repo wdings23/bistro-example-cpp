@@ -105,6 +105,13 @@
             "ParentJobName": "Temporal Restir Diffuse Ray Trace",
             "ParentName": "Spherical Harmonics 2 Output",
             "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Ray Trace Shadow Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Ray Traced Shadow",
+            "ParentName": "Direct Sun Light Output",
+            "Format": "rgba32float"
         }
         
     ]

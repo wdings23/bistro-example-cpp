@@ -19,6 +19,10 @@
 #include <stb_image.h>
 #include <stb_image_write.h>
 
+#define TINYEXR_IMPLEMENTATION
+#include <tinyexr/tinyexr.h>
+#include <tinyexr/miniz.c>
+
 #include <chrono>
 
 #if defined(RUN_TEST_LOCALLY)
@@ -1498,7 +1502,12 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
 #endif // USE_RAY_TRACING
 
                 Render::Common::CRenderJob* pRenderJob = mapRenderJobs[renderJobName];
-                RenderDriver::Common::CCommandBuffer& commandBuffer = *mapRenderJobCommandBuffers[renderJobName];
+                RenderDriver::Common::CCommandBuffer* pCommandBuffer = mapRenderJobCommandBuffers[renderJobName];
+                if(mRenderDriverType == RenderDriverType::Metal)
+                {
+                    pCommandBuffer = mapRenderJobCommandBuffers["Mesh Culling Compute"];
+                }
+                RenderDriver::Common::CCommandBuffer& commandBuffer = *pCommandBuffer;
                 
                 if(pRenderJob->mPassType == Render::Common::PassType::SwapChain)
                 {
@@ -1600,6 +1609,47 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
 
                 if(mRenderDriverType == RenderDriverType::Metal)
                 {
+#if 0
+                    for(auto& keyValue : pRenderJob->mapOutputImageAttachments)
+                    {
+                        if(keyValue.second == nullptr)
+                        {
+                            continue;
+                        }
+                        
+                        RenderDriver::Common::CImage* pImage = keyValue.second;
+                        if(pImage->getDescriptor().mFormat != RenderDriver::Common::Format::R32G32B32A32_FLOAT)
+                        {
+                            continue;
+                        }
+                        
+                        std::string baseName = pRenderJob->mName + "-" + keyValue.first;
+                        std::replace(baseName.begin(), baseName.end(), ' ', '-');
+                        
+                        std::vector<float> afImageData;
+                        platformCopyImageToCPUMemory(pImage, afImageData);
+                        
+                        int32_t iImageWidth = pImage->getDescriptor().miWidth;
+                        int32_t iImageHeight = pImage->getDescriptor().miHeight;
+                        std::string outputDir = std::string("/Users/dingwings/Downloads/debug-output-attachments/") + baseName + ".exr";
+                        char const* pError = nullptr;
+                        int32_t iRet = SaveEXR(
+                            afImageData.data(),
+                            iImageWidth,
+                            iImageHeight,
+                            4,
+                            0,
+                            outputDir.c_str(),
+                            &pError);
+                        WTFASSERT(iRet == TINYEXR_SUCCESS, "Can\'t save \"%s\"", outputDir.c_str());
+                        
+                        //int32_t iRet = stbi_write_hdr(outputDir.c_str(), iImageWidth, iImageHeight, 4, afImageData.data());
+                        //WTFASSERT(iRet > 0, "can\'t write file: %s", outputDir.c_str());
+                        DEBUG_PRINTF("wrote to: %s\n", outputDir.c_str());
+                    }
+#endif // #if 0
+                    
+                    ++iJobIndex;
                     continue;
                 }
                 
@@ -1765,6 +1815,7 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
 #endif // USE_RAY_TRACING
 
                 Render::Common::CRenderJob* pRenderJob = mapRenderJobs[renderJobName];
+                            
                 pRenderJob->mpSignalFence->reset2();
                 if(pRenderJob->mpWaitFence != nullptr)
                 {
@@ -2354,6 +2405,50 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
             );
         }
 
+        /*
+        **
+        */
+        void CRenderer::debugRenderJobOutputAttachments(Render::Common::CRenderJob* pRenderJob)
+        {
+            for(auto& keyValue : pRenderJob->mapOutputImageAttachments)
+            {
+                if(keyValue.second == nullptr)
+                {
+                    continue;
+                }
+                
+                RenderDriver::Common::CImage* pImage = keyValue.second;
+                if(pImage->getDescriptor().mFormat != RenderDriver::Common::Format::R32G32B32A32_FLOAT)
+                {
+                    continue;
+                }
+                
+                std::string baseName = pRenderJob->mName + "-" + keyValue.first;
+                std::replace(baseName.begin(), baseName.end(), ' ', '-');
+                
+                std::vector<float> afImageData;
+                platformCopyImageToCPUMemory(pImage, afImageData);
+                
+                int32_t iImageWidth = pImage->getDescriptor().miWidth;
+                int32_t iImageHeight = pImage->getDescriptor().miHeight;
+                std::string outputDir = std::string("/Users/dingwings/Downloads/debug-output-attachments/") + baseName + ".exr";
+                char const* pError = nullptr;
+                int32_t iRet = SaveEXR(
+                    afImageData.data(),
+                    iImageWidth,
+                    iImageHeight,
+                    4,
+                    0,
+                    outputDir.c_str(),
+                    &pError);
+                WTFASSERT(iRet == TINYEXR_SUCCESS, "Can\'t save \"%s\"", outputDir.c_str());
+                
+                //int32_t iRet = stbi_write_hdr(outputDir.c_str(), iImageWidth, iImageHeight, 4, afImageData.data());
+                //WTFASSERT(iRet > 0, "can\'t write file: %s", outputDir.c_str());
+                DEBUG_PRINTF("wrote to: %s\n", outputDir.c_str());
+            }
+        }
+    
     }   // Common
 
 } // Render

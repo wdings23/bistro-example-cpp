@@ -68,13 +68,19 @@ namespace RenderDriver
             RenderDriver::Common::CPipelineState& pipelineState,
             RenderDriver::Common::CDevice& device)
         {
-            if(mType == RenderDriver::Common::CommandBufferType::Graphics)
+            if(pipelineState.getType() == PipelineType::GRAPHICS_PIPELINE_TYPE)
             {
                 id<MTLRenderPipelineState> nativePipelineState = (__bridge id<MTLRenderPipelineState>)pipelineState.getNativePipelineState();
                 WTFASSERT(nativePipelineState != nil, "No native graphics pipeline state for \"%s\"", pipelineState.getID().c_str());
                 [mNativeRenderCommandEncoder setRenderPipelineState: nativePipelineState];
             }
-            else if(mType == RenderDriver::Common::CommandBufferType::Compute)
+            else if(pipelineState.getType() == PipelineType::COMPUTE_PIPELINE_TYPE)
+            {
+                id<MTLComputePipelineState> nativePipelineState = (__bridge id<MTLComputePipelineState>)pipelineState.getNativePipelineState();
+                WTFASSERT(nativePipelineState != nil, "No native graphics pipeline state for \"%s\"", pipelineState.getID().c_str());
+                [mNativeComputeCommandEncoder setComputePipelineState: nativePipelineState];
+            }
+            else if(pipelineState.getType() == PipelineType::RAY_TRACE_PIPELINE_TYPE)
             {
                 id<MTLComputePipelineState> nativePipelineState = (__bridge id<MTLComputePipelineState>)pipelineState.getNativePipelineState();
                 WTFASSERT(nativePipelineState != nil, "No native graphics pipeline state for \"%s\"", pipelineState.getID().c_str());
@@ -262,7 +268,7 @@ namespace RenderDriver
         {
             mState = RenderDriver::Common::CommandBufferState::Closed;
             
-            if(mType == RenderDriver::Common::CommandBufferType::Graphics && mNativeRenderCommandEncoder != nil)
+            /*if(mType == RenderDriver::Common::CommandBufferType::Graphics && mNativeRenderCommandEncoder != nil)
             {
                 [mNativeRenderCommandEncoder endEncoding];
             }
@@ -277,6 +283,24 @@ namespace RenderDriver
             else
             {
                 WTFASSERT(0, "no native command buffer");
+            }*/
+            
+            if(mNativeRenderCommandEncoder)
+            {
+                [mNativeRenderCommandEncoder endEncoding];
+                mNativeRenderCommandEncoder = nil;
+            }
+            
+            if(mNativeComputeCommandEncoder)
+            {
+                [mNativeComputeCommandEncoder endEncoding];
+                mNativeComputeCommandEncoder = nil;
+            }
+            
+            if(mNativeBlitCommandEncoder)
+            {
+                [mNativeBlitCommandEncoder endEncoding];
+                mNativeBlitCommandEncoder = nil;
             }
         }
 

@@ -8,7 +8,9 @@
 [[vk::binding(2, 0)]] Texture2D<float4> worldPositionTexture;
 [[vk::binding(3, 0)]] Texture2D<float4> normalTexture;
 [[vk::binding(4, 0)]] Texture2D<float4> sunLightTexture;
-[[vk::binding(5, 0)]] SamplerState textureSampler;
+[[vk::binding(5, 0)]] RWTexture2D<float4> debugTexture0;
+[[vk::binding(6, 0)]] RWTexture2D<float4> debugTexture1;
+[[vk::binding(7, 0)]] SamplerState textureSampler;
 
 [[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
 
@@ -40,9 +42,9 @@ void rayGen()
         
         RayDesc ray;
         float3 origin = float3(worldPosition.xyz);
-        ray.Origin = origin;
-        ray.Direction = normalize(defaultUniformBuffer.mLightDirection.xyz); 
-        ray.TMin = 0.01f;
+        ray.Direction = normalize(defaultUniformBuffer.mLightDirection.xyz);
+        ray.Origin = origin + ray.Direction * 0.1f;
+        ray.TMin = 0.1f;
         ray.TMax = 1000.0f;
         RayPayload payload = { 
             float4(0.0f, 0.0f, 0.0f, 0.0f)
@@ -64,6 +66,8 @@ void rayGen()
             float4(0.81f, 0.01f, 0.81f, 1.0f) :
             float4(1.0f, 1.0f, 1.0f, 1.0f) * float4(fDP, fDP, fDP, 1.0f);
         renderTarget[rayIndex] = radianceOutput;
+        debugTexture0[rayIndex] = payload.mOutput.x;
+        debugTexture1[rayIndex] = payload.mOutput.y;
     }
 }
 

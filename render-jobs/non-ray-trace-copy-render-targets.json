@@ -49,6 +49,13 @@
             "Format": "rgba32float",
             "ScaleWidth": 0.25,
             "ScaleHeight": 0.25
+        },
+        {
+            "Name": "Previous Ray Trace Shadow Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Ray Traced Shadow",
+            "ParentName": "Direct Sun Light Output",
+            "Format": "rgba32float"
         }
         
     ]

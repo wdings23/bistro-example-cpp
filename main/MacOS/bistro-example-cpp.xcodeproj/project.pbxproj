@@ -958,6 +958,7 @@
 		254CE3A62D77B5D4003070B3 /* trimmed-ray-trace-render-jobs.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "trimmed-ray-trace-render-jobs.json"; path = "../../../render-jobs/trimmed-ray-trace-render-jobs.json"; sourceTree = "<group>"; };
 		254CE3AB2D77C023003070B3 /* LDR_RGBA_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = LDR_RGBA_0.png; path = ../../../scene/LDR_RGBA_0.png; sourceTree = "<group>"; };
 		254CE3AD2D77C187003070B3 /* LDR_RGBA_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = LDR_RGBA_0.png; path = ../../../scene/LDR_RGBA_0.png; sourceTree = "<group>"; };
+		255E69392D7E9FA1008F40CB /* miniz.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; name = miniz.c; path = "/Users/dingwings/projects/bistro-example-cpp/externals/tinyexr/miniz.c"; sourceTree = "<absolute>"; };
 		257FBDB72D61D2E200F92519 /* bistro2-triangles.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = "bistro2-triangles.bin"; path = "../../../scene/Bistro_v4/bistro2-triangles.bin"; sourceTree = "<group>"; };
 		257FBDBC2D629FDF00F92519 /* bistro2-mesh-instance-ids.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = "bistro2-mesh-instance-ids.bin"; path = "../../../scene/Bistro_v4/bistro2-mesh-instance-ids.bin"; sourceTree = "<group>"; };
 		257FBDBD2D629FDF00F92519 /* bistro2-mesh-instance-positions.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; name = "bistro2-mesh-instance-positions.bin"; path = "../../../scene/Bistro_v4/bistro2-mesh-instance-positions.bin"; sourceTree = "<group>"; };
@@ -1553,6 +1554,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		255E69382D7E9F92008F40CB /* external */ = {
+			isa = PBXGroup;
+			children = (
+				255E69392D7E9FA1008F40CB /* miniz.c */,
+			);
+			path = external;
+			sourceTree = "<group>";
+		};
 		257FBDBB2D61D46B00F92519 /* Assets */ = {
 			isa = PBXGroup;
 			children = (
@@ -2001,6 +2010,7 @@
 				25DECEBB2D61373400ED56EE /* render */,
 				25DECF502D61532E00ED56EE /* render-driver */,
 				257FC0422D63215D00F92519 /* shaders */,
+				255E69382D7E9F92008F40CB /* external */,
 			);
 			sourceTree = "<group>";
 		};

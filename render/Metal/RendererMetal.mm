@@ -240,6 +240,15 @@ namespace Render
                                                   atIndex:0];
             }
             
+            mDefaultUploadUniformBuffer = std::make_unique<RenderDriver::Metal::CBuffer>();
+            
+            RenderDriver::Common::BufferDescriptor uploadUniformBufferDesc;
+            uploadUniformBufferDesc.miSize = 4096;
+            uploadUniformBufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage(
+                uint32_t(RenderDriver::Common::BufferUsage::StorageBuffer) |
+                uint32_t(RenderDriver::Common::BufferUsage::TransferSrc));
+            mDefaultUploadUniformBuffer->create(uploadUniformBufferDesc, *mpDevice);
+            
             mDesc = desc;
         }
 
@@ -478,29 +487,49 @@ namespace Render
                 buffer.getID().c_str(),
                 iDataSize);
 
-            mapUploadBuffers.emplace_back(std::make_unique<RenderDriver::Metal::CBuffer>());
-
-            RenderDriver::Metal::CBuffer& uploadBuffer = static_cast<RenderDriver::Metal::CBuffer&>(*mapUploadBuffers.back());
-            RenderDriver::Common::BufferDescriptor uploadBufferDesc = {};
-
-            uploadBufferDesc.mHeapType = RenderDriver::Common::HeapType::Upload;
-            uploadBufferDesc.miSize = iDataSize;
-            uploadBufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferSrc;
-            uploadBuffer.create(uploadBufferDesc, *mpDevice);
-            uploadBuffer.setID("Upload Buffer");
-
-            uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
-            platformCopyCPUToGPUBuffer(
-                *mpUploadCommandBuffer,
-                &buffer,
-                &uploadBuffer,
-                pRawSrcData,
-                0,
-                static_cast<uint32_t>(iDestDataOffset),
-                static_cast<uint32_t>(iDataSize),
-                iFlags);
-            
-            uploadBuffer.releaseNativeBuffer();
+            if(iDataSize < 4096 && mDefaultUploadUniformBuffer.get() != nullptr)
+            {
+                uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
+                mDefaultUploadUniformBuffer->setData(pRawSrcData, (uint32_t)iDataSize);
+                buffer.copy(
+                    *mDefaultUploadUniformBuffer.get(),
+                    *mpUploadCommandBuffer,
+                    (uint32_t)iDestDataOffset,
+                    0,
+                    (uint32_t)iDataSize);
+                
+                if((iFlags & static_cast<uint32_t>(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY)) > 0)
+                {
+                    platformExecuteCopyCommandBuffer(*mpUploadCommandBuffer, iFlags);
+                    mpUploadCommandBuffer->reset();
+                }
+            }
+            else
+            {
+                mapUploadBuffers.emplace_back(std::make_unique<RenderDriver::Metal::CBuffer>());
+                
+                RenderDriver::Metal::CBuffer& uploadBuffer = static_cast<RenderDriver::Metal::CBuffer&>(*mapUploadBuffers.back());
+                RenderDriver::Common::BufferDescriptor uploadBufferDesc = {};
+                
+                uploadBufferDesc.mHeapType = RenderDriver::Common::HeapType::Upload;
+                uploadBufferDesc.miSize = iDataSize;
+                uploadBufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferSrc;
+                uploadBuffer.create(uploadBufferDesc, *mpDevice);
+                uploadBuffer.setID("Upload Buffer");
+                
+                uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
+                platformCopyCPUToGPUBuffer(
+                    *mpUploadCommandBuffer,
+                    &buffer,
+                    &uploadBuffer,
+                    pRawSrcData,
+                    0,
+                    static_cast<uint32_t>(iDestDataOffset),
+                    static_cast<uint32_t>(iDataSize),
+                    iFlags);
+                
+                uploadBuffer.releaseNativeBuffer();
+            }
         }
 
         /*
@@ -1024,27 +1053,49 @@ namespace Render
             
             id<MTLBuffer> nativeBuffer = (__bridge id<MTLBuffer>)pGPUBuffer->getNativeBuffer();
             
-            RenderDriver::Metal::CBuffer readBackBuffer;
-            RenderDriver::Common::BufferDescriptor desc;
-            desc.miSize = iDataSize;
-            desc.mFormat = RenderDriver::Common::Format::R32_FLOAT;
-            desc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferSrc;
-            readBackBuffer.create(desc, *mpDevice);
-            readBackBuffer.setID("Read Back Buffer");
             
             mpUploadCommandBuffer->reset();
-            readBackBuffer.copy(*pGPUBuffer, *mpUploadCommandBuffer, 0, 0, iDataSize);
+            RenderDriver::Metal::CBuffer readBackBuffer;
+            if(iDataSize < 4096)
+            {
+                mDefaultUploadUniformBuffer->copy(
+                    *pGPUBuffer,
+                    *mpUploadCommandBuffer,
+                    0,
+                    0,
+                    (uint32_t)iDataSize);
+            }
+            else
+            {
+                RenderDriver::Common::BufferDescriptor desc;
+                desc.miSize = iDataSize;
+                desc.mFormat = RenderDriver::Common::Format::R32_FLOAT;
+                desc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferSrc;
+                readBackBuffer.create(desc, *mpDevice);
+                readBackBuffer.setID("Read Back Buffer");
+                
+                readBackBuffer.copy(*pGPUBuffer, *mpUploadCommandBuffer, 0, 0, iDataSize);
+            }
             mpUploadCommandBuffer->close();
             
             mpCopyCommandQueue->execCommandBuffer(*mpUploadCommandBuffer, *mpDevice);
             id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)mpUploadCommandBuffer->getNativeCommandList();
             [nativeCommandBuffer waitUntilCompleted];
             
-            id<MTLBuffer> nativeReadBackBuffer = (__bridge id<MTLBuffer>)readBackBuffer.getNativeBuffer();
-            void* pContent = [nativeReadBackBuffer contents];
-            memcpy(pCPUBuffer, ((uint8_t*)pContent) + iSrcOffset, iDataSize);
+            if(iDataSize >= 4096)
+            {
+                id<MTLBuffer> nativeReadBackBuffer = (__bridge id<MTLBuffer>)readBackBuffer.getNativeBuffer();
+                void* pContent = [nativeReadBackBuffer contents];
+                memcpy(pCPUBuffer, ((uint8_t*)pContent) + iSrcOffset, iDataSize);
+                readBackBuffer.releaseNativeBuffer();
+            }
+            else
+            {
+                id<MTLBuffer> nativeBuffer = (__bridge id<MTLBuffer>)mDefaultUploadUniformBuffer->getNativeBuffer();
+                void* pContent = [nativeBuffer contents];
+                memcpy(pCPUBuffer, ((uint8_t*)pContent) + iSrcOffset, iDataSize);
+            }
             
-            readBackBuffer.releaseNativeBuffer();
             mpUploadCommandBuffer->reset();
         
         }
@@ -2528,8 +2579,10 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             id<MTLTexture> srcTexture = (__bridge id<MTLTexture>)mapRenderJobs["Swap Chain Graphics"]->mapOutputImageAttachments["Swap Chain Output"]->getNativeImage();
             id<MTLTexture> dstTexture = (__bridge id<MTLTexture>)mpSwapChain->getDrawableTexture()->getNativeImage();
             
+            id<MTLTexture> srcFormattedTexture = [srcTexture newTextureViewWithPixelFormat:MTLPixelFormatRGBA8Unorm];
+            
             [nativeBlitCommandEncoder
-             copyFromTexture: srcTexture
+             copyFromTexture: srcFormattedTexture
              sourceSlice: 0
              sourceLevel: 0
              toTexture: dstTexture
@@ -2598,13 +2651,13 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
         */
         void CRenderer::platformPostRenderJobExec()
         {
-            [mNativeCommandBufferGraphics commit];
+            //[mNativeCommandBufferGraphics commit];
             [mNativeCommandBufferCompute commit];
-            [mNativeCommandBufferCopy commit];
+            //[mNativeCommandBufferCopy commit];
             
-            [mNativeCommandBufferGraphics waitUntilCompleted];
+            //[mNativeCommandBufferGraphics waitUntilCompleted];
             [mNativeCommandBufferCompute waitUntilCompleted];
-            [mNativeCommandBufferCopy waitUntilCompleted];
+            //[mNativeCommandBufferCopy waitUntilCompleted];
             
             mNativeCommandBufferGraphics = nil;
             mNativeCommandBufferCompute = nil;

@@ -892,8 +892,6 @@ namespace Render
             virtual void platformPostRenderJobExec() {}
             
             protected:
-                
-                
                 struct PreRenderCopyJob
                 {
                     std::vector<std::shared_ptr<RenderDriver::Common::CBuffer>>      maUploadBuffers;
@@ -905,6 +903,8 @@ namespace Render
 
                 uint32_t miStartCaptureFrame;
 
+                void debugRenderJobOutputAttachments(Render::Common::CRenderJob* pRenderJob);
+            
             public:
                 uint64_t maiRenderJobFenceValues[RenderDriver::Common::CCommandQueue::Type::NumTypes];
         };

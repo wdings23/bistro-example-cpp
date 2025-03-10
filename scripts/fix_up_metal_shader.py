@@ -299,7 +299,7 @@ def output_trace_ray(
             output_str = 'raytracing::ray r;\n'
             for i in range(space_index):
                 output_str += ' '
-            output_str += 'r.origin = {};\n'.format(parameter_str[0])
+            output_str += 'r.origin = {} + {} * 0.1f;\n'.format(parameter_str[0], parameter_str[2])
             for i in range(space_index):
                 output_str += ' '
             output_str += 'r.min_distance = {};\n'.format(parameter_str[1])
@@ -315,6 +315,9 @@ def output_trace_ray(
             for i in range(space_index):
                 output_str += ' '
             output_str += 'inter.assume_geometry_type(raytracing::geometry_type::triangle);\n'
+            for i in range(space_index):
+                output_str += ' '
+            output_str += 'inter.force_opacity(raytracing::forced_opacity::opaque);\n'
             for i in range(space_index):
                 output_str += ' '
             output_str += 'auto intersection = inter.intersect(r, scene, 0xff);\n'
