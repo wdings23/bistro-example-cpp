@@ -15,9 +15,9 @@
             "ParentJobName": "Ray Traced Shadow"
         },
         {
-            "Name" : "Decoded Spherical Harmonics Output",
+            "Name" : "Diffuse Accumulated Output",
             "Type": "TextureInput",
-            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
+            "ParentJobName": "Temporal Accumulation Graphics"
         }
     ],
     "ShaderResources": [

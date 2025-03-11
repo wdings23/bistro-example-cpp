@@ -1,0 +1,89 @@
+{
+    "Type": "Graphics",
+    "PassType": "Full Triangle",
+    "Shader": "diffuse-temporal-accumulation-graphics.shader",
+    "Attachments": [
+        {
+            "Name" : "Diffuse Accumulated Output",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
+        },
+        {
+            "Name" : "Diffuse Moment Output",
+            "Type": "TextureOutput",
+            "Format": "rg32float"
+        },
+        
+
+        {
+            "Name" : "Decoded Spherical Harmonics Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
+        },
+        {
+            "Name" : "World Position Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name" : "Normal Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name": "Previous World Position Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Copy Render Targets"
+        },
+        {
+            "Name": "Previous Normal Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Copy Render Targets"
+        },
+        {
+            "Name": "Previous Diffuse Temporal Accumulation Radiance",
+            "Type": "TextureInput",
+            "ParentJobName": "Copy Render Targets"
+        },
+        {
+            "Name": "Motion Vector Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name": "Previous Motion Vector Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Copy Render Targets"
+        },
+        {
+            "Name" : "Screen Motion Vector Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name": "Ambient Occlusion Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
+        }
+    ],
+    "ShaderResources": [   
+    ],
+    "BlendStates": [
+        {
+            "Enabled": "False"
+        }
+    ],
+    "DepthStencilState":
+    {
+        "DepthEnable": "False",
+        "DepthWriteMask": "One",
+        "DepthFunc": "LessEqual",
+        "StencilEnable": "False"
+    },
+    "RasterState":
+    {
+        "FillMode": "Solid",
+        "CullMode": "None",
+        "FrontFace": "CounterClockwise"
+    }
+}

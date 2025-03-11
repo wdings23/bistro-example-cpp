@@ -112,6 +112,13 @@
             "ParentJobName": "Ray Traced Shadow",
             "ParentName": "Direct Sun Light Output",
             "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Diffuse Temporal Accumulation Radiance",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Accumulation Graphics",
+            "ParentName": "Diffuse Accumulated Output",
+            "Format": "rgba32float"
         }
         
     ]
