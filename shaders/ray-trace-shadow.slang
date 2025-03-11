@@ -69,8 +69,8 @@ void rayGen()
 
         float fDP = max(dot(normal, ray.Direction), 0.0f);
         float4 radianceOutput = (payload.mOutput.w > 0.0f) ? 
-            float4(0.81f, 0.01f, 0.81f, 1.0f) :
-            float4(1.0f, 1.0f, 1.0f, 1.0f) * float4(fDP, fDP, fDP, 1.0f);
+            float4(0.0f, 0.0f, 0.0f, 1.0f) :
+            float4(0.8f, 0.8f, 0.8f, 1.0f) * float4(fDP, fDP, fDP, 1.0f);
         renderTarget[rayIndex] = radianceOutput;
         debugTexture0[rayIndex] = payload.mOutput.x;
         debugTexture1[rayIndex] = payload.mOutput.y;

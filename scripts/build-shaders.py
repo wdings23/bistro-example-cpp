@@ -333,7 +333,6 @@ def compile_pipeline_shaders():
             file_name_end = metal_output_file_name.rfind('.')
             fixed_output_file_path = metal_output_file_name[:file_name_end] + '-fixed.metal'
             
-            '''
             # shader arguments from the reflection file
             shader_argument_info = fill_output_reflection_info(
                 metal_reflection_file_name,
@@ -350,7 +349,6 @@ def compile_pipeline_shaders():
             file = open(fixed_output_file_path, 'w')
             file.write(fixed_output)
             file.close()
-            '''
             
             metal_output_file_name = fixed_output_file_path
             print('use fixed up ray tracing shader: \"{}\"'.format(metal_output_file_name))
