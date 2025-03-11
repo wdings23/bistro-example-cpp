@@ -132,7 +132,9 @@ def execute_command(args):
     if str(output[1]).find('error:') > 0 or str(output[1]).find('ERROR:') > 0:
         print('!!! ERROR !!!')
         print('{}'.format(str(output[1])))
-        assert(0)
+        raise Exception("Compile Error")
+        
+
     if len(output[0]) > 0 or len(output[1]) > 0:
         print('{}'.format(str(output[0])))
         print('{}'.format(str(output[1])))
@@ -158,6 +160,7 @@ def compile_native_metal_shaders(
         '-c',
         '-frecord-sources',
         '-gline-tables-only',
+        '-fmetal-enable-logging',
         metal_file_name
     ]
     execute_command(args)
@@ -171,6 +174,7 @@ def compile_native_metal_shaders(
         'metal', 
         '-frecord-sources', 
         '-gline-tables-only',
+        '-fmetal-enable-logging',
         '-o', 
         metal_lib_file_path
     ]
@@ -329,6 +333,7 @@ def compile_pipeline_shaders():
             file_name_end = metal_output_file_name.rfind('.')
             fixed_output_file_path = metal_output_file_name[:file_name_end] + '-fixed.metal'
             
+            '''
             # shader arguments from the reflection file
             shader_argument_info = fill_output_reflection_info(
                 metal_reflection_file_name,
@@ -345,6 +350,8 @@ def compile_pipeline_shaders():
             file = open(fixed_output_file_path, 'w')
             file.write(fixed_output)
             file.close()
+            '''
+            
             metal_output_file_name = fixed_output_file_path
             print('use fixed up ray tracing shader: \"{}\"'.format(metal_output_file_name))
 
@@ -360,6 +367,7 @@ def compile_pipeline_shaders():
             '-c',
             '-frecord-sources',
             '-gline-tables-only',
+            '-fmetal-enable-logging',
             metal_output_file_name
         ]
         execute_command(args)
@@ -374,6 +382,7 @@ def compile_pipeline_shaders():
             'metal', 
             '-frecord-sources', 
             '-gline-tables-only',
+            '-fmetal-enable-logging',
             '-o', 
             metal_lib_file_path
         ]

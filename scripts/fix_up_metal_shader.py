@@ -308,16 +308,20 @@ def output_trace_ray(
             output_str += 'r.direction = {};\n'.format(parameter_str[2])
             for i in range(space_index):
                 output_str += ' '
-            output_str += 'r.max_distance = {};\n'.format(parameter_str[3])
+            #output_str += 'r.max_distance = {};\n'.format(parameter_str[3])
+            output_str += 'r.max_distance = FLT_MAX;\n'
             for i in range(space_index):
                 output_str += ' '
-            output_str += 'raytracing::intersector<raytracing::triangle_data, raytracing::instancing> inter;\n'
+            output_str += 'raytracing::intersector<raytracing::triangle_data, raytracing::instancing, raytracing::world_space_data, raytracing::extended_limits> inter;\n'
             for i in range(space_index):
                 output_str += ' '
             output_str += 'inter.assume_geometry_type(raytracing::geometry_type::triangle);\n'
             for i in range(space_index):
                 output_str += ' '
             output_str += 'inter.force_opacity(raytracing::forced_opacity::opaque);\n'
+            for i in range(space_index):
+                output_str += ' '
+            output_str += 'inter.accept_any_intersection(false);\n'
             for i in range(space_index):
                 output_str += ' '
             output_str += 'auto intersection = inter.intersect(r, scene, 0xff);\n'
