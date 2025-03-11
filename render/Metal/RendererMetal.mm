@@ -790,6 +790,12 @@ namespace Render
                 //++iShaderIndex;
             }
             
+            // set the primitive acceleration structures
+            for(id<MTLAccelerationStructure> primitiveAccelerationStructure in mPrimitiveAccelerationStructures)
+            {
+                [nativeComputeEncoder useResource:primitiveAccelerationStructure usage:MTLResourceUsageRead];
+            }
+            
             
         }
 
@@ -1754,7 +1760,7 @@ namespace Render
                 std::string const& name = pRenderJob->maAttachmentMappings[iAttachment].first;
                 RenderDriver::Metal::CImage* pImageMetal = (RenderDriver::Metal::CImage*)pRenderJob->mapOutputImageAttachments[name];
                 
-DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
+//DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
                 
                 if(name == "Depth Output")
                 {
@@ -1988,7 +1994,7 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             uint32_t iNumMeshes
         )
         {
-            NSMutableArray* primitiveAccelerationStructures = [[NSMutableArray alloc] init];
+            mPrimitiveAccelerationStructures = [[NSMutableArray alloc] init];
             
             RenderDriver::Metal::CBuffer& vertexBuffer = *((RenderDriver::Metal::CBuffer*)mapVertexBuffers["bistro"]);
             RenderDriver::Metal::CBuffer& indexBuffer = *((RenderDriver::Metal::CBuffer*)mapIndexBuffers["bistro"]);
@@ -2088,7 +2094,7 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
                 
                 [commandBuffer waitUntilCompleted];
                 
-                [primitiveAccelerationStructures addObject:accelerationStructure];
+                [mPrimitiveAccelerationStructures addObject:compactedAccelerationStructure];
             }
             
             id<MTLBuffer> instanceBuffer = [nativeDevice newBufferWithLength:sizeof(MTLAccelerationStructureInstanceDescriptor) * iNumMeshes options: MTLResourceStorageModeManaged];
@@ -2098,9 +2104,9 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             for(uint32_t iInstance = 0; iInstance < iNumMeshes; iInstance++)
             {
                 instanceDescriptors[iInstance].accelerationStructureIndex = iInstance;
-                instanceDescriptors[iInstance].options = MTLAccelerationStructureInstanceOptionOpaque;
+                instanceDescriptors[iInstance].options = MTLAccelerationStructureInstanceOptionNone;
                 instanceDescriptors[iInstance].intersectionFunctionTableOffset = 0;
-                instanceDescriptors[iInstance].mask = 0xff;
+                instanceDescriptors[iInstance].mask = 0xFFFFFFFF;
                 instanceDescriptors[iInstance].transformationMatrix.columns[0] = MTLPackedFloat3Make(1.0f, 0.0f, 0.0f);
                 instanceDescriptors[iInstance].transformationMatrix.columns[1] = MTLPackedFloat3Make(0.0f, 1.0f, 0.0f);
                 instanceDescriptors[iInstance].transformationMatrix.columns[2] = MTLPackedFloat3Make(0.0f, 0.0f, 1.0f);
@@ -2108,7 +2114,7 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             }
             
             MTLInstanceAccelerationStructureDescriptor* accelDescriptor = [MTLInstanceAccelerationStructureDescriptor descriptor];
-            accelDescriptor.instancedAccelerationStructures = primitiveAccelerationStructures;
+            accelDescriptor.instancedAccelerationStructures = mPrimitiveAccelerationStructures;
             accelDescriptor.instanceCount = iNumMeshes;
             accelDescriptor.instanceDescriptorBuffer = instanceBuffer;
             
@@ -2156,7 +2162,7 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
                 
                 // Allocate a smaller acceleration structure based on the returned size.
                 mCompactedInstanceAccelerationStructure = [nativeDevice newAccelerationStructureWithSize:compactedSize];
-                mCompactedInstanceAccelerationStructure.label = @"Compacted Acceleration Structure";
+                mCompactedInstanceAccelerationStructure.label = @"Compacted Instance Acceleration Structure";
                 
                 // Create another command buffer and encoder.
                 commandBuffer = [nativeQueue commandBuffer];
@@ -2179,7 +2185,7 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             }
             
             maAccelerationStructures["bistro"] = std::make_unique<RenderDriver::Metal::CAccelerationStructure>();
-            maAccelerationStructures["bistro"]->setNativeAccelerationStructure((__bridge void*)mInstanceAccelerationStructure);
+            maAccelerationStructures["bistro"]->setNativeAccelerationStructure((__bridge void*)mCompactedInstanceAccelerationStructure);
 
             mapAccelerationStructures["bistro"] = maAccelerationStructures["bistro"].get();
             
@@ -2579,10 +2585,10 @@ DEBUG_PRINTF("\toutput attachment %d: \"%s\"\n", iAttachment, name.c_str());
             id<MTLTexture> srcTexture = (__bridge id<MTLTexture>)mapRenderJobs["Swap Chain Graphics"]->mapOutputImageAttachments["Swap Chain Output"]->getNativeImage();
             id<MTLTexture> dstTexture = (__bridge id<MTLTexture>)mpSwapChain->getDrawableTexture()->getNativeImage();
             
-            id<MTLTexture> srcFormattedTexture = [srcTexture newTextureViewWithPixelFormat:MTLPixelFormatRGBA8Unorm];
+            //id<MTLTexture> srcFormattedTexture = [srcTexture newTextureViewWithPixelFormat:MTLPixelFormatRGBA8Unorm];
             
             [nativeBlitCommandEncoder
-             copyFromTexture: srcFormattedTexture
+             copyFromTexture: srcTexture
              sourceSlice: 0
              sourceLevel: 0
              toTexture: dstTexture

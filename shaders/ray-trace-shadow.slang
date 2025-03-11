@@ -10,7 +10,8 @@
 [[vk::binding(4, 0)]] Texture2D<float4> sunLightTexture;
 [[vk::binding(5, 0)]] RWTexture2D<float4> debugTexture0;
 [[vk::binding(6, 0)]] RWTexture2D<float4> debugTexture1;
-[[vk::binding(7, 0)]] SamplerState textureSampler;
+[[vk::binding(7, 0)]] RWTexture2D<float4> debugTexture2;
+[[vk::binding(8, 0)]] SamplerState textureSampler;
 
 [[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
 
@@ -24,6 +25,11 @@ struct RayPayload
 void rayGen()
 {
     uint2 rayIndex = DispatchRaysIndex().xy;
+
+    if(rayIndex.x >= defaultUniformBuffer.miScreenWidth || rayIndex.y >= defaultUniformBuffer.miScreenHeight)
+    {
+        return;
+    }
 
     float4 worldPosition = worldPositionTexture[rayIndex];
     float3 normal = normalTexture[rayIndex].xyz;
@@ -68,6 +74,7 @@ void rayGen()
         renderTarget[rayIndex] = radianceOutput;
         debugTexture0[rayIndex] = payload.mOutput.x;
         debugTexture1[rayIndex] = payload.mOutput.y;
+        debugTexture2[rayIndex] = float4(float(rayIndex.x), float(rayIndex.y), 0.0f, 1.0f);
     }
 }
 

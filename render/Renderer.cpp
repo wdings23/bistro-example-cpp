@@ -1096,7 +1096,7 @@ namespace Render
                 &commandBuffer
             );
 
-DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
+//DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
             
             // queue type
             RenderDriver::Common::CCommandQueue::Type queueType = RenderDriver::Common::CCommandQueue::Type::Graphics;
@@ -1434,12 +1434,6 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                 *pRenderJob,
                 commandBuffer);
             
-            // set pipeline and all the shader resource bindings
-            commandBuffer.setPipelineState(
-                *pRenderJob->mpPipelineState,
-                *mpDevice
-            );
-
             platformSetRayTraceDescriptorSet(
                 *pRenderJob->mpDescriptorSet,
                 commandBuffer,
@@ -1450,6 +1444,12 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                 commandBuffer
             );
 
+            // set pipeline and all the shader resource bindings
+            commandBuffer.setPipelineState(
+                *pRenderJob->mpPipelineState,
+                *mpDevice
+            );
+            
             platformRayTraceCommand(
                 pRenderJob,
                 commandBuffer,
@@ -1468,8 +1468,6 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
                 pRenderJob,
                 commandBuffer
             );
-
-            
 
             platformEndDebugMarker3(
                 &commandBuffer
@@ -1609,45 +1607,7 @@ DEBUG_PRINTF("render job: \"%s\"\n", pRenderJob->mName.c_str());
 
                 if(mRenderDriverType == RenderDriverType::Metal)
                 {
-#if 0
-                    for(auto& keyValue : pRenderJob->mapOutputImageAttachments)
-                    {
-                        if(keyValue.second == nullptr)
-                        {
-                            continue;
-                        }
-                        
-                        RenderDriver::Common::CImage* pImage = keyValue.second;
-                        if(pImage->getDescriptor().mFormat != RenderDriver::Common::Format::R32G32B32A32_FLOAT)
-                        {
-                            continue;
-                        }
-                        
-                        std::string baseName = pRenderJob->mName + "-" + keyValue.first;
-                        std::replace(baseName.begin(), baseName.end(), ' ', '-');
-                        
-                        std::vector<float> afImageData;
-                        platformCopyImageToCPUMemory(pImage, afImageData);
-                        
-                        int32_t iImageWidth = pImage->getDescriptor().miWidth;
-                        int32_t iImageHeight = pImage->getDescriptor().miHeight;
-                        std::string outputDir = std::string("/Users/dingwings/Downloads/debug-output-attachments/") + baseName + ".exr";
-                        char const* pError = nullptr;
-                        int32_t iRet = SaveEXR(
-                            afImageData.data(),
-                            iImageWidth,
-                            iImageHeight,
-                            4,
-                            0,
-                            outputDir.c_str(),
-                            &pError);
-                        WTFASSERT(iRet == TINYEXR_SUCCESS, "Can\'t save \"%s\"", outputDir.c_str());
-                        
-                        //int32_t iRet = stbi_write_hdr(outputDir.c_str(), iImageWidth, iImageHeight, 4, afImageData.data());
-                        //WTFASSERT(iRet > 0, "can\'t write file: %s", outputDir.c_str());
-                        DEBUG_PRINTF("wrote to: %s\n", outputDir.c_str());
-                    }
-#endif // #if 0
+                    //debugRenderJobOutputAttachments(pRenderJob);
                     
                     ++iJobIndex;
                     continue;
