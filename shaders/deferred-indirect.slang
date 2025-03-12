@@ -73,7 +73,10 @@ PSOutput PSMain(VertexStageOutput in)
 {
     PSOutput out;
 
-    uint32_t iMesh = uint32_t(ceil(in.worldPosition.w - 0.5f));
+    uint32_t iMesh = uint32_t(ceil(in.texCoord.w - 0.5f));
+#if defined(METAL)
+    iMesh = uint32_t(ceil(in.texCoord.z - 0.5f));
+#endif // METAL
     out.mWorldPosition = float4(in.worldPosition.xyz, float(iMesh));
     out.mTexCoord = float4(in.texCoord.x, in.texCoord.y, 0.0f, 1.0f);
     float3 normalXYZ = normalize(in.normal.xyz);

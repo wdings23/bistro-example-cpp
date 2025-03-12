@@ -129,7 +129,7 @@ def execute_command(args):
 
     # wait until done
     output = proc.communicate()
-    if str(output[1]).find('error:') > 0 or str(output[1]).find('ERROR:') > 0:
+    if str(output[1]).find('error:') > 0 or str(output[1]).find('ERROR:') > 0 or str(output[1]).find('error ') > 0:
         print('!!! ERROR !!!')
         print('{}'.format(str(output[1])))
         raise Exception("Compile Error")
@@ -309,7 +309,8 @@ def compile_pipeline_shaders():
             metal_output_file_name,
             '--msl', 
             '--msl-version',
-            '20300'
+            '20300',
+            '--emit-line-directives'
         ]
         execute_command(args)
 

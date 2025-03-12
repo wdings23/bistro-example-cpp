@@ -1838,20 +1838,25 @@ namespace Render
                 float4 maxPosition = *pExtent++;
                 maMeshExtents.push_back(std::make_pair(minPosition, maxPosition));
             }
-            WTFASSERT(sizeof(VertexFormat) == iVertexSize, "vertex size not equal");
+            WTFASSERT(sizeof(GPUVertexFormat) == iVertexSize, "vertex size not equal");
             
             // vertices
-            VertexFormat* pVertices = (VertexFormat*)pExtent;
-            std::vector<VertexFormat> aVertexBuffer(iNumTotalVertices);
-            memcpy(aVertexBuffer.data(), pVertices, sizeof(VertexFormat) * iNumTotalVertices);
+            GPUVertexFormat* pVertices = (GPUVertexFormat*)pExtent;
+            std::vector<GPUVertexFormat> aVertexBuffer(iNumTotalVertices);
+            memcpy(aVertexBuffer.data(), pVertices, sizeof(GPUVertexFormat) * iNumTotalVertices);
             pVertices += iNumTotalVertices;
 
+            for(uint32_t i = 0; i < aVertexBuffer.size(); i++)
+            {
+                aVertexBuffer[i].mTexCoord.z = aVertexBuffer[i].mPosition.w;
+            }
+            
             // indices
             uint32_t const* pIndices = (uint32_t const*)pVertices;
             std::vector<uint32_t> aiIndexBuffer(iNumTotalTriangles * 3);
             memcpy(aiIndexBuffer.data(), pIndices, sizeof(uint32_t) * iNumTotalTriangles * 3);
 
-            uint32_t iVertexBufferSize = iNumTotalVertices * sizeof(VertexFormat);
+            uint32_t iVertexBufferSize = iNumTotalVertices * sizeof(GPUVertexFormat);
             uint32_t iIndexBufferSize = iNumTotalTriangles * 3 * sizeof(uint32_t);
 
             // register vertex and index gpu buffers
@@ -1902,12 +1907,6 @@ namespace Render
                 );
 //#endif // USE_RAY_TRACING
             }
-
-
-
-            vec4        mPosition;
-            vec4        mNormal;
-            vec4        mTexCoord;
 
             // full screen triangle
             Render::Common::VertexFormat aTriangleVertices[3];
