@@ -20,8 +20,8 @@ namespace RenderDriver
             mNativeDevice = (__bridge id<MTLDevice>)deviceMetal.getNativeDevice();
 
             RenderDriver::Metal::CommandBufferDescriptor const& descMetal = static_cast<RenderDriver::Metal::CommandBufferDescriptor const&>(desc);
-            WTFASSERT(descMetal.mpCommandQueue != nil, "Need to supply command queue");
-            mNativeQueue = descMetal.mpCommandQueue;
+            WTFASSERT(descMetal.mpNativeCommandQueue != nil, "Need to supply command queue");
+            mNativeQueue = descMetal.mpNativeCommandQueue;
             
             mType = desc.mType;
      
@@ -310,6 +310,14 @@ namespace RenderDriver
         void* CCommandBuffer::getNativeCommandList()
         {
             return (__bridge void*)mNativeCommandBuffer;
+        }
+    
+        /*
+        **
+        */
+        void CCommandBuffer::createNativeCommandBuffer()
+        {
+            mNativeCommandBuffer = [mNativeQueue commandBuffer];
         }
     
         /*

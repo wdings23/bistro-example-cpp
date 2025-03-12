@@ -97,6 +97,14 @@ namespace RenderDriver
         /*
         **
         */
+        void* CBuffer::getMemoryOpen(uint32_t iDataSize)
+        {
+            return [mNativeBuffer contents];
+        }
+    
+        /*
+        **
+        */
         void CBuffer::setID(std::string const& id)
         {
             RenderDriver::Common::CObject::setID(id);

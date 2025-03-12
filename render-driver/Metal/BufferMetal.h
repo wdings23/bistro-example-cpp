@@ -38,6 +38,8 @@ namespace RenderDriver
 
             virtual uint64_t getGPUVirtualAddress();
             
+            virtual void* getMemoryOpen(uint32_t iDataSize);
+            
             virtual void releaseNativeBuffer();
             
         protected:

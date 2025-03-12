@@ -287,6 +287,16 @@ namespace Render
                 RenderDriver::Common::CCommandBuffer& commandBuffer,
                 RenderDriver::Common::CCommandQueue& commandQueue
             );
+            
+            void copyBufferToCPUMemory3(
+                RenderDriver::Common::CBuffer* pGPUBuffer,
+                void* pCPUBuffer,
+                uint64_t iSrcOffset,
+                uint64_t iDataSize,
+                RenderDriver::Common::CBuffer& readBackBuffer,
+                RenderDriver::Common::CCommandBuffer& commandBuffer,
+                RenderDriver::Common::CCommandQueue& commandQueue
+            );
 
             virtual inline RenderDriver::Common::CDevice* getDevice()
             {
@@ -662,6 +672,15 @@ namespace Render
                 RenderDriver::Common::CCommandBuffer& commandBuffer,
                 RenderDriver::Common::CCommandQueue& commandQueue) = 0;
 
+            virtual void platformCopyBufferToCPUMemory3(
+                RenderDriver::Common::CBuffer* pGPUBuffer,
+                void* pCPUBuffer,
+                uint64_t iSrcOffset,
+                uint64_t iDataSize,
+                RenderDriver::Common::CBuffer& readBackBuffer,
+                RenderDriver::Common::CCommandBuffer& commandBuffer,
+                RenderDriver::Common::CCommandQueue& commandQueue) = 0;
+            
             virtual void platformCopyBufferToBuffer(
                 RenderDriver::Common::CBuffer* pDestBuffer,
                 RenderDriver::Common::CBuffer* pSrcBuffer,

@@ -12,7 +12,7 @@ namespace RenderDriver
     {
         struct CommandBufferDescriptor : public RenderDriver::Common::CommandBufferDescriptor
         {
-            id<MTLCommandQueue>             mpCommandQueue = nil;
+            id<MTLCommandQueue>             mpNativeCommandQueue = nil;
             MTLRenderPassDescriptor*        mpRenderPassDescriptor = nil;
         };
     
@@ -127,6 +127,8 @@ namespace RenderDriver
                 uint32_t iCountBufferOffset,
                 uint32_t iDrawCommandOffset = 0
             );
+            
+            void createNativeCommandBuffer();
             
         protected:
             id<MTLCommandBuffer>                mNativeCommandBuffer = nil;

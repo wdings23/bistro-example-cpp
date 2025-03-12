@@ -202,6 +202,15 @@ namespace Render
                                                         RenderDriver::Common::CCommandBuffer& commandBuffer,
                                                         RenderDriver::Common::CCommandQueue& commandQueue
                                                         );
+            virtual void platformCopyBufferToCPUMemory3(
+                                                        RenderDriver::Common::CBuffer* pGPUBuffer,
+                                                        void* pCPUBuffer,
+                                                        uint64_t iSrcOffset,
+                                                        uint64_t iDataSize,
+                                                        RenderDriver::Common::CBuffer& readBackBuffer,
+                                                        RenderDriver::Common::CCommandBuffer& commandBuffer,
+                                                        RenderDriver::Common::CCommandQueue& commandQueue
+                                                        );
             
             virtual void platformCopyImageToCPUMemory(
                                                       RenderDriver::Common::CImage* pGPUMemory,

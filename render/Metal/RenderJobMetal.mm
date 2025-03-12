@@ -202,7 +202,7 @@ namespace Render
 			commandBufferDesc.mpCommandAllocator = &commandAllocator;
 			commandBufferDesc.mpPipelineState = nullptr;
 			commandBufferDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
-            commandBufferDesc.mpCommandQueue = (__bridge id<MTLCommandQueue>)pCommandQueue->getNativeCommandQueue();
+            commandBufferDesc.mpNativeCommandQueue = (__bridge id<MTLCommandQueue>)pCommandQueue->getNativeCommandQueue();
 			RenderDriver::Metal::CCommandBuffer commandBuffer;
 			commandBuffer.create(commandBufferDesc, *mpDevice);
 			commandBuffer.reset();

@@ -1324,6 +1324,21 @@ uint64_t iElapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::
         {
             WTFASSERT(0, "Implement me");
         }
+    
+        /*
+        **
+        */
+        void CRenderer::platformCopyBufferToCPUMemory3(
+            RenderDriver::Common::CBuffer* pGPUBuffer,
+            void* pCPUBuffer,
+            uint64_t iSrcOffset,
+            uint64_t iDataSize,
+            RenderDriver::Common::CBuffer& readBackBuffer,
+            RenderDriver::Common::CCommandBuffer& commandBuffer,
+            RenderDriver::Common::CCommandQueue& commandQueue)
+        {
+            WTFASSERT(0, "Implement me");
+        }
 
         /*
         **

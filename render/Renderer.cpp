@@ -861,6 +861,28 @@ namespace Render
                 commandBuffer,
                 commandQueue);
         }
+    
+        /*
+        **
+        */
+        void CRenderer::copyBufferToCPUMemory3(
+            RenderDriver::Common::CBuffer* pGPUBuffer,
+            void* pCPUBuffer,
+            uint64_t iSrcOffset,
+            uint64_t iDataSize,
+            RenderDriver::Common::CBuffer& readBackBuffer,
+            RenderDriver::Common::CCommandBuffer& commandBuffer,
+            RenderDriver::Common::CCommandQueue& commandQueue)
+        {
+            platformCopyBufferToCPUMemory3(
+                pGPUBuffer,
+                pCPUBuffer,
+                iSrcOffset,
+                iDataSize,
+                readBackBuffer,
+                commandBuffer,
+                commandQueue);
+        }
 
         /*
         **

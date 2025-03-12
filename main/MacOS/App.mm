@@ -12,12 +12,53 @@
 #include <math/mat4.h>
 
 #include <filesystem>
+#include <algorithm>
+#include <sstream>
+
 
 #include <stb_image.h>
 #include <utils/wtfassert.h>
 
 #define WINDOW_WIDTH    512
 #define WINDOW_HEIGHT   512
+
+static std::atomic<uint32_t> giCopyingTexturePage = 0;
+static std::atomic<uint32_t> giNumFinished = 0;
+
+struct ImageInfo
+{
+    int32_t    miImageWidth;
+    int32_t    miImageHeight;
+    stbi_uc* mpImageData;
+};
+
+void loadTexturePageThread(
+    Render::Common::CRenderer* pRenderer,
+    std::vector<std::string> const& aAlbedoTextureNames,
+    std::vector<uint2> const& aAlbedoTextureDimensions,
+    std::vector<std::string> const& aNormalTextureNames,
+    std::vector<uint2> const& aNormalTextureDimensions,
+    uint32_t& iCurrTotalPageLoaded,
+    uint32_t& iCurrAlbedoPageLoaded,
+    uint32_t& iCurrNormalPageLoaded,
+    RenderDriver::Common::CCommandBuffer& commandBuffer,
+    RenderDriver::Common::CCommandQueue& commandQueue,
+    RenderDriver::Common::CBuffer& threadScratchPathUploadBuffer,
+    RenderDriver::Common::CBuffer& texturePageUploadBuffer,
+    uint32_t iStartIndex,
+    uint32_t iNumChecksPerLoop,
+    uint32_t& iLastCounterValue,
+    std::vector<char>const & acTexturePageQueueData,
+    std::vector<char>const & acTexturePageInfoData,
+    std::mutex& threadMutex);
+
+void getTexturePage(
+    std::vector<char>& acTexturePageImage,
+    stbi_uc const* pImageData,
+    uint2 const& pageCoord,
+    uint32_t const& iImageWidth,
+    uint32_t const& iImageHeight,
+    uint32_t const& iTexturePageSize);
 
 /*
 **
@@ -439,20 +480,14 @@ void CApp::init(AppDescriptor const& appDesc)
     
     // materials, albedo and normal texture names, albedo and normal texture dimension
     std::vector<char> acMaterialBuffer;
-    std::vector<std::string> aAlbedoTextureNames;
-    std::vector<std::string> aNormalTextureNames;
-    std::vector<uint2> aAlbedoTextureDimensions;
-    std::vector<uint2> aNormalTextureDimensions;
-    uint32_t iNumAlbedoTextures = 0;
-    uint32_t iNumNormalTextures = 0;
     getMaterialInfo(
         acMaterialBuffer,
-        aAlbedoTextureNames,
-        aNormalTextureNames,
-        aAlbedoTextureDimensions,
-        aNormalTextureDimensions,
-        iNumAlbedoTextures,
-        iNumNormalTextures,
+        maAlbedoTextureNames,
+        maNormalTextureNames,
+        maAlbedoTextureDimensions,
+        maNormalTextureDimensions,
+        miNumAlbedoTextures,
+        miNumNormalTextures,
         mpRenderer.get());
     
     // set up buffers used for all the passes
@@ -481,27 +516,248 @@ void CApp::init(AppDescriptor const& appDesc)
     
     initRenderData(
         acMaterialBuffer,
-        aAlbedoTextureNames,
-        aNormalTextureNames,
-        aAlbedoTextureDimensions,
-        aNormalTextureDimensions,
-        iNumAlbedoTextures,
-        iNumNormalTextures
+        maAlbedoTextureNames,
+        maNormalTextureNames,
+        maAlbedoTextureDimensions,
+        maNormalTextureDimensions,
+        miNumAlbedoTextures,
+        miNumNormalTextures
     );
     
     pRenderer->prepareRenderJobData();
     
-#if 0
-    int32_t iBlueNoiseWidth = 0, iBlueNoiseHeight = 0, iNumChannels = 0;
-    stbi_uc* pImageData = stbi_load(
-        fullPath.c_str(),
-        &miBlueNoiseWidth,
-        &miBlueNoiseHeight,
-        &iNumChannels,
-        4);
-    memcpy(macBlueNoiseImageData.data(), pImageData, iBlueNoiseWidth * iBlueNoiseHeight * 4);
-    stbi_image_free(pImageData);
-#endif // #if 0
+    miNumLoadingThreads = 1;
+    
+    maiStartAndNumChecks.resize(4);
+    
+    // create thread command queue
+    mThreadCommandQueue = std::make_unique<RenderDriver::Metal::CCommandQueue>();
+    RenderDriver::Common::CCommandQueue::CreateDesc commandQueueDesc = {};
+    commandQueueDesc.mType = RenderDriver::Common::CCommandQueue::Type::Copy;
+    commandQueueDesc.mpDevice = pRenderer->getDevice();
+    mThreadCommandQueue->create(commandQueueDesc);
+    mThreadCommandQueue->setID("Texture Page Thread Command Queue");
+
+    // create thread command buffer
+    mThreadCommandBuffer = std::make_unique<RenderDriver::Metal::CCommandBuffer>();
+    RenderDriver::Metal::CommandBufferDescriptor commandBufferDesc = {};
+    commandBufferDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
+    commandBufferDesc.mpNativeCommandQueue = (__bridge id<MTLCommandQueue>)mThreadCommandQueue->getNativeCommandQueue();
+    mThreadCommandBuffer->create(commandBufferDesc, *pRenderer->getDevice());
+    //((RenderDriver::Metal::CCommandBuffer*)mThreadCommandBuffer.get())->createNativeCommandBuffer();
+    mThreadCommandBuffer->setID("Texture Page Thread Command Buffer");
+    
+    // read back buffer from gpu to get the texture page info
+    auto& pTexturePageQueueBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Texture Page Queue MIP"];
+    uint32_t iBufferSize = (uint32_t)pTexturePageQueueBuffer->getDescriptor().miSize;
+    macTexturePageQueueData.resize(iBufferSize);
+        
+    auto& texturePageInfoBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["MIP Texture Page Hash Table"];
+    iBufferSize = (uint32_t)texturePageInfoBuffer->getDescriptor().miSize;
+    macTexturePageInfoData.resize(iBufferSize);
+
+    // get the number of pages
+    auto& pTexturePageCountBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Counters"];
+    macCounterData.resize(pTexturePageCountBuffer->getDescriptor().miSize);
+    
+    RenderDriver::Common::CDevice* pDevice = pRenderer->getDevice();
+    
+    // create readback buffers
+    RenderDriver::Common::BufferDescriptor bufferDesc = {};
+    bufferDesc.miSize = macTexturePageQueueData.size();
+    bufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferSrc;
+    mTexturePageQueueReadBackBuffer = std::make_unique<RenderDriver::Metal::CBuffer>();
+    mTexturePageQueueReadBackBuffer->create(bufferDesc, *pDevice);
+    mTexturePageQueueReadBackBuffer->setID("Texture Page Queue Read Back Buffer");
+    
+    bufferDesc.miSize = macTexturePageInfoData.size();
+    mTexturePageInfoReadBackBuffer = std::make_unique<RenderDriver::Metal::CBuffer>();
+    mTexturePageInfoReadBackBuffer->create(bufferDesc, *pDevice);
+    mTexturePageInfoReadBackBuffer->setID("Texture Page Info Read Back Buffer");
+    
+    bufferDesc.miSize = macCounterData.size();
+    mTexturePageCounterReadBackBuffer = std::make_unique<RenderDriver::Metal::CBuffer>();
+    mTexturePageCounterReadBackBuffer->create(bufferDesc, *pDevice);
+    mTexturePageCounterReadBackBuffer->setID("Texture Page Counter Read Back Buffer");
+    
+    // create texture page upload buffers
+    for(uint32_t i = 0; i < 4; i++)
+    {
+        bufferDesc.miSize = 64 * 64 * 4;
+        maTexturePageUploadBuffer[i] = std::make_unique<RenderDriver::Metal::CBuffer>();
+        maTexturePageUploadBuffer[i]->create(bufferDesc, *pDevice);
+        
+        std::ostringstream name;
+        name << "Texture Page Upload Buffer " << i;
+        maTexturePageUploadBuffer[i]->setID(name.str());
+        
+        bufferDesc.miSize = 256;
+        maScatchPadUploadBuffer[i] = std::make_unique<RenderDriver::Metal::CBuffer>();
+        maScatchPadUploadBuffer[i]->create(bufferDesc, *pDevice);
+        
+        std::ostringstream scratchPadName;
+        scratchPadName << "Thread Scratch Pad Upload Buffer " << i;
+        maScatchPadUploadBuffer[i]->setID(scratchPadName.str());
+    }
+    
+    // post draw, get the texture pages needed
+    pRenderer->mpfnPostDraw = std::make_unique<std::function<void(Render::Common::CRenderer*)>>();
+    *pRenderer->mpfnPostDraw = [&](Render::Common::CRenderer* pRenderer)
+    {
+        if(mbTexturePageLoadingStarted == false)
+        {
+            mbTexturePageLoadingStarted = true;
+            
+            miNumChecksPerThread = 4000 / miNumLoadingThreads;
+            for(uint32_t iThread = 0; iThread < miNumLoadingThreads; iThread++)
+            {
+                maThreads[iThread] = std::make_unique<std::thread>(
+                    [&](uint32_t iThread)
+                {
+                    uint32_t iThisThreadID = iThread;
+                    
+                    uint32_t iLastCounterValue = 0;
+
+                    uint32_t iStartIndex = iThisThreadID * miNumChecksPerThread;
+                    uint32_t iNumChecksPerLoop = 100;
+                    std::map<uint32_t, ImageInfo> aImageInfo;
+
+                    // TODO: find the buffer overflowing to corrupt function stack data
+
+                    for(uint32_t iLoop = 0;; iLoop++)
+                    {
+                        @autoreleasepool {
+                            
+                            if(mbQuit)
+                            {
+                                mConditionVariable.notify_all();
+                                break;
+                            }
+                            
+                            // wait or caldulate thread start and end indices
+                            if(iThisThreadID == 0 && iLoop > 0)
+                            {
+                                // get the page queue, page info, and calculate the each thread's start index and num pages in queue to check
+                                
+                                // start upload/download from gpu
+                                giCopyingTexturePage.store(1);
+                                
+                                // get the texture pages needed
+                                auto& pTexturePageQueueBuffer = mpRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Texture Page Queue MIP"];
+                                uint32_t iBufferSize = (uint32_t)pTexturePageQueueBuffer->getDescriptor().miSize;
+                                WTFASSERT(iBufferSize <= macTexturePageQueueData.size(), "Need larger buffer");
+                                mpRenderer->copyBufferToCPUMemory3(
+                                                                   pTexturePageQueueBuffer,
+                                                                   macTexturePageQueueData.data(),
+                                                                   0,
+                                                                   iBufferSize,
+                                                                   *mTexturePageQueueReadBackBuffer,
+                                                                   *mThreadCommandBuffer,
+                                                                   *mThreadCommandQueue
+                                                                   );
+                                
+                                auto& texturePageInfoBuffer = mpRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["MIP Texture Page Hash Table"];
+                                iBufferSize = (uint32_t)texturePageInfoBuffer->getDescriptor().miSize;
+                                WTFASSERT(iBufferSize <= macTexturePageInfoData.size(), "Need larger buffer");
+                                mpRenderer->copyBufferToCPUMemory3(
+                                                                   texturePageInfoBuffer,
+                                                                   macTexturePageInfoData.data(),
+                                                                   0,
+                                                                   iBufferSize,
+                                                                   *mTexturePageInfoReadBackBuffer,
+                                                                   *mThreadCommandBuffer,
+                                                                   *mThreadCommandQueue
+                                                                   );
+                                
+                                auto& pTexturePageCountBuffer = mpRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Counters"];
+                                WTFASSERT(256 <= macCounterData.size(), "Need larger buffer");
+                                mpRenderer->copyBufferToCPUMemory3(
+                                                                   pTexturePageCountBuffer,
+                                                                   macCounterData.data(),
+                                                                   0,
+                                                                   128,
+                                                                   *mTexturePageCounterReadBackBuffer,
+                                                                   *mThreadCommandBuffer,
+                                                                   *mThreadCommandQueue
+                                                                   );
+                                
+                                // finish upload/download from gpu
+                                giCopyingTexturePage.store(0);
+                                
+                                uint32_t iNumChecks = std::min(*((uint32_t*)macCounterData.data()), 65535u);
+                                for(uint32_t i = 0; i < miNumThreads; i++)
+                                {
+                                    maiStartAndNumChecks[i] = std::make_pair(i * (uint32_t)ceil((float)iNumChecks / (float)miNumThreads), (uint32_t)ceil((float)iNumChecks / (float)miNumThreads));
+                                }
+                                
+                                while(giNumFinished.load() < miNumLoadingThreads)
+                                {
+                                    if(mbQuit)
+                                    {
+                                        break;
+                                    }
+                                    std::this_thread::sleep_for(std::chrono::microseconds(10));
+                                }
+                                
+                                giNumFinished.store(0);
+                                
+                                // wake up all other threads
+                                mbStartLoadPage = true;
+                                mConditionVariable.notify_all();
+                                
+                            }
+                            
+                            uint32_t iStartThreadIndex = maiStartAndNumChecks[iThisThreadID].first;
+                            uint32_t iNumChecksCopy = maiStartAndNumChecks[iThisThreadID].second;
+                            
+                            WTFASSERT(iStartThreadIndex < 1000000, "wtf");
+                            WTFASSERT(iNumChecksCopy < 10000000, "wtf");
+                            
+                            loadTexturePageThread(
+                                                  mpRenderer.get(),
+                                                  maAlbedoTextureNames,
+                                                  maAlbedoTextureDimensions,
+                                                  maNormalTextureNames,
+                                                  maNormalTextureDimensions,
+                                                  miCurrTotalPageLoaded,
+                                                  miCurrAlbedoPageLoaded,
+                                                  miCurrNormalPageLoaded,
+                                                  *mThreadCommandBuffer,
+                                                  *mThreadCommandQueue,
+                                                  *maScatchPadUploadBuffer[iThisThreadID],
+                                                  *maTexturePageUploadBuffer[iThisThreadID],
+                                                  iStartThreadIndex,
+                                                  iNumChecksPerLoop,
+                                                  iLastCounterValue,
+                                                  macTexturePageQueueData,
+                                                  macTexturePageInfoData,
+                                                  mTexturePageThreadMutex);
+                            
+                            giNumFinished.fetch_add(1);
+                            if(iThisThreadID != 0)
+                            {
+                                std::unique_lock<std::mutex> uniqueLock(mTexturePageThreadMutex);
+                                mConditionVariable.wait(uniqueLock);
+                            }
+                        }
+                    }
+                },
+                iThread);
+
+                DEBUG_PRINTF("Thread %d id = %d\n", iThread, maThreads[iThread]->get_id());
+
+            }   // for thread = 0 to num threads
+            mbStartLoadPage = true;
+        }
+
+        if(mbQuit)
+        {
+            for(uint32_t i = 0; i < 4; i++)
+            {
+                maThreads[i]->join();
+            }
+        }
+    };
     
 }
 
@@ -581,16 +837,6 @@ void* CApp::getNativeDevice()
 {
     return mpRenderer->getDevice()->getNativeDevice();
 }
-
-struct PageInfo
-{
-    uint32_t    miCoordX;
-    uint32_t    miCoordY;
-    uint32_t    miHashIndex;
-    uint32_t    miTextureID;
-    uint32_t    miMIP;
-    uint32_t    miPageIndex;
-};
 
 /*
 **
@@ -723,4 +969,347 @@ void CApp::initRenderData(
             ++iPage;
         }
     };
+}
+
+/*
+**
+*/
+void loadTexturePageThread(
+    Render::Common::CRenderer* pRenderer,
+    std::vector<std::string> const& aAlbedoTextureNames,
+    std::vector<uint2> const& aAlbedoTextureDimensions,
+    std::vector<std::string> const& aNormalTextureNames,
+    std::vector<uint2> const& aNormalTextureDimensions,
+    uint32_t& iCurrTotalPageLoaded,
+    uint32_t& iCurrAlbedoPageLoaded,
+    uint32_t& iCurrNormalPageLoaded,
+    RenderDriver::Common::CCommandBuffer& commandBuffer,
+    RenderDriver::Common::CCommandQueue& commandQueue,
+    RenderDriver::Common::CBuffer& threadScratchPathUploadBuffer,
+    RenderDriver::Common::CBuffer& texturePageUploadBuffer,
+    uint32_t iStartIndex,
+    uint32_t iNumChecksPerLoop,
+    uint32_t& iLastCounterValue,
+    std::vector<char>const & acTexturePageQueueData,
+    std::vector<char>const & acTexturePageInfoData,
+    std::mutex& threadMutex)
+{
+auto totalStart = std::chrono::high_resolution_clock::now();
+
+    // texture page info
+    struct TexturePage
+    {
+        int32_t miPageUV;
+        int32_t miTextureID;
+        int32_t miHashIndex;
+
+        int32_t miMIP;
+    };
+
+    struct HashEntry
+    {
+        uint32_t miPageCoordinate;
+        uint32_t miPageIndex;
+        uint32_t miTextureIDAndMIP;
+        uint32_t miUpdateFrame;
+    };
+
+    uint32_t const iTextureAtlasSize = 8192;
+    uint32_t const iTexturePageSize = 64;
+    uint32_t iNumPagesPerRow = iTextureAtlasSize / iTexturePageSize;
+
+    uint32_t const iTexturePageDataSize = iTexturePageSize * iTexturePageSize * 4;
+
+    auto& texturePageInfoBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["MIP Texture Page Hash Table"];
+
+    uint32_t iThreadAlbedoTextureIndex = 0, iThreadNormalTextureIndex = 0;
+    uint32_t i = 0;
+    for(i = iStartIndex; i < iStartIndex + iNumChecksPerLoop; i++)
+    //for(i = 0; i < iNumChecksPerLoop; i++)
+    {
+        char const* acData = acTexturePageQueueData.data() + i * sizeof(TexturePage);
+        TexturePage texturePage = *((TexturePage const*)acData);
+        
+        // check for valid entry
+        if(texturePage.miHashIndex == 0 && texturePage.miPageUV == 0 && texturePage.miTextureID == 0)
+        {
+            break;
+        }
+
+        // check if the page has already been loaded
+        char const* acPageInfoData = acTexturePageInfoData.data() + texturePage.miHashIndex * sizeof(HashEntry);
+        HashEntry hashEntry = *((HashEntry const*)acPageInfoData);
+        if(hashEntry.miPageIndex != 0xffffffff)
+        {
+            continue;
+        }
+
+        // reserve albedo page index for this thread
+        {
+            std::lock_guard<std::mutex> lock(threadMutex);
+            iThreadAlbedoTextureIndex = iCurrAlbedoPageLoaded;
+            iCurrAlbedoPageLoaded += 1;
+        }
+
+        uint32_t iTextureID = texturePage.miTextureID;
+        if(iTextureID >= 65536)
+        {
+            std::lock_guard<std::mutex> lock(threadMutex);
+            iTextureID -= 65536;
+
+            // TODO: have normal texture page images
+            iThreadNormalTextureIndex = iCurrNormalPageLoaded;
+            iCurrNormalPageLoaded += 1;
+            iCurrTotalPageLoaded += 1;
+            
+            continue;
+        }
+
+        int32_t iPageY = (texturePage.miPageUV >> 16);
+        int32_t iPageX = (texturePage.miPageUV & 0x0000ffff);
+
+        uint32_t iMipDenom = (uint32_t)pow(2, texturePage.miMIP);
+        uint2 textureDimension = aAlbedoTextureDimensions[iTextureID];
+        if(texturePage.miTextureID >= 65536)
+        {
+            textureDimension = aNormalTextureDimensions[iTextureID];
+        }
+        uint2 mipTextureDimension(
+            textureDimension.x / iMipDenom,
+            textureDimension.y / iMipDenom
+        );
+
+        uint2 numDivs(
+            std::max(1u, uint32_t(mipTextureDimension.x / iTexturePageSize)),
+            std::max(1u, uint32_t(mipTextureDimension.y / iTexturePageSize))
+        );
+
+        // texture page coordinate
+        uint2 pageCoord(
+            (uint32_t)abs(iPageX) % numDivs.x,
+            (uint32_t)abs(iPageY) % numDivs.y
+        );
+
+        // wrap around for negative coordinates
+        if(iPageX < 0)
+        {
+            pageCoord.x = numDivs.x - pageCoord.x;
+            if(pageCoord.x >= numDivs.x)
+            {
+                pageCoord.x = pageCoord.x % numDivs.x;
+            }
+        }
+        if(iPageY < 0)
+        {
+            pageCoord.y = numDivs.y - pageCoord.y;
+            if(pageCoord.y >= numDivs.y)
+            {
+                pageCoord.y = pageCoord.y % numDivs.y;
+            }
+        }
+
+        // texture name
+        std::string textureName = aAlbedoTextureNames[iTextureID];
+        if(texturePage.miTextureID >= 65536)
+        {
+            textureName = aNormalTextureNames[iTextureID];
+        }
+
+        std::string fullTexturePath;
+        getAssetsDir(fullTexturePath, std::string("converted-dds-scaled/") + textureName);
+        int32_t iImageWidth = 0, iImageHeight = 0, iNumChannels = 0;
+        stbi_uc* pImageData = stbi_load(
+            fullTexturePath.c_str(),
+            &iImageWidth,
+            &iImageHeight,
+            &iNumChannels,
+            4
+        );
+        WTFASSERT(pImageData != nullptr, "Can\'t open \"%s\"", fullTexturePath.c_str());
+        
+        // get the texture page data
+auto start = std::chrono::high_resolution_clock::now();
+        std::vector<char> acTexturePageImage(iTexturePageSize * iTexturePageSize * 4);
+        getTexturePage(
+            acTexturePageImage,
+            pImageData,
+            pageCoord,
+            iImageWidth,
+            iImageHeight,
+            iTexturePageSize
+        );
+        stbi_image_free(pImageData);
+        char const* pTexturePageData = acTexturePageImage.data();
+auto durationUS = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
+        
+        // wait for other thread to finish gpu upload
+        while(giCopyingTexturePage.load());
+        
+        // uploading now
+        giCopyingTexturePage.store(1);
+
+auto start1 = std::chrono::high_resolution_clock::now();
+
+        void* pUploadBuffer = texturePageUploadBuffer.getMemoryOpen(iTexturePageDataSize);
+        WTFASSERT(pUploadBuffer, "Can\'t open texture page upload buffer");
+        
+        // copy texture page to texture atlas, normal or albedo
+        uint32_t iPageIndex = 0;
+        if(texturePage.miTextureID >= 65536)
+        {
+            auto& textureAtlas1 = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputImageAttachments["Texture Atlas 1"];
+            memcpy(pUploadBuffer, pTexturePageData, iTexturePageDataSize);
+            pRenderer->copyTexturePageToAtlas2(
+                (char const*)pTexturePageData,
+                textureAtlas1,
+                uint2(iThreadNormalTextureIndex % iNumPagesPerRow, (iThreadNormalTextureIndex / iNumPagesPerRow) % iNumPagesPerRow),
+                iTexturePageSize,
+                commandBuffer,
+                commandQueue,
+                texturePageUploadBuffer
+            );
+
+            iPageIndex = iThreadNormalTextureIndex + 1;
+        }
+        else
+        {
+            if(iThreadAlbedoTextureIndex >= iNumPagesPerRow * iNumPagesPerRow)
+            {
+                auto& textureAtlas0 = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputImageAttachments["Texture Atlas 2"];
+                memcpy(pUploadBuffer, pTexturePageData, iTexturePageDataSize);
+                pRenderer->copyTexturePageToAtlas2(
+                    (char const*)pTexturePageData,
+                    textureAtlas0,
+                    uint2(iThreadAlbedoTextureIndex % iNumPagesPerRow, (iThreadAlbedoTextureIndex / iNumPagesPerRow) % iNumPagesPerRow),
+                    iTexturePageSize,
+                    commandBuffer,
+                    commandQueue,
+                    texturePageUploadBuffer
+                );
+            }
+            else
+            {
+                auto& textureAtlas0 = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputImageAttachments["Texture Atlas 0"];
+                memcpy(pUploadBuffer, pTexturePageData, iTexturePageDataSize);
+                pRenderer->copyTexturePageToAtlas2(
+                    (char const*)pTexturePageData,
+                    textureAtlas0,
+                    uint2(iThreadAlbedoTextureIndex% iNumPagesPerRow, (iThreadAlbedoTextureIndex / iNumPagesPerRow) % iNumPagesPerRow),
+                    iTexturePageSize,
+                    commandBuffer,
+                    commandQueue,
+                    texturePageUploadBuffer
+                );
+            }
+
+            iPageIndex = iThreadAlbedoTextureIndex + 1;
+        }
+
+#if 0
+        stbi_image_free(pTexturePageData);
+#endif // #if 0
+        
+        auto elapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
+
+        // update the page info to point to the page index in the atlas
+        uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
+        uint32_t iBufferOffset = texturePage.miHashIndex * sizeof(uint32_t) * 4 + sizeof(uint32_t);
+        pRenderer->copyCPUToBuffer4(
+            texturePageInfoBuffer,
+            &iPageIndex,
+            iBufferOffset,
+            sizeof(uint32_t),
+            commandBuffer,
+            commandQueue,
+            threadScratchPathUploadBuffer
+        );
+
+        // update frame index entry
+        uint32_t iFrameIndex = pRenderer->getFrameIndex() + 1;
+        iBufferOffset = texturePage.miHashIndex * sizeof(uint32_t) * 4 + sizeof(uint32_t) * 3;
+        pRenderer->copyCPUToBuffer4(
+            texturePageInfoBuffer,
+            &iFrameIndex,
+            iBufferOffset,
+            sizeof(uint32_t),
+            commandBuffer,
+            commandQueue,
+            threadScratchPathUploadBuffer
+        );
+
+        // finished uploading to gpu
+        giCopyingTexturePage.store(0);
+
+        {
+            std::lock_guard<std::mutex> lock(threadMutex);
+            iCurrTotalPageLoaded += 1;
+        }
+    }
+
+    auto elapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - totalStart).count();
+
+    int iDebug = 1;
+}
+
+/*
+**
+*/
+void getTexturePage(
+    std::vector<char>& acTexturePageImage,
+    stbi_uc const* pImageData,
+    uint2 const& pageCoord,
+    uint32_t const& iImageWidth,
+    uint32_t const& iImageHeight,
+    uint32_t const& iTexturePageSize)
+{
+    if(iImageWidth >= iTexturePageSize && iImageHeight >= iTexturePageSize)
+    {
+        for(uint32_t iY = 0; iY < iTexturePageSize; iY++)
+        {
+            uint32_t iStartPageIndex = iY * iTexturePageSize * 4;
+            uint32_t iStartIndex = (pageCoord.y * iTexturePageSize + iY) * iImageWidth * 4;
+
+            for(uint32_t iX = 0; iX < iTexturePageSize; iX++)
+            {
+                uint32_t iPageIndex = iStartPageIndex + iX * 4;
+                uint32_t iIndex = iStartIndex + (pageCoord.x * iTexturePageSize + iX) * 4;
+
+                acTexturePageImage[iPageIndex] = pImageData[iIndex];
+                acTexturePageImage[iPageIndex + 1] = pImageData[iIndex + 1];
+                acTexturePageImage[iPageIndex + 2] = pImageData[iIndex + 2];
+                acTexturePageImage[iPageIndex + 3] = pImageData[iIndex + 3];
+            }
+        }
+    }
+    else
+    {
+        float2 scale(
+            (float)iTexturePageSize / (float)iImageWidth,
+            (float)iTexturePageSize / (float)iImageHeight
+        );
+
+        float fX = 0.0f, fY = 0.0f;
+        for(uint32_t iY = 0; iY < iTexturePageSize; iY++)
+        {
+            uint32_t iTotalY = uint32_t(fY);
+            fY += scale.y;
+            
+            uint32_t iStartIndex = iTotalY * iImageWidth * 4;
+            uint32_t iStartPageIndex = iY * iTexturePageSize * 4;
+
+            for(uint32_t iX = 0; iX < iTexturePageSize; iX++)
+            {
+                uint32_t iPageIndex = iStartPageIndex + iX * 4;
+
+                uint32_t iTotalX = uint32_t(fX);
+                fX += scale.x;
+                uint32_t iIndex = iStartIndex + iX * 4;
+
+                acTexturePageImage[iPageIndex] = pImageData[iIndex];
+                acTexturePageImage[iPageIndex + 1] = pImageData[iIndex + 1];
+                acTexturePageImage[iPageIndex + 2] = pImageData[iIndex + 2];
+                acTexturePageImage[iPageIndex + 3] = pImageData[iIndex + 3];
+            }
+        }
+    }
 }

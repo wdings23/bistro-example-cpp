@@ -96,17 +96,17 @@ namespace Render
                 std::string name = "Graphics Queue";
                 if(i == RenderDriver::Common::CCommandQueue::Type::Graphics)
                 {
-                    commandBufferDesc.mpCommandQueue = (__bridge id<MTLCommandQueue>)mpGraphicsCommandQueue->getNativeCommandQueue();
+                    commandBufferDesc.mpNativeCommandQueue = (__bridge id<MTLCommandQueue>)mpGraphicsCommandQueue->getNativeCommandQueue();
                 }
                 else if(i == RenderDriver::Common::CCommandQueue::Type::Compute)
                 {
                     name = "Compute Queue";
-                    commandBufferDesc.mpCommandQueue = (__bridge id<MTLCommandQueue>)mpComputeCommandQueue->getNativeCommandQueue();
+                    commandBufferDesc.mpNativeCommandQueue = (__bridge id<MTLCommandQueue>)mpComputeCommandQueue->getNativeCommandQueue();
                 }
                 else if(i == RenderDriver::Common::CCommandQueue::Type::Copy)
                 {
                     name = "Copy Queue";
-                    commandBufferDesc.mpCommandQueue = (__bridge id<MTLCommandQueue>)mpCopyCommandQueue->getNativeCommandQueue();
+                    commandBufferDesc.mpNativeCommandQueue = (__bridge id<MTLCommandQueue>)mpCopyCommandQueue->getNativeCommandQueue();
                 }
                 
                 // command buffers
@@ -134,7 +134,7 @@ namespace Render
             metalCommandBufferDesc.mpCommandAllocator = mpUploadCommandAllocator.get();
             metalCommandBufferDesc.mpPipelineState = nullptr;
             metalCommandBufferDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
-            metalCommandBufferDesc.mpCommandQueue = (__bridge id<MTLCommandQueue>)mpCopyCommandQueue->getNativeCommandQueue();
+            metalCommandBufferDesc.mpNativeCommandQueue = (__bridge id<MTLCommandQueue>)mpCopyCommandQueue->getNativeCommandQueue();
             mpUploadCommandBuffer->create(metalCommandBufferDesc, *mpDevice);
             mpUploadCommandBuffer->setID("Upload Command Buffer");
             mpUploadCommandBuffer->reset();
@@ -1119,6 +1119,43 @@ namespace Render
         {
             WTFASSERT(0, "Implement me");
         }
+    
+        /*
+        **
+        */
+        void CRenderer::platformCopyBufferToCPUMemory3(
+            RenderDriver::Common::CBuffer* pGPUBuffer,
+            void* pCPUBuffer,
+            uint64_t iSrcOffset,
+            uint64_t iDataSize,
+            RenderDriver::Common::CBuffer& readBackBuffer,
+            RenderDriver::Common::CCommandBuffer& commandBuffer,
+            RenderDriver::Common::CCommandQueue& commandQueue)
+        {
+            id<MTLBuffer> nativeSrcBuffer = (__bridge id<MTLBuffer>)pGPUBuffer->getNativeBuffer();
+            id<MTLBuffer> nativeDestBuffer = (__bridge id<MTLBuffer>)readBackBuffer.getNativeBuffer();
+            
+            id<MTLCommandQueue> nativeCommandQueue = (__bridge id<MTLCommandQueue>)commandQueue.getNativeCommandQueue();
+            id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBuffer.getNativeCommandList();
+            if(nativeCommandBuffer == nil)
+            {
+                nativeCommandBuffer = [nativeCommandQueue commandBuffer];
+            }
+            id<MTLBlitCommandEncoder> nativeBlitCommandEncoder = [nativeCommandBuffer blitCommandEncoder];
+            WTFASSERT(readBackBuffer.getDescriptor().miSize >= iDataSize, "read back buffer size (%d) is smaller than needed (%d)", readBackBuffer.getDescriptor().miSize, iDataSize);
+            [nativeBlitCommandEncoder copyFromBuffer: nativeSrcBuffer
+                                        sourceOffset: 0
+                                            toBuffer: nativeDestBuffer
+                                   destinationOffset: 0
+                                                size: iDataSize
+            ];
+            [nativeBlitCommandEncoder endEncoding];
+            [nativeCommandBuffer commit];
+            [nativeCommandBuffer waitUntilCompleted];
+            
+            void* pData = nativeDestBuffer.contents;
+            memcpy(pCPUBuffer, pData, iDataSize);
+        }
 
         /*
         **
@@ -1557,19 +1594,31 @@ namespace Render
             uint32_t iDataSize,
             RenderDriver::Common::CBuffer& uploadBuffer)
         {
-            WTFASSERT(0, "Implement me");
-            
             WTFASSERT(iDataSize < uploadBuffer.getDescriptor().miSize, "Copy size exceeds %d", uploadBuffer.getDescriptor().miSize);
             
-            commandBuffer.reset();
-            uploadBuffer.setData(pCPUData, iDataSize);
+            id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBuffer.getNativeCommandList();
+            if(nativeCommandBuffer == nil)
+            {
+                id<MTLCommandQueue> nativeCommandQueue = (__bridge id<MTLCommandQueue>)commandQueue.getNativeCommandQueue();
+                nativeCommandBuffer = [nativeCommandQueue commandBuffer];
+            }
+            id<MTLBlitCommandEncoder> nativeBlitCommandEncoder = [nativeCommandBuffer blitCommandEncoder];
+            WTFASSERT(nativeBlitCommandEncoder != nil, "Invalid blit command encoder");
             
-            commandBuffer.close();
-
-            commandQueue.execCommandBufferSynchronized(
-                commandBuffer,
-                *mpDevice
-            );
+            id<MTLBuffer> nativeUploadBuffer = (__bridge id<MTLBuffer>)uploadBuffer.getNativeBuffer();
+            WTFASSERT(nativeUploadBuffer != nil, "Invalid upload buffer");
+            void* pDstData = [nativeUploadBuffer contents];
+            memcpy(pDstData, pCPUData, iDataSize);
+            
+            id<MTLBuffer> nativeDstBuffer = (__bridge id<MTLBuffer>)pDestBuffer->getNativeBuffer();
+            WTFASSERT(nativeDstBuffer != nil, "Invalid destination buffer \"%s\"", pDestBuffer->getID().c_str());
+            
+            [nativeBlitCommandEncoder
+              copyFromBuffer: nativeUploadBuffer
+              sourceOffset: iSrcOffset
+              toBuffer: nativeDstBuffer
+              destinationOffset: iDestOffset
+              size: iDataSize];
         }
 
         /*
@@ -1688,25 +1737,25 @@ namespace Render
                 RenderDriver::Common::CommandAllocatorDescriptor allocatorDesc;
                 desc.mType = RenderDriver::Common::CommandBufferType::Graphics;
                 allocatorDesc.mType = RenderDriver::Common::CommandBufferType::Graphics;
-                desc.mpCommandQueue = (__bridge id<MTLCommandQueue>)mpGraphicsCommandQueue->getNativeCommandQueue();
+                desc.mpNativeCommandQueue = (__bridge id<MTLCommandQueue>)mpGraphicsCommandQueue->getNativeCommandQueue();
                 if(mapRenderJobs[renderJobName]->mType == Render::Common::JobType::Compute)
                 {
                     desc.mType = RenderDriver::Common::CommandBufferType::Compute;
                     allocatorDesc.mType = RenderDriver::Common::CommandBufferType::Compute;
-                    desc.mpCommandQueue = (__bridge id<MTLCommandQueue>)mpComputeCommandQueue->getNativeCommandQueue();
+                    desc.mpNativeCommandQueue = (__bridge id<MTLCommandQueue>)mpComputeCommandQueue->getNativeCommandQueue();
                     
                 }
                 else if(mapRenderJobs[renderJobName]->mType == Render::Common::JobType::Copy)
                 {
                     desc.mType = RenderDriver::Common::CommandBufferType::Copy;
                     allocatorDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
-                    desc.mpCommandQueue = (__bridge id<MTLCommandQueue>)mpCopyCommandQueue->getNativeCommandQueue();
+                    desc.mpNativeCommandQueue = (__bridge id<MTLCommandQueue>)mpCopyCommandQueue->getNativeCommandQueue();
                 }
                 else if(mapRenderJobs[renderJobName]->mType == Render::Common::JobType::RayTrace)
                 {
                     desc.mType = RenderDriver::Common::CommandBufferType::Compute;
                     allocatorDesc.mType = RenderDriver::Common::CommandBufferType::Compute;
-                    desc.mpCommandQueue = (__bridge id<MTLCommandQueue>)mpComputeCommandQueue->getNativeCommandQueue();
+                    desc.mpNativeCommandQueue = (__bridge id<MTLCommandQueue>)mpComputeCommandQueue->getNativeCommandQueue();
                 }
 
                 // create command buffer allocator
@@ -2318,26 +2367,34 @@ namespace Render
             RenderDriver::Common::CCommandQueue& commandQueue,
             RenderDriver::Common::CBuffer& uploadBuffer)
         {
-            WTFASSERT(0, "Implement me");
+            uint32_t iPageImageSize = iTexturePageDimension * iTexturePageDimension * 4 * sizeof(char);
             
-            RenderDriver::Metal::CDevice* pDeviceMetal = static_cast<RenderDriver::Metal::CDevice*>(mpDevice.get());
-
-            // recording
-            commandBuffer.reset();
-
+            uploadBuffer.setData((void*)pImageData, iPageImageSize);
+            id<MTLBuffer> nativeTexturePageBuffer = (__bridge id<MTLBuffer>)uploadBuffer.getNativeBuffer();
+            id<MTLCommandQueue> nativeCommandQueue = (__bridge id<MTLCommandQueue>)mpCopyCommandQueue->getNativeCommandQueue();
+            
             // set copy region
+            id<MTLCommandBuffer> nativeCommandBuffer = [nativeCommandQueue commandBuffer];
+            WTFASSERT(nativeCommandBuffer != nil, "uninitialized upload command buffer");
+            id<MTLTexture> nativeDestTexture = (__bridge id<MTLTexture>)pDestImage->getNativeImage();
+            id<MTLBlitCommandEncoder> nativeBlitEncoder = [nativeCommandBuffer blitCommandEncoder];
+            [nativeBlitEncoder setLabel: @"Texture Page Blit Encoder"];
+            [nativeBlitEncoder copyFromBuffer: nativeTexturePageBuffer
+                                 sourceOffset: 0
+                            sourceBytesPerRow: iTexturePageDimension * 4
+                          sourceBytesPerImage: iTexturePageDimension * iTexturePageDimension * 4
+                                   sourceSize: MTLSizeMake(iTexturePageDimension, iTexturePageDimension, 1)
+                                    toTexture: nativeDestTexture
+                             destinationSlice: 0
+                             destinationLevel: 0
+                            destinationOrigin: MTLOriginMake(pageCoord.x * iTexturePageDimension, pageCoord.y * iTexturePageDimension, 0)
+            ];
             
-
-            // do the copy
+            [nativeBlitEncoder endEncoding];
+            [nativeCommandBuffer commit];
+            [nativeCommandBuffer waitUntilCompleted];
             
-
-            // close and execute
-            commandBuffer.close();
-            commandQueue.execCommandBufferSynchronized(
-                commandBuffer,
-                *mpDevice);
-
-            commandBuffer.reset();
+            nativeBlitEncoder = nil;
 
         }
 
@@ -2348,8 +2405,6 @@ namespace Render
             std::unique_ptr<RenderDriver::Common::CCommandAllocator>& threadCommandAllocator,
             std::unique_ptr<RenderDriver::Common::CCommandBuffer>& threadCommandBuffer)
         {
-            WTFASSERT(0, "Implement me");
-            
             threadCommandAllocator = std::make_unique<RenderDriver::Metal::CCommandAllocator>();
             threadCommandBuffer = std::make_unique<RenderDriver::Metal::CCommandBuffer>();
         }
@@ -2361,12 +2416,10 @@ namespace Render
             std::unique_ptr<RenderDriver::Common::CBuffer>& buffer,
             uint32_t iSize)
         {
-            WTFASSERT(0, "Implement me");
-            
             buffer = std::make_unique<RenderDriver::Metal::CBuffer>();
             RenderDriver::Common::BufferDescriptor bufferDesc = {};
             bufferDesc.miSize = 64 * 64 * 4;
-            bufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferDest;
+            bufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferSrc;
             bufferDesc.mHeapType = RenderDriver::Common::HeapType::Upload;
             buffer->create(
                 bufferDesc,
