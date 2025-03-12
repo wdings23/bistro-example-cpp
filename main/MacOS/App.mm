@@ -13,6 +13,9 @@
 
 #include <filesystem>
 
+#include <stb_image.h>
+#include <utils/wtfassert.h>
+
 #define WINDOW_WIDTH    512
 #define WINDOW_HEIGHT   512
 
@@ -466,7 +469,6 @@ void CApp::init(AppDescriptor const& appDesc)
     
     pRenderer->initData();
     pRenderer->loadRenderJobInfo(pDesc->mRenderJobsFilePath, maBufferMap);
-    pRenderer->prepareRenderJobData();
     
     fullPath = std::string(szSaveDir) + "/LDR_RGBA_0.png";
     
@@ -476,6 +478,18 @@ void CApp::init(AppDescriptor const& appDesc)
     
     mCameraLookAt = float3(-3.44f, 1.53f, 0.625f);
     mCameraPosition = float3(7.08f, 1.62f, 0.675f);
+    
+    initRenderData(
+        acMaterialBuffer,
+        aAlbedoTextureNames,
+        aNormalTextureNames,
+        aAlbedoTextureDimensions,
+        aNormalTextureDimensions,
+        iNumAlbedoTextures,
+        iNumNormalTextures
+    );
+    
+    pRenderer->prepareRenderJobData();
     
 #if 0
     int32_t iBlueNoiseWidth = 0, iBlueNoiseHeight = 0, iNumChannels = 0;
@@ -566,4 +580,147 @@ void CApp::nextDrawable(
 void* CApp::getNativeDevice()
 {
     return mpRenderer->getDevice()->getNativeDevice();
+}
+
+struct PageInfo
+{
+    uint32_t    miCoordX;
+    uint32_t    miCoordY;
+    uint32_t    miHashIndex;
+    uint32_t    miTextureID;
+    uint32_t    miMIP;
+    uint32_t    miPageIndex;
+};
+
+/*
+**
+*/
+void CApp::initRenderData(
+    std::vector<char> const& acMaterialBuffer,
+    std::vector<std::string> const& aAlbedoTextureNames,
+    std::vector<std::string> const& aNormalTextureNames,
+    std::vector<uint2> const& aAlbedoTextureDimensions,
+    std::vector<uint2> const& aNormalTextureDimensions,
+    uint32_t iNumAlbedoTextures,
+    uint32_t iNumNormalTextures
+)
+{
+    std::map<std::string, std::vector<PageInfo>> maPageInfo;
+
+    // initialize data, set the albedo and normal texture dimensions
+    mpRenderer->mpfnInitData = std::make_unique<std::function<void(Render::Common::CRenderer*)>>();
+    *mpRenderer->mpfnInitData = [
+        aAlbedoTextureDimensions,
+        aNormalTextureDimensions,
+        aAlbedoTextureNames,
+        aNormalTextureNames,
+        acMaterialBuffer
+    ](Render::Common::CRenderer* pRenderer)
+    {
+        // copy texture dimension data over
+        auto& pTextureDimensionBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapUniformBuffers["Texture Sizes"];
+        pRenderer->copyCPUToBuffer(
+            pTextureDimensionBuffer,
+            (void *)aAlbedoTextureDimensions.data(),
+            0,
+            uint32_t(aAlbedoTextureDimensions.size() * sizeof(uint2))
+        );
+
+        pTextureDimensionBuffer = pRenderer->mapRenderJobs["Texture Atlas Graphics"]->mapUniformBuffers["Texture Sizes"];
+        pRenderer->copyCPUToBuffer(
+            pTextureDimensionBuffer,
+            (void*)aAlbedoTextureDimensions.data(),
+            0,
+            uint32_t(aAlbedoTextureDimensions.size() * sizeof(uint2))
+        );
+
+        uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
+        auto& pNormalTextureDimensionBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapUniformBuffers["Normal Texture Sizes"];
+        pRenderer->copyCPUToBuffer(
+            pNormalTextureDimensionBuffer,
+            (void *)aNormalTextureDimensions.data(),
+            0,
+            uint32_t(aNormalTextureDimensions.size() * sizeof(uint2)),
+            iFlags
+        );
+
+        pNormalTextureDimensionBuffer = pRenderer->mapRenderJobs["Texture Atlas Graphics"]->mapUniformBuffers["Normal Texture Sizes"];
+        pRenderer->copyCPUToBuffer(
+            pNormalTextureDimensionBuffer,
+            (void*)aNormalTextureDimensions.data(),
+            0,
+            uint32_t(aNormalTextureDimensions.size() * sizeof(uint2)),
+            iFlags
+        );
+
+        auto& pMaterialBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapUniformBuffers["materials"];
+        pRenderer->copyCPUToBuffer(
+            pMaterialBuffer,
+            (void *)acMaterialBuffer.data(),
+            0,
+            (uint32_t)acMaterialBuffer.size()
+        );
+
+        // inital texture pages
+        uint32_t const iInitialAtlasSize = 512;
+        uint32_t const iInitialPageSize = 16;
+        constexpr uint32_t iNumPagesPerRow = iInitialAtlasSize / iInitialPageSize;
+        uint32_t iPage = 0;
+        for(auto const& textureName : aAlbedoTextureNames)
+        {
+            std::string fullPath;
+            getAssetsDir(fullPath, std::string("converted-dds-scaled/") + textureName);
+            int32_t iWidth = 0, iHeight = 0, iNumChannels = 0;
+            stbi_uc* pImageData = stbi_load(
+                fullPath.c_str(),
+                &iWidth,
+                &iHeight,
+                &iNumChannels,
+                4
+            );
+            WTFASSERT(pImageData != nullptr, "Can\'t open \"%s\"", fullPath.c_str());
+            
+            std::vector<unsigned char> acScaledImage(iInitialPageSize * iInitialPageSize * 4);
+            //if(iWidth < iPageSize || iHeight < iPageSize)
+            {
+                float fScaleX = (float)iWidth / (float)iInitialPageSize;
+                float fScaleY = (float)iHeight / (float)iInitialPageSize;
+
+                float fY = 0.0f;
+                for(uint32_t iY = 0; iY < iInitialPageSize; iY++)
+                {
+                    uint32_t iSampleY = uint32_t(fY);
+                    fY += fScaleY;
+                    float fX = 0.0f;
+                    for(uint32_t iX = 0; iX < iInitialPageSize; iX++)
+                    {
+                        uint32_t iSampleX = uint32_t(fX);
+                        fX += fScaleX;
+
+                        uint32_t iSampleIndex = (iSampleY * iWidth + iSampleX) * 4;
+                        uint32_t iIndex = (iY * iInitialPageSize + iX) * 4;
+                        acScaledImage[iIndex] = pImageData[iSampleIndex];
+                        acScaledImage[iIndex+1] = pImageData[iSampleIndex+1];
+                        acScaledImage[iIndex+2] = pImageData[iSampleIndex+2];
+                        acScaledImage[iIndex+3] = pImageData[iSampleIndex+3];
+
+                    }
+                }
+                pImageData = acScaledImage.data();
+            }
+
+            uint32_t iPageX = iPage % iNumPagesPerRow;
+            uint32_t iPageY = iPage / iNumPagesPerRow;
+            uint2 pageCoord(iPageX, iPageY);
+            auto & textureAtlas3 = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputImageAttachments["Initial Texture Atlas"];
+            pRenderer->copyTexturePageToAtlas(
+                (char const*)pImageData,
+                textureAtlas3,
+                pageCoord,
+                iInitialPageSize
+            );
+
+            ++iPage;
+        }
+    };
 }

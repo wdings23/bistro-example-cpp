@@ -45,4 +45,15 @@ protected:
     float3 mCameraLookAt;
     
     std::map<std::string, std::unique_ptr<RenderDriver::Common::CBuffer>> maBufferMap;
+    
+protected:
+    void initRenderData(
+        std::vector<char> const& acMaterialBuffer,
+        std::vector<std::string> const& aAlbedoTextureNames,
+        std::vector<std::string> const& aNormalTextureNames,
+        std::vector<uint2> const& aAlbedoTextureDimensions,
+        std::vector<uint2> const& aNormalTextureDimensions,
+        uint32_t iNumAlbedoTextures,
+        uint32_t iNumNormalTextures
+    );
 };

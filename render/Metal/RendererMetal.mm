@@ -2263,62 +2263,47 @@ namespace Render
             uint2 const& pageCoord,
             uint32_t iTexturePageDimension)
         {
-            WTFASSERT(0, "Implement me");
-            
-            RenderDriver::Metal::CDevice* pDeviceMetal = static_cast<RenderDriver::Metal::CDevice*>(mpDevice.get());
-
-            mapUploadBuffers.emplace_back(std::make_unique<RenderDriver::Metal::CBuffer>());
-            RenderDriver::Metal::CBuffer& uploadBuffer = static_cast<RenderDriver::Metal::CBuffer&>(*mapUploadBuffers.back());
-
-            uint32_t iImageSize = iTexturePageDimension * iTexturePageDimension * 4;
-            RenderDriver::Common::BufferDescriptor uploadBufferDesc =
+            uint32_t iPageImageSize = iTexturePageDimension * iTexturePageDimension * 4 * sizeof(char);
+            if(mTexturePageUploadBuffer == nullptr)
             {
-                /* .miSize          */      iImageSize,
-                /* .mFormat         */      RenderDriver::Common::Format::UNKNOWN,
-                /* .mFlags          */      RenderDriver::Common::ResourceFlagBits::None,
-                /* .mHeapType       */      RenderDriver::Common::HeapType::Upload,
-                /* .mOverrideState  */      RenderDriver::Common::ResourceStateFlagBits::None,
-                /* .mpCounterBuffer */      nullptr,
-            };
-            uploadBufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferSrc;
-            uploadBuffer.create(uploadBufferDesc, *mpDevice);
-            uploadBuffer.setID("Upload Image Buffer");
-
-            uploadBuffer.setData((void*)pImageData, iImageSize);
-
-            // set copy region
-            
-
-            // native buffer and image
-            
-            // prepare command buffer
-            RenderDriver::Common::CommandBufferState const& commandBufferState = mpUploadCommandBuffer->getState();
-            if(commandBufferState == RenderDriver::Common::CommandBufferState::Closed)
-            {
-                mpUploadCommandBuffer->reset();
+                RenderDriver::Common::BufferDescriptor uploadBufferDesc = {};
+                uploadBufferDesc.miSize = iPageImageSize;
+                uploadBufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage(
+                    uint32_t(RenderDriver::Common::BufferUsage::TransferSrc)
+                );
+                mTexturePageUploadBuffer = std::make_unique<RenderDriver::Metal::CBuffer>();
+                mTexturePageUploadBuffer->create(uploadBufferDesc, *mpDevice);
+                mTexturePageUploadBuffer->setID("Texture Page Upload Buffer");
             }
-
-            // previous layout
+            WTFASSERT(mTexturePageUploadBuffer.get(), "Texture Page Upload Buffer has not been created");
             
-
-            // transition to dest optimal
+            mTexturePageUploadBuffer->setData((void*)pImageData, iPageImageSize);
+            id<MTLBuffer> nativeTexturePageBuffer = (__bridge id<MTLBuffer>)mTexturePageUploadBuffer->getNativeBuffer();
             
-
-            // do the copy
+            id<MTLCommandQueue> nativeCommandQueue = (__bridge id<MTLCommandQueue>)mpCopyCommandQueue->getNativeCommandQueue();
             
-            // transition back
-
+            // set copy region
+            id<MTLCommandBuffer> nativeCommandBuffer = [nativeCommandQueue commandBuffer];
+            WTFASSERT(nativeCommandBuffer != nil, "uninitialized upload command buffer");
+            id<MTLTexture> nativeDestTexture = (__bridge id<MTLTexture>)pDestImage->getNativeImage();
+            id<MTLBlitCommandEncoder> nativeBlitEncoder = [nativeCommandBuffer blitCommandEncoder];
+            [nativeBlitEncoder setLabel: @"Texture Page Blit Encoder"];
+            [nativeBlitEncoder copyFromBuffer: nativeTexturePageBuffer
+                                 sourceOffset: 0
+                            sourceBytesPerRow: iTexturePageDimension * 4
+                          sourceBytesPerImage: iTexturePageDimension * iTexturePageDimension * 4
+                                   sourceSize: MTLSizeMake(iTexturePageDimension, iTexturePageDimension, 1)
+                                    toTexture: nativeDestTexture
+                             destinationSlice: 0
+                             destinationLevel: 0
+                            destinationOrigin: MTLOriginMake(pageCoord.x * iTexturePageDimension, pageCoord.y * iTexturePageDimension, 0)
+            ];
             
-            mpUploadCommandBuffer->close();
-
-            mpCopyCommandQueue->execCommandBufferSynchronized(
-                *mpUploadCommandBuffer,
-                *mpDevice);
-
-            RenderDriver::Metal::CCommandQueue* pCopyCommandQueueMetal = static_cast<RenderDriver::Metal::CCommandQueue*>(mpCopyCommandQueue.get());
+            [nativeBlitEncoder endEncoding];
+            [nativeCommandBuffer commit];
+            [nativeCommandBuffer waitUntilCompleted];
             
-            mpUploadCommandAllocator->reset();
-            mpUploadCommandBuffer->reset();
+            nativeBlitEncoder = nil;
         }
 
         /*

@@ -504,6 +504,8 @@ namespace Render
             //std::map<std::string, std::unique_ptr<RenderDriver::Metal::CAccelerationStructure>> maAccelerationStructures;
             
             std::unique_ptr<RenderDriver::Metal::CBuffer>           mDefaultUploadUniformBuffer;
+            std::unique_ptr<RenderDriver::Metal::CBuffer>           mTexturePageUploadBuffer;
+            
             
             id<MTLSamplerState>                           mDefaultNativeLinearSamplerState;
             id<MTLSamplerState>                           mDefaultNativePointSamplerState;
