@@ -1139,7 +1139,9 @@ namespace Render
             id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBuffer.getNativeCommandList();
             if(nativeCommandBuffer == nil)
             {
-                nativeCommandBuffer = [nativeCommandQueue commandBuffer];
+                RenderDriver::Metal::CCommandBuffer& commandBufferMetal = (RenderDriver::Metal::CCommandBuffer&)commandBuffer;
+                commandBufferMetal.createNativeCommandBuffer();
+                nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBufferMetal.getNativeCommandList();
             }
             id<MTLBlitCommandEncoder> nativeBlitCommandEncoder = [nativeCommandBuffer blitCommandEncoder];
             WTFASSERT(readBackBuffer.getDescriptor().miSize >= iDataSize, "read back buffer size (%d) is smaller than needed (%d)", readBackBuffer.getDescriptor().miSize, iDataSize);
@@ -1152,6 +1154,9 @@ namespace Render
             [nativeBlitCommandEncoder endEncoding];
             [nativeCommandBuffer commit];
             [nativeCommandBuffer waitUntilCompleted];
+            
+            nativeBlitCommandEncoder = nil;
+            commandBuffer.reset();
             
             void* pData = nativeDestBuffer.contents;
             memcpy(pCPUBuffer, pData, iDataSize);
@@ -1599,8 +1604,9 @@ namespace Render
             id<MTLCommandBuffer> nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBuffer.getNativeCommandList();
             if(nativeCommandBuffer == nil)
             {
-                id<MTLCommandQueue> nativeCommandQueue = (__bridge id<MTLCommandQueue>)commandQueue.getNativeCommandQueue();
-                nativeCommandBuffer = [nativeCommandQueue commandBuffer];
+                RenderDriver::Metal::CCommandBuffer& commandBufferMetal = (RenderDriver::Metal::CCommandBuffer&)commandBuffer;
+                commandBufferMetal.createNativeCommandBuffer();
+                nativeCommandBuffer = (__bridge id<MTLCommandBuffer>)commandBufferMetal.getNativeCommandList();
             }
             id<MTLBlitCommandEncoder> nativeBlitCommandEncoder = [nativeCommandBuffer blitCommandEncoder];
             WTFASSERT(nativeBlitCommandEncoder != nil, "Invalid blit command encoder");
@@ -1619,6 +1625,13 @@ namespace Render
               toBuffer: nativeDstBuffer
               destinationOffset: iDestOffset
               size: iDataSize];
+            
+            [nativeBlitCommandEncoder endEncoding];
+            [nativeCommandBuffer commit];
+            
+            nativeBlitCommandEncoder = nil;
+            commandBuffer.reset();
+            
         }
 
         /*
