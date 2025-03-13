@@ -91,7 +91,6 @@ public:
     std::map<std::string, std::vector<PageInfo>> maPageInfo;
     bool mbTexturePageLoadingStarted = false;
     
-    uint32_t miNumThreads = 4;
     std::unique_ptr<std::thread> mTexturePageLoadingThread;
     std::unique_ptr<std::thread> maThreads[4];
     uint32_t miNumLoadingThreads;

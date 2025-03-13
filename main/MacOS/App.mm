@@ -697,9 +697,9 @@ void CApp::init(AppDescriptor const& appDesc)
                                 giCopyingTexturePage.store(0);
                                 
                                 uint32_t iNumChecks = std::min(*((uint32_t*)macCounterData.data()), 65535u);
-                                for(uint32_t i = 0; i < miNumThreads; i++)
+                                for(uint32_t i = 0; i < miNumLoadingThreads; i++)
                                 {
-                                    maiStartAndNumChecks[i] = std::make_pair(i * (uint32_t)ceil((float)iNumChecks / (float)miNumThreads), (uint32_t)ceil((float)iNumChecks / (float)miNumThreads));
+                                    maiStartAndNumChecks[i] = std::make_pair(i * (uint32_t)ceil((float)iNumChecks / (float)miNumLoadingThreads), (uint32_t)ceil((float)iNumChecks / (float)miNumLoadingThreads));
                                 }
                                 
                                 while(giNumFinished.load() < miNumLoadingThreads)
@@ -739,7 +739,7 @@ void CApp::init(AppDescriptor const& appDesc)
                                 *maScatchPadUploadBuffer[iThisThreadID],
                                 *maTexturePageUploadBuffer[iThisThreadID],
                                 iStartThreadIndex,
-                                iNumChecksPerLoop,
+                                iNumChecksCopy,
                                 iLastCounterValue,
                                 macTexturePageQueueData,
                                 macTexturePageInfoData,
