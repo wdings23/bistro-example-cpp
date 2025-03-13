@@ -600,6 +600,8 @@ void CApp::init(AppDescriptor const& appDesc)
         maScatchPadUploadBuffer[i]->setID(scratchPadName.str());
     }
     
+    miCurrTotalPageLoaded = 0;
+    
     // post draw, get the texture pages needed
     pRenderer->mpfnPostDraw = std::make_unique<std::function<void(Render::Common::CRenderer*)>>();
     *pRenderer->mpfnPostDraw = [&](Render::Common::CRenderer* pRenderer)
@@ -622,8 +624,7 @@ void CApp::init(AppDescriptor const& appDesc)
                     uint32_t iNumChecksPerLoop = 100;
                     std::map<uint32_t, ImageInfo> aImageInfo;
 
-                    // TODO: find the buffer overflowing to corrupt function stack data
-
+                    uint32_t iStartThreadIndex = 0;
                     for(uint32_t iLoop = 0;; iLoop++)
                     {
                         @autoreleasepool
@@ -638,21 +639,13 @@ void CApp::init(AppDescriptor const& appDesc)
                             if(iThisThreadID == 0 && iLoop > 0)
                             {
                                 // get the page queue, page info, and calculate the each thread's start index and num pages in queue to check
-                                //while(giCopyingTexturePage.load() > 0)
-                                //{
-                                //    sleep(1);
-                                //}
-                                
                                 uint32_t iDesired = 0; //giCopyingTexturePage.load();
-                                while(giCopyingTexturePage.compare_exchange_strong(iDesired, 1u, std::memory_order_acquire, std::memory_order_release) == 1)
+                                while(giCopyingTexturePage.compare_exchange_strong(iDesired, 1u, std::memory_order_acquire, std::memory_order_release) == false)
                                 {
                                     usleep(10);
                                 }
                                 
                                 mThreadCommandBuffer->reset();
-                                
-                                // start upload/download from gpu
-                                //giCopyingTexturePage.store(1);
                                 
                                 // get the texture pages needed
                                 auto& pTexturePageQueueBuffer = mpRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Texture Page Queue MIP"];
@@ -719,8 +712,18 @@ void CApp::init(AppDescriptor const& appDesc)
                                 
                             }
                             
-                            uint32_t iStartThreadIndex = maiStartAndNumChecks[iThisThreadID].first;
-                            uint32_t iNumChecksCopy = maiStartAndNumChecks[iThisThreadID].second;
+                            // start or continue with the queue entry index from last loop
+                            if(iStartThreadIndex >= maiStartAndNumChecks[iThisThreadID].second || iStartThreadIndex < maiStartAndNumChecks[iThisThreadID].first)
+                            {
+                                iStartThreadIndex = maiStartAndNumChecks[iThisThreadID].first;
+                            }
+                            
+                            // number of queue entries to check at one time, make sure to cap to the end
+                            uint32_t iNumChecksCopy = 100;
+                            if(iStartThreadIndex + iNumChecksCopy > maiStartAndNumChecks[iThisThreadID].second)
+                            {
+                                iNumChecksCopy = maiStartAndNumChecks[iThisThreadID].second - iStartIndex;
+                            }
                             
                             WTFASSERT(iStartThreadIndex < 1000000, "wtf");
                             WTFASSERT(iNumChecksCopy < 10000000, "wtf");
@@ -745,6 +748,12 @@ void CApp::init(AppDescriptor const& appDesc)
                                 macTexturePageInfoData,
                                 mTexturePageThreadMutex
                             );
+                            
+                            iStartThreadIndex += iNumChecksCopy;
+                            if(iStartThreadIndex >= maiStartAndNumChecks[iThisThreadID].second)
+                            {
+                                iStartThreadIndex = 0;
+                            }
                             
                             giNumFinished.fetch_add(1);
                             if(iThisThreadID != 0)
@@ -1035,8 +1044,6 @@ auto totalStart = std::chrono::high_resolution_clock::now();
 
     uint32_t const iTexturePageDataSize = iTexturePageSize * iTexturePageSize * 4;
 
-    auto& texturePageInfoBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["MIP Texture Page Hash Table"];
-
     uint32_t iThreadAlbedoTextureIndex = 0, iThreadNormalTextureIndex = 0;
     uint32_t i = 0;
     for(i = iStartIndex; i < iStartIndex + iNumChecksPerLoop; i++)
@@ -1050,7 +1057,7 @@ auto totalStart = std::chrono::high_resolution_clock::now();
         {
             break;
         }
-
+        
         // check if the page has already been loaded
         char const* acPageInfoData = acTexturePageInfoData.data() + texturePage.miHashIndex * sizeof(HashEntry);
         HashEntry hashEntry = *((HashEntry const*)acPageInfoData);
@@ -1058,7 +1065,7 @@ auto totalStart = std::chrono::high_resolution_clock::now();
         {
             continue;
         }
-
+        
         // reserve albedo page index for this thread
         {
             std::lock_guard<std::mutex> lock(threadMutex);
@@ -1129,7 +1136,7 @@ auto totalStart = std::chrono::high_resolution_clock::now();
         {
             textureName = aNormalTextureNames[iTextureID];
         }
-
+        
         std::string fullTexturePath;
         getAssetsDir(fullTexturePath, std::string("converted-dds-scaled/") + textureName);
         int32_t iImageWidth = 0, iImageHeight = 0, iNumChannels = 0;
@@ -1158,32 +1165,40 @@ auto start = std::chrono::high_resolution_clock::now();
 auto durationUS = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
         
         // wait for other thread to finish gpu upload
-        while(giCopyingTexturePage.load());
-        
-        // uploading now
-        giCopyingTexturePage.store(1);
+        uint32_t iExpected = 0;
+        while(giCopyingTexturePage.compare_exchange_strong(iExpected, 1u, std::memory_order_acquire, std::memory_order_release) == false)
+        {
+            usleep(10);
+        }
 
 auto start1 = std::chrono::high_resolution_clock::now();
 
         void* pUploadBuffer = texturePageUploadBuffer.getMemoryOpen(iTexturePageDataSize);
         WTFASSERT(pUploadBuffer, "Can\'t open texture page upload buffer");
         
+        uint2 texturePageAtlasCoord = uint2(
+            iThreadAlbedoTextureIndex % iNumPagesPerRow,
+            (iThreadAlbedoTextureIndex / iNumPagesPerRow) % iNumPagesPerRow
+        );
+        
         // copy texture page to texture atlas, normal or albedo
         uint32_t iPageIndex = 0;
         if(texturePage.miTextureID >= 65536)
         {
+            texturePageAtlasCoord.x = iThreadNormalTextureIndex % iNumPagesPerRow;
+            texturePageAtlasCoord.y = (iThreadNormalTextureIndex / iNumPagesPerRow) % iNumPagesPerRow;
+            
             auto& textureAtlas1 = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputImageAttachments["Texture Atlas 1"];
             memcpy(pUploadBuffer, pTexturePageData, iTexturePageDataSize);
             pRenderer->copyTexturePageToAtlas2(
                 (char const*)pTexturePageData,
                 textureAtlas1,
-                uint2(iThreadNormalTextureIndex % iNumPagesPerRow, (iThreadNormalTextureIndex / iNumPagesPerRow) % iNumPagesPerRow),
+                texturePageAtlasCoord,
                 iTexturePageSize,
                 commandBuffer,
                 commandQueue,
                 texturePageUploadBuffer
             );
-
             iPageIndex = iThreadNormalTextureIndex + 1;
         }
         else
@@ -1195,7 +1210,7 @@ auto start1 = std::chrono::high_resolution_clock::now();
                 pRenderer->copyTexturePageToAtlas2(
                     (char const*)pTexturePageData,
                     textureAtlas0,
-                    uint2(iThreadAlbedoTextureIndex % iNumPagesPerRow, (iThreadAlbedoTextureIndex / iNumPagesPerRow) % iNumPagesPerRow),
+                    texturePageAtlasCoord,
                     iTexturePageSize,
                     commandBuffer,
                     commandQueue,
@@ -1209,52 +1224,40 @@ auto start1 = std::chrono::high_resolution_clock::now();
                 pRenderer->copyTexturePageToAtlas2(
                     (char const*)pTexturePageData,
                     textureAtlas0,
-                    uint2(iThreadAlbedoTextureIndex% iNumPagesPerRow, (iThreadAlbedoTextureIndex / iNumPagesPerRow) % iNumPagesPerRow),
+                    texturePageAtlasCoord,
                     iTexturePageSize,
                     commandBuffer,
                     commandQueue,
                     texturePageUploadBuffer
                 );
             }
-
             iPageIndex = iThreadAlbedoTextureIndex + 1;
         }
-
+                
 #if 0
         stbi_image_free(pTexturePageData);
 #endif // #if 0
         
         auto elapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
-
-        // update the page info to point to the page index in the atlas
-        uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
-        uint32_t iBufferOffset = texturePage.miHashIndex * sizeof(uint32_t) * 4 + sizeof(uint32_t);
+        
+        auto& texturePageInfoBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["MIP Texture Page Hash Table"];
+            
+        hashEntry.miPageIndex = iPageIndex;
+        hashEntry.miUpdateFrame = pRenderer->getFrameIndex() + 1;
+        uint32_t iBufferOffset = texturePage.miHashIndex * sizeof(uint32_t) * 4;
         pRenderer->copyCPUToBuffer4(
             texturePageInfoBuffer,
-            &iPageIndex,
+            &hashEntry,
             iBufferOffset,
-            sizeof(uint32_t),
+            sizeof(HashEntry),
             commandBuffer,
             commandQueue,
-            threadScratchPathUploadBuffer
-        );
-
-        // update frame index entry
-        uint32_t iFrameIndex = pRenderer->getFrameIndex() + 1;
-        iBufferOffset = texturePage.miHashIndex * sizeof(uint32_t) * 4 + sizeof(uint32_t) * 3;
-        pRenderer->copyCPUToBuffer4(
-            texturePageInfoBuffer,
-            &iFrameIndex,
-            iBufferOffset,
-            sizeof(uint32_t),
-            commandBuffer,
-            commandQueue,
-            threadScratchPathUploadBuffer
-        );
-
+            threadScratchPathUploadBuffer);
+        
         // finished uploading to gpu
         giCopyingTexturePage.store(0);
-
+        
+        // update the number of pages loaded
         {
             std::lock_guard<std::mutex> lock(threadMutex);
             iCurrTotalPageLoaded += 1;
