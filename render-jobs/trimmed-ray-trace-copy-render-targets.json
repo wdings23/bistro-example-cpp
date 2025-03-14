@@ -123,8 +123,8 @@
         {
             "Name": "Previous SVG Filtered Output",
             "Type": "TextureOutput",
-            "ParentJobName": "SVG Filter Graphics",
-            "ParentName": "Diffuse SVG Filter Radiance 0 Output",
+            "ParentJobName": "SVG Filter Graphics 1",
+            "ParentName": "Diffuse SVG Filter Radiance 1 Output",
             "Format": "rgba32float"
         }
         

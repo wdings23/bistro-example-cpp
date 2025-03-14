@@ -114,7 +114,7 @@
             "PassType": "Full Triangle"
         },
         {
-            "Name": "SVG Filter Graphics",
+            "Name": "SVG Filter Graphics 0",
             "Pipeline": "diffuse-svgf-lite-0-graphics.json",
             "Type": "Graphics",
             "PassType": "Full Triangle",
@@ -122,6 +122,19 @@
                 {
                     "name": "step",
                     "data": 1,
+                    "data type": "int"
+                }
+            ]
+        },
+        {
+            "Name": "SVG Filter Graphics 1",
+            "Pipeline": "diffuse-svgf-lite-1-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle",
+            "ConstantBuffer": [ 
+                {
+                    "name": "step",
+                    "data": 2,
                     "data type": "int"
                 }
             ]
