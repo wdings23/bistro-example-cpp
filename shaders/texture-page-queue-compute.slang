@@ -366,12 +366,14 @@ iMIP = 0u;
             iMIP
         );
 
+        HashEntry hashEntry = aPageHashTableMIP[iAlbedoHashIndex];
+
         // output page info
         uint32_t iMIPEncodedCoordinate = uint32_t(uint32_t(mipStartPageUV.x) | uint32_t(uint32_t(mipStartPageUV.y) << 16u));
         texturePageInfoTexture[int2(int32_t(uv.x * float(defaultUniformBuffer.miScreenWidth)), int32_t(uv.y * float(defaultUniformBuffer.miScreenHeight)))] =
             float4(
-                float(iMIPEncodedCoordinate),
-                float(mipStartPageUV.y),
+                float(hashEntry.miPageCoordinate)/*float(iMIPEncodedCoordinate)*/,
+                float(hashEntry.miPageIndex)/*float(mipStartPageUV.y)*/,
                 float(iAlbedoTextureID)/* + float(iMIP) * 0.1f*/,
                 float(iAlbedoHashIndex)
             );
