@@ -11,8 +11,8 @@ struct ConstantBufferData
 [[vk::binding(3, 0)]] Texture2D<float2> momentTexture;
 
 [[vk::binding(4, 0)]] Texture2D<float4> ambientOcclusionTexture;
-
-[[vk::binding(5, 0)]] SamplerState textureSampler;
+[[vk::binding(5, 0)]] Texture2D<float4> motionMeshAndDepthTexture;
+[[vk::binding(6, 0)]] SamplerState textureSampler;
 
 [[vk::binding(0, 1)]] ConstantBuffer<ConstantBufferData> constantBuffer;
 [[vk::binding(1, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
@@ -34,9 +34,9 @@ struct AssembledVertex
 struct PSOutput
 {
     float4 mRadiance : SV_TARGET0;
-    float2 mMoment : SV_TARGET1;
+    float4 mMoment : SV_TARGET1;
 
-    float mAmbientOcclusion : SV_TARGET2;
+    float4 mAmbientOcclusion : SV_TARGET2;
 };
 
 struct VertexStageOutput
@@ -72,7 +72,7 @@ PSOutput PSMain(VertexStageOutput in)
     if (worldPosition.w <= 0.0f)
     {
         out.mRadiance = float4(0.0f, 0.0f, 0.0f, 0.0f);
-        out.mMoment = float2(0.0f, 0.0f);
+        out.mMoment.xy = float2(0.0f, 0.0f);
     }
 
     uint32_t iX = uint32_t(in.texCoord.x * float(textureSize.x));
@@ -89,9 +89,9 @@ PSOutput PSMain(VertexStageOutput in)
         1.0f
     );
 
-    out.mMoment = svgfRet.mMoments;
+    out.mMoment = float4(svgfRet.mMoments.xy, 0.0f, 1.0f);
 
-    out.mAmbientOcclusion = svgfRet.mfAmbientOcclusion;
+    out.mAmbientOcclusion = float4(svgfRet.mfAmbientOcclusion, svgfRet.mfAmbientOcclusion, svgfRet.mfAmbientOcclusion, 1.0f);
 
     return out;
 }
@@ -227,7 +227,12 @@ SVGFFilterResult svgFilter(
         imageUV
     );
 
-    float fDepth = fract(worldPosition.w);
+    float4 motionMeshAndDepth = motionMeshAndDepthTexture.Sample(
+        textureSampler,
+        imageUV
+    );
+
+    float fDepth = fract(motionMeshAndDepth.z);
 
     float4 radiance  = radianceTexture.Sample(
         textureSampler,
@@ -235,7 +240,7 @@ SVGFFilterResult svgFilter(
     );
     float fLuminance = computeLuminance(radiance.xyz);
 
-    float3 totalRadiance = float3(0.0f, 0.0f, 0.0f);
+    float3 totalRadiance = float3(0.0f);
     float fTotalWeight = 0.0f;
     float fTotalSquaredWeight = 0.0f;
     float fTotalWeightedVariance = 0.0f;
@@ -258,11 +263,6 @@ SVGFFilterResult svgFilter(
         {
             int32_t iOffsetX  = iStepX * int32_t(iStepSize);
             int32_t iSampleX  = iX + iOffsetX;
-            if (iSampleX < 0 || iSampleX >= int32_t(defaultUniformBuffer.miScreenWidth))
-            {
-                continue;
-            }
-
             float2 sampleUV = float2(
                 float(iSampleX) / float(defaultUniformBuffer.miScreenWidth),
                 float(iSampleY) / float(defaultUniformBuffer.miScreenHeight)
@@ -280,8 +280,11 @@ SVGFFilterResult svgFilter(
                 textureSampler,
                 sampleUV
             );
-
             float2 moment = momentTexture.Sample(
+                textureSampler,
+                sampleUV
+            );
+            float4 sampleMotionMeshAndDepth = motionMeshAndDepthTexture.Sample(
                 textureSampler,
                 sampleUV
             );
@@ -299,12 +302,12 @@ SVGFFilterResult svgFilter(
                 continue;
             }
 
-            float fSampleDepth = fract(sampleWorldPosition.w);
+            float fSampleDepth = fract(sampleMotionMeshAndDepth.z);
 
             float fSampleNormalWeight = computeSVGFNormalStoppingWeight(
-                                            sampleNormal.xyz,
-                                            normal.xyz,
-                                            kfNormalPower);
+                sampleNormal.xyz,
+                normal.xyz,
+                kfNormalPower);
             float fSampleDepthWeight = computeSVGFDepthStoppingWeight(
                                          fDepth,
                                          fSampleDepth,
@@ -323,6 +326,11 @@ SVGFFilterResult svgFilter(
             float fKernel = afKernel[iCount];
             iCount += 1;
             float fKernelWeight = fKernel * fSampleWeight;
+
+            if (iStepX == 0 && iStepY == 0)
+            {
+                fKernelWeight = fKernel;
+            }
 
             totalRadiance += sampleRadiance.xyz * fKernelWeight;
             fTotalWeight += fKernelWeight;

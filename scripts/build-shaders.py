@@ -96,6 +96,8 @@ def get_shader_bindings(
             binding_info['name'] = 'sampler'
         elif variable_tokens[0] == 'ConstantBuffer<DefaultUniformData>':
             binding_info['name'] = 'Default Uniform Buffer'
+        elif variable_tokens[0].find('<ConstantBufferData>') >= 0 and binding_info['shader-name'] == 'constantBuffer':
+            binding_info['name'] = 'Push Constant'
 
         if binding_set == 0 and last_render_target_index >= 0:
             binding_info['index'] = binding_index + last_render_target_index + 1

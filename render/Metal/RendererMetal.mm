@@ -1628,8 +1628,8 @@ namespace Render
             
             [nativeBlitCommandEncoder endEncoding];
             [nativeCommandBuffer commit];
+            [nativeCommandBuffer waitUntilCompleted];
             
-            nativeBlitCommandEncoder = nil;
             commandBuffer.reset();
             
         }

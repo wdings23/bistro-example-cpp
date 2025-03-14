@@ -114,6 +114,19 @@
             "PassType": "Full Triangle"
         },
         {
+            "Name": "SVG Filter Graphics",
+            "Pipeline": "diffuse-svgf-lite-0-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle",
+            "ConstantBuffer": [ 
+                {
+                    "name": "step",
+                    "data": 1,
+                    "data type": "int"
+                }
+            ]
+        },
+        {
             "Name": "Build Irradiance Cache Ray Trace",
             "Pipeline": "build-irradiance-cache.json",
             "Type": "Ray Trace",

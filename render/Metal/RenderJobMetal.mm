@@ -446,7 +446,21 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
                 {
                     if(name != "sampler" && name != "textureSampler")
                     {
-                        DEBUG_PRINTF("*** Need to set shader resource \"%s\"\n", name.c_str());
+                        if(name == "Push Constant")
+                        {
+                            for(auto const& keyValue : mapUniformBuffers)
+                            {
+                                if(keyValue.first.find("Constant Buffer") != std::string::npos)
+                                {
+                                    shaderResourceInfo.mExternalResource.mpBuffer = keyValue.second;
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            DEBUG_PRINTF("*** Need to set shader resource \"%s\"\n", name.c_str());
+                        }
                     }
                 }
                 
@@ -1137,58 +1151,41 @@ DEBUG_PRINTF("%s\n", shaderPath.c_str());
 			RenderDriver::Common::CCommandQueue& commandQueue
 		)
 		{
-            WTFASSERT(0, "Implement me");
+            RenderDriver::Metal::CBuffer uploadBuffer;
+            RenderDriver::Common::BufferDescriptor bufferDesc = {};
+            bufferDesc.miSize = iDataSize;
+            bufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferSrc;
+            uploadBuffer.create(bufferDesc, *mpDevice);
+            uploadBuffer.setID("Render Job Upload Buffer");
             
-			// upload command buffer allocator
-			RenderDriver::Common::CommandAllocatorDescriptor commandAllocatorDesc = {};
-			commandAllocatorDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
-			RenderDriver::Metal::CCommandAllocator commandAllocator;
-			commandAllocator.create(commandAllocatorDesc, *mpDevice);
-
-			// upload command buffer
-			RenderDriver::Common::CommandBufferDescriptor commandBufferDesc = {};
-			commandBufferDesc.mpCommandAllocator = &commandAllocator;
-			commandBufferDesc.mpPipelineState = nullptr;
-			commandBufferDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
-			RenderDriver::Metal::CCommandBuffer commandBuffer;
-			commandBuffer.create(commandBufferDesc, *mpDevice);
-			commandBuffer.reset();
-
-			// upload buffer 
-			RenderDriver::Metal::CBuffer uploadBuffer;
-			RenderDriver::Common::BufferDescriptor bufferDesc;
-			bufferDesc.miSize = iDataSize;
-			bufferDesc.mBufferUsage = RenderDriver::Common::BufferUsage(
-				uint32_t(RenderDriver::Common::BufferUsage::TransferSrc) |
-				uint32_t(RenderDriver::Common::BufferUsage::StorageBuffer)
-			);
-			bufferDesc.mHeapType = RenderDriver::Common::HeapType::Upload;
-			uploadBuffer.create(bufferDesc, *mpDevice);
-
-			// set image data
-			uploadBuffer.setData(
-				(void*)pacData,
-				iDataSize);
-
-			buffer.copy(
-				uploadBuffer,
-				commandBuffer,
-				0,
-				0,
-				iDataSize
-			);
-
-			commandBuffer.close();
-
-			// execute command 
-			commandQueue.execCommandBuffer(
-				commandBuffer,
-				*mpDevice
-			);
-
-			// command queue wait
+            id<MTLBuffer> srcNativeBuffer = (__bridge id<MTLBuffer>)uploadBuffer.getNativeBuffer();
+            id<MTLBuffer> dstNativeBuffer = (__bridge id<MTLBuffer>)buffer.getNativeBuffer();
             
-			uploadBuffer.releaseNativeBuffer();
+            WTFASSERT(srcNativeBuffer != nil, "Can\'t create upload buffer");
+            WTFASSERT(dstNativeBuffer != nil, "Invalid destination buffer");
+            
+            void* pSrcBuffer = [srcNativeBuffer contents];
+            memcpy(pSrcBuffer, pacData, iDataSize);
+            
+            id<MTLCommandQueue> nativeCommandQueue = (__bridge id<MTLCommandQueue>)commandQueue.getNativeCommandQueue();
+            id<MTLCommandBuffer> uploadCommandBuffer = [nativeCommandQueue commandBuffer];
+            WTFASSERT(uploadCommandBuffer != nil, "Can\'t create upload command buffer");
+            id<MTLBlitCommandEncoder> blitCommandEncoder = [uploadCommandBuffer blitCommandEncoder];
+            WTFASSERT(blitCommandEncoder != nil, "Can\'t create upload blit command encoder");
+            [blitCommandEncoder
+             copyFromBuffer: srcNativeBuffer
+             sourceOffset: 0
+             toBuffer: dstNativeBuffer
+             destinationOffset: 0
+             size: iDataSize];
+            
+            [blitCommandEncoder endEncoding];
+            [uploadCommandBuffer commit];
+            [uploadCommandBuffer waitUntilCompleted];
+            
+            uploadBuffer.releaseNativeBuffer();
+            blitCommandEncoder = nil;
+            uploadCommandBuffer = nil;
 		}
     
         /*

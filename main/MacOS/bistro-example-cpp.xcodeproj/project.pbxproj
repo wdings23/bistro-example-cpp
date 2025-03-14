@@ -409,6 +409,7 @@
 		257FC0DA2D650A9000F92519 /* down-rez-depth-3.metallib in Copy Files */ = {isa = PBXBuildFile; fileRef = 257FC0BA2D650A9000F92519 /* down-rez-depth-3.metallib */; };
 		259DF5842D605457007BA6A1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259DF5832D605457007BA6A1 /* ViewController.swift */; };
 		259DF5882D6054A9007BA6A1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 259DF5872D6054A9007BA6A1 /* AppDelegate.swift */; };
+		25B105DC2D83FE97001FFF56 /* diffuse-svgf-lite-0-graphics.json in CopyFiles */ = {isa = PBXBuildFile; fileRef = 25B105DB2D83FE97001FFF56 /* diffuse-svgf-lite-0-graphics.json */; };
 		25DECE7F2D6057FF00ED56EE /* MetalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25DECE7E2D6057FF00ED56EE /* MetalView.swift */; };
 		25DECE862D6058E900ED56EE /* Wrapper.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECE852D6058E900ED56EE /* Wrapper.mm */; };
 		25DECE892D605CAC00ED56EE /* App.mm in Sources */ = {isa = PBXBuildFile; fileRef = 25DECE882D605CAC00ED56EE /* App.mm */; };
@@ -799,6 +800,7 @@
 			dstPath = "assets/render-jobs";
 			dstSubfolderSpec = 7;
 			files = (
+				25B105DC2D83FE97001FFF56 /* diffuse-svgf-lite-0-graphics.json in CopyFiles */,
 				256DD9822D80AAF2000714BF /* diffuse-temporal-accumulation-graphics.json in CopyFiles */,
 				254CE3A72D77B5D4003070B3 /* trimmed-ray-trace-copy-render-targets.json in CopyFiles */,
 				254CE3A82D77B5D4003070B3 /* trimmed-ray-trace-render-jobs.json in CopyFiles */,
@@ -860,6 +862,7 @@
 			dstPath = assets/shaders;
 			dstSubfolderSpec = 7;
 			files = (
+				257FC08F2D63218D00F92519 /* svgf-graphics.slang in CopyFiles */,
 				256DD9842D80AB2B000714BF /* diffuse-temporal-accumulation-graphics.slang in CopyFiles */,
 				257FC06C2D63218D00F92519 /* spatial-restir-emissive-ray-trace.slang in CopyFiles */,
 				257FC06D2D63218D00F92519 /* random-headers.slang in CopyFiles */,
@@ -896,7 +899,6 @@
 				257FC08C2D63218D00F92519 /* barycentric-headers.slang in CopyFiles */,
 				257FC08D2D63218D00F92519 /* specular-temporal-restir-ray-trace.slang in CopyFiles */,
 				257FC08E2D63218D00F92519 /* build-irradiance-cache.slang in CopyFiles */,
-				257FC08F2D63218D00F92519 /* svgf-graphics.slang in CopyFiles */,
 				257FC0902D63218D00F92519 /* deferred-indirect.slang in CopyFiles */,
 				257FC0912D63218D00F92519 /* test-compute.slang in CopyFiles */,
 				257FC0922D63218D00F92519 /* default-uniform-headers.slang in CopyFiles */,
@@ -1364,6 +1366,8 @@
 		259DF54C2D6053C9007BA6A1 /* bistro-example-cpp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "bistro-example-cpp.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		259DF5832D605457007BA6A1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = ../ViewController.swift; sourceTree = "<group>"; };
 		259DF5872D6054A9007BA6A1 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = ../AppDelegate.swift; sourceTree = "<group>"; };
+		25B105DA2D83FD23001FFF56 /* svgf-graphics.slang */ = {isa = PBXFileReference; lastKnownFileType = text; name = "svgf-graphics.slang"; path = "../../../shaders/svgf-graphics.slang"; sourceTree = "<group>"; };
+		25B105DB2D83FE97001FFF56 /* diffuse-svgf-lite-0-graphics.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = "diffuse-svgf-lite-0-graphics.json"; path = "../../../render-jobs/diffuse-svgf-lite-0-graphics.json"; sourceTree = "<group>"; };
 		25DECE7E2D6057FF00ED56EE /* MetalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = MetalView.swift; path = ../MetalView.swift; sourceTree = "<group>"; };
 		25DECE832D6058A400ED56EE /* bistro-example-cpp-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "bistro-example-cpp-Bridging-Header.h"; path = "../bistro-example-cpp-Bridging-Header.h"; sourceTree = "<group>"; };
 		25DECE842D6058E900ED56EE /* Wrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Wrapper.h; path = ../Wrapper.h; sourceTree = "<group>"; };
@@ -1915,6 +1919,7 @@
 				257FBFED2D63213400F92519 /* texture-atlas-graphics.json */,
 				257FBFEC2D63213400F92519 /* texture-page-queue-compute.json */,
 				256DD9812D80AAF2000714BF /* diffuse-temporal-accumulation-graphics.json */,
+				25B105DB2D83FE97001FFF56 /* diffuse-svgf-lite-0-graphics.json */,
 			);
 			path = "render-jobs";
 			sourceTree = "<group>";
@@ -1964,6 +1969,7 @@
 				257FC0462D63218A00F92519 /* tone-mapping-headers.slang */,
 				257FC0582D63218B00F92519 /* vertex-format-headers.slang */,
 				257FC0962D63C97B00F92519 /* spirv-cross-compile */,
+				25B105DA2D83FD23001FFF56 /* svgf-graphics.slang */,
 			);
 			path = shaders;
 			sourceTree = "<group>";

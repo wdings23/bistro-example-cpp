@@ -25,6 +25,8 @@
 static std::atomic<uint32_t> giCopyingTexturePage = 0;
 static std::atomic<uint32_t> giNumFinished = 0;
 
+std::mutex gPageCopyThreadMutex;
+
 struct ImageInfo
 {
     int32_t    miImageWidth;
@@ -676,44 +678,48 @@ void CApp::init(AppDescriptor const& appDesc)
                                 
                                 mThreadCommandBuffer->reset();
                                 
-                                // get the texture pages needed
-                                auto& pTexturePageQueueBuffer = mpRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Texture Page Queue MIP"];
-                                uint32_t iBufferSize = (uint32_t)pTexturePageQueueBuffer->getDescriptor().miSize;
-                                WTFASSERT(iBufferSize <= macTexturePageQueueData.size(), "Need larger buffer");
-                                mpRenderer->copyBufferToCPUMemory3(
-                                    pTexturePageQueueBuffer,
-                                    macTexturePageQueueData.data(),
-                                    0,
-                                    iBufferSize,
-                                    *mTexturePageQueueReadBackBuffer,
-                                    *mThreadCommandBuffer,
-                                    *mThreadCommandQueue
-                                );
-                                
-                                auto& texturePageInfoBuffer = mpRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["MIP Texture Page Hash Table"];
-                                iBufferSize = (uint32_t)texturePageInfoBuffer->getDescriptor().miSize;
-                                WTFASSERT(iBufferSize <= macTexturePageInfoData.size(), "Need larger buffer");
-                                mpRenderer->copyBufferToCPUMemory3(
-                                    texturePageInfoBuffer,
-                                    macTexturePageInfoData.data(),
-                                    0,
-                                    iBufferSize,
-                                    *mTexturePageInfoReadBackBuffer,
-                                    *mThreadCommandBuffer,
-                                    *mThreadCommandQueue
-                                );
-                                
-                                auto& pTexturePageCountBuffer = mpRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Counters"];
-                                WTFASSERT(256 <= macCounterData.size(), "Need larger buffer");
-                                mpRenderer->copyBufferToCPUMemory3(
-                                    pTexturePageCountBuffer,
-                                    macCounterData.data(),
-                                    0,
-                                    128,
-                                    *mTexturePageCounterReadBackBuffer,
-                                    *mThreadCommandBuffer,
-                                    *mThreadCommandQueue
-                                );
+                                {
+                                    std::lock_guard<std::mutex> lock(gPageCopyThreadMutex);
+                                    
+                                    // get the texture pages needed
+                                    auto& pTexturePageQueueBuffer = mpRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Texture Page Queue MIP"];
+                                    uint32_t iBufferSize = (uint32_t)pTexturePageQueueBuffer->getDescriptor().miSize;
+                                    WTFASSERT(iBufferSize <= macTexturePageQueueData.size(), "Need larger buffer");
+                                    mpRenderer->copyBufferToCPUMemory3(
+                                                                       pTexturePageQueueBuffer,
+                                                                       macTexturePageQueueData.data(),
+                                                                       0,
+                                                                       iBufferSize,
+                                                                       *mTexturePageQueueReadBackBuffer,
+                                                                       *mThreadCommandBuffer,
+                                                                       *mThreadCommandQueue
+                                                                       );
+                                    
+                                    auto& texturePageInfoBuffer = mpRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["MIP Texture Page Hash Table"];
+                                    iBufferSize = (uint32_t)texturePageInfoBuffer->getDescriptor().miSize;
+                                    WTFASSERT(iBufferSize <= macTexturePageInfoData.size(), "Need larger buffer");
+                                    mpRenderer->copyBufferToCPUMemory3(
+                                                                       texturePageInfoBuffer,
+                                                                       macTexturePageInfoData.data(),
+                                                                       0,
+                                                                       iBufferSize,
+                                                                       *mTexturePageInfoReadBackBuffer,
+                                                                       *mThreadCommandBuffer,
+                                                                       *mThreadCommandQueue
+                                                                       );
+                                    
+                                    auto& pTexturePageCountBuffer = mpRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Counters"];
+                                    WTFASSERT(256 <= macCounterData.size(), "Need larger buffer");
+                                    mpRenderer->copyBufferToCPUMemory3(
+                                                                       pTexturePageCountBuffer,
+                                                                       macCounterData.data(),
+                                                                       0,
+                                                                       128,
+                                                                       *mTexturePageCounterReadBackBuffer,
+                                                                       *mThreadCommandBuffer,
+                                                                       *mThreadCommandQueue
+                                                                       );
+                                }
                                 
                                 // finish upload/download from gpu
                                 giCopyingTexturePage.store(0);
@@ -1216,6 +1222,8 @@ auto start1 = std::chrono::high_resolution_clock::now();
         uint32_t iPageIndex = 0;
         if(texturePage.miTextureID >= 65536)
         {
+            std::lock_guard<std::mutex> lock(gPageCopyThreadMutex);
+            
             texturePageAtlasCoord.x = iThreadNormalTextureIndex % iNumPagesPerRow;
             texturePageAtlasCoord.y = (iThreadNormalTextureIndex / iNumPagesPerRow) % iNumPagesPerRow;
             
@@ -1236,6 +1244,8 @@ auto start1 = std::chrono::high_resolution_clock::now();
         {
             if(iThreadAlbedoTextureIndex >= iNumPagesPerRow * iNumPagesPerRow)
             {
+                std::lock_guard<std::mutex> lock(gPageCopyThreadMutex);
+                
                 auto& textureAtlas0 = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputImageAttachments["Texture Atlas 2"];
                 memcpy(pUploadBuffer, pTexturePageData, iTexturePageDataSize);
                 pRenderer->copyTexturePageToAtlas2(
@@ -1250,6 +1260,8 @@ auto start1 = std::chrono::high_resolution_clock::now();
             }
             else
             {
+                std::lock_guard<std::mutex> lock(gPageCopyThreadMutex);
+                
                 auto& textureAtlas0 = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputImageAttachments["Texture Atlas 0"];
                 memcpy(pUploadBuffer, pTexturePageData, iTexturePageDataSize);
                 pRenderer->copyTexturePageToAtlas2(
@@ -1276,14 +1288,17 @@ auto start1 = std::chrono::high_resolution_clock::now();
         hashEntry.miPageIndex = iPageIndex;
         hashEntry.miUpdateFrame = pRenderer->getFrameIndex() + 1;
         uint32_t iBufferOffset = texturePage.miHashIndex * sizeof(uint32_t) * 4;
-        pRenderer->copyCPUToBuffer4(
-            texturePageInfoBuffer,
-            &hashEntry,
-            iBufferOffset,
-            sizeof(HashEntry),
-            commandBuffer,
-            commandQueue,
-            threadScratchPathUploadBuffer);
+        {
+            std::lock_guard<std::mutex> lock(gPageCopyThreadMutex);
+            pRenderer->copyCPUToBuffer4(
+                                        texturePageInfoBuffer,
+                                        &hashEntry,
+                                        iBufferOffset,
+                                        sizeof(HashEntry),
+                                        commandBuffer,
+                                        commandQueue,
+                                        threadScratchPathUploadBuffer);
+        }
         
         // finished uploading to gpu
         giCopyingTexturePage.store(0);
