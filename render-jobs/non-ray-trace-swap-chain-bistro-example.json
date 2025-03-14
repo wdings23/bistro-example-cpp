@@ -1,7 +1,7 @@
 {
     "Type": "Graphics",
     "PassType": "Swap Chain",
-    "Shader": "swap-chain-bistro-example.shader",
+    "Shader": "trimmed-swap-chain-bistro-example.shader",
     "Attachments": [
         {
             "Name" : "Swap Chain Output",
@@ -10,14 +10,19 @@
         },
 
         {
-            "Name" : "Direct Sun Light Output",
+            "Name" : "Albedo Output",
             "Type": "TextureInput",
-            "ParentJobName": "Ray Traced Shadow"
+            "ParentJobName": "Texture Atlas Graphics"
         },
         {
             "Name" : "Diffuse Accumulated Output",
             "Type": "TextureInput",
             "ParentJobName": "Temporal Accumulation Graphics"
+        },
+        {
+            "Name" : "Direct Sun Light Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Ray Traced Shadow"
         }
     ],
     "ShaderResources": [
