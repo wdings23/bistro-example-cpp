@@ -41,7 +41,7 @@
             "ParentJobName": "Copy Render Targets"
         },
         {
-            "Name": "Previous Diffuse Temporal Accumulation Radiance",
+            "Name": "Previous SVG Filtered Output",
             "Type": "TextureInput",
             "ParentJobName": "Copy Render Targets"
         },

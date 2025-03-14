@@ -15,9 +15,9 @@
             "ParentJobName": "Texture Atlas Graphics"
         },
         {
-            "Name" : "Diffuse Accumulated Output",
+            "Name" : "Diffuse SVG Filter Radiance 0 Output",
             "Type": "TextureInput",
-            "ParentJobName": "Temporal Accumulation Graphics"
+            "ParentJobName": "SVG Filter Graphics"
         },
         {
             "Name" : "Direct Sun Light Output",

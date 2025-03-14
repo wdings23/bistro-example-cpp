@@ -119,6 +119,13 @@
             "ParentJobName": "Temporal Accumulation Graphics",
             "ParentName": "Diffuse Accumulated Output",
             "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous SVG Filtered Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "SVG Filter Graphics",
+            "ParentName": "Diffuse SVG Filter Radiance 0 Output",
+            "Format": "rgba32float"
         }
         
     ]

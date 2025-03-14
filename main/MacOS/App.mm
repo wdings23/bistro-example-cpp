@@ -686,39 +686,39 @@ void CApp::init(AppDescriptor const& appDesc)
                                     uint32_t iBufferSize = (uint32_t)pTexturePageQueueBuffer->getDescriptor().miSize;
                                     WTFASSERT(iBufferSize <= macTexturePageQueueData.size(), "Need larger buffer");
                                     mpRenderer->copyBufferToCPUMemory3(
-                                                                       pTexturePageQueueBuffer,
-                                                                       macTexturePageQueueData.data(),
-                                                                       0,
-                                                                       iBufferSize,
-                                                                       *mTexturePageQueueReadBackBuffer,
-                                                                       *mThreadCommandBuffer,
-                                                                       *mThreadCommandQueue
-                                                                       );
+                                        pTexturePageQueueBuffer,
+                                        macTexturePageQueueData.data(),
+                                        0,
+                                        iBufferSize,
+                                        *mTexturePageQueueReadBackBuffer,
+                                        *mThreadCommandBuffer,
+                                        *mThreadCommandQueue
+                                    );
                                     
                                     auto& texturePageInfoBuffer = mpRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["MIP Texture Page Hash Table"];
                                     iBufferSize = (uint32_t)texturePageInfoBuffer->getDescriptor().miSize;
                                     WTFASSERT(iBufferSize <= macTexturePageInfoData.size(), "Need larger buffer");
                                     mpRenderer->copyBufferToCPUMemory3(
-                                                                       texturePageInfoBuffer,
-                                                                       macTexturePageInfoData.data(),
-                                                                       0,
-                                                                       iBufferSize,
-                                                                       *mTexturePageInfoReadBackBuffer,
-                                                                       *mThreadCommandBuffer,
-                                                                       *mThreadCommandQueue
-                                                                       );
+                                        texturePageInfoBuffer,
+                                        macTexturePageInfoData.data(),
+                                        0,
+                                        iBufferSize,
+                                        *mTexturePageInfoReadBackBuffer,
+                                        *mThreadCommandBuffer,
+                                        *mThreadCommandQueue
+                                    );
                                     
                                     auto& pTexturePageCountBuffer = mpRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Counters"];
                                     WTFASSERT(256 <= macCounterData.size(), "Need larger buffer");
                                     mpRenderer->copyBufferToCPUMemory3(
-                                                                       pTexturePageCountBuffer,
-                                                                       macCounterData.data(),
-                                                                       0,
-                                                                       128,
-                                                                       *mTexturePageCounterReadBackBuffer,
-                                                                       *mThreadCommandBuffer,
-                                                                       *mThreadCommandQueue
-                                                                       );
+                                        pTexturePageCountBuffer,
+                                        macCounterData.data(),
+                                        0,
+                                        128,
+                                        *mTexturePageCounterReadBackBuffer,
+                                        *mThreadCommandBuffer,
+                                        *mThreadCommandQueue
+                                    );
                                 }
                                 
                                 // finish upload/download from gpu
