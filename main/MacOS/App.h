@@ -110,4 +110,6 @@ public:
     
     std::unique_ptr<RenderDriver::Common::CCommandBuffer> mThreadCommandBuffer;
     std::unique_ptr<RenderDriver::Common::CCommandAllocator> mThreadCommandAllocator;
+    
+    bool mabThreadWaiting[4];
 };

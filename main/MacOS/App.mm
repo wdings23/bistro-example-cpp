@@ -526,7 +526,7 @@ void CApp::init(AppDescriptor const& appDesc)
     
     pRenderer->prepareRenderJobData();
     
-    miNumLoadingThreads = 1;
+    miNumLoadingThreads = 2;
     
     maiStartAndNumChecks.resize(4);
     
@@ -600,6 +600,11 @@ void CApp::init(AppDescriptor const& appDesc)
         maScatchPadUploadBuffer[i]->setID(scratchPadName.str());
     }
     
+    for(uint32_t i = 0; i < miNumLoadingThreads; i++)
+    {
+        mabThreadWaiting[i] = false;
+    }
+    
     miCurrTotalPageLoaded = 0;
     
     // post draw, get the texture pages needed
@@ -638,6 +643,30 @@ void CApp::init(AppDescriptor const& appDesc)
                             // wait or calculate thread start and end indices
                             if(iThisThreadID == 0 && iLoop > 0)
                             {
+                                // wait till all the other threads have done its loading checks and are waiting
+                                while(giNumFinished.load() < miNumLoadingThreads)
+                                {
+                                    uint32_t iNumWaiting = 0;
+                                    for(uint32_t i = 1; i < miNumLoadingThreads; i++)
+                                    {
+                                        if(mabThreadWaiting[i])
+                                        {
+                                            ++iNumWaiting;
+                                        }
+                                    }
+                                    
+                                    if(iNumWaiting >= miNumLoadingThreads - 1)
+                                    {
+                                        break;
+                                    }
+                                    
+                                    if(mbQuit)
+                                    {
+                                        break;
+                                    }
+                                    std::this_thread::sleep_for(std::chrono::microseconds(10));
+                                }
+                                
                                 // get the page queue, page info, and calculate the each thread's start index and num pages in queue to check
                                 uint32_t iDesired = 0; //giCopyingTexturePage.load();
                                 while(giCopyingTexturePage.compare_exchange_strong(iDesired, 1u, std::memory_order_acquire, std::memory_order_release) == false)
@@ -690,18 +719,10 @@ void CApp::init(AppDescriptor const& appDesc)
                                 giCopyingTexturePage.store(0);
                                 
                                 uint32_t iNumChecks = std::min(*((uint32_t*)macCounterData.data()), 65535u);
+                                uint32_t iNumChecksPerLoadingThreads = iNumChecks / miNumLoadingThreads;
                                 for(uint32_t i = 0; i < miNumLoadingThreads; i++)
                                 {
-                                    maiStartAndNumChecks[i] = std::make_pair(i * (uint32_t)ceil((float)iNumChecks / (float)miNumLoadingThreads), (uint32_t)ceil((float)iNumChecks / (float)miNumLoadingThreads));
-                                }
-                                
-                                while(giNumFinished.load() < miNumLoadingThreads)
-                                {
-                                    if(mbQuit)
-                                    {
-                                        break;
-                                    }
-                                    std::this_thread::sleep_for(std::chrono::microseconds(10));
+                                    maiStartAndNumChecks[i] = std::make_pair(i * iNumChecksPerLoadingThreads, std::min((i + 1) * iNumChecksPerLoadingThreads, iNumChecks));
                                 }
                                 
                                 giNumFinished.store(0);
@@ -710,6 +731,16 @@ void CApp::init(AppDescriptor const& appDesc)
                                 mbStartLoadPage = true;
                                 mConditionVariable.notify_all();
                                 
+                            }
+                            else
+                            {
+                                if(iThisThreadID > 0)
+                                {
+                                    std::unique_lock<std::mutex> uniqueLock(mTexturePageThreadMutex);
+                                    mabThreadWaiting[iThisThreadID] = true;
+                                    mConditionVariable.wait(uniqueLock);
+                                    mabThreadWaiting[iThisThreadID] = false;
+                                }
                             }
                             
                             // start or continue with the queue entry index from last loop
