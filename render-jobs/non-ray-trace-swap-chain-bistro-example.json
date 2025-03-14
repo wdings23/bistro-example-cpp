@@ -15,9 +15,9 @@
             "ParentJobName": "Texture Atlas Graphics"
         },
         {
-            "Name" : "Diffuse SVG Filter Radiance 0 Output",
+            "Name" : "Diffuse SVG Filter Radiance 2 Output",
             "Type": "TextureInput",
-            "ParentJobName": "SVG Filter Graphics 0"
+            "ParentJobName": "SVG Filter Graphics 2"
         },
         {
             "Name" : "Direct Sun Light Output",

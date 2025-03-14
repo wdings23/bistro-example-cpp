@@ -4,17 +4,17 @@
     "Shader": "svgf-graphics.shader",
     "Attachments": [
         {
-            "Name" : "Diffuse SVG Filter Radiance 1 Output",
+            "Name" : "Diffuse SVG Filter Radiance 2 Output",
             "Type": "TextureOutput",
             "Format": "rgba32float"
         },
         {
-            "Name" : "Diffuse SVG Filter Moment 1 Output",
+            "Name" : "Diffuse SVG Filter Moment 2 Output",
             "Type": "TextureOutput",
             "Format": "rgba32float"
         },
         {
-            "Name" : "Diffuse SVG Filter Ambient Occlusion 1 Output",
+            "Name" : "Diffuse SVG Filter Ambient Occlusion 2 Output",
             "Type": "TextureOutput",
             "Format": "rgba32float"
         },
@@ -30,14 +30,14 @@
             "ParentJobName": "Deferred Indirect Graphics"
         },
         {
-            "Name" : "Diffuse SVG Filter Radiance 0 Output",
+            "Name" : "Diffuse SVG Filter Radiance 1 Output",
             "Type": "TextureInput",
-            "ParentJobName": "SVG Filter Graphics 0"
+            "ParentJobName": "SVG Filter Graphics 1"
         },
         {
-            "Name" : "Diffuse SVG Filter Moment 0 Output",
+            "Name" : "Diffuse SVG Filter Moment 1 Output",
             "Type": "TextureInput",
-            "ParentJobName": "SVG Filter Graphics 0"
+            "ParentJobName": "SVG Filter Graphics 1"
         },
 
         {
