@@ -5,7 +5,8 @@
 [[vk::binding(0, 0)]] Texture2D<float4> texture0;
 [[vk::binding(1, 0)]] Texture2D<float4> texture1;
 [[vk::binding(2, 0)]] Texture2D<float4> texture2;
-[[vk::binding(3, 0)]] SamplerState sampler;
+[[vk::binding(3, 0)]] Texture2D<float4> texture3;
+[[vk::binding(4, 0)]] SamplerState sampler;
 [[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
 
 struct AssembledVertex
@@ -53,6 +54,7 @@ PSOutput PSMain(VertexStageOutput in)
     out.mOutput.xyz =
         clamp(
             texture0.Sample(sampler, texCoord).xyz *
+            texture3.Sample(sampler, texCoord).xyz *
             (texture1.Sample(sampler, texCoord).xyz + 
             texture2.Sample(sampler, texCoord).xyz),
             float3(0.0f),

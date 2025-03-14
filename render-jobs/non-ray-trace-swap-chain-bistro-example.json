@@ -23,6 +23,11 @@
             "Name" : "Direct Sun Light Output",
             "Type": "TextureInput",
             "ParentJobName": "Ray Traced Shadow"
+        },
+        {
+            "Name": "Diffuse SVG Filter Ambient Occlusion 2 Output",
+            "Type": "TextureInput",
+            "ParentJobName": "SVG Filter Graphics 2"
         }
     ],
     "ShaderResources": [
