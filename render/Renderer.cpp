@@ -568,11 +568,7 @@ namespace Render
 
             if(bWaitCPU)
             {
-                auto start = std::chrono::high_resolution_clock::now();
-
                 mpUploadFence->waitCPU(UINT64_MAX);
-
-                uint64_t iElapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
             }
 
             mpUploadCommandAllocator->reset();
@@ -1208,7 +1204,7 @@ namespace Render
                 uint32_t(float(mDesc.miScreenHeight) * pRenderJob->mViewportScale.y),
                 mDesc.mfViewportMaxDepth,
                 commandBuffer);
-
+            
             float afClearColor[] = {0.0f, 0.0f, 0.3f, 0.0f};
 
             if(pRenderJob->mPassType == PassType::FullTriangle || pRenderJob->mPassType == PassType::SwapChain)
@@ -1518,9 +1514,6 @@ namespace Render
             RenderDriver::Common::CCommandQueue* pGraphicsCommandQueue = mpGraphicsCommandQueue.get();
             RenderDriver::Common::CCommandQueue* pComputeCommandQueue = mpComputeCommandQueue.get();
             RenderDriver::Common::CCommandQueue* pCopyCommandQueue = mpCopyCommandQueue.get();
-            RenderDriver::Common::CCommandQueue* pGPUCopyCommandQueue = mpGPUCopyCommandQueue.get();
-
-auto startExecJobs = std::chrono::high_resolution_clock::now();
 
             platformPreRenderJobExec();
             
@@ -1529,8 +1522,6 @@ auto startExecJobs = std::chrono::high_resolution_clock::now();
             uint32_t iTripleBufferIndex = miFrameIndex % 3;
             for(auto const& renderJobName : maRenderJobNames)
             {
-auto start0 = std::chrono::high_resolution_clock::now();
-
 #if !defined(USE_RAY_TRACING)
                 if(renderJobName.find("Light Composite") != std::string::npos ||
                    renderJobName.find("Temporal Accumulation Graphics") != std::string::npos ||
@@ -1627,7 +1618,6 @@ auto start0 = std::chrono::high_resolution_clock::now();
                         RenderDriver::Common::CImage* pSrcImage = pRenderJob->mapInputImageAttachments[destAttachmentName];
                         RenderDriver::Common::CImage* pDestImage = pRenderJob->mapOutputImageAttachments[copyAttachment.first];
 
-                        RenderDriver::Common::CCommandBuffer& commandBuffer = *mapRenderJobCommandBuffers["Copy Render Targets"];
                         platformCopyImage2(
                             *pDestImage,
                             *pSrcImage,
@@ -1644,9 +1634,6 @@ auto start0 = std::chrono::high_resolution_clock::now();
                         commandBuffer
                     );
                 }
-
-auto elapsed0 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start0).count();
-//DEBUG_PRINTF("\"%s\" 0 %d micro-seconds\n", pRenderJob->mName.c_str(), elapsed0);
 
                 commandBuffer.close();
 
@@ -1675,7 +1662,8 @@ auto elapsed0 = std::chrono::duration_cast<std::chrono::microseconds>(std::chron
                         &pRenderJob->miSignalSemaphoreValue,
                         pRenderJob->mpWaitFence,
                         pRenderJob->mpSignalFence
-                    );
+                        );
+                    
                 }
                 else if(pRenderJob->mType == Render::Common::JobType::Compute)
                 {
@@ -1710,13 +1698,8 @@ auto elapsed0 = std::chrono::duration_cast<std::chrono::microseconds>(std::chron
 
                 ++iJobIndex;
 
-//auto elapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start1).count();
-//DEBUG_PRINTF("\"%s\" 1 %d micro-seconds\n", pRenderJob->mName.c_str(), elapsed1);
             }
-
-auto totalElapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - startExecJobs).count();
-
-
+            
             // transition swap chain image to present if no swap chain pass is listed
             if(!bHasSwapChainPass)
             {
@@ -1843,28 +1826,28 @@ auto totalElapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::c
                 float4 maxPosition = *pExtent++;
                 maMeshExtents.push_back(std::make_pair(minPosition, maxPosition));
             }
-            WTFASSERT(sizeof(VertexFormat) == iVertexSize, "vertex size not equal");
+            WTFASSERT(sizeof(GPUVertexFormat) == iVertexSize, "vertex size not equal");
             
             // vertices
-            VertexFormat* pVertices = (VertexFormat*)pExtent;
-            std::vector<VertexFormat> aVertexBuffer(iNumTotalVertices);
-            memcpy(aVertexBuffer.data(), pVertices, sizeof(VertexFormat) * iNumTotalVertices);
+            GPUVertexFormat* pVertices = (GPUVertexFormat*)pExtent;
+            std::vector<GPUVertexFormat> aVertexBuffer(iNumTotalVertices);
+            memcpy(aVertexBuffer.data(), pVertices, sizeof(GPUVertexFormat) * iNumTotalVertices);
             pVertices += iNumTotalVertices;
-			
-			if(mRenderDriverType == RenderDriverType::Metal)
+
+            if(mRenderDriverType == RenderDriverType::Metal)
 			{
-	            for(uint32_t i = 0; i < aVertexBuffer.size(); i++)
-	            {
-	                aVertexBuffer[i].mTexCoord.z = aVertexBuffer[i].mPosition.w;
-	            }
-	     	}
+                for(uint32_t i = 0; i < aVertexBuffer.size(); i++)
+                {
+                    aVertexBuffer[i].mTexCoord.z = aVertexBuffer[i].mPosition.w;
+                }
+            }
             
             // indices
             uint32_t const* pIndices = (uint32_t const*)pVertices;
             std::vector<uint32_t> aiIndexBuffer(iNumTotalTriangles * 3);
             memcpy(aiIndexBuffer.data(), pIndices, sizeof(uint32_t) * iNumTotalTriangles * 3);
 
-            uint32_t iVertexBufferSize = iNumTotalVertices * sizeof(VertexFormat);
+            uint32_t iVertexBufferSize = iNumTotalVertices * sizeof(GPUVertexFormat);
             uint32_t iIndexBufferSize = iNumTotalTriangles * 3 * sizeof(uint32_t);
 
             // register vertex and index gpu buffers
