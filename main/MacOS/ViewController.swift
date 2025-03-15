@@ -31,6 +31,8 @@ class ViewController: NSViewController {
         let selector = #selector(renderLoop(_:))
         self._displayLink = _renderView.displayLink(target: self, selector: selector)
         self._displayLink?.add(to: .main, forMode: .common)
+        
+        self.view.window?.title = "RenderWithMe (Metal)"
     }
 
 }
