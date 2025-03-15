@@ -1,7 +1,6 @@
 #pragma once
 
 #include <string>
-#include <vec.h>
 #include <vector>
 #include <math/vec.h>
 #include <math/mat4.h>
