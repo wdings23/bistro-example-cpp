@@ -284,7 +284,6 @@ namespace Render
                     iImageHeight = attachmentJSON["ImageHeight"].GetInt();
                 }
 
-                RenderDriver::Common::Format attachmentFormat = RenderDriver::Common::Format::R8G8B8A8_UNORM;
                 if(type == "TextureOutput")
                 {
                     handleTextureOutput(
@@ -618,16 +617,17 @@ namespace Render
                         ++iBinding;
                     }
                 }
+#if defined(_MSC_VER)           // metal will handle shader resources when creating pipeline
                 else if(maUniformMappings[i].second == "buffer-input" || maUniformMappings[i].second == "buffer-output" || maUniformMappings[i].second == "buffer")
                 {
                     RenderDriver::Common::CBuffer* pBuffer = mapUniformBuffers[name];
                     bool bReadOnly = (maShaderResourceInfo[name]["usage"] == "uniform" || maShaderResourceInfo[name]["usage"] == "read_only_storage");
                     mpDescriptorSet->addBuffer(
-                        pBuffer, 
+                        pBuffer,
                         iBinding,
                         1,
                         bReadOnly);
-
+                    
                     DEBUG_PRINTF("\tbuffer \"%s\" set %d binding %d",
                         name.c_str(),
                         1,
@@ -639,13 +639,10 @@ namespace Render
 
                     ++iBinding;
                 }
-                else
-                {
-                    WTFASSERT(0, "not handled");
-                }
+#endif // _MSC_VER
             }
 
-#if defined(_MSC_VER)
+#if defined(_MSC_VER)           // metal will handle shader resources when creating pipeline
             mpDescriptorSet->addBuffer(
                 mpDefaultUniformBuffer,
                 iBinding,
@@ -657,7 +654,7 @@ namespace Render
                 1,
                 iBinding);
 #endif // _MSC_VER
-
+            
             // create the descriptor set and update the buffers
             mpDescriptorSet->finishLayout(
                 createInfo.maSamplers
@@ -963,7 +960,6 @@ DEBUG_PRINTF("render job: %s\n", mName.c_str());
                     iImageHeight = attachmentJSON["ImageHeight"].GetInt();
                 }
 
-                RenderDriver::Common::Format attachmentFormat = RenderDriver::Common::Format::R8G8B8A8_UNORM;
                 if(type == "TextureOutput")
                 {
                     maAttachmentMappings.push_back(std::make_pair(name, "texture-output"));
@@ -1269,8 +1265,6 @@ DEBUG_PRINTF("render job: %s\n", mName.c_str());
             std::vector<Render::Common::CRenderJob*>* apRenderJobs
         )
         {
-            RenderDriver::Common::BufferUsage usage = RenderDriver::Common::BufferUsage::StorageBuffer;
-
             std::string const name = attachmentJSON["Name"].GetString();
 
             // get parent job
@@ -1489,7 +1483,6 @@ DEBUG_PRINTF("render job: %s\n", mName.c_str());
             std::string name = shaderResource["name"].GetString();
 
             int32_t iTextureWidth = 0, iTextureHeight = 0;
-            RenderDriver::Common::Format textureFormat = RenderDriver::Common::Format::R8G8B8A8_UNORM;
             if(shaderResource.HasMember("file_path"))
             {
                 std::string filePath = shaderResource["file_path"].GetString();
