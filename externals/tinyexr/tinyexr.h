@@ -175,6 +175,11 @@ extern "C" {
 #define TINYEXR_TILE_ROUND_DOWN (0)
 #define TINYEXR_TILE_ROUND_UP (1)
 
+#if defined(_MSC_VER)
+#undef max
+#undef min
+#endif // _MSC_VER
+
 typedef struct _EXRVersion {
   int version;    // this must be 2
   // tile format image;

@@ -12,6 +12,8 @@
 #include <LogPrint.h>
 #include <wtfassert.h>
 
+#include <stb_image.h>
+
 namespace Render
 {
     namespace Vulkan

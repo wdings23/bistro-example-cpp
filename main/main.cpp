@@ -386,6 +386,9 @@ std::mutex threadMutex;
 std::mutex updateCheckMutex;
 bool gbQuit = false;
 
+#undef max
+#undef min
+
 /*
 **
 */
@@ -684,8 +687,10 @@ int CALLBACK WinMain(
         static_cast<Render::Vulkan::CRenderer*>(pRenderer)->initImgui();
     }
 
+    std::map<std::string, std::unique_ptr<RenderDriver::Common::CBuffer>> aExternalBufferMap;
+
     pRenderer->initData();
-    pRenderer->loadRenderJobInfo(pDesc->mRenderJobsFilePath);
+    pRenderer->loadRenderJobInfo(pDesc->mRenderJobsFilePath, aExternalBufferMap);
     pRenderer->prepareRenderJobData();
 
     {
@@ -943,7 +948,7 @@ int CALLBACK WinMain(
                             giCopyingTexturePage.store(0);
 
                             // get the size of the queue and compute the start and end indices to check for each threads
-                            uint32_t iNumChecks = min(*((uint32_t*)acCounterData.data()), 65535);
+                            uint32_t iNumChecks = std::min(*((uint32_t*)acCounterData.data()), 65535u);
                             iNumChecksPerThread = (uint32_t)ceil((float)iNumChecks / (float)iNumThreads);
                             for(uint32_t i = 0; i < iNumThreads; i++)
                             {
@@ -1756,14 +1761,14 @@ LRESULT CALLBACK _windowProc(
 
             case '[':
             {
-                Render::Common::gfEmissiveRadiance = max(Render::Common::gfEmissiveRadiance - 5.0f, 0.0f);
+                Render::Common::gfEmissiveRadiance = std::max(Render::Common::gfEmissiveRadiance - 5.0f, 0.0f);
                 Render::Common::gfClearReservoir = 1.0f;
                 break;
             }
 
             case ']':
             {
-                Render::Common::gfEmissiveRadiance = max(Render::Common::gfEmissiveRadiance + 5.0f, 0.0f);
+                Render::Common::gfEmissiveRadiance = std::max(Render::Common::gfEmissiveRadiance + 5.0f, 0.0f);
                 Render::Common::gfClearReservoir = 1.0f;
                 break;
             }
@@ -2540,8 +2545,8 @@ void outputTexturePages(
         4);
 
     uint2 numPages(
-        max(iImageWidth / iPageDimension, 1),
-        max(iImageHeight / iPageDimension, 1)
+        std::max(iImageWidth / iPageDimension, 1u),
+        std::max(iImageHeight / iPageDimension, 1u)
     );
 
     auto fileExtensionStart = imageFileName.find_last_of(".");
@@ -2715,8 +2720,8 @@ void loadTexturePage(
         );
 
         uint2 numDivs(
-            max(1, mipTextureDimension.x / iTexturePageSize),
-            max(1, mipTextureDimension.y / iTexturePageSize)
+            std::max(1u, mipTextureDimension.x / iTexturePageSize),
+            std::max(1u, mipTextureDimension.y / iTexturePageSize)
         );
 
         // texture page coordinate
@@ -3104,8 +3109,8 @@ auto totalStart = std::chrono::high_resolution_clock::now();
         );
 
         uint2 numDivs(
-            max(1, mipTextureDimension.x / iTexturePageSize),
-            max(1, mipTextureDimension.y / iTexturePageSize)
+            std::max(1u, mipTextureDimension.x / iTexturePageSize),
+            std::max(1u, mipTextureDimension.y / iTexturePageSize)
         );
 
         // texture page coordinate

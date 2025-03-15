@@ -112,7 +112,7 @@ namespace RenderDriver
             uint32_t iStartIndexLocation,
             uint32_t iBaseVertexLocation,
             uint32_t iStartInstanceLocation,
-            enderDriver::Common::CBuffer* pIndexBuffer)
+            RenderDriver::Common::CBuffer* pIndexBuffer)
         {
             mState = RenderDriver::Common::CommandBufferState::Executing;
             mNativeCommandList->DrawIndexedInstanced(

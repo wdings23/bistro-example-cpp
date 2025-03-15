@@ -14,6 +14,9 @@
 
 #include <sstream>
 
+#if defined(_MSC_VER)
+#undef max
+#endif // _MSC_VER
 
 namespace Render
 {
