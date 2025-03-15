@@ -284,6 +284,8 @@ namespace Render
                         break;
                     }
 
+                    uint32_t iAddress = iSlot * sizeof(HashMapEntry);
+                    uint32_t iPrev = UINT32_MAX;
                     HashMapEntry* aDataHashMap = reinterpret_cast<HashMapEntry*>(buffer.data());
                     HashMapEntry& dataHashMap = aDataHashMap[iSlot];
 
@@ -353,6 +355,7 @@ namespace Render
                         break;
                     }
 
+                    uint32_t iAddress = iSlot * sizeof(HashMapEntry);
                     if(aDataHashMap[iSlot].mMeshCluster.x == key.x &&
                          aDataHashMap[iSlot].mMeshCluster.y == key.y)
                     {
@@ -389,6 +392,7 @@ namespace Render
                         break;
                     }
 
+                    uint32_t iAddress = iSlot * sizeof(HashMapEntry);
                     if(aDataHashMap[iSlot].mMeshCluster.x == key.x &&
                         aDataHashMap[iSlot].mMeshCluster.y == key.y)
                     {
@@ -631,9 +635,9 @@ namespace Render
                                     {
                                         case 0:
                                         {
-                                            //float4 color = rasterTriangleDesc.maColors[0] * barycentricCoord.x +
-                                            //    rasterTriangleDesc.maColors[1] * barycentricCoord.y +
-                                            //    rasterTriangleDesc.maColors[2] * barycentricCoord.z;
+                                            float4 color = rasterTriangleDesc.maColors[0] * barycentricCoord.x +
+                                                rasterTriangleDesc.maColors[1] * barycentricCoord.y +
+                                                rasterTriangleDesc.maColors[2] * barycentricCoord.z;
 
                                             FragmentShaderInput fragmentShaderInput;
                                             FragmentShaderOutput fragmentShaderOutput;

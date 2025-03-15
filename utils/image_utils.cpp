@@ -241,6 +241,8 @@ namespace ImageUtils
                     int32_t iIndex = (iY * iWidth + iX) * 4;
                     float fX = (float)pOrigImageData[iIndex] / 255.0f;
                     float fY = (float)pOrigImageData[iIndex+1] / 255.0f;
+                    float fZ = (float)pOrigImageData[iIndex+2] / 255.0f;
+                    float fW = (float)pOrigImageData[iIndex+3] / 255.0f;
 
                     float fPhi = (fX * 2.0f - 1.0f) * 3.14159f;
                     float fTheta = fY * 2.0f * 3.14159f;

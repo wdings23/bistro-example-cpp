@@ -568,7 +568,11 @@ namespace Render
 
             if(bWaitCPU)
             {
+                auto start = std::chrono::high_resolution_clock::now();
+
                 mpUploadFence->waitCPU(UINT64_MAX);
+
+                uint64_t iElapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
             }
 
             mpUploadCommandAllocator->reset();
@@ -899,6 +903,13 @@ namespace Render
                 pData,
                 iDataSize,
                 iDestOffset);
+
+            if((iFlags & static_cast<uint32_t>(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY)) > 0)
+            {
+                platformExecuteCopyCommandBuffer(*mpUploadCommandBuffer, iFlags);
+                mpUploadCommandAllocator->reset();
+                mpUploadCommandBuffer->reset();
+            }
         }
 
         /*
@@ -1197,6 +1208,8 @@ namespace Render
                 uint32_t(float(mDesc.miScreenHeight) * pRenderJob->mViewportScale.y),
                 mDesc.mfViewportMaxDepth,
                 commandBuffer);
+
+            float afClearColor[] = {0.0f, 0.0f, 0.3f, 0.0f};
 
             if(pRenderJob->mPassType == PassType::FullTriangle || pRenderJob->mPassType == PassType::SwapChain)
             {
@@ -1505,13 +1518,19 @@ namespace Render
             RenderDriver::Common::CCommandQueue* pGraphicsCommandQueue = mpGraphicsCommandQueue.get();
             RenderDriver::Common::CCommandQueue* pComputeCommandQueue = mpComputeCommandQueue.get();
             RenderDriver::Common::CCommandQueue* pCopyCommandQueue = mpCopyCommandQueue.get();
+            RenderDriver::Common::CCommandQueue* pGPUCopyCommandQueue = mpGPUCopyCommandQueue.get();
+
+auto startExecJobs = std::chrono::high_resolution_clock::now();
 
             platformPreRenderJobExec();
             
             uint32_t iJobIndex = 0;
             bool bHasSwapChainPass = false;
+            uint32_t iTripleBufferIndex = miFrameIndex % 3;
             for(auto const& renderJobName : maRenderJobNames)
             {
+auto start0 = std::chrono::high_resolution_clock::now();
+
 #if !defined(USE_RAY_TRACING)
                 if(renderJobName.find("Light Composite") != std::string::npos ||
                    renderJobName.find("Temporal Accumulation Graphics") != std::string::npos ||
@@ -1608,6 +1627,7 @@ namespace Render
                         RenderDriver::Common::CImage* pSrcImage = pRenderJob->mapInputImageAttachments[destAttachmentName];
                         RenderDriver::Common::CImage* pDestImage = pRenderJob->mapOutputImageAttachments[copyAttachment.first];
 
+                        RenderDriver::Common::CCommandBuffer& commandBuffer = *mapRenderJobCommandBuffers["Copy Render Targets"];
                         platformCopyImage2(
                             *pDestImage,
                             *pSrcImage,
@@ -1624,6 +1644,9 @@ namespace Render
                         commandBuffer
                     );
                 }
+
+auto elapsed0 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start0).count();
+//DEBUG_PRINTF("\"%s\" 0 %d micro-seconds\n", pRenderJob->mName.c_str(), elapsed0);
 
                 commandBuffer.close();
 
@@ -1652,30 +1675,7 @@ namespace Render
                         &pRenderJob->miSignalSemaphoreValue,
                         pRenderJob->mpWaitFence,
                         pRenderJob->mpSignalFence
-                        );
-                    
-                    /*for(auto& keyValue : pRenderJob->mapOutputImageAttachments)
-                    {
-                        if(keyValue.second == nullptr)
-                        {
-                            continue;
-                        }
-                        
-                        RenderDriver::Common::CImage* pImage = keyValue.second;
-                        std::string baseName = pRenderJob->mName + "-" + keyValue.first;
-                        std::replace(baseName.begin(), baseName.end(), ' ', '-');
-                        
-                        std::vector<float> afImageData;
-                        platformCopyImageToCPUMemory(pImage, afImageData);
-                        
-                        int32_t iImageWidth = pImage->getDescriptor().miWidth;
-                        int32_t iImageHeight = pImage->getDescriptor().miHeight;
-                        std::string outputDir = std::string("/Users/dingwings/Downloads/debug-output-attachments/") + baseName + ".hdr";
-                        int32_t iRet = stbi_write_hdr(outputDir.c_str(), iImageWidth, iImageHeight, 4, afImageData.data());
-                        WTFASSERT(iRet > 0, "can\'t write file: %s", outputDir.c_str());
-                        DEBUG_PRINTF("wrote to: %s\n", outputDir.c_str());
-                    }*/
-            
+                    );
                 }
                 else if(pRenderJob->mType == Render::Common::JobType::Compute)
                 {
@@ -1706,34 +1706,17 @@ namespace Render
                         pRenderJob->mpWaitFence,
                         pRenderJob->mpSignalFence
                     );
-                    
-                    /*for(auto& keyValue : pRenderJob->mapOutputImageAttachments)
-                    {
-                        if(keyValue.second == nullptr)
-                        {
-                            continue;
-                        }
-                        
-                        RenderDriver::Common::CImage* pImage = keyValue.second;
-                        std::string baseName = pRenderJob->mName + "-" + keyValue.first;
-                        std::replace(baseName.begin(), baseName.end(), ' ', '-');
-                        
-                        std::vector<float> afImageData;
-                        platformCopyImageToCPUMemory(pImage, afImageData);
-                        
-                        int32_t iImageWidth = pImage->getDescriptor().miWidth;
-                        int32_t iImageHeight = pImage->getDescriptor().miHeight;
-                        std::string outputDir = std::string("/Users/dingwings/Downloads/debug-output-attachments/") + baseName + ".hdr";
-                        int32_t iRet = stbi_write_hdr(outputDir.c_str(), iImageWidth, iImageHeight, 4, afImageData.data());
-                        WTFASSERT(iRet > 0, "can\'t write file: %s", outputDir.c_str());
-                        DEBUG_PRINTF("wrote to: %s\n", outputDir.c_str());
-                    }*/
                 }
 
                 ++iJobIndex;
 
+//auto elapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start1).count();
+//DEBUG_PRINTF("\"%s\" 1 %d micro-seconds\n", pRenderJob->mName.c_str(), elapsed1);
             }
-            
+
+auto totalElapsed = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - startExecJobs).count();
+
+
             // transition swap chain image to present if no swap chain pass is listed
             if(!bHasSwapChainPass)
             {
@@ -1860,25 +1843,28 @@ namespace Render
                 float4 maxPosition = *pExtent++;
                 maMeshExtents.push_back(std::make_pair(minPosition, maxPosition));
             }
-            WTFASSERT(sizeof(GPUVertexFormat) == iVertexSize, "vertex size not equal");
+            WTFASSERT(sizeof(VertexFormat) == iVertexSize, "vertex size not equal");
             
             // vertices
-            GPUVertexFormat* pVertices = (GPUVertexFormat*)pExtent;
-            std::vector<GPUVertexFormat> aVertexBuffer(iNumTotalVertices);
-            memcpy(aVertexBuffer.data(), pVertices, sizeof(GPUVertexFormat) * iNumTotalVertices);
+            VertexFormat* pVertices = (VertexFormat*)pExtent;
+            std::vector<VertexFormat> aVertexBuffer(iNumTotalVertices);
+            memcpy(aVertexBuffer.data(), pVertices, sizeof(VertexFormat) * iNumTotalVertices);
             pVertices += iNumTotalVertices;
-
-            for(uint32_t i = 0; i < aVertexBuffer.size(); i++)
-            {
-                aVertexBuffer[i].mTexCoord.z = aVertexBuffer[i].mPosition.w;
-            }
+			
+			if(mRenderDriverType == RenderDriverType::Metal)
+			{
+	            for(uint32_t i = 0; i < aVertexBuffer.size(); i++)
+	            {
+	                aVertexBuffer[i].mTexCoord.z = aVertexBuffer[i].mPosition.w;
+	            }
+	     	}
             
             // indices
             uint32_t const* pIndices = (uint32_t const*)pVertices;
             std::vector<uint32_t> aiIndexBuffer(iNumTotalTriangles * 3);
             memcpy(aiIndexBuffer.data(), pIndices, sizeof(uint32_t) * iNumTotalTriangles * 3);
 
-            uint32_t iVertexBufferSize = iNumTotalVertices * sizeof(GPUVertexFormat);
+            uint32_t iVertexBufferSize = iNumTotalVertices * sizeof(VertexFormat);
             uint32_t iIndexBufferSize = iNumTotalTriangles * 3 * sizeof(uint32_t);
 
             // register vertex and index gpu buffers
@@ -1920,14 +1906,14 @@ namespace Render
                     iFlags
                 );
 
-//#if defined(USE_RAY_TRACING)
+#if defined(USE_RAY_TRACING)
                 platformCreateAccelerationStructures(
                     aPositions,
                     aiIndexBuffer,
                     maMeshRanges,
                     miNumMeshes
                 );
-//#endif // USE_RAY_TRACING
+#endif // USE_RAY_TRACING
             }
 
             // full screen triangle

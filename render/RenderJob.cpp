@@ -284,6 +284,7 @@ namespace Render
                     iImageHeight = attachmentJSON["ImageHeight"].GetInt();
                 }
 
+                RenderDriver::Common::Format attachmentFormat = RenderDriver::Common::Format::R8G8B8A8_UNORM;
                 if(type == "TextureOutput")
                 {
                     handleTextureOutput(
@@ -422,6 +423,10 @@ namespace Render
 
                     maUniformMappings.push_back(std::make_pair(name, "texture-input"));
                 }
+                else
+                {
+                    WTFASSERT(0, "type not handled");
+                }
 
                 ++iIndex;
 
@@ -462,8 +467,10 @@ namespace Render
                 maUniformMappings.push_back(std::make_pair(name, "buffer-input"));
             }
             
+#if !defined(_MSC_VER)
             // default uniform buffer at the very end of the descriptor
             maUniformMappings.push_back(std::make_pair("Default Uniform Buffer", "buffer-input"));
+#endif // METAL
         }
 
         /*
@@ -586,7 +593,7 @@ namespace Render
             for(uint32_t i = 0; i < (uint32_t)maUniformMappings.size(); i++)
             {
                 std::string name = maUniformMappings[i].first;
-                if(maUniformMappings[i].second == "texture")
+                if(maUniformMappings[i].second == "texture-input" || maUniformMappings[i].second == "texture")
                 {
                     RenderDriver::Common::CImage* pImage = mapUniformImages[name];
                     bool bReadOnly = (maShaderResourceInfo[name]["usage"] == "uniform" || maShaderResourceInfo[name]["usage"] == "read_only_storage");
@@ -611,7 +618,7 @@ namespace Render
                         ++iBinding;
                     }
                 }
-                else if(maUniformMappings[i].second == "buffer")
+                else if(maUniformMappings[i].second == "buffer-input" || maUniformMappings[i].second == "buffer-output" || maUniformMappings[i].second == "buffer")
                 {
                     RenderDriver::Common::CBuffer* pBuffer = mapUniformBuffers[name];
                     bool bReadOnly = (maShaderResourceInfo[name]["usage"] == "uniform" || maShaderResourceInfo[name]["usage"] == "read_only_storage");
@@ -632,9 +639,13 @@ namespace Render
 
                     ++iBinding;
                 }
+                else
+                {
+                    WTFASSERT(0, "not handled");
+                }
             }
 
-#if 0
+#if defined(_MSC_VER)
             mpDescriptorSet->addBuffer(
                 mpDefaultUniformBuffer,
                 iBinding,
@@ -645,8 +656,8 @@ namespace Render
                 mpDefaultUniformBuffer->getID().c_str(),
                 1,
                 iBinding);
-#endif // #if 0
-            
+#endif // _MSC_VER
+
             // create the descriptor set and update the buffers
             mpDescriptorSet->finishLayout(
                 createInfo.maSamplers
@@ -815,7 +826,7 @@ DEBUG_PRINTF("render job: %s\n", mName.c_str());
                 
                 std::string shaderPath = doc["Shader"].GetString();
 
-                // fill creation descriptorget
+                // fill creation descriptor
                 std::string fullPath = shaderDirectory + "\\shaders\\" + shaderPath;
                 std::vector<char> acShaderBuffer;
                 pDesc = platformFillOutComputePipelineDescriptor(
@@ -952,6 +963,7 @@ DEBUG_PRINTF("render job: %s\n", mName.c_str());
                     iImageHeight = attachmentJSON["ImageHeight"].GetInt();
                 }
 
+                RenderDriver::Common::Format attachmentFormat = RenderDriver::Common::Format::R8G8B8A8_UNORM;
                 if(type == "TextureOutput")
                 {
                     maAttachmentMappings.push_back(std::make_pair(name, "texture-output"));
@@ -1257,6 +1269,8 @@ DEBUG_PRINTF("render job: %s\n", mName.c_str());
             std::vector<Render::Common::CRenderJob*>* apRenderJobs
         )
         {
+            RenderDriver::Common::BufferUsage usage = RenderDriver::Common::BufferUsage::StorageBuffer;
+
             std::string const name = attachmentJSON["Name"].GetString();
 
             // get parent job
@@ -1475,6 +1489,7 @@ DEBUG_PRINTF("render job: %s\n", mName.c_str());
             std::string name = shaderResource["name"].GetString();
 
             int32_t iTextureWidth = 0, iTextureHeight = 0;
+            RenderDriver::Common::Format textureFormat = RenderDriver::Common::Format::R8G8B8A8_UNORM;
             if(shaderResource.HasMember("file_path"))
             {
                 std::string filePath = shaderResource["file_path"].GetString();
