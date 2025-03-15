@@ -1081,7 +1081,7 @@ namespace Render
                 RenderDriver::Common::BufferDescriptor desc;
                 desc.miSize = iDataSize;
                 desc.mFormat = RenderDriver::Common::Format::R32_FLOAT;
-                desc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferDest;
+                desc.mBufferUsage = RenderDriver::Common::BufferUsage::TransferSrc;
                 mpReadBackBuffer->create(
                     desc,
                     *mpDevice
