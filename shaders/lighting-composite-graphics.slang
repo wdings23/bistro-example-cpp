@@ -39,7 +39,7 @@ struct VertexStageOutput
 
 [[vk::binding(10, 0)]] SamplerState sampler;
 
-[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
+[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData;
 
 [shader("vertex")]
 VertexStageOutput VSMain(

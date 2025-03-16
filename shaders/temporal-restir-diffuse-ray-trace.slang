@@ -40,6 +40,16 @@ struct VertexStageOutput
     float4 sv_position : SV_Position;
     float4 texCoord;
 };
+struct FragmentOutput {
+    float4 radianceOutput : SV_TARGET0;
+    float4 temporalReservoir : SV_TARGET1;
+    float4 ambientOcclusionOutput : SV_TARGET2;
+    float4 hitPosition : SV_TARGET3;
+    float4 hitNormal : SV_TARGET4;
+    float4 sampleRayHitPosition : SV_TARGET5;
+    float4 sampleRayDirection : SV_TARGET6;
+    float4 rayDirection : SV_TARGET7;
+};
 
 struct UniformData
 {
@@ -380,17 +390,11 @@ void rayGen()
     
     float fNumValidSamples = 0.0f;
 
-    // TODO: this samples in quad, need to sample in pixel
     uint2 blueNoiseScreenCoord = uint2(
         uint32_t(uv.x * float(blueNoiseTextureSize.x)),
         uint32_t(uv.y * float(blueNoiseTextureSize.y))
     );
-
-#if defined(METAL)
-    blueNoiseScreenCoord.x = rayIndex.x % blueNoiseTextureSize.x;
-    blueNoiseScreenCoord.y = rayIndex.y % blueNoiseTextureSize.y;
-#endif // METAL
-
+    
     // blue noise tile coordinate
     uint32_t iTileSize = 32u;
     uint32_t iNumTilesPerRow = blueNoiseTextureSize.x / iTileSize;
@@ -425,11 +429,6 @@ void rayGen()
         //blueNoiseScreenCoord.x = (blueNoiseScreenCoord.x + iSampleX) % blueNoiseTextureSize.x;
         //blueNoiseScreenCoord.y = (blueNoiseScreenCoord.y + iSampleY) % blueNoiseTextureSize.y;
 
-#if defined(METAL)
-        blueNoiseScreenCoord.x = (blueNoiseScreenCoord.x + iFrame) % blueNoiseTextureSize.x;
-        blueNoiseScreenCoord.y = (blueNoiseScreenCoord.y + (iFrame / blueNoiseTextureSize.x)) % blueNoiseTextureSize.y;
-#endif // METAL
-
         float3 blueNoise = blueNoiseTexture[blueNoiseScreenCoord].xyz;
         Ray ray = uniformSampling(
             worldPosition.xyz,
@@ -438,9 +437,6 @@ void rayGen()
             blueNoise.y);
         sampleRayDirection = ray.mDirection.xyz;
         result.mIntersectionResult.miHitTriangle = UINT32_MAX;
-
-debugTexture0[rayIndex] = float4(ray.mDirection.xyz, float(rayIndex.y * 512 + rayIndex.x));
-debugTexture1[rayIndex] = float4(float(rayIndex.x), float(rayIndex.y), 0.0f, 1.0f);
 
         // restir
         result.mAmbientOcclusion.y += 1.0f;

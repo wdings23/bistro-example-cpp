@@ -101,7 +101,7 @@ RWTexture2D<float4> debugTexture0;
 [[vk::binding(2, 1)]] StructuredBuffer<Material> materialData;
 [[vk::binding(3, 1)]] StructuredBuffer<uint32_t> materialID;
 [[vk::binding(4, 1)]] StructuredBuffer<MeshRange> meshTriangleRangeData;
-[[vk::binding(5, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
+[[vk::binding(5, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData;
 
 #define NUM_THREADS         16
 
@@ -163,8 +163,8 @@ void rayGen()
     worldPositionTexture.GetDimensions(textureSize.x, textureSize.y);
 
     RandomResult randomResult = initRand(
-        uint32_t(float(rayIndex.x + rayIndex.y) * 100.0f + float(rayIndex.y + rayIndex.x) * 200.0f) + uint32_t(defaultUniformBuffer.mfRand0 * 100.0f),
-        uint32_t(float(rayIndex.x + rayIndex.y) * 10.0f + float(rayIndex.x + rayIndex.y) * 20.0f) + uint32_t(defaultUniformBuffer.mfRand1 * 100.0f),
+        uint32_t(float(rayIndex.x + rayIndex.y) * 100.0f + float(rayIndex.y + rayIndex.x) * 200.0f) + uint32_t(defaultUniformData.mfRand0 * 100.0f),
+        uint32_t(float(rayIndex.x + rayIndex.y) * 10.0f + float(rayIndex.x + rayIndex.y) * 20.0f) + uint32_t(defaultUniformData.mfRand1 * 100.0f),
         10u);
 
     int2 texCoord = int2(rayIndex.x, rayIndex.y);
@@ -180,7 +180,7 @@ void rayGen()
     if(fRayLength < 100.0f && length(hitPosition.xyz) > 0.0f)
     {
         // check if on screen
-        float4 clipSpacePosition = mul(defaultUniformBuffer.mViewProjectionMatrix, float4(hitPosition.xyz, 1.0f));
+        float4 clipSpacePosition = mul(defaultUniformData.mViewProjectionMatrix, float4(hitPosition.xyz, 1.0f));
         clipSpacePosition.x /= clipSpacePosition.w;
         clipSpacePosition.y /= clipSpacePosition.w;
         clipSpacePosition.z /= clipSpacePosition.w;
@@ -194,7 +194,7 @@ void rayGen()
         );
 
         float4 hitWorldPosition = worldPositionTexture[clipSpaceScreenCoord];
-        var hitPositionClipSpace = mul(defaultUniformBuffer.mViewProjectionMatrix, float4(hitWorldPosition.xyz, 1.0f));
+        var hitPositionClipSpace = mul(defaultUniformData.mViewProjectionMatrix, float4(hitWorldPosition.xyz, 1.0f));
         hitPositionClipSpace.x /= hitPositionClipSpace.w;
         hitPositionClipSpace.y /= hitPositionClipSpace.w;
         hitPositionClipSpace.z /= hitPositionClipSpace.w;
@@ -400,7 +400,7 @@ UpdateIrradianceCacheResult updateIrradianceCache(
     else 
     {
         int32_t iHitTriangleIndex = int32_t(intersectionInfo.miHitTriangle);
-        if (intersectionInfo.miHitMesh < defaultUniformBuffer.miNumMeshes)
+        if (intersectionInfo.miHitMesh < defaultUniformData.miNumMeshes)
         {
             uint32_t iMaterialID = materialID[intersectionInfo.miHitMesh] - 1;
             float3 emissiveRadiance = materialData[iMaterialID].mEmissive.xyz;
@@ -578,7 +578,7 @@ void updateIrradianceCacheProbe(
         iCacheEntryIndex
     );
 
-    irradianceCache[iCacheEntryIndex].mSampleCount.z = float(defaultUniformBuffer.miFrame);
+    irradianceCache[iCacheEntryIndex].mSampleCount.z = float(defaultUniformData.miFrame);
 }
 
 /*

@@ -48,7 +48,7 @@ struct VertexStageOutput
 [[vk::binding(2, 0)]] Texture2D<float4> prevSunRadianceTexture;
 [[vk::binding(3, 0)]] SamplerState textureSampler;
 
-[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
+[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData;
 
 
 [shader("vertex")]
@@ -74,10 +74,10 @@ Fragment PSMain(
 {
     Fragment ret;
 
-    float3 directionDiff = defaultUniformBuffer.mLightDirection.xyz - defaultUniformBuffer.mPrevLightDirection.xyz;
+    float3 directionDiff = defaultUniformData.mLightDirection.xyz - defaultUniformData.mPrevLightDirection.xyz;
     float fLengthSquared = dot(directionDiff, directionDiff);
 
-    if(defaultUniformBuffer.miFrame > 10 && fLengthSquared <= 0.00001f)
+    if(defaultUniformData.miFrame > 1 && fLengthSquared <= 0.00001f)
     {
         float2 uv = float2(
             input.texcoord.x,
@@ -110,8 +110,8 @@ Fragment PSMain(
 
     //float3 lightDirection = normalize(float3(-0.5f, 1.0f, 0.0f));
     //float3 lightRadiance = float3(1.0f, 1.0f, 1.0f);
-    float3 lightDirection = normalize(defaultUniformBuffer.mLightDirection.xyz);
-    float3 lightRadiance = defaultUniformBuffer.mLightRadiance.xyz;
+    float3 lightDirection = normalize(defaultUniformData.mLightDirection.xyz);
+    float3 lightRadiance = defaultUniformData.mLightRadiance.xyz;
 
     ScatteringResult sky = IntegrateScattering(
         float3(0.0f, 0.0f, 0.0f),

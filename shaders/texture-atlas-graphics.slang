@@ -30,7 +30,7 @@ struct TextureAtlasOutput
 
 [[vk::binding(0, 1)]] StructuredBuffer<int2> aTextureDimension;
 [[vk::binding(1, 1)]] StructuredBuffer<int2> aNormalTextureDimension;
-[[vk::binding(2, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
+[[vk::binding(2, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData;
 
 struct AssembledVertex
 {
@@ -77,13 +77,13 @@ PSOutput PSMain(VertexStageOutput in)
         float2 convertedUV = sampleUV * 2.0f - float2(1.0f, 1.0f);
         convertedUV.y = -convertedUV.y;
 
-        // float4x4 inverseViewProjectionMatrix = inverse(transpose(defaultUniformBuffer.mViewProjectionMatrix));
-        float4 worldSpace = mul(float4(convertedUV.x, convertedUV.y, 1.0f, 1.0f), defaultUniformBuffer.mInverseViewProjectionMatrix);
+        // float4x4 inverseViewProjectionMatrix = inverse(transpose(defaultUniformData.mViewProjectionMatrix));
+        float4 worldSpace = mul(float4(convertedUV.x, convertedUV.y, 1.0f, 1.0f), defaultUniformData.mInverseViewProjectionMatrix);
         worldSpace.x /= worldSpace.w;
         worldSpace.y /= worldSpace.w;
         worldSpace.z /= worldSpace.w;
 
-        float3 direction = normalize(worldSpace.xyz - defaultUniformBuffer.mCameraPosition.xyz);
+        float3 direction = normalize(worldSpace.xyz - defaultUniformData.mCameraPosition.xyz);
 
         float2 uv = octahedronMap2(direction);
         float4 skyRadiance = skyTexture.Sample(
@@ -271,7 +271,7 @@ TextureAtlasOutput outputTextureMIP(
         }
 
         // mark page as active
-        aPageHashTableMIP[iHashIndexMIP].miUpdateFrame = uint32_t(defaultUniformBuffer.miFrame);
+        aPageHashTableMIP[iHashIndexMIP].miUpdateFrame = uint32_t(defaultUniformData.miFrame);
     }
 
     return ret;

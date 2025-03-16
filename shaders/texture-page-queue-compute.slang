@@ -63,7 +63,7 @@ struct ConstantBufferData
 [[vk::binding(2, 1)]] StructuredBuffer<Material> aMeshMaterials;
 [[vk::binding(3, 1)]] StructuredBuffer<int2> aNormalTextureSizes;
 [[vk::binding(4, 1)]] ConstantBuffer<ConstantBufferData> constantBufferData;
-[[vk::binding(5, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
+[[vk::binding(5, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData;
 
 /*
 **
@@ -89,8 +89,8 @@ void CSMain(
     uint32_t iNumTotalThreadX = iNumThreadX * workGroupSize.x;
     uint32_t iNumTotalThreadY = iNumThreadY * workGroupSize.y; 
 
-    uint32_t iTileWidth = uint32_t(defaultUniformBuffer.miScreenWidth) / iNumTotalThreadX;
-    uint32_t iTileHeight = uint32_t(defaultUniformBuffer.miScreenHeight) / iNumTotalThreadY;
+    uint32_t iTileWidth = uint32_t(defaultUniformData.miScreenWidth) / iNumTotalThreadX;
+    uint32_t iTileHeight = uint32_t(defaultUniformData.miScreenHeight) / iNumTotalThreadY;
 
     
     uint32_t iTotalThreadIndex = (localIndex.y * iNumThreadX + localIndex.x) + (workGroupIndex.y * workGroupSize.x + workGroupIndex.x) * 256;
@@ -366,14 +366,12 @@ iMIP = 0u;
             iMIP
         );
 
-        HashEntry hashEntry = aPageHashTableMIP[iAlbedoHashIndex];
-
         // output page info
         uint32_t iMIPEncodedCoordinate = uint32_t(uint32_t(mipStartPageUV.x) | uint32_t(uint32_t(mipStartPageUV.y) << 16u));
-        texturePageInfoTexture[int2(int32_t(uv.x * float(defaultUniformBuffer.miScreenWidth)), int32_t(uv.y * float(defaultUniformBuffer.miScreenHeight)))] =
+        texturePageInfoTexture[int2(int32_t(uv.x * float(defaultUniformData.miScreenWidth)), int32_t(uv.y * float(defaultUniformData.miScreenHeight)))] =
             float4(
-                float(hashEntry.miPageCoordinate)/*float(iMIPEncodedCoordinate)*/,
-                float(hashEntry.miPageIndex)/*float(mipStartPageUV.y)*/,
+                float(iMIPEncodedCoordinate),
+                float(mipStartPageUV.y),
                 float(iAlbedoTextureID)/* + float(iMIP) * 0.1f*/,
                 float(iAlbedoHashIndex)
             );

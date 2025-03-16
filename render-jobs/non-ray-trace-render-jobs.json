@@ -78,8 +78,8 @@
         {
             "Name": "Secondary Deferred Indirect Graphics",
             "Pipeline": "secondary-deferred-indirect-graphics.json",
-            "Type": "Graphics",
-            "PassType": "Draw Meshes",
+            "Type": "Compute",
+            "PassType": "Compute",
             "Dispatch": [10, 1, 1]
         },
         {
@@ -94,12 +94,6 @@
             "Pipeline": "texture-atlas-graphics.json",
             "Type": "Graphics",
             "PassType": "Full Triangle"
-        },
-        {
-            "Name": "Ray Traced Shadow",
-            "Pipeline": "ray-traced-shadow.json",
-            "Type": "Ray Trace",
-            "PassType": "Ray Trace"
         },
         {
             "Name": "Swap Chain Graphics",

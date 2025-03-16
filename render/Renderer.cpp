@@ -356,7 +356,7 @@ namespace Render
             execRenderJobs3();
             miTotalExecRenderJobTime = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
 
-            DEBUG_PRINTF("frame %d time elapsed: %d us\n", miFrameIndex, miTotalExecRenderJobTime);
+            //DEBUG_PRINTF("frame %d time elapsed: %d us\n", miFrameIndex, miTotalExecRenderJobTime);
             
 #if 0
             RenderDriver::Common::SwapChainPresentDescriptor desc;

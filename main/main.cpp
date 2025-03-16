@@ -476,7 +476,7 @@ int CALLBACK WinMain(
 
     // TODO: move vertex and index buffer out of renderer
 
-    pDesc->mRenderJobsFilePath = "d:\\test\\bistro-example-cpp\\render-jobs\\bistro-example-render-jobs.json";
+    pDesc->mRenderJobsFilePath = "d:\\test\\github-projects\\bistro-example-cpp\\render-jobs\\bistro-example-render-jobs.json";
     pRenderer->setup(*pDesc);
     
     // number of meshes

@@ -1,6 +1,5 @@
 #include "default-uniform-headers.slang"
 
-#if defined(METAL)
 struct DrawIndexParam
 {
     uint32_t miIndexCount;
@@ -9,16 +8,6 @@ struct DrawIndexParam
     int32_t miBaseVertex;
     uint32_t miFirstInstance;
 };
-#else
-struct DrawIndexParam
-{
-    uint32_t miIndexCount;
-    uint32_t miInstanceCount;
-    uint32_t miFirstIndex;
-    int32_t miBaseVertex;
-    uint32_t miFirstInstance;
-};
-#endif // METAL
 
 struct MeshBBox
 {
@@ -53,7 +42,7 @@ struct UniformData
 [[vk::binding(0, 1)]] ConstantBuffer<UniformData> uniformData;
 [[vk::binding(1, 1)]] RWStructuredBuffer<Range> aMeshTriangleIndexRanges;
 [[vk::binding(2, 1)]] RWStructuredBuffer<MeshBBox> aMeshBBox;
-[[vk::binding(3, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
+[[vk::binding(3, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData;
 
 #include "frustum-culling-headers.slang"
 
@@ -88,7 +77,7 @@ void CSMain(
 
     float3 center = (aMeshBBox[iMesh].mMaxPosition.xyz + aMeshBBox[iMesh].mMinPosition.xyz) * 0.5f;
     
-    float4 xformCenter = mul(float4(center.xyz, 1.0f), defaultUniformBuffer.mViewProjectionMatrix);
+    float4 xformCenter = mul(float4(center.xyz, 1.0f), defaultUniformData.mViewProjectionMatrix);
     xformCenter.x /= xformCenter.w;
     xformCenter.y /= xformCenter.w;
     xformCenter.z /= xformCenter.w;

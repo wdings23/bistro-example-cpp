@@ -1,33 +1,24 @@
 {
     "Type": "Graphics",
     "PassType": "Swap Chain",
-    "Shader": "trimmed-swap-chain-bistro-example.shader",
+    "Shader": "swap-chain-bistro-example.shader",
     "Attachments": [
         {
-            "Name" : "Swap Chain Output",
+            "Name" : "Output",
             "Type": "TextureOutput",
-            "Format": "rgb10a2unorm"
+            "Format": "bgra8unorm"
         },
 
+
         {
-            "Name" : "Albedo Output",
+            "Name" : "World Position Output",
             "Type": "TextureInput",
-            "ParentJobName": "Texture Atlas Graphics"
+            "ParentJobName": "Deferred Indirect Graphics"
         },
         {
-            "Name" : "Diffuse SVG Filter Radiance 2 Output",
+            "Name" : "Normal Output",
             "Type": "TextureInput",
-            "ParentJobName": "SVG Filter Graphics 2"
-        },
-        {
-            "Name" : "Direct Sun Light Output",
-            "Type": "TextureInput",
-            "ParentJobName": "Ray Traced Shadow"
-        },
-        {
-            "Name": "Diffuse SVG Filter Ambient Occlusion 2 Output",
-            "Type": "TextureInput",
-            "ParentJobName": "SVG Filter Graphics 2"
+            "ParentJobName": "Deferred Indirect Graphics"
         }
     ],
     "ShaderResources": [

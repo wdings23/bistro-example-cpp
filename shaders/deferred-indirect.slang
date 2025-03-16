@@ -17,7 +17,7 @@ struct Material
 [[vk::binding(0, 1)]] RWStructuredBuffer<Material> aMaterials;
 [[vk::binding(1, 1)]] RWStructuredBuffer<uint32_t> aMeshMaterialID;
 [[vk::binding(2, 1)]] RWStructuredBuffer<Range> aMeshTriangleIndexRanges;
-[[vk::binding(3, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
+[[vk::binding(3, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData;
 
 struct PSOutput
 {
@@ -45,7 +45,7 @@ VertexStageOutput VSMain(
     VertexStageOutput output;
 
     output.sv_position = mul(
-        defaultUniformBuffer.mJitteredViewProjectionMatrix,
+        defaultUniformData.mJitteredViewProjectionMatrix,
         float4(
             assembledVertex.position.x,
             assembledVertex.position.y,
@@ -57,11 +57,11 @@ VertexStageOutput VSMain(
     output.normal = assembledVertex.normal;
 
     output.currClipSpace = mul(
-        defaultUniformBuffer.mViewProjectionMatrix,
+        defaultUniformData.mViewProjectionMatrix,
         float4(assembledVertex.position.xyz, 1.0f)
     );
     output.prevClipSpace = mul(
-        defaultUniformBuffer.mPrevJitteredViewProjectionMatrix,
+        defaultUniformData.mPrevJitteredViewProjectionMatrix,
         float4(assembledVertex.position.xyz, 1.0f)
     );
 
@@ -73,10 +73,7 @@ PSOutput PSMain(VertexStageOutput in)
 {
     PSOutput out;
 
-    uint32_t iMesh = uint32_t(ceil(in.texCoord.w - 0.5f));
-#if defined(METAL)
-    iMesh = uint32_t(ceil(in.texCoord.z - 0.5f));
-#endif // METAL
+    uint32_t iMesh = uint32_t(ceil(in.worldPosition.w - 0.5f));
     out.mWorldPosition = float4(in.worldPosition.xyz, float(iMesh));
     out.mTexCoord = float4(in.texCoord.x, in.texCoord.y, 0.0f, 1.0f);
     float3 normalXYZ = normalize(in.normal.xyz);
@@ -114,8 +111,8 @@ PSOutput PSMain(VertexStageOutput in)
     // store depth and mesh id in worldPosition.w
     //out.mWorldPosition.w = clamp(in.worldPosition.z, 0.0f, 0.999f) + floor(in.worldPosition.w + 0.5f);
 
-    float4 currClipSpacePos = mul(defaultUniformBuffer.mViewProjectionMatrix, float4(in.worldPosition.xyz, 1.0f));
-    float4 prevClipSpacePos = mul(defaultUniformBuffer.mPrevViewProjectionMatrix, float4(in.worldPosition.xyz, 1.0f));
+    float4 currClipSpacePos = mul(defaultUniformData.mViewProjectionMatrix, float4(in.worldPosition.xyz, 1.0f));
+    float4 prevClipSpacePos = mul(defaultUniformData.mPrevViewProjectionMatrix, float4(in.worldPosition.xyz, 1.0f));
 
     float fOneOverW = 1.0f / currClipSpacePos.w;
     currClipSpacePos.x *= fOneOverW;
@@ -160,13 +157,13 @@ PSOutput PSMain(VertexStageOutput in)
     );
 
     int2 screenCoord = int2(
-        int32_t(currClipSpacePos.x * float(defaultUniformBuffer.miScreenWidth)),
-        int32_t(currClipSpacePos.y * float(defaultUniformBuffer.miScreenHeight))
+        int32_t(currClipSpacePos.x * float(defaultUniformData.miScreenWidth)),
+        int32_t(currClipSpacePos.y * float(defaultUniformData.miScreenHeight))
     );
 
     int2 prevScreenCoord = int2(
-        int32_t(prevClipSpacePos.x * float(defaultUniformBuffer.miScreenWidth)),
-        int32_t(prevClipSpacePos.y * float(defaultUniformBuffer.miScreenHeight))
+        int32_t(prevClipSpacePos.x * float(defaultUniformData.miScreenWidth)),
+        int32_t(prevClipSpacePos.y * float(defaultUniformData.miScreenHeight))
     );
 
     int2 screenMotionVector = screenCoord - prevScreenCoord;

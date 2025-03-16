@@ -5,7 +5,7 @@
 [[vk::binding(0, 0)]] Texture2D<float4> texture0;
 [[vk::binding(1, 0)]] Texture2D<float4> texture1;
 [[vk::binding(2, 0)]] SamplerState sampler;
-[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
+[[vk::binding(0, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformData;
 
 struct AssembledVertex
 {
@@ -41,26 +41,19 @@ PSOutput PSMain(VertexStageOutput in)
 {
     PSOutput out;
 
-#if defined(METAL)
-    float2 texCoord = float2(in.texCoord.x, in.texCoord.y);
-#else 
     float2 texCoord = float2(in.texCoord.x, 1.0f - in.texCoord.y);
-#endif // METAL
+    out.mOutput = /*texture0.Sample(
+        sampler,
+        texCoord
+    ) * */
+    texture1.Sample(
+        sampler, 
+        texCoord
+    );
 
-
-
-    out.mOutput.xyz =
-        clamp(
-            texture0.Sample(sampler, texCoord).xyz +
-            texture1.Sample(sampler, texCoord).xyz,
-            float3(0.0f),
-            float3(1.0f)
-        );
-
-    //out.mOutput.xyz = ACESFilm(
-    //    clamp(out.mOutput.xyz, 0.0f, 1.0f)
-    //);
-    out.mOutput.w = 1.0f;
+    out.mOutput.xyz = ACESFilm(
+        out.mOutput.xyz
+    );
 
     //float3 sdrColor = ACESFilm(out.mOutput.xyz);
     //out.mOutput.x = sdrColor.x;
