@@ -115,7 +115,9 @@ void initImgui(
 
 void imguiLayout(Render::Common::CRenderer* pRenderer);
 
-static std::atomic<uint32_t> giCopyingTexturePage;
+//static std::atomic<uint32_t> giCopyingTexturePage;
+static std::mutex gCopyTexturePageMutex;
+
 
 /*
 **
@@ -398,7 +400,7 @@ int CALLBACK WinMain(
     _In_ LPSTR pCommandLine,
     _In_ int iCommandShow)
 {
-    giCopyingTexturePage.store(0);
+    //giCopyingTexturePage.store(0);
 
     //std::this_thread::sleep_for(std::chrono::seconds(5));
 
@@ -907,45 +909,49 @@ int CALLBACK WinMain(
 
                             //std::lock_guard<std::mutex> lock(texturePageThreadMutex);
 
-                            giCopyingTexturePage.store(1);
+                            //giCopyingTexturePage.store(1);
 
-                            // get the texture pages needed
-                            auto& pTexturePageQueueBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Texture Page Queue MIP"];
-                            uint32_t iBufferSize = (uint32_t)pTexturePageQueueBuffer->getDescriptor().miSize;
-                            WTFASSERT(iBufferSize <= acTexturePageQueueData.size(), "Need larger buffer");
-                            pRenderer->copyBufferToCPUMemory2(
-                                pTexturePageQueueBuffer,
-                                acTexturePageQueueData.data(),
-                                0,
-                                iBufferSize,
-                                *threadCommandBuffer,
-                                *threadCommandQueue
-                            );
+                            {
+                                std::unique_lock<std::mutex> lock(gCopyTexturePageMutex);
 
-                            auto& texturePageInfoBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["MIP Texture Page Hash Table"];
-                            iBufferSize = (uint32_t)texturePageInfoBuffer->getDescriptor().miSize;
-                            WTFASSERT(iBufferSize <= acTexturePageInfoData.size(), "Need larger buffer");
-                            pRenderer->copyBufferToCPUMemory2(
-                                texturePageInfoBuffer,
-                                acTexturePageInfoData.data(),
-                                0,
-                                iBufferSize,
-                                *threadCommandBuffer,
-                                *threadCommandQueue
-                            );
+                                // get the texture pages needed
+                                auto& pTexturePageQueueBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Texture Page Queue MIP"];
+                                uint32_t iBufferSize = (uint32_t)pTexturePageQueueBuffer->getDescriptor().miSize;
+                                WTFASSERT(iBufferSize <= acTexturePageQueueData.size(), "Need larger buffer");
+                                pRenderer->copyBufferToCPUMemory2(
+                                    pTexturePageQueueBuffer,
+                                    acTexturePageQueueData.data(),
+                                    0,
+                                    iBufferSize,
+                                    *threadCommandBuffer,
+                                    *threadCommandQueue
+                                );
 
-                            auto& pTexturePageCountBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Counters"];
-                            WTFASSERT(256 <= acCounterData.size(), "Need larger buffer");
-                            pRenderer->copyBufferToCPUMemory2(
-                                pTexturePageCountBuffer,
-                                acCounterData.data(),
-                                0,
-                                128,
-                                *threadCommandBuffer,
-                                *threadCommandQueue
-                            );
+                                auto& texturePageInfoBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["MIP Texture Page Hash Table"];
+                                iBufferSize = (uint32_t)texturePageInfoBuffer->getDescriptor().miSize;
+                                WTFASSERT(iBufferSize <= acTexturePageInfoData.size(), "Need larger buffer");
+                                pRenderer->copyBufferToCPUMemory2(
+                                    texturePageInfoBuffer,
+                                    acTexturePageInfoData.data(),
+                                    0,
+                                    iBufferSize,
+                                    *threadCommandBuffer,
+                                    *threadCommandQueue
+                                );
 
-                            giCopyingTexturePage.store(0);
+                                auto& pTexturePageCountBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Counters"];
+                                WTFASSERT(256 <= acCounterData.size(), "Need larger buffer");
+                                pRenderer->copyBufferToCPUMemory2(
+                                    pTexturePageCountBuffer,
+                                    acCounterData.data(),
+                                    0,
+                                    128,
+                                    *threadCommandBuffer,
+                                    *threadCommandQueue
+                                );
+                            }
+
+                            //giCopyingTexturePage.store(0);
 
                             // get the size of the queue and compute the start and end indices to check for each threads
                             uint32_t iNumChecks = std::min(*((uint32_t*)acCounterData.data()), 65535u);
@@ -1140,10 +1146,12 @@ auto start = std::chrono::high_resolution_clock::now();
 
         pRenderer->draw();
 
-        //while(giCopyingTexturePage.load());
-        giCopyingTexturePage.store(1);
-        pRenderer->presentSwapChain();
-        giCopyingTexturePage.store(0);
+        //giCopyingTexturePage.store(1);
+        {
+            //std::unique_lock<std::mutex> lock(gCopyTexturePageMutex);
+            pRenderer->presentSwapChain();
+        }
+        //giCopyingTexturePage.store(0);
         pRenderer->postDraw();
     }
 
@@ -2957,48 +2965,6 @@ auto totalStart = std::chrono::high_resolution_clock::now();
     uint32_t iOffset = iStartIndex * sizeof(TexturePage);
     uint32_t iCopyBufferSize = iNumChecksPerLoop * sizeof(TexturePage);
 
-    // get the texture pages needed
-    //auto& pTexturePageQueueBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Texture Page Queue MIP"];
-    ////uint32_t iBufferSize = (uint32_t)pTexturePageQueueBuffer->getDescriptor().miSize;
-    //std::vector<char> acTexturePageQueueData(iCopyBufferSize);
-    //pRenderer->copyBufferToCPUMemory2(
-    //    pTexturePageQueueBuffer,
-    //    acTexturePageQueueData.data(),
-    //    iOffset,
-    //    iCopyBufferSize,
-    //    commandBuffer,
-    //    commandQueue
-    //);
-    //
-    //iOffset = iStartIndex * sizeof(HashEntry);
-    //iCopyBufferSize = iNumChecksPerLoop * sizeof(HashEntry);
-
-    //auto& texturePageInfoBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["MIP Texture Page Hash Table"];
-    //uint32_t iBufferSize = (uint32_t)texturePageInfoBuffer->getDescriptor().miSize;
-    //std::vector<char> acTexturePageInfoData(iBufferSize);
-    //pRenderer->copyBufferToCPUMemory2(
-    //    texturePageInfoBuffer,
-    //    acTexturePageInfoData.data(),
-    //    0,
-    //    iBufferSize,
-    //    commandBuffer,
-    //    commandQueue
-    //);
-
-    // get the number of pages
-    //auto& pTexturePageCountBuffer = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputBufferAttachments["Counters"];
-    //std::vector<char> acCounter(256);
-    //pRenderer->copyBufferToCPUMemory2(
-    //    pTexturePageCountBuffer,
-    //    acCounter.data(),
-    //    0,
-    //    256,
-    //    commandBuffer,
-    //    commandQueue
-    //);
-    //uint32_t iNumQueueEntries = *((uint32_t*)acCounter.data());
-    //iLastCounterValue = iNumQueueEntries;
-
     uint32_t const iTextureAtlasSize = 8192;
     uint32_t const iTexturePageSize = 64;
     uint32_t iNumPagesPerRow = iTextureAtlasSize / iTexturePageSize;
@@ -3194,8 +3160,8 @@ auto totalStart = std::chrono::high_resolution_clock::now();
         WTFASSERT(pTexturePageData, "Can\'t find texture page \"%s\"", oss.str().c_str());
         auto durationUS = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
 
-        while(giCopyingTexturePage.load());
-        giCopyingTexturePage.store(1);
+        //while(giCopyingTexturePage.load());
+        //giCopyingTexturePage.store(1);
 
         auto start1 = std::chrono::high_resolution_clock::now();
 
@@ -3255,33 +3221,37 @@ auto totalStart = std::chrono::high_resolution_clock::now();
 
         auto elapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
 
-        // update the page info to point to the page index in the atlas
-        uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
-        uint32_t iBufferOffset = texturePage.miHashIndex * sizeof(uint32_t) * 4 + sizeof(uint32_t);
-        pRenderer->copyCPUToBuffer4(
-            texturePageInfoBuffer,
-            &iPageIndex,
-            iBufferOffset,
-            sizeof(uint32_t),
-            commandBuffer,
-            commandQueue,
-            uploadBuffer
-        );
+        {
+            std::unique_lock<std::mutex> lock(gCopyTexturePageMutex);
 
-        // update frame index entry
-        uint32_t iFrameIndex = pRenderer->getFrameIndex() + 1;
-        iBufferOffset = texturePage.miHashIndex * sizeof(uint32_t) * 4 + sizeof(uint32_t) * 3;
-        pRenderer->copyCPUToBuffer4(
-            texturePageInfoBuffer,
-            &iFrameIndex,
-            iBufferOffset,
-            sizeof(uint32_t),
-            commandBuffer,
-            commandQueue,
-            uploadBuffer
-        );
+            // update the page info to point to the page index in the atlas
+            uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
+            uint32_t iBufferOffset = texturePage.miHashIndex * sizeof(uint32_t) * 4 + sizeof(uint32_t);
+            pRenderer->copyCPUToBuffer4(
+                texturePageInfoBuffer,
+                &iPageIndex,
+                iBufferOffset,
+                sizeof(uint32_t),
+                commandBuffer,
+                commandQueue,
+                uploadBuffer
+            );
 
-        giCopyingTexturePage.store(0);
+            // update frame index entry
+            uint32_t iFrameIndex = pRenderer->getFrameIndex() + 1;
+            iBufferOffset = texturePage.miHashIndex * sizeof(uint32_t) * 4 + sizeof(uint32_t) * 3;
+            pRenderer->copyCPUToBuffer4(
+                texturePageInfoBuffer,
+                &iFrameIndex,
+                iBufferOffset,
+                sizeof(uint32_t),
+                commandBuffer,
+                commandQueue,
+                uploadBuffer
+            );
+        }
+
+        //giCopyingTexturePage.store(0);
 
         {
             std::lock_guard<std::mutex> lock(threadMutex);
