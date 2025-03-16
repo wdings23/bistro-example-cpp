@@ -138,7 +138,7 @@ TextureAtlasOutput outputTextureMIP(
     int32_t iTextureIDMIP = int32_t(ceil(pageInfoMIP.z - 0.5f));
     int32_t iHashIndexMIP = int32_t(ceil(pageInfoMIP.w - 0.5f));
     int32_t iPageIndexMIP = int32_t(aPageHashTableMIP[iHashIndexMIP].miPageIndex);
-    uint32_t iMIP = aPageHashTableMIP[iHashIndexMIP].miTextureIDAndMIP & 0xf;
+    uint32_t iMIP = aPageHashTableMIP[iHashIndexMIP].miTextureIDAndMIP >> 24;
 
     if(uint32_t(iPageIndexMIP) == 0xffffffffu || iPageIndexMIP <= 0)
     {

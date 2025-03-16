@@ -119,7 +119,7 @@ uint32_t registerTexturePage(
     in uint32_t iTextureID,
     in uint32_t iMIP)
 {
-    uint32_t iTextureAndMIP = (uint32_t(iTextureID) << 24) | uint32_t(iMIP);
+    uint32_t iTextureAndMIP = (uint32_t(iMIP) << 24) | uint32_t(iTextureID);
 
     uint32_t iBefore = 0;
     InterlockedExchange(aiUsedHashPages[iHashIndex], iHashIndex, iBefore);
