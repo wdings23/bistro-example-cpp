@@ -2857,7 +2857,7 @@ void loadTexturePage(
 **
 */
 void getTexturePage(
-    std::vector<char>& acTexturePageImage,
+    std::vector<unsigned char>& acTexturePageImage,
     stbi_uc const* pImageData,
     uint2 const& pageCoord,
     uint32_t const& iImageWidth,
@@ -2906,6 +2906,10 @@ void getTexturePage(
                 uint32_t iTotalX = uint32_t(fX);
                 fX += scale.x;
                 uint32_t iIndex = iStartIndex + iX * 4;
+                if(iIndex >= iImageWidth * iImageHeight * 4)
+                {
+                    iIndex = (iImageWidth * iImageHeight * 4) - 4;
+                }
 
                 acTexturePageImage[iPageIndex] = pImageData[iIndex];
                 acTexturePageImage[iPageIndex + 1] = pImageData[iIndex + 1];
@@ -2915,6 +2919,9 @@ void getTexturePage(
         }
     }
 }
+
+std::atomic<uint32_t> giCurrAlbedoPageLoaded = 0;
+std::atomic<uint32_t> giCurrNormalPageLoaded = 0;
 
 /*
 **
@@ -3017,21 +3024,26 @@ auto totalStart = std::chrono::high_resolution_clock::now();
         {
             std::lock_guard<std::mutex> lock(threadMutex);
             iThreadAlbedoTextureIndex = iCurrAlbedoPageLoaded;
-            iCurrAlbedoPageLoaded += 1;
+            iThreadNormalTextureIndex = iCurrNormalPageLoaded;
         }
 
         uint32_t iTextureID = texturePage.miTextureID;
         if(iTextureID >= 65536)
         {
+
             std::lock_guard<std::mutex> lock(threadMutex);
             iTextureID -= 65536;
 
+#if 0
             // TODO: have normal texture page images
             iThreadNormalTextureIndex = iCurrNormalPageLoaded;
             iCurrNormalPageLoaded += 1;
             iCurrTotalPageLoaded += 1;
             
             continue;
+#endif // #if 0
+
+            int iDebug = 1;
         }
 
 #if 0
@@ -3118,57 +3130,81 @@ auto totalStart = std::chrono::high_resolution_clock::now();
         aPageInfo[keyStream.str()].push_back(pageInfo);
 #endif // #if 0
 
+        unsigned char const* pTexturePageData = nullptr;
+
         // texture name
+        std::vector<unsigned char> acTexturePageImage(iTexturePageSize* iTexturePageSize * 4);
         std::string textureName = aAlbedoTextureNames[iTextureID];
         if(texturePage.miTextureID >= 65536)
         {
             textureName = aNormalTextureNames[iTextureID];
+        
+            std::string fullPath = "d:\\Downloads\\Bistro_v4\\converted-dds-scaled\\" + textureName;
+            int32_t iImageWidth = 0, iImageHeight = 0, iNumChannels = 0;
+            stbi_uc* pImageData = stbi_load(
+                fullPath.c_str(),
+                &iImageWidth,
+                &iImageHeight,
+                &iNumChannels,
+                4
+            );
+            
+            // get the texture page data
+            auto start = std::chrono::high_resolution_clock::now();
+            getTexturePage(
+                acTexturePageImage,
+                pImageData,
+                pageCoord,
+                iImageWidth,
+                iImageHeight,
+                iTexturePageSize
+            );
+            pTexturePageData = acTexturePageImage.data();
+            stbi_image_free(pImageData);
+
+            auto durationUS = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
+        
+        }
+        else
+        {
+            auto start = std::chrono::high_resolution_clock::now();
+
+            // load texture page image data
+            auto fileExtensionStart = textureName.find_last_of(".");
+            std::string baseName = textureName.substr(0, fileExtensionStart);
+            std::vector<char> acPageData(iTexturePageSize * iTexturePageSize * 4);
+            std::ostringstream oss;
+            oss << "d:\\Downloads\\Bistro_v4\\texture-pages\\" << baseName << "-" << pageCoord.x << "-" << pageCoord.y << ".png";
+            int32_t iWidth = 0, iHeight = 0, iNumChannels = 0;
+            stbi_uc* pPageImageData = stbi_load(
+                oss.str().c_str(),
+                &iWidth,
+                &iHeight,
+                &iNumChannels,
+                4
+            );
+            WTFASSERT(pPageImageData, "Can\'t find texture page \"%s\"", oss.str().c_str());
+            memcpy(acTexturePageImage.data(), pPageImageData, iWidth * iHeight * 4);
+            pTexturePageData = acTexturePageImage.data();
+
+            stbi_image_free(pPageImageData);
+            
+            auto durationUS = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
         }
 
-#if 0
-        // get the texture page data
-        auto start = std::chrono::high_resolution_clock::now();
-        std::vector<char> acTexturePageImage(iTexturePageSize * iTexturePageSize * 4);
-        getTexturePage(
-            acTexturePageImage,
-            pImageData,
-            pageCoord,
-            iImageWidth,
-            iImageHeight,
-            iTexturePageSize
-        );
-        char const* pTexturePageData = acTexturePageImage.data();
-        auto durationUS = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
-#endif // #if 0
-
-        auto start = std::chrono::high_resolution_clock::now();
-
-        // load texture page image data
-        auto fileExtensionStart = textureName.find_last_of(".");
-        std::string baseName = textureName.substr(0, fileExtensionStart);
-        std::vector<char> acPageData(iTexturePageSize * iTexturePageSize * 4);
-        std::ostringstream oss;
-        oss << "d:\\Downloads\\Bistro_v4\\texture-pages\\" << baseName << "-" << pageCoord.x << "-" << pageCoord.y << ".png";
-        int32_t iWidth = 0, iHeight = 0, iNumChannels = 0;
-        stbi_uc* pTexturePageData = stbi_load(
-            oss.str().c_str(),
-            &iWidth,
-            &iHeight,
-            &iNumChannels,
-            4
-        );
-        WTFASSERT(pTexturePageData, "Can\'t find texture page \"%s\"", oss.str().c_str());
-        auto durationUS = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
+        WTFASSERT(pTexturePageData != nullptr, "Invalud texture page data");
 
         //while(giCopyingTexturePage.load());
         //giCopyingTexturePage.store(1);
 
         auto start1 = std::chrono::high_resolution_clock::now();
-
+       
         // copy texture page to texture atlas, normal or albedo
         uint32_t iPageIndex = 0;
         if(texturePage.miTextureID >= 65536)
         {
+            iThreadNormalTextureIndex = giCurrNormalPageLoaded.fetch_add(1);
+
             auto& textureAtlas1 = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputImageAttachments["Texture Atlas 1"];
             memcpy(pUploadBuffer, pTexturePageData, iTexturePageDataSize);
             pRenderer->copyTexturePageToAtlas2(
@@ -3181,10 +3217,31 @@ auto totalStart = std::chrono::high_resolution_clock::now();
                 texturePageUploadBuffer
             );
 
-            iPageIndex = iThreadNormalTextureIndex + 1;
+            {
+                std::unique_lock lock(gCopyTexturePageMutex);
+                iCurrNormalPageLoaded += 1;
+                iPageIndex = iThreadNormalTextureIndex + 1;
+
+                uint32_t iFrameIndex = pRenderer->getFrameIndex() + 1;
+                hashEntry.miPageIndex = iPageIndex;
+                hashEntry.miUpdateFrame = iFrameIndex;
+                uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
+                uint32_t iBufferOffset = texturePage.miHashIndex * sizeof(uint32_t) * 4;
+                pRenderer->copyCPUToBuffer4(
+                    texturePageInfoBuffer,
+                    &hashEntry,
+                    iBufferOffset,
+                    sizeof(HashEntry),
+                    commandBuffer,
+                    commandQueue,
+                    uploadBuffer
+                );
+            }
         }
         else
         {
+            iThreadAlbedoTextureIndex = giCurrAlbedoPageLoaded.fetch_add(1);
+
             if(iThreadAlbedoTextureIndex >= iNumPagesPerRow * iNumPagesPerRow)
             {
                 auto& textureAtlas0 = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputImageAttachments["Texture Atlas 2"];
@@ -3214,16 +3271,36 @@ auto totalStart = std::chrono::high_resolution_clock::now();
                 );
             }
 
-            iPageIndex = iThreadAlbedoTextureIndex + 1;
+            {
+                std::unique_lock lock(gCopyTexturePageMutex);
+                iCurrAlbedoPageLoaded += 1;
+                iPageIndex = iThreadAlbedoTextureIndex + 1;
+
+                uint32_t iFrameIndex = pRenderer->getFrameIndex() + 1;
+                hashEntry.miPageIndex = iPageIndex;
+                hashEntry.miUpdateFrame = iFrameIndex;
+                uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
+                uint32_t iBufferOffset = texturePage.miHashIndex * sizeof(uint32_t) * 4;
+                pRenderer->copyCPUToBuffer4(
+                    texturePageInfoBuffer,
+                    &hashEntry,
+                    iBufferOffset,
+                    sizeof(HashEntry),
+                    commandBuffer,
+                    commandQueue,
+                    uploadBuffer
+                );
+            }
         }
 
-        stbi_image_free(pTexturePageData);
-
-        auto elapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start).count();
+        auto elapsed1 = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now() - start1).count();
 
         {
             std::unique_lock<std::mutex> lock(gCopyTexturePageMutex);
 
+            
+
+#if 0
             // update the page info to point to the page index in the atlas
             uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
             uint32_t iBufferOffset = texturePage.miHashIndex * sizeof(uint32_t) * 4 + sizeof(uint32_t);
@@ -3238,7 +3315,6 @@ auto totalStart = std::chrono::high_resolution_clock::now();
             );
 
             // update frame index entry
-            uint32_t iFrameIndex = pRenderer->getFrameIndex() + 1;
             iBufferOffset = texturePage.miHashIndex * sizeof(uint32_t) * 4 + sizeof(uint32_t) * 3;
             pRenderer->copyCPUToBuffer4(
                 texturePageInfoBuffer,
@@ -3249,6 +3325,7 @@ auto totalStart = std::chrono::high_resolution_clock::now();
                 commandQueue,
                 uploadBuffer
             );
+#endif // #if 0
         }
 
         //giCopyingTexturePage.store(0);

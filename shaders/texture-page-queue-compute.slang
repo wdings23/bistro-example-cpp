@@ -375,5 +375,21 @@ iMIP = 0u;
                 float(iAlbedoTextureID)/* + float(iMIP) * 0.1f*/,
                 float(iAlbedoHashIndex)
             );
+
+        iNormalHashIndex = registerTexturePage(
+            mipNormalStartPageUV,
+            iNormalHashIndex,
+            iNormalTextureID + 65536,
+            iMIP
+        );
+
+        uint32_t iNormalMIPEncodedCoordinate = uint32_t(uint32_t(mipNormalStartPageUV.x) | uint32_t(uint32_t(mipNormalStartPageUV.y) << 16u));
+        normalTexturePageInfoTexture[int2(int32_t(uv.x * float(defaultUniformData.miScreenWidth)), int32_t(uv.y * float(defaultUniformData.miScreenHeight)))] =
+            float4(
+                float(iNormalMIPEncodedCoordinate),
+                float(mipNormalStartPageUV.y),
+                float(iNormalTextureID) /* + float(iMIP) * 0.1f*/,
+                float(iNormalHashIndex)
+            );
     }
 }
