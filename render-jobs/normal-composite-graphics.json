@@ -1,0 +1,45 @@
+{
+    "Type": "Graphics",
+    "PassType": "Full Triangle",
+    "Shader": "normal-composite-graphics.shader",
+    "Attachments": [
+        {
+            "Name" : "Normal Composite Output",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
+        },
+
+        {
+            "Name" : "Normal Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name" : "Texture Atlas Normal Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Texture Atlas Graphics"
+        }
+        
+    ],
+    "ShaderResources": [
+        
+    ],
+    "BlendStates": [
+        {
+            "Enabled": "False"
+        }
+    ],
+    "DepthStencilState":
+    {
+        "DepthEnable": "False",
+        "DepthWriteMask": "One",
+        "DepthFunc": "LessEqual",
+        "StencilEnable": "False"
+    },
+    "RasterState":
+    {
+        "FillMode": "Solid",
+        "CullMode": "None",
+        "FrontFace": "CounterClockwise"
+    }
+}
