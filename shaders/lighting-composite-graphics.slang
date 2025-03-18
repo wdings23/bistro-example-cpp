@@ -114,7 +114,7 @@ float4 PSMain(
             sampler, 
             texCoord).w;
 
-        ret = (shadow + diffuseRadiance * (1.0f - fKD) + specularRadiance) * albedo * fAO + emissiveRadiance;
+        ret = (shadow + diffuseRadiance * (1.0f - fKD)) * albedo * fAO + specularRadiance * fAO + emissiveRadiance;
     }
     return float4(ret.xyz, 1.0f); 
 }
