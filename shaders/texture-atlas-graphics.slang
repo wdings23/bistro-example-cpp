@@ -41,6 +41,7 @@ struct AssembledVertex
 struct PSOutput
 {
     float4 mAlbedo : SV_TARGET0;
+    float4 mNormal : SV_TARGET1;
 };
 
 struct VertexStageOutput
@@ -97,7 +98,12 @@ PSOutput PSMain(VertexStageOutput in)
         out.mAlbedo = outputTextureMIP(
             float2(in.texCoord.x, in.texCoord.y),
             0u
-        ) .mColor;
+        ).mColor;
+
+        out.mNormal = outputTextureMIP(
+            float2(in.texCoord.x, in.texCoord.y),
+            1u
+        ).mColor;
     }
 
     return out;
@@ -265,6 +271,14 @@ TextureAtlasOutput outputTextureMIP(
         else if(iMIP == 3)
         {
             ret.mColor = atlasTexture3.Sample(
+                textureSampler,
+                atlasUV
+            );
+        }
+
+        if(iTextureType == 1u)
+        {
+            ret.mColor = atlasTexture1.Sample(
                 textureSampler,
                 atlasUV
             );

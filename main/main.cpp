@@ -3219,11 +3219,9 @@ auto totalStart = std::chrono::high_resolution_clock::now();
 
             {
                 std::unique_lock lock(gCopyTexturePageMutex);
-                iCurrNormalPageLoaded += 1;
-                iPageIndex = iThreadNormalTextureIndex + 1;
 
                 uint32_t iFrameIndex = pRenderer->getFrameIndex() + 1;
-                hashEntry.miPageIndex = iPageIndex;
+                hashEntry.miPageIndex = iThreadNormalTextureIndex + 1;
                 hashEntry.miUpdateFrame = iFrameIndex;
                 uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
                 uint32_t iBufferOffset = texturePage.miHashIndex * sizeof(uint32_t) * 4;
@@ -3241,7 +3239,6 @@ auto totalStart = std::chrono::high_resolution_clock::now();
         else
         {
             iThreadAlbedoTextureIndex = giCurrAlbedoPageLoaded.fetch_add(1);
-
             if(iThreadAlbedoTextureIndex >= iNumPagesPerRow * iNumPagesPerRow)
             {
                 auto& textureAtlas0 = pRenderer->mapRenderJobs["Texture Page Queue Compute"]->mapOutputImageAttachments["Texture Atlas 2"];
@@ -3273,11 +3270,9 @@ auto totalStart = std::chrono::high_resolution_clock::now();
 
             {
                 std::unique_lock lock(gCopyTexturePageMutex);
-                iCurrAlbedoPageLoaded += 1;
-                iPageIndex = iThreadAlbedoTextureIndex + 1;
-
+                
                 uint32_t iFrameIndex = pRenderer->getFrameIndex() + 1;
-                hashEntry.miPageIndex = iPageIndex;
+                hashEntry.miPageIndex = iThreadAlbedoTextureIndex + 1;
                 hashEntry.miUpdateFrame = iFrameIndex;
                 uint32_t iFlags = uint32_t(Render::Common::CopyBufferFlags::EXECUTE_RIGHT_AWAY) | uint32_t(Render::Common::CopyBufferFlags::WAIT_AFTER_EXECUTION);
                 uint32_t iBufferOffset = texturePage.miHashIndex * sizeof(uint32_t) * 4;
