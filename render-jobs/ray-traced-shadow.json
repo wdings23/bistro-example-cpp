@@ -18,6 +18,11 @@
             "ParentJobName": "Deferred Indirect Graphics"
         },
         {
+            "Name" : "Normal Composite Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Normal Composite Graphics"
+        },
+        {
             "Name" : "Sun Light Output",
             "Type": "TextureInput",
             "ParentJobName": "Atmosphere Graphics"
