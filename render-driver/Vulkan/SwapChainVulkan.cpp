@@ -257,7 +257,7 @@ namespace RenderDriver
 
             VkResult ret;
             {
-                //std::lock_guard<std::mutex> lock(gSubmitMutex);
+                std::lock_guard<std::mutex> lock(gSubmitMutex);
                 ret = vkQueuePresentKHR(nativeQueue, &presentInfo);
                 WTFASSERT(ret == VK_SUCCESS, "Error presenting swap chain: %s", Utils::getErrorCode(ret));
             

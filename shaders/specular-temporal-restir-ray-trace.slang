@@ -616,7 +616,7 @@ TemporalRestirResult temporalRestir(
             uint32_t(skyUV.y * float(skyTextureSize.y))
         );
 
-        candidateRadiance = skyTexture[skyCoord] + sunLightTexture[skyCoord];
+        candidateRadiance = skyTexture[skyCoord] + sunLightTexture[inputCoord];
 
         candidateHitNormal = float4(-ray.Direction.x, -ray.Direction.y, -ray.Direction.z, 1.0f);
         candidateHitPosition.x = worldPosition.x + ray.Direction.x * 50000.0f;

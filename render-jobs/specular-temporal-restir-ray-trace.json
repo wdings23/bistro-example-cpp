@@ -177,9 +177,9 @@
         },
 
         {
-            "Name" : "Sun Light Output",
+            "Name": "Direct Sun Light Output",
             "Type": "TextureInput",
-            "ParentJobName": "Atmosphere Graphics"
+            "ParentJobName": "Ray Traced Shadow"
         },
 
         {
