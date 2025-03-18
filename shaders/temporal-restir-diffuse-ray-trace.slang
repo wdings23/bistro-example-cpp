@@ -414,6 +414,7 @@ void rayGen()
     float2 prevScreenUVCopy = prevScreenUV;
     for(int32_t iSample = 0; iSample < iNumCenterSamples; iSample++)
     { 
+#if 0
         uint32_t iTileX = (iCurrIndex + uint32_t(iNumCenterSamples)) % iNumTilesPerRow;
         uint32_t iTileY = ((iCurrIndex + uint32_t(iNumCenterSamples)) / iNumTilesPerRow) % (iNumTilesPerRow * iNumTilesPerRow);
         uint32_t iTileOffsetX = (iCurrIndex + uint32_t(iNumCenterSamples)) % iTileSize;
@@ -428,6 +429,14 @@ void rayGen()
         //uint32_t iSampleY = iTotalIndex / blueNoiseTextureSize.y;
         //blueNoiseScreenCoord.x = (blueNoiseScreenCoord.x + iSampleX) % blueNoiseTextureSize.x;
         //blueNoiseScreenCoord.y = (blueNoiseScreenCoord.y + iSampleY) % blueNoiseTextureSize.y;
+#endif // #if 0
+
+        uint32_t iOffsetX = defaultUniformBuffer.miFrame % blueNoiseTextureSize.x;
+        uint32_t iOffsetY = (defaultUniformBuffer.miFrame / (blueNoiseTextureSize.x)) % blueNoiseTextureSize.x;
+        blueNoiseScreenCoord = uint2(
+            (rayIndex.x + iOffsetX) % blueNoiseTextureSize.x,
+            (rayIndex.y + iOffsetY) % blueNoiseTextureSize.y
+        );
 
         float3 blueNoise = blueNoiseTexture[blueNoiseScreenCoord].xyz;
         Ray ray = uniformSampling(
@@ -774,63 +783,6 @@ TemporalRestirResult temporalRestir(
     sphericalHarmonicsCountOutput[screenCoord].x = sphericalHarmonicsCountOutput[screenCoord].x + 1.0f;
     float fMaxRayCount = 20.0f;
     float fRayCount = min(sphericalHarmonicsCountOutput[screenCoord].x, fMaxRayCount);
-    if(bTraceRay)
-    {
-        float fDstPct = 1.5f;
-        float fSrcPct = 0.7f;
-
-        float4 SHCoefficent0 = prevSphericalHarmonicCoefficientTexture0[prevInputCoord] * fSrcPct;
-        float4 SHCoefficent1 = prevSphericalHarmonicCoefficientTexture1[prevInputCoord] * fSrcPct;
-        float4 SHCoefficent2 = prevSphericalHarmonicCoefficientTexture2[prevInputCoord] * fSrcPct;
-
-        float4 afC = float4(
-            0.282095f,
-            0.488603f,
-            0.488603f,
-            0.488603f
-        );
-
-        float4 A = float4(
-            0.886227f,
-            1.023326f,
-            1.023326f,
-            1.023326f
-        );
-
-        // encode coefficients with direction
-        float4 coefficient = float4(
-            afC.x * A.x,
-            afC.y * candidateRayDirection.y * A.y,
-            afC.z * candidateRayDirection.z * A.z,
-            afC.w * candidateRayDirection.x * A.w
-        );
-
-        // encode with radiance
-        float3 aResults[4];
-        aResults[0] = candidateRadiance.xyz * coefficient.x * fDstPct;
-        aResults[1] = candidateRadiance.xyz * coefficient.y * fDstPct;
-        aResults[2] = candidateRadiance.xyz * coefficient.z * fDstPct;
-        aResults[3] = candidateRadiance.xyz * coefficient.w * fDstPct;
-        SHCoefficent0.x += aResults[0].x;
-        SHCoefficent0.y += aResults[0].y;
-        SHCoefficent0.z += aResults[0].z;
-        SHCoefficent0.w += aResults[1].x;
-
-        SHCoefficent1.x += aResults[1].y;
-        SHCoefficent1.y += aResults[1].z;
-        SHCoefficent1.z += aResults[2].x;
-        SHCoefficent1.w += aResults[2].y;
-
-        SHCoefficent2.x += aResults[2].z;
-        SHCoefficent2.y += aResults[3].x;
-        SHCoefficent2.z += aResults[3].y;
-        SHCoefficent2.w += aResults[3].z;
-
-        sphericalHarmonicCoefficientTexture0[screenCoord] = SHCoefficent0;
-        sphericalHarmonicCoefficientTexture1[screenCoord] = SHCoefficent1;
-        sphericalHarmonicCoefficientTexture2[screenCoord] = SHCoefficent2;
-    }
-    
     
     // reservoir
     float fLuminance = computeLuminance(
@@ -865,7 +817,63 @@ TemporalRestirResult temporalRestir(
         ret.mReservoir.z = fMaxTemporalReservoirSamples;
     }
 
-    
+    if (bTraceRay)
+    {
+        float fDstPct = 1.5f;
+        float fSrcPct = 0.7f;
+
+        float4 SHCoefficent0 = prevSphericalHarmonicCoefficientTexture0[prevInputCoord] * fSrcPct;
+        float4 SHCoefficent1 = prevSphericalHarmonicCoefficientTexture1[prevInputCoord] * fSrcPct;
+        float4 SHCoefficent2 = prevSphericalHarmonicCoefficientTexture2[prevInputCoord] * fSrcPct;
+
+        float4 afC = float4(
+            0.282095f,
+            0.488603f,
+            0.488603f,
+            0.488603f
+        );
+
+        float4 A = float4(
+            0.886227f,
+            1.023326f,
+            1.023326f,
+            1.023326f
+        );
+
+        // encode coefficients with direction
+        float4 coefficient = float4(
+            afC.x * A.x,
+            afC.y * ret.mRayDirection.y * A.y,
+            afC.z * ret.mRayDirection.z * A.z,
+            afC.w * ret.mRayDirection.x * A.w
+        );
+
+        // encode with radiance
+        float3 aResults[4];
+        aResults[0] = ret.mRadiance.xyz * coefficient.x * fDstPct;
+        aResults[1] = ret.mRadiance.xyz * coefficient.y * fDstPct;
+        aResults[2] = ret.mRadiance.xyz * coefficient.z * fDstPct;
+        aResults[3] = ret.mRadiance.xyz * coefficient.w * fDstPct;
+        SHCoefficent0.x += aResults[0].x;
+        SHCoefficent0.y += aResults[0].y;
+        SHCoefficent0.z += aResults[0].z;
+        SHCoefficent0.w += aResults[1].x;
+
+        SHCoefficent1.x += aResults[1].y;
+        SHCoefficent1.y += aResults[1].z;
+        SHCoefficent1.z += aResults[2].x;
+        SHCoefficent1.w += aResults[2].y;
+
+        SHCoefficent2.x += aResults[2].z;
+        SHCoefficent2.y += aResults[3].x;
+        SHCoefficent2.z += aResults[3].y;
+        SHCoefficent2.w += aResults[3].z;
+
+        sphericalHarmonicCoefficientTexture0[screenCoord] = SHCoefficent0;
+        sphericalHarmonicCoefficientTexture1[screenCoord] = SHCoefficent1;
+        sphericalHarmonicCoefficientTexture2[screenCoord] = SHCoefficent2;
+    }
+
     ret.mIntersectionResult = intersectionInfo;
     ret.mfNumValidSamples += fM * float(fLuminance > 0.0f);
 

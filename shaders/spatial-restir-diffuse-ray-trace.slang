@@ -283,75 +283,6 @@ void rayGen()
 
         uint32_t iMaterialID = materialID[iMesh];
         float fReflectivity = 0.5f;
-#if 0
-        bool bOnScreen = false;
-        
-        // get on-screen radiance if there's any
-        float4 clipSpacePosition = mul(defaultUniformBuffer.mViewProjectionMatrix, float4(hitPosition.xyz, 1.0));
-        clipSpacePosition.x /= clipSpacePosition.w;
-        clipSpacePosition.y /= clipSpacePosition.w;
-        clipSpacePosition.z /= clipSpacePosition.w;
-
-        clipSpacePosition.x = clipSpacePosition.x * 0.5f + 0.5f;
-        clipSpacePosition.y = 1.0f - (clipSpacePosition.y * 0.5f + 0.5f);
-        clipSpacePosition.z = clipSpacePosition.z * 0.5f + 0.5f;
-        uint2 clipSpaceCoord = uint2(
-            uint32_t(floor(clipSpacePosition.x * float(outputTextureSize.x) + 0.5f)),
-            uint32_t(floor(clipSpacePosition.y * float(outputTextureSize.y) + 0.5f))
-        );
-
-        if (clipSpaceCoord.x >= 0 && clipSpaceCoord.x < outputTextureSize.x &&
-            clipSpaceCoord.y >= 0 && clipSpaceCoord.y < outputTextureSize.y &&
-            clipSpacePosition.z >= 0.0f && clipSpacePosition.z <= 1.0f)
-        {
-            onScreenRadiance.xyz = albedoTexture[clipSpaceCoord.xy].xyz * directSunOutputTexture[clipSpaceCoord.xy].xyz;
-            float3 checkHitPosition = worldPositionTexture[clipSpaceCoord.xy].xyz;
-            float3 diff = checkHitPosition - hitPosition.xyz;
-            float3 direction = checkHitPosition - worldPosition.xyz;
-            float fDistance = length(direction);
-            if(dot(diff, diff) <= 0.1f && fDistance >= 1.0f)
-            {
-                float3 hitNormal = normalTexture[clipSpaceCoord.xy].xyz;
-                fDistanceAttenuation = 1.0f / max(dot(direction, direction), 1.0f);
-                fRadianceDP = max(dot(normalize(direction), normal), 0.0f);
-                bOnScreen = true;
-                
-            }
-        }
-
-        // not on screen, check irradiance cache
-        iHitType = 1;
-        if(bOnScreen == false)
-        {
-            onScreenRadiance.xyz = getIrradianceCacheRadiance(
-                hitPosition.xyz,
-                worldPosition.xyz);
-
-            uint32_t iInitialAtlasWidth = 1, iInitialAtlasHeight = 1;
-            initialTextureAtlas.GetDimensions(iInitialAtlasWidth, iInitialAtlasHeight);
-
-            int32_t iInitialPageSize = 16;
-            int32_t iNumInitialPagesPerRow = iInitialAtlasWidth / iInitialPageSize;
-            uint32_t iTextureID = materialData[iMaterialID].miAlbedoTextureID;
-
-            int2 pageOffset = int2(
-                int32_t(floor(hitUV.x * float(iInitialPageSize) + 0.5f)),
-                int32_t(floor(hitUV.x * float(iInitialPageSize) + 0.5f))
-            );
-            int2 textureAtlasCoord = int2(
-                (iTextureID % iNumInitialPagesPerRow) * iInitialPageSize + pageOffset.x,
-                (iTextureID / iNumInitialPagesPerRow) * iInitialPageSize + pageOffset.y
-            );
-            float3 albedo = initialTextureAtlas[textureAtlasCoord].xyz;
-            float3 direction = hitPosition.xyz - worldPosition.xyz;
-            fDistanceAttenuation = 1.0f / max(dot(direction, direction), 1.0f);
-            fRadianceDP = max(dot(normalize(direction), normal), 0.0f);
-            onScreenRadiance.xyz = onScreenRadiance * albedo;
-            iHitType = 2;
-
-        }
-#endif // #if 0
-
         BouncedRadianceInfo bouncedRadianceInfo = getBouncedRadiance(
             worldPosition,
             normal,
@@ -429,14 +360,6 @@ void rayGen()
     debugTexture0[rayIndex] = float4(hitPosition.xyz, payload.mOutput.w);
     if(payload.mOutput.w > 0.0f)
     {
-        //float4x4 viewMatrix = ;
-        //float4x4 projectionMatrix = defaultUniformBuffer.mProjectionMatrix;
-        //projectionMatrix._22 *= -1.0f;
-        //float4x4 viewProjectionMatrix = mul(
-        //    projectionMatrix,
-        //    viewMatrix
-        //);
-
         // get on-screen radiance if there's any
         float4 clipSpacePosition = mul(defaultUniformBuffer.mViewProjectionMatrix, float4(hitPosition.xyz, 1.0));
         clipSpacePosition.x /= clipSpacePosition.w;
