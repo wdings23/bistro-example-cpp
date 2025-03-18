@@ -311,7 +311,17 @@
             "ParentJobName": "Emissive SVG Filter 1 Graphics",
             "ParentName": "Emissive SVG Filter Radiance 1 Output",
             "Format": "rgba32float"
-        }
+        },
 
+
+    
+        {
+            "Name": "Previous Normal Composite Output",
+            "Type": "TextureOutput",
+            "ParentName" : "Normal Composite Output",
+            "ParentJobName": "Normal Composite Graphics",
+            "Format": "rgba32float"
+        }
+        
     ]
 }

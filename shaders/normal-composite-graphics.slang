@@ -53,7 +53,7 @@ PSOutput PSMain(VertexStageOutput in)
     float3 normalMap = normalMapTexture.Sample(
         textureSampler,
         uv
-    ) .xyz;
+    ).xyz * 2.0f - float3(1.0f, 1.0f, 1.0f);
 
     float3 up = (abs(normal.y) > 0.99f) ? float3(1.0f, 0.0f, 0.0f) : float3(0.0f, 1.0f, 0.0f);
     float3 tangent = normalize(cross(up, normal));
