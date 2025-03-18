@@ -89,6 +89,12 @@
             "PassType": "Full Triangle"
         },
         {
+            "Name": "Normal Composite Graphics",
+            "Pipeline": "normal-composite-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
             "Name": "Ray Traced Shadow",
             "Pipeline": "ray-traced-shadow.json",
             "Type": "Ray Trace",
