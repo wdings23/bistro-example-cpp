@@ -15,9 +15,9 @@
             "ParentJobName": "Deferred Indirect Graphics"
         },
         {
-            "Name" : "Normal Output",
+            "Name" : "Normal Composite Output",
             "Type": "TextureInput",
-            "ParentJobName": "Deferred Indirect Graphics"
+            "ParentJobName": "Normal Composite Graphics"
         },
         {
             "Name" : "Light Composite Radiance Output",

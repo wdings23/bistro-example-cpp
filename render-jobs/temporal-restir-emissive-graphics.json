@@ -73,9 +73,9 @@
             "ParentJobName": "Deferred Indirect Graphics"
         },
         {
-            "Name" : "Normal Output",
+            "Name" : "Normal Composite Output",
             "Type": "TextureInput",
-            "ParentJobName": "Deferred Indirect Graphics"
+            "ParentJobName": "Normal Composite Graphics"
         },
         {
             "Name" : "Texture Coordinate Output",
@@ -110,7 +110,7 @@
             "ParentJobName": "Copy Render Targets"
         },
         {
-            "Name": "Previous Normal Output",
+            "Name": "Previous Normal Composite Output",
             "Type": "TextureInput",
             "ParentJobName": "Copy Render Targets"
         },
