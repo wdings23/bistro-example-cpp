@@ -118,6 +118,11 @@ void imguiLayout(Render::Common::CRenderer* pRenderer);
 //static std::atomic<uint32_t> giCopyingTexturePage;
 static std::mutex gCopyTexturePageMutex;
 
+static std::string sMeshModelDirectory;
+static std::string sTextureDirectory;
+static std::string sMeshModelName;
+static std::string sRenderJobFilePath;
+static std::string sTexturePageFilePath;
 
 /*
 **
@@ -125,6 +130,16 @@ static std::mutex gCopyTexturePageMutex;
 extern "C" char const* getSaveDir()
 {
     return "C:\\Users\\Dingwings\\Logs";
+}
+
+extern "C" char const* getTopAssetDirectory()
+{
+    return sMeshModelDirectory.c_str();
+}
+
+extern "C" char const* getMeshModelName()
+{
+    return sMeshModelName.c_str();
 }
 
 static Render::Common::RenderDriverType sRenderDriverType = Render::Common::RenderDriverType::DX12;
@@ -147,7 +162,9 @@ void getMaterialInfo(
     Render::Common::CRenderer* pRenderer
 )
 {
-    FILE* fp = fopen("d:\\downloads\\Bistro_v4\\bistro2.mat", "rb");
+    std::string filePath = sMeshModelDirectory + "\\bistro2.mat";
+    FILE* fp = fopen(filePath.c_str(), "rb");
+    WTFASSERT("Can\'t open \"%s\"", filePath.c_str());
     fseek(fp, 0, SEEK_END);
     size_t iFileSize = ftell(fp);
     fseek(fp, 0, SEEK_SET);
@@ -255,22 +272,17 @@ void getMaterialInfo(
         iCurrPos += 1;
     }
 
-    //ImageUtils::rescaleImages(
-    //    aAlbedoTextureNames,
-    //    "d:\\Downloads\\bistro_v4\\converted-dds",
-    //    "d:\\Downloads\\bistro_v4\\converted-dds-initial",
-    //    64,
-    //    64,
-    //    "albedo-dimensions"
-    //);
-
     aAlbedoTextureDimensions.resize(iNumAlbedoTextures);
-    fp = fopen("d:\\Downloads\\Bistro_v4\\converted-dds-scaled\\albedo-dimensions.txt", "rb");
+    filePath = sTextureDirectory + "\\albedo-dimensions.txt";
+    fp = fopen(filePath.c_str(), "rb");
+    WTFASSERT("Can\'t open \"%s\"", filePath.c_str());
     fread(aAlbedoTextureDimensions.data(), sizeof(uint2), iNumAlbedoTextures, fp);
     fclose(fp);
 
     aNormalTextureDimensions.resize(iNumNormalTextures);
-    fp = fopen("d:\\Downloads\\Bistro_v4\\converted-dds-scaled\\normal-dimensions.txt", "rb");
+    filePath = sTextureDirectory + "\\albedo-dimensions.txt";
+    fp = fopen(filePath.c_str(), "rb");
+    WTFASSERT("Can\'t open \"%s\"", filePath.c_str());
     fread(aNormalTextureDimensions.data(), sizeof(uint2), iNumNormalTextures, fp);
     fclose(fp);
 }
@@ -354,6 +366,31 @@ int CALLBACK WinMain(
 
     //std::this_thread::sleep_for(std::chrono::seconds(5));
 
+    FILE* optionsFP = fopen("config.json", "rb");
+    if(optionsFP != nullptr)
+    {
+        fseek(optionsFP, 0, SEEK_END);
+        uint64_t iFileSize = (uint64_t)ftell(optionsFP);
+        fseek(optionsFP, 0, SEEK_SET);
+        std::vector<char> acFileContent(iFileSize + 1);
+        acFileContent[iFileSize] = '\0';
+        fread(acFileContent.data(), sizeof(char), iFileSize, optionsFP);
+        fclose(optionsFP);
+
+        rapidjson::Document doc;
+        doc.Parse(acFileContent.data());
+        sMeshModelDirectory = doc["Asset Directory"].GetString();
+        sTextureDirectory = doc["Texture Directory"].GetString();
+        sMeshModelName = doc["Mesh Model Name"].GetString();
+        sRenderJobFilePath = doc["Render Job File"].GetString();
+        sTexturePageFilePath = doc["Texture Page Directory"].GetString();
+    }
+    else
+    {
+        WTFASSERT(0, "Can\'t find config.json");
+        exit(1);
+    }
+
     if(strstr(pCommandLine, "--render=vulkan"))
     {
         sRenderDriverType = Render::Common::RenderDriverType::Vulkan;
@@ -426,12 +463,15 @@ int CALLBACK WinMain(
 
     // TODO: move vertex and index buffer out of renderer
 
-    pDesc->mRenderJobsFilePath = "d:\\test\\github-projects\\bistro-example-cpp\\render-jobs\\bistro-example-render-jobs.json";
+    //pDesc->mRenderJobsFilePath = "d:\\test\\github-projects\\bistro-example-cpp\\render-jobs\\bistro-example-render-jobs.json";
+    pDesc->mRenderJobsFilePath = sRenderJobFilePath;
     pRenderer->setup(*pDesc);
     
     // number of meshes
+    std::string filePath = sMeshModelDirectory + "\\" + sMeshModelName + "-triangles.bin";
     uint32_t miNumMeshes = 0;
-    FILE* fp = fopen("d:\\Downloads\\Bistro_v4\\bistro2-triangles.bin", "rb");
+    FILE* fp = fopen(filePath.c_str(), "rb");
+    WTFASSERT(fp, "Can\'t open \"%s\"", filePath.c_str());
     fread(&miNumMeshes, sizeof(uint32_t), 1, fp);
     fclose(fp);
 
@@ -572,7 +612,7 @@ int CALLBACK WinMain(
         uint32_t iPage = 0;
         for(auto const& textureName : aAlbedoTextureNames)
         {
-            std::string fullPath = "d:\\Downloads\\Bistro_v4\\converted-dds-scaled\\" + textureName;
+            std::string fullPath = sTextureDirectory + "\\" + textureName;
             int32_t iWidth = 0, iHeight = 0, iNumChannels = 0;
             stbi_uc* pImageData = stbi_load(
                 fullPath.c_str(),
@@ -2451,7 +2491,7 @@ void outputTexturePages(
     std::string const& imageFileName,
     uint32_t iPageDimension)
 {
-    std::string fullPath = "d:\\Downloads\\Bistro_v4\\converted-dds-scaled\\" + imageFileName;
+    std::string fullPath = sTextureDirectory + "\\" + imageFileName;
     int32_t iImageWidth = 0, iImageHeight = 0, iNumChannels = 0;
     stbi_uc* pImageData = stbi_load(
         fullPath.c_str(),
@@ -2487,7 +2527,7 @@ void outputTexturePages(
                 }
 
                 std::ostringstream oss;
-                oss << "d:\\Downloads\\Bistro_v4\\texture-pages\\" << baseName << "-" << iPageX << "-" << iPageY << ".png";
+                oss << sTexturePageFilePath << "\\" << baseName << "-" << iPageX << "-" << iPageY << ".png";
                 stbi_write_png(
                     oss.str().c_str(),
                     iPageDimension,
@@ -2539,7 +2579,7 @@ void outputTexturePages(
         }
 
         std::ostringstream oss;
-        oss << "d:\\Downloads\\Bistro_v4\\texture-pages\\" << baseName << "-0-0.png";
+        oss << sTexturePageFilePath << "\\" << baseName << "-0-0.png";
         stbi_write_png(
             oss.str().c_str(),
             iPageDimension,
@@ -2688,7 +2728,7 @@ void loadTexturePage(
         std::string baseName = textureName.substr(0, fileExtensionStart);
         std::vector<char> acPageData(iTexturePageSize * iTexturePageSize * 4);
         std::ostringstream oss;
-        oss << "d:\\Downloads\\Bistro_v4\\texture-pages\\" << baseName << "-" << pageCoord.x << "-" << pageCoord.y << ".png";
+        oss << sTexturePageFilePath << "\\" << baseName << "-" << pageCoord.x << "-" << pageCoord.y << ".png";
         int32_t iWidth = 0, iHeight = 0, iNumChannels = 0;
         stbi_uc* pTexturePageData = stbi_load(
             oss.str().c_str(),
@@ -3021,7 +3061,7 @@ auto totalStart = std::chrono::high_resolution_clock::now();
         {
             textureName = aNormalTextureNames[iTextureID];
         
-            std::string fullPath = "d:\\Downloads\\Bistro_v4\\converted-dds-scaled\\" + textureName;
+            std::string fullPath = sTextureDirectory + "\\" + textureName;
             int32_t iImageWidth = 0, iImageHeight = 0, iNumChannels = 0;
             stbi_uc* pImageData = stbi_load(
                 fullPath.c_str(),
@@ -3056,7 +3096,7 @@ auto totalStart = std::chrono::high_resolution_clock::now();
             std::string baseName = textureName.substr(0, fileExtensionStart);
             std::vector<char> acPageData(iTexturePageSize * iTexturePageSize * 4);
             std::ostringstream oss;
-            oss << "d:\\Downloads\\Bistro_v4\\texture-pages\\" << baseName << "-" << pageCoord.x << "-" << pageCoord.y << ".png";
+            oss << sTexturePageFilePath << "\\" << baseName << "-" << pageCoord.x << "-" << pageCoord.y << ".png";
             int32_t iWidth = 0, iHeight = 0, iNumChannels = 0;
             stbi_uc* pPageImageData = stbi_load(
                 oss.str().c_str(),
@@ -3240,7 +3280,9 @@ void setupExternalDataBuffers(
             uint32_t            miSpecularTextureID;
         };
 
-        FILE* fp = fopen("d:\\downloads\\Bistro_v4\\bistro2.mat", "rb");
+        std::string filePath = sMeshModelDirectory + "\\" + sMeshModelName + ".mat";
+        FILE* fp = fopen(filePath.c_str(), "rb");
+        WTFASSERT(fp, "Can\'t open \"%s\"", filePath.c_str());
         fseek(fp, 0, SEEK_END);
         size_t iFileSize = ftell(fp);
         fseek(fp, 0, SEEK_SET);
@@ -3291,7 +3333,9 @@ void setupExternalDataBuffers(
 
     // material id for texture atlas pages
     {
-        FILE* fp = fopen("d:\\downloads\\Bistro_v4\\bistro2.mid", "rb");
+        std::string filePath = sMeshModelDirectory + "\\" + sMeshModelName + ".mid";
+        FILE* fp = fopen(filePath.c_str(), "rb");
+        WTFASSERT(fp, "Can\'t open \"%s\"", filePath.c_str());
         fseek(fp, 0, SEEK_END);
         size_t iFileSize = ftell(fp);
         fseek(fp, 0, SEEK_SET);
@@ -3324,8 +3368,11 @@ void setupExternalDataBuffers(
 
     // mesh triangle ranges
     {
+        std::string filePath = sMeshModelDirectory + "\\" + sMeshModelName + "-triangles.bin";
+
         // load binary data
-        FILE* fp = fopen("d:\\Downloads\\Bistro_v4\\bistro2-triangles.bin", "rb");
+        FILE* fp = fopen(filePath.c_str(), "rb");
+        WTFASSERT(fp, "Can\'t open \"%s\"", filePath.c_str());
         fseek(fp, 0, SEEK_END);
         size_t iFileSize = ftell(fp);
         fseek(fp, 0, SEEK_SET);
@@ -3393,7 +3440,9 @@ void loadMeshInstanceInfo(
     std::vector<uint32_t> aiMeshInstanceID
 )
 {
-    FILE* fp = fopen("d:\\Downloads\\Bistro_v4\\bistro2-mesh-instance-ids.bin", "rb");
+    std::string filePath = sMeshModelDirectory + "\\" + sMeshModelName + "-mesh-instance-ids.bin";
+    FILE* fp = fopen(filePath.c_str(), "rb");
+    WTFASSERT(fp, "Can\'t open \"%s\"", filePath.c_str());
     uint32_t iNumOrigMeshes = 0;
     fread(&iNumOrigMeshes, sizeof(uint32_t), 1, fp);
     std::vector<std::vector<uint32_t>> aiMeshInstances(iNumOrigMeshes);
@@ -3409,7 +3458,9 @@ void loadMeshInstanceInfo(
     }
     fclose(fp);
 
-    fp = fopen("d:\\Downloads\\Bistro_v4\\bistro2-mesh-instance-positions.bin", "rb");
+    filePath = sMeshModelDirectory + "\\" + sMeshModelName + "-mesh-instance-positions.bin";
+    fp = fopen(filePath.c_str(), "rb");
+    WTFASSERT(fp, "Can\'t open \"%s\"", filePath.c_str());
     uint32_t iNumMeshes = 0;
     fread(&iNumMeshes, sizeof(uint32_t), 1, fp);
     std::vector<float3> aMeshInstancePositions(iNumMeshes);
@@ -3418,7 +3469,9 @@ void loadMeshInstanceInfo(
         fread(aMeshInstancePositions.data(), sizeof(float3), iNumMeshes, fp);
     }
 
-    fp = fopen("d:\\Downloads\\Bistro_v4\\bistro2-mesh-instance-bboxes.bin", "rb");
+    filePath = sMeshModelDirectory + "\\" + sMeshModelName + "-mesh-instance-bboxes.bin";
+    fp = fopen(filePath.c_str(), "rb");
+    WTFASSERT(fp, "Can\'t open \"%s\"", filePath.c_str());
     iNumMeshes = 0;
     fread(&iNumMeshes, sizeof(uint32_t), 1, fp);
     std::vector<float3> aMeshInstanceBBoxes(iNumMeshes);

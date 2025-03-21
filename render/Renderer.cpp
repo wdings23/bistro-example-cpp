@@ -1776,6 +1776,9 @@ namespace Render
             ++miFrameIndex;
         }
 
+        extern "C" char const* getTopAssetDirectory();
+        extern "C" char const* getMeshModelName();
+
         /*
         **
         */
@@ -1783,13 +1786,18 @@ namespace Render
         {
             FILE* fp = nullptr;
 #if defined(_MSC_VER)
-            fp = fopen("d:\\Downloads\\Bistro_v4\\bistro2-triangles.bin", "rb");
+            std::string directory = getTopAssetDirectory();
+            std::string meshModelName = getMeshModelName();
+            std::string fullPath = directory + "\\" + meshModelName + "-triangles.bin";
+            fp = fopen(fullPath.c_str(), "rb");
 #else
             std::string fullPath;
             getAssetsDir(fullPath, "bistro2-triangles.bin");
             fp = fopen(fullPath.c_str(), "rb");
 #endif // _MSC_VER
             
+            WTFASSERT(fp, "Can\'t open \"%s\"", fullPath.c_str());
+
             // load binary data
             fseek(fp, 0, SEEK_END);
             size_t iFileSize = ftell(fp);
