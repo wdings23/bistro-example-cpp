@@ -264,50 +264,6 @@ void getMaterialInfo(
     //    "albedo-dimensions"
     //);
 
-#if 0
-    ImageUtils::rescaleImages(
-        aAlbedoTextureNames,
-        "d:\\Downloads\\bistro_v4\\converted-dds",
-        "d:\\Downloads\\bistro_v4\\converted-dds-scaled",
-        512,
-        512,
-        "albedo-dimensions"
-    );
-
-    ImageUtils::rescaleImages(
-        aNormalTextureNames,
-        "d:\\Downloads\\bistro_v4\\converted-dds",
-        "d:\\Downloads\\bistro_v4\\converted-dds-scaled",
-        512,
-        512,
-        "normal-dimensions"
-    );
-
-    ImageUtils::convertNormalImages(
-        aNormalTextureNames,
-        "d:\\Downloads\\bistro_v4\\converted-dds-scaled",
-        "d:\\Downloads\\bistro_v4\\converted-dds-scaled");
-
-    ImageUtils::rescaleImages(
-        aAlbedoTextureNames,
-        "d:\\Downloads\\bistro_v4\\converted-dds-scaled",
-        "d:\\Downloads\\bistro_v4\\converted-dds-initial",
-        64,
-        64,
-        "albedo-dimensions"
-    );
-
-    ImageUtils::rescaleImages(
-        aNormalTextureNames,
-        "d:\\Downloads\\bistro_v4\\converted-dds-scaled",
-        "d:\\Downloads\\bistro_v4\\converted-dds-initial",
-        64,
-        64,
-        "normal-dimensions"
-    );
-
-#endif // #if 0
-
     aAlbedoTextureDimensions.resize(iNumAlbedoTextures);
     fp = fopen("d:\\Downloads\\Bistro_v4\\converted-dds-scaled\\albedo-dimensions.txt", "rb");
     fread(aAlbedoTextureDimensions.data(), sizeof(uint2), iNumAlbedoTextures, fp);
@@ -318,12 +274,6 @@ void getMaterialInfo(
     fread(aNormalTextureDimensions.data(), sizeof(uint2), iNumNormalTextures, fp);
     fclose(fp);
 }
-
-//void loadTexturePage(
-//    std::vector<char>& acPageData,
-//    std::string const& imageFileName,
-//    uint2 const& pageCoord,
-//    uint32_t iPageDimension);
 
 struct PageInfo
 {
@@ -2494,48 +2444,6 @@ void imguiLayout(Render::Common::CRenderer* pRenderer)
     }
 }
 
-#if 0
-/*
-**
-*/
-void loadTexturePage(
-    std::vector<char>& acPageData,
-    std::string const& imageFileName,
-    uint2 const& pageCoord,
-    uint32_t iPageDimension)
-{
-    std::string fullPath = "d:\\Downloads\\Bistro_v4\\converted-dds\\" + imageFileName;
-    int32_t iImageWidth = 0, iImageHeight = 0, iNumChannels = 0;
-    stbi_uc* pImageData = stbi_load(
-        fullPath.c_str(),
-        &iImageWidth,
-        &iImageHeight,
-        &iNumChannels,
-        4);
-
-    for(uint32_t iY = 0; iY < iPageDimension; iY++)
-    {
-        uint32_t iStart = (((pageCoord.y * iPageDimension) + iY) * iImageWidth + pageCoord.x * iPageDimension) * 4;
-        uint32_t iIndex = iY * iPageDimension * 4;
-        memcpy(
-            &acPageData[iIndex],
-            &pImageData[iStart],
-            iPageDimension * 4
-        );
-    }
-    stbi_image_free(pImageData);
-
-    stbi_write_png(
-        "d:\\Downloads\\Bistro_v4\\texture-pages\\test.png",
-        iPageDimension,
-        iPageDimension,
-        4,
-        acPageData.data(),
-        iPageDimension * 4
-    );
-}
-#endif // if 0
-
 /*
 **
 */
@@ -3045,32 +2953,6 @@ auto totalStart = std::chrono::high_resolution_clock::now();
 
             int iDebug = 1;
         }
-
-#if 0
-        // open the image, storing the file ptr in map
-        stbi_uc* pImageData = nullptr;
-        int32_t iImageWidth = 0, iImageHeight = 0, iNumChannels = 0;
-        if(aImageInfo[texturePage.miTextureID].mpImageData == nullptr)
-        {
-            std::string fullPath = "d:\\Downloads\\Bistro_v4\\converted-dds-scaled\\" + aAlbedoTextureNames[texturePage.miTextureID];
-            aImageInfo[texturePage.miTextureID].mpImageData = stbi_load(
-                fullPath.c_str(),
-                &iImageWidth,
-                &iImageHeight,
-                &iNumChannels,
-                4
-            );
-            aImageInfo[texturePage.miTextureID].miImageWidth = iImageWidth;
-            aImageInfo[texturePage.miTextureID].miImageHeight = iImageHeight;
-            pImageData = aImageInfo[texturePage.miTextureID].mpImageData;
-        }
-        else
-        {
-            pImageData = aImageInfo[texturePage.miTextureID].mpImageData;
-            iImageWidth = aImageInfo[texturePage.miTextureID].miImageWidth;
-            iImageHeight = aImageInfo[texturePage.miTextureID].miImageHeight;
-        }
-#endif // #if 0
 
         int32_t iPageY = (texturePage.miPageUV >> 16);
         int32_t iPageX = (texturePage.miPageUV & 0x0000ffff);
