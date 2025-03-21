@@ -232,11 +232,21 @@ void getMinMaxRadiance(
     in Texture2D<float4> radianceTexture
 )
 {
+    float2 uv = float2(
+        float(screenCoord.x) / float(textureSize.x),
+        float(screenCoord.y) / float(textureSize.y)
+    );
+    float3 normal = normalTexture.Sample(
+        textureSampler,
+        uv
+    ) .xyz;
+
     int32_t iRadius = 3;
 
     float fOneOverWidth = 1.0f / float(textureSize.x);
     float fOneOverHeight = 1.0f / float(textureSize.y);
 
+    float fTotalWeight = 0.0f;
     float fNumSamples = 0.0f;
     float3 radianceMean = float3(0.0f, 0.0f, 0.0f);
     float3 aRadiance[9];
@@ -252,13 +262,24 @@ void getMinMaxRadiance(
             aRadiance[int(fNumSamples)] = radianceTexture.Sample(
                 textureSampler,
                 sampleUV
+            ).xyz;
+
+            float3 sampleNormal = normalTexture.Sample(
+                                                   textureSampler,
+                                                   sampleUV
             ) .xyz;
-            radianceMean += aRadiance[int(fNumSamples)];
+            float fDP = dot(normal, sampleNormal);
+            float fWeight = fDP;
+
+            radianceMean += aRadiance[int(fNumSamples)] * fWeight;
             fNumSamples += 1.0f;
+            fTotalWeight += fWeight;
         }
     }
-    float fOneOverNumSamples = 1.0f / fNumSamples;
-    radianceMean *= fOneOverNumSamples;
+    // float fOneOverNumSamples = 1.0f / fNumSamples;
+    // radianceMean *= fOneOverNumSamples;
+    float fOneOverTotalWeight = 1.0f / fTotalWeight;
+    radianceMean *= fOneOverTotalWeight;
 
     uint32_t iIndex = 0;
     float3 totalDiffSquared = float3(0.0f, 0.0f, 0.0f);
@@ -272,7 +293,8 @@ void getMinMaxRadiance(
         }
     }
 
-    float3 standardDeviation = sqrt((totalDiffSquared) * fOneOverNumSamples);
+    // float3 standardDeviation = sqrt((totalDiffSquared) * fOneOverNumSamples);
+    float3 standardDeviation = sqrt((totalDiffSquared)*fOneOverTotalWeight);
 
     minRadiance = max(radianceMean - standardDeviation * 0.25f, float3(0.0f, 0.0f, 0.0f));
     maxRadiance = max(radianceMean + standardDeviation * 0.25f, float3(0.0f, 0.0f, 0.0f)); 
