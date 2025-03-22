@@ -499,7 +499,6 @@ void rayGen()
         );
     }
 
-#if 0
     result = permutationRestir(
         result,
         uv,
@@ -513,7 +512,6 @@ void rayGen()
         textureSize,
         randomResult
     );
-#endif // #if 0
 
     result.mAmbientOcclusion.y += 1;
     if (result.mIntersectionResult.miHitTriangle != UINT32_MAX)

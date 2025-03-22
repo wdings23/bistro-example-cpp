@@ -429,7 +429,7 @@ void rayGen()
     radianceOutput[rayIndex] = result.mRadiance * fWeight;
 
     encodeToSphericalHarmonicCoefficients2(
-        radianceOutput[rayIndex].xyz * 20.0f,
+        radianceOutput[rayIndex].xyz * 50.0f,
         normalize(result.mHitPosition.xyz - worldPosition.xyz),
         rayIndex
     );
@@ -451,6 +451,8 @@ void rayGen()
     );
 
     decodedSphericalHarmonicsOutput[rayIndex] = float4(shOutput.xyz, 1.0f);
+
+    debugTexture0[rayIndex] = float4(fRoughness, fMetalness, 0.0f, 1.0f);
 }
 
 /////
@@ -967,6 +969,7 @@ void encodeToSphericalHarmonicCoefficients2(
     sphericalHarmonicCoefficientTexture2[screenCoord].z = aResults[3].y;
     sphericalHarmonicCoefficientTexture2[screenCoord].w = aResults[3].z;
 }
+
 
 /*
 **

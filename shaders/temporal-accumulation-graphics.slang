@@ -281,7 +281,7 @@ void getMinMaxRadiance(
             float3 sampleWorldPosition = worldPositionTexture.Sample(
                 textureSampler,
                 sampleUV
-            ) .xyz;
+            ).xyz;
             float3 diff = sampleWorldPosition - worldPosition;
             float fDP = dot(diff, normal);
             float fWeight = exp(abs(fDP + fPlaneD) * -1.0f);

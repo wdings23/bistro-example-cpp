@@ -35,9 +35,9 @@
         },
 
         {
-            "Name" : "Spatial Restir 1 Decoded Spherical Harmonics Output",
+            "Name" : "Decoded Spherical Harmonics Output",
             "Type": "TextureInput",
-            "ParentJobName": "Spatial Restir Diffuse 1 Ray Trace"
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
         },
         {
             "Name" : "World Position Output",
@@ -60,7 +60,7 @@
             "ParentJobName": "Copy Render Targets"
         },
         {
-            "Name": "Previous Temporal Accumulation Diffuse",
+            "Name": "Previous Diffuse SVG Filter Radiance",
             "Type": "TextureInput",
             "ParentJobName": "Copy Render Targets"
         },
