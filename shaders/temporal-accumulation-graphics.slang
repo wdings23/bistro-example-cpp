@@ -237,9 +237,19 @@ void getMinMaxRadiance(
         float(screenCoord.y) / float(textureSize.y)
     );
     float3 normal = normalTexture.Sample(
+                                     textureSampler,
+                                     uv
+    ).xyz;
+    float3 worldPosition = worldPositionTexture.Sample(
         textureSampler,
         uv
-    ) .xyz;
+    ).xyz;
+
+    float fPlaneD = dot(worldPosition, normal) * -1.0f;
+
+    float3 up = abs(normal.y) >= 0.99f ? float3(1.0f, 0.0f, 0.0f) : float3(0.0f, 1.0f, 0.0f);
+    float3 tangent = cross(up, normal);
+    float3 binormal = cross(normal, tangent);
 
     int32_t iRadius = 3;
 
@@ -265,12 +275,17 @@ void getMinMaxRadiance(
             ).xyz;
 
             float3 sampleNormal = normalTexture.Sample(
-                                                   textureSampler,
-                                                   sampleUV
+                textureSampler,
+                sampleUV
+            ).xyz;
+            float3 sampleWorldPosition = worldPositionTexture.Sample(
+                textureSampler,
+                sampleUV
             ) .xyz;
-            float fDP = dot(normal, sampleNormal);
-            float fWeight = fDP;
-
+            float3 diff = sampleWorldPosition - worldPosition;
+            float fDP = dot(diff, normal);
+            float fWeight = exp(abs(fDP + fPlaneD) * -1.0f);
+            
             radianceMean += aRadiance[int(fNumSamples)] * fWeight;
             fNumSamples += 1.0f;
             fTotalWeight += fWeight;
