@@ -226,17 +226,19 @@ Texture2D<float4> previousAmbientOcclusionTexture;
 [[vk::binding(0, 1)]]
 ConstantBuffer<UniformData> uniformData;
 
-[[vk::binding(1, 1)]]
-Texture2D<float4> blueNoiseTexture;
+[[vk::binding(1, 1)]] StructuredBuffer<VertexFormat> vertexBuffer;
+[[vk::binding(2, 1)]] StructuredBuffer<uint32_t> indexBuffer;
+[[vk::binding(3, 1)]] StructuredBuffer<Material> materialData;
+[[vk::binding(4, 1)]] StructuredBuffer<uint32_t> materialID;
+[[vk::binding(5, 1)]] StructuredBuffer<MeshRange> meshRanges;
 
-[[vk::binding(2, 1)]] StructuredBuffer<VertexFormat> vertexBuffer;
-[[vk::binding(3, 1)]] StructuredBuffer<uint32_t> indexBuffer;
-[[vk::binding(4, 1)]] StructuredBuffer<Material> materialData;
-[[vk::binding(5, 1)]] StructuredBuffer<uint32_t> materialID;
-[[vk::binding(6, 1)]] StructuredBuffer<MeshRange> meshRanges;
+[[vk::binding(6, 1)]] Texture2D<float4> blueNoiseTexture0;
+[[vk::binding(7, 1)]] Texture2D<float4> blueNoiseTexture1;
+[[vk::binding(8, 1)]] Texture2D<float4> blueNoiseTexture2;
+[[vk::binding(9, 1)]] Texture2D<float4> blueNoiseTexture3;
+[[vk::binding(10, 1)]] Texture2D<float4> blueNoiseTexture4;
 
-[[vk::binding(7, 1)]]
-ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
+[[vk::binding(11, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
 
 [shader("vertex")]
 VertexStageOutput VSMain(
@@ -318,7 +320,7 @@ void rayGen()
     int32_t iFrame = defaultUniformBuffer.miFrame;
 
     uint2 blueNoiseTextureSize;
-    blueNoiseTexture.GetDimensions(
+    blueNoiseTexture0.GetDimensions(
         blueNoiseTextureSize.x,
         blueNoiseTextureSize.y
     );
@@ -431,14 +433,37 @@ void rayGen()
         //blueNoiseScreenCoord.y = (blueNoiseScreenCoord.y + iSampleY) % blueNoiseTextureSize.y;
 #endif // #if 0
 
-        uint32_t iOffsetX = defaultUniformBuffer.miFrame % blueNoiseTextureSize.x;
-        uint32_t iOffsetY = (defaultUniformBuffer.miFrame / (blueNoiseTextureSize.x)) % blueNoiseTextureSize.x;
+        uint32_t iFrame = defaultUniformBuffer.miFrame % 5;
+
+        uint32_t iOffsetX = iFrame % blueNoiseTextureSize.x;
+        uint32_t iOffsetY = (iFrame / (blueNoiseTextureSize.x)) % blueNoiseTextureSize.x;
         blueNoiseScreenCoord = uint2(
             (rayIndex.x + iOffsetX) % blueNoiseTextureSize.x,
             (rayIndex.y + iOffsetY) % blueNoiseTextureSize.y
         );
 
-        float3 blueNoise = blueNoiseTexture[blueNoiseScreenCoord].xyz;
+        float3 blueNoise = float3(0.0f, 0.0f, 0.0f);
+        if (iFrame % 5 == 0)
+        {
+            blueNoise = blueNoiseTexture0[blueNoiseScreenCoord].xyz;
+        }
+        else if (iFrame % 5 == 1)
+        {
+            blueNoise = blueNoiseTexture1[blueNoiseScreenCoord].xyz;
+        }
+        else if (iFrame % 5 == 2)
+        {
+            blueNoise = blueNoiseTexture2[blueNoiseScreenCoord].xyz;
+        }
+        else if (iFrame % 5 == 3)
+        {
+            blueNoise = blueNoiseTexture3[blueNoiseScreenCoord].xyz;
+        }
+        else if (iFrame % 5 == 4)
+        {
+            blueNoise = blueNoiseTexture4[blueNoiseScreenCoord].xyz;
+        }
+
         Ray ray = uniformSampling(
             worldPosition.xyz,
             normal.xyz,
@@ -512,7 +537,7 @@ void rayGen()
         normal.xyz,
         float3(10.0f, 10.0f, 10.0f),
         uv,
-        max(sphericalHarmonicsCountOutput[rayIndex].x, 5.0f)
+        max(sphericalHarmonicsCountOutput[rayIndex].x * 2.0f, 5.0f)
     );
 
     decodedSphericalHarmonicsOutput[rayIndex] = float4(shOutput.xyz, 1.0f);
@@ -779,10 +804,26 @@ TemporalRestirResult temporalRestir(
         fRadianceDP * 
         fDistanceAttenuation * 
         fOneOverPDF;
-    
-    sphericalHarmonicsCountOutput[screenCoord].x = sphericalHarmonicsCountOutput[screenCoord].x + 1.0f;
-    float fMaxRayCount = 20.0f;
-    float fRayCount = min(sphericalHarmonicsCountOutput[screenCoord].x, fMaxRayCount);
+
+    float fSrcPct = 0.8f;
+    float fDstPct = 1.0f;
+    if (bTraceRay)
+    {
+        encodeToSphericalHarmonicCoefficients2(
+            candidateRadiance.xyz,
+            candidateRayDirection.xyz,
+            screenCoord,
+            prevSphericalHarmonicCoefficientTexture0[prevInputCoord],
+            prevSphericalHarmonicCoefficientTexture1[prevInputCoord],
+            prevSphericalHarmonicCoefficientTexture2[prevInputCoord],
+            fSrcPct,
+            fDstPct
+        );
+    }
+
+    sphericalHarmonicsCountOutput[screenCoord].x = sphericalHarmonicsCountOutput[screenCoord].x + 2.0f;
+    //float fMaxRayCount = 20.0f;
+    //float fRayCount = min(sphericalHarmonicsCountOutput[screenCoord].x, fMaxRayCount);
     
     // reservoir
     float fLuminance = computeLuminance(
@@ -819,59 +860,16 @@ TemporalRestirResult temporalRestir(
 
     if (bTraceRay)
     {
-        float fDstPct = 1.5f;
-        float fSrcPct = 0.7f;
-
-        float4 SHCoefficent0 = prevSphericalHarmonicCoefficientTexture0[prevInputCoord] * fSrcPct;
-        float4 SHCoefficent1 = prevSphericalHarmonicCoefficientTexture1[prevInputCoord] * fSrcPct;
-        float4 SHCoefficent2 = prevSphericalHarmonicCoefficientTexture2[prevInputCoord] * fSrcPct;
-
-        float4 afC = float4(
-            0.282095f,
-            0.488603f,
-            0.488603f,
-            0.488603f
+        encodeToSphericalHarmonicCoefficients2(
+            ret.mRadiance.xyz,
+            ret.mRayDirection.xyz,
+            screenCoord,
+            sphericalHarmonicCoefficientTexture0[screenCoord],
+            sphericalHarmonicCoefficientTexture1[screenCoord],
+            sphericalHarmonicCoefficientTexture2[screenCoord],
+            fSrcPct,
+            fDstPct
         );
-
-        float4 A = float4(
-            0.886227f,
-            1.023326f,
-            1.023326f,
-            1.023326f
-        );
-
-        // encode coefficients with direction
-        float4 coefficient = float4(
-            afC.x * A.x,
-            afC.y * ret.mRayDirection.y * A.y,
-            afC.z * ret.mRayDirection.z * A.z,
-            afC.w * ret.mRayDirection.x * A.w
-        );
-
-        // encode with radiance
-        float3 aResults[4];
-        aResults[0] = ret.mRadiance.xyz * coefficient.x * fDstPct;
-        aResults[1] = ret.mRadiance.xyz * coefficient.y * fDstPct;
-        aResults[2] = ret.mRadiance.xyz * coefficient.z * fDstPct;
-        aResults[3] = ret.mRadiance.xyz * coefficient.w * fDstPct;
-        SHCoefficent0.x += aResults[0].x;
-        SHCoefficent0.y += aResults[0].y;
-        SHCoefficent0.z += aResults[0].z;
-        SHCoefficent0.w += aResults[1].x;
-
-        SHCoefficent1.x += aResults[1].y;
-        SHCoefficent1.y += aResults[1].z;
-        SHCoefficent1.z += aResults[2].x;
-        SHCoefficent1.w += aResults[2].y;
-
-        SHCoefficent2.x += aResults[2].z;
-        SHCoefficent2.y += aResults[3].x;
-        SHCoefficent2.z += aResults[3].y;
-        SHCoefficent2.w += aResults[3].z;
-
-        sphericalHarmonicCoefficientTexture0[screenCoord] = SHCoefficent0;
-        sphericalHarmonicCoefficientTexture1[screenCoord] = SHCoefficent1;
-        sphericalHarmonicCoefficientTexture2[screenCoord] = SHCoefficent2;
     }
 
     ret.mIntersectionResult = intersectionInfo;
@@ -1193,27 +1191,28 @@ void encodeToSphericalHarmonicCoefficients2(
     in uint2 screenCoord,
     in float4 prevSphericalHarmonicsCoefficients0,
     in float4 prevSphericalHarmonicsCoefficients1,
-    in float4 prevSphericalHarmonicsCoefficients2
+    in float4 prevSphericalHarmonicsCoefficients2,
+    in float fSrcPct,
+    in float fDstPct
 )
 {
-
-    float4 SHCoefficent0 = prevSphericalHarmonicsCoefficients0;
-    float4 SHCoefficent1 = prevSphericalHarmonicsCoefficients1;
-    float4 SHCoefficent2 = prevSphericalHarmonicsCoefficients2;
+    float4 SHCoefficent0 = prevSphericalHarmonicsCoefficients0 * fSrcPct;
+    float4 SHCoefficent1 = prevSphericalHarmonicsCoefficients1 * fSrcPct;
+    float4 SHCoefficent2 = prevSphericalHarmonicsCoefficients2 * fSrcPct;
 
     float4 afC = float4(
         0.282095f,
         0.488603f,
         0.488603f,
         0.488603f
-    );
+        );
 
     float4 A = float4(
         0.886227f,
         1.023326f,
         1.023326f,
         1.023326f
-    );
+        );
 
     // encode coefficients with direction
     float4 coefficient = float4(
@@ -1221,15 +1220,14 @@ void encodeToSphericalHarmonicCoefficients2(
         afC.y * direction.y * A.y,
         afC.z * direction.z * A.z,
         afC.w * direction.x * A.w
-    );
+        );
 
     // encode with radiance
     float3 aResults[4];
-    aResults[0] = radiance.xyz * coefficient.x;
-    aResults[1] = radiance.xyz * coefficient.y;
-    aResults[2] = radiance.xyz * coefficient.z;
-    aResults[3] = radiance.xyz * coefficient.w;
-
+    aResults[0] = radiance.xyz * coefficient.x * fDstPct;
+    aResults[1] = radiance.xyz * coefficient.y * fDstPct;
+    aResults[2] = radiance.xyz * coefficient.z * fDstPct;
+    aResults[3] = radiance.xyz * coefficient.w * fDstPct;
     SHCoefficent0.x += aResults[0].x;
     SHCoefficent0.y += aResults[0].y;
     SHCoefficent0.z += aResults[0].z;
@@ -1596,7 +1594,7 @@ bool isDisoccluded(
 
     float fDP = max(dot(normal, prevNormal), 0.0f);
     float fLength = dot(worldPositionDiff, worldPositionDiff);
-    bool bDisoccluded = (fLength > 0.01f || /*fDP < 0.8f || */iMesh != iPrevMesh);
+    bool bDisoccluded = (fLength > 0.005f || /*fDP < 0.9f || */iMesh != iPrevMesh);
 
     return bDisoccluded;
 }

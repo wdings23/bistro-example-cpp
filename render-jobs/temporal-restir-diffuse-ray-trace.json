@@ -250,14 +250,6 @@
             "shader_stage" : "all",
             "usage": "uniform"
         },
-        {
-            "name": "blue noise texture",
-            "type": "texture2d",
-            "shader_stage": "fragment",
-            "format": "rgb8unorm",
-            "usage": "uniform",
-            "file_path": "D:\\projects\\free-blue-noise-textures\\512_512\\LDR_RGBA_0.png"
-        },
         { 
             "name" : "vertexBuffer",
             "type" : "buffer",
@@ -292,6 +284,46 @@
             "size" : 0,
             "shader_stage" : "ray trace",
             "usage": "read_write_storage"
+        },
+        {
+            "name": "blue noise texture 0",
+            "type": "texture2d",
+            "shader_stage": "fragment",
+            "format": "rgb8unorm",
+            "usage": "uniform",
+            "file_path": "D:\\projects\\free-blue-noise-textures\\256_256\\LDR_RGBA_1.png"
+        },
+        {
+            "name": "blue noise texture 1",
+            "type": "texture2d",
+            "shader_stage": "fragment",
+            "format": "rgb8unorm",
+            "usage": "uniform",
+            "file_path": "D:\\projects\\free-blue-noise-textures\\256_256\\LDR_RGBA_2.png"
+        },
+        {
+            "name": "blue noise texture 2",
+            "type": "texture2d",
+            "shader_stage": "fragment",
+            "format": "rgb8unorm",
+            "usage": "uniform",
+            "file_path": "D:\\projects\\free-blue-noise-textures\\256_256\\LDR_RGBA_3.png"
+        },
+        {
+            "name": "blue noise texture 3",
+            "type": "texture2d",
+            "shader_stage": "fragment",
+            "format": "rgb8unorm",
+            "usage": "uniform",
+            "file_path": "D:\\projects\\free-blue-noise-textures\\256_256\\LDR_RGBA_4.png"
+        },
+        {
+            "name": "blue noise texture 4",
+            "type": "texture2d",
+            "shader_stage": "fragment",
+            "format": "rgb8unorm",
+            "usage": "uniform",
+            "file_path": "D:\\projects\\free-blue-noise-textures\\256_256\\LDR_RGBA_5.png"
         }
     ],
     "BlendStates": [
