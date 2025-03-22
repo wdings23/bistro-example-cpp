@@ -109,13 +109,17 @@ struct OnScreenRadianceResult
 [[vk::binding(28, 0)]] Texture2D<float4> motionVectorTexture;
 [[vk::binding(29, 0)]] StructuredBuffer<IrradianceCacheEntry> irradianceCache;
 
-[[vk::binding(0, 1)]] Texture2D<float4> blueNoiseTexture;
-[[vk::binding(1, 1)]] StructuredBuffer<VertexFormat> vertexBuffer;
-[[vk::binding(2, 1)]] StructuredBuffer<uint32_t> indexBuffer;
-[[vk::binding(3, 1)]] StructuredBuffer<Material> materialData;
-[[vk::binding(4, 1)]] StructuredBuffer<uint32_t> materialID;
-[[vk::binding(5, 1)]] StructuredBuffer<MeshRange> meshRanges;
-[[vk::binding(6, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
+[[vk::binding(0, 1)]] StructuredBuffer<VertexFormat> vertexBuffer;
+[[vk::binding(1, 1)]] StructuredBuffer<uint32_t> indexBuffer;
+[[vk::binding(2, 1)]] StructuredBuffer<Material> materialData;
+[[vk::binding(3, 1)]] StructuredBuffer<uint32_t> materialID;
+[[vk::binding(4, 1)]] StructuredBuffer<MeshRange> meshRanges;
+[[vk::binding(5, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
+[[vk::binding(6, 1)]] Texture2D<float4> blueNoiseTexture0;
+[[vk::binding(7, 1)]] Texture2D<float4> blueNoiseTexture1;
+[[vk::binding(8, 1)]] Texture2D<float4> blueNoiseTexture2;
+[[vk::binding(9, 1)]] Texture2D<float4> blueNoiseTexture3;
+[[vk::binding(10, 1)]] Texture2D<float4> blueNoiseTexture4;
 
 [shader("vertex")]
 VertexStageOutput VSMain(
@@ -426,7 +430,7 @@ SpatialRestirResult spatialRestir(
     float3 normal = normalTexture[screenCoord].xyz;
 
     uint2 blueNoiseTextureSize;
-    blueNoiseTexture.GetDimensions(
+    blueNoiseTexture0.GetDimensions(
         blueNoiseTextureSize.x,
         blueNoiseTextureSize.y
     );
@@ -444,6 +448,7 @@ SpatialRestirResult spatialRestir(
     int2 blueNoiseScreenCoord;
     for(int32_t iSample = 0; iSample < iNumSamples; iSample++)
     {
+#if 0
         uint32_t iTileX = (iCurrIndex + uint32_t(iNumSamples)) % iNumTilesPerRow;
         uint32_t iTileY = ((iCurrIndex + uint32_t(iNumSamples)) / iNumTilesPerRow) % (iNumTilesPerRow * iNumTilesPerRow);
         uint32_t iTileOffsetX = (iCurrIndex + uint32_t(iNumSamples)) % iTileSize;
@@ -452,8 +457,37 @@ SpatialRestirResult spatialRestir(
         uint32_t iOffsetY = iTileOffsetY + iTileY * iTileSize;
         blueNoiseScreenCoord.x = (screenCoord.x + iOffsetX) % blueNoiseTextureSize.x;
         blueNoiseScreenCoord.y = (screenCoord.y + iOffsetY) % blueNoiseTextureSize.y;
+#endif // #if 0
 
-        float4 blueNoise = blueNoiseTexture[blueNoiseScreenCoord];
+        uint32_t iOffsetX = defaultUniformBuffer.miFrame % blueNoiseTextureSize.x;
+        uint32_t iOffsetY = (defaultUniformBuffer.miFrame / (blueNoiseTextureSize.x)) % blueNoiseTextureSize.x;
+        blueNoiseScreenCoord = uint2(
+            (screenCoord.x + iOffsetX) % blueNoiseTextureSize.x,
+            (screenCoord.y + iOffsetY) % blueNoiseTextureSize.y
+        );
+
+        uint32_t iFrame = defaultUniformBuffer.miFrame % 5;
+        float3 blueNoise = float3(0.0f, 0.0f, 0.0f);
+        if (iFrame % 5 == 0)
+        {
+            blueNoise = blueNoiseTexture0[blueNoiseScreenCoord].xyz;
+        }
+        else if (iFrame % 5 == 1)
+        {
+            blueNoise = blueNoiseTexture1[blueNoiseScreenCoord].xyz;
+        }
+        else if (iFrame % 5 == 2)
+        {
+            blueNoise = blueNoiseTexture2[blueNoiseScreenCoord].xyz;
+        }
+        else if (iFrame % 5 == 3)
+        {
+            blueNoise = blueNoiseTexture3[blueNoiseScreenCoord].xyz;
+        }
+        else if (iFrame % 5 == 4)
+        {
+            blueNoise = blueNoiseTexture4[blueNoiseScreenCoord].xyz;
+        }
 
         int2 sampleCoord = screenCoord + int2(
             int32_t((blueNoise.x - 0.5f) * fRadius), 
