@@ -406,8 +406,13 @@ void rayGen()
 
     if(fDisocclusion > 0.0f)
     {
-        result.mAmbientOcclusion = float4(0.0f, 0.0f, 0.0f, 0.0f);
-        sphericalHarmonicsCountOutput[rayIndex].x = 0.0f;
+        result.mAmbientOcclusion = float4(0.0f);
+        sphericalHarmonicsCountOutput[rayIndex] = float4(1.0f);
+        sphericalHarmonicCoefficientTexture0[rayIndex] = float4(0.0f);
+        sphericalHarmonicCoefficientTexture1[rayIndex] = float4(0.0f);
+        sphericalHarmonicCoefficientTexture2[rayIndex] = float4(0.0f);
+
+        debugTexture0[rayIndex] = float4(1.0f, 1.0f, 1.0f, 1.0f);
     }
 
     // center pixel sample
@@ -494,6 +499,7 @@ void rayGen()
         );
     }
 
+#if 0
     result = permutationRestir(
         result,
         uv,
@@ -507,6 +513,7 @@ void rayGen()
         textureSize,
         randomResult
     );
+#endif // #if 0
 
     result.mAmbientOcclusion.y += 1;
     if (result.mIntersectionResult.miHitTriangle != UINT32_MAX)
@@ -535,9 +542,9 @@ void rayGen()
 
     float3 shOutput = decodeFromSphericalHarmonicCoefficients(
         normal.xyz,
-        float3(10.0f, 10.0f, 10.0f),
+        result.mRadiance.xyz,
         uv,
-        max(sphericalHarmonicsCountOutput[rayIndex].x * 2.0f, 5.0f)
+        sphericalHarmonicsCountOutput[rayIndex].x
     );
 
     decodedSphericalHarmonicsOutput[rayIndex] = float4(shOutput.xyz, 1.0f);
@@ -805,26 +812,28 @@ TemporalRestirResult temporalRestir(
         fDistanceAttenuation * 
         fOneOverPDF;
 
-    float fSrcPct = 0.8f;
+    float fSrcPct = 1.0f;
     float fDstPct = 1.0f;
     if (bTraceRay)
     {
+        float4 prevSH0 = prevSphericalHarmonicCoefficientTexture0[prevInputCoord];
+        float4 prevSH1 = prevSphericalHarmonicCoefficientTexture1[prevInputCoord];
+        float4 prevSH2 = prevSphericalHarmonicCoefficientTexture2[prevInputCoord];
+        
         encodeToSphericalHarmonicCoefficients2(
             candidateRadiance.xyz,
             candidateRayDirection.xyz,
             screenCoord,
-            prevSphericalHarmonicCoefficientTexture0[prevInputCoord],
-            prevSphericalHarmonicCoefficientTexture1[prevInputCoord],
-            prevSphericalHarmonicCoefficientTexture2[prevInputCoord],
+            prevSH0,
+            prevSH1,
+            prevSH2,
             fSrcPct,
             fDstPct
         );
+
+        sphericalHarmonicsCountOutput[screenCoord] = sphericalHarmonicsCountOutput[screenCoord] + float4(1.0f);
     }
 
-    sphericalHarmonicsCountOutput[screenCoord].x = sphericalHarmonicsCountOutput[screenCoord].x + 2.0f;
-    //float fMaxRayCount = 20.0f;
-    //float fRayCount = min(sphericalHarmonicsCountOutput[screenCoord].x, fMaxRayCount);
-    
     // reservoir
     float fLuminance = computeLuminance(
         candidateRadiance.xyz
@@ -858,6 +867,7 @@ TemporalRestirResult temporalRestir(
         ret.mReservoir.z = fMaxTemporalReservoirSamples;
     }
 
+#if 0
     if (bTraceRay)
     {
         encodeToSphericalHarmonicCoefficients2(
@@ -870,7 +880,10 @@ TemporalRestirResult temporalRestir(
             fSrcPct,
             fDstPct
         );
+
+        sphericalHarmonicsCountOutput[screenCoord] = sphericalHarmonicsCountOutput[screenCoord] + float4(1.0f);
     }
+#endif // #if 0
 
     ret.mIntersectionResult = intersectionInfo;
     ret.mfNumValidSamples += fM * float(fLuminance > 0.0f);
@@ -1278,10 +1291,12 @@ float3 decodeFromSphericalHarmonicCoefficients(
     //}
     float fFactor = 1.0f;
 
-    aTotalCoefficients[0] = float3(SHCoefficent0.x, SHCoefficent0.y, SHCoefficent0.z) * fFactor;
-    aTotalCoefficients[1] = float3(SHCoefficent0.w, SHCoefficent1.x, SHCoefficent1.y) * fFactor;
-    aTotalCoefficients[2] = float3(SHCoefficent1.z, SHCoefficent1.w, SHCoefficent2.x) * fFactor;
-    aTotalCoefficients[3] = float3(SHCoefficent2.y, SHCoefficent2.z, SHCoefficent2.w) * fFactor;
+    float fOneOverRayCount = (4.0f * 3.14159f) / max(fRayCount, 1.0f);
+
+    aTotalCoefficients[0] = float3(SHCoefficent0.x, SHCoefficent0.y, SHCoefficent0.z) * fOneOverRayCount;
+    aTotalCoefficients[1] = float3(SHCoefficent0.w, SHCoefficent1.x, SHCoefficent1.y) * fOneOverRayCount;
+    aTotalCoefficients[2] = float3(SHCoefficent1.z, SHCoefficent1.w, SHCoefficent2.x) * fOneOverRayCount;
+    aTotalCoefficients[3] = float3(SHCoefficent2.y, SHCoefficent2.z, SHCoefficent2.w) * fOneOverRayCount;
 
     float fC1 = 0.42904276540489171563379376569857f;
     float fC2 = 0.51166335397324424423977581244463f;
@@ -1594,7 +1609,7 @@ bool isDisoccluded(
 
     float fDP = max(dot(normal, prevNormal), 0.0f);
     float fLength = dot(worldPositionDiff, worldPositionDiff);
-    bool bDisoccluded = (fLength > 0.005f || /*fDP < 0.9f || */iMesh != iPrevMesh);
+    bool bDisoccluded = (fLength > 0.0025f || /*fDP < 0.9f || */iMesh != iPrevMesh);
 
     return bDisoccluded;
 }
