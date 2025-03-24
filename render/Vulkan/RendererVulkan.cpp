@@ -1061,7 +1061,103 @@ namespace Render
             RenderDriver::Common::CImage* pGPUImage,
             std::vector<float>& afImageData)
         {
-            WTFASSERT(0, "Implement me");
+            uint32_t iDataSize = pGPUImage->getDescriptor().miWidth * pGPUImage->getDescriptor().miHeight * sizeof(float4);
+            uint32_t iImageWidth = pGPUImage->getDescriptor().miWidth;
+            uint32_t iImageHeight = pGPUImage->getDescriptor().miHeight;
+
+            if(mpAttachmentReadBackBuffer == nullptr)
+            {
+                mpAttachmentReadBackBuffer = std::make_unique<RenderDriver::Vulkan::CBuffer>();
+                RenderDriver::Common::BufferDescriptor desc;
+                desc.miSize = iDataSize;
+                desc.mFormat = RenderDriver::Common::Format::R32_FLOAT;
+                desc.mBufferUsage = RenderDriver::Common::BufferUsage(uint32_t(RenderDriver::Common::BufferUsage::TransferDest) | uint32_t(RenderDriver::Common::BufferUsage::TransferSrc));
+                mpAttachmentReadBackBuffer->create(
+                    desc,
+                    *mpDevice
+                );
+            }
+
+            if(mpImageReadBackCommandBuffer == nullptr)
+            {
+                mpImageReadBackCommandAllocator = std::make_unique<RenderDriver::Vulkan::CCommandAllocator>();
+                RenderDriver::Common::CommandAllocatorDescriptor commandAllocatorDesc = {};
+                commandAllocatorDesc.mType = RenderDriver::Common::CommandBufferType::Copy;
+                mpImageReadBackCommandAllocator->create(commandAllocatorDesc, *mpDevice);
+                mpImageReadBackCommandAllocator->setID("Image Read Back Command Allocator");
+
+                mpImageReadBackCommandBuffer = std::make_unique<RenderDriver::Vulkan::CCommandBuffer>();
+                RenderDriver::Common::CommandBufferDescriptor desc = {};
+                desc.mpCommandAllocator = mpImageReadBackCommandAllocator.get();
+                desc.mpPipelineState = nullptr;
+                desc.mType = RenderDriver::Common::CommandBufferType::Copy;
+                mpImageReadBackCommandBuffer->create(desc, *mpDevice);
+                mpImageReadBackCommandBuffer->setID("Image Read Back Command Buffer");
+            }
+
+            VkCommandBuffer* pNativeUploadCommandBuffer = static_cast<VkCommandBuffer*>(mpImageReadBackCommandBuffer->getNativeCommandList());
+            VkImage* pNativeImageSrc = static_cast<VkImage*>(pGPUImage->getNativeImage());
+            
+            VkBuffer* pNativeBufferDest = static_cast<VkBuffer*>(mpAttachmentReadBackBuffer->getNativeBuffer());
+            VkDevice* pNativeDevice = static_cast<VkDevice*>(mpDevice->getNativeDevice());
+            //VkDeviceMemory* pNativeMemorySrc = static_cast<VkDeviceMemory*>(static_cast<RenderDriver::Vulkan::CBuffer*>(mpAttachmentReadBackBuffer.get())->getNativeDeviceMemory());
+        
+            //mpImageReadBackCommandBuffer->reset();
+
+            VkCommandBufferBeginInfo beginInfo = {};
+            beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+            beginInfo.pNext = nullptr;
+            beginInfo.flags = 0;
+            beginInfo.pInheritanceInfo = nullptr;
+            vkBeginCommandBuffer(
+                *pNativeUploadCommandBuffer,
+                &beginInfo);
+
+            VkBufferCopy region;
+            region.srcOffset = 0;
+            region.dstOffset = 0;
+            region.size = iDataSize;
+
+            VkBufferImageCopy copyRegion = {};
+            //copyRegion.bufferRowLength = iImageWidth;
+            //copyRegion.bufferImageHeight = iImageHeight;
+            //copyRegion.bufferOffset = 0;
+            copyRegion.imageExtent.depth = 1;
+            copyRegion.imageExtent.width = iImageWidth;
+            copyRegion.imageExtent.height = iImageHeight;
+            copyRegion.imageOffset.x = 0;
+            copyRegion.imageOffset.y = 0;
+            copyRegion.imageOffset.z = 0;
+            copyRegion.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+            copyRegion.imageSubresource.baseArrayLayer = 0;
+            copyRegion.imageSubresource.layerCount = 1;
+            copyRegion.imageSubresource.mipLevel = 0;
+
+            VkImageLayout srcImageLayout = VK_IMAGE_LAYOUT_GENERAL;
+
+            vkCmdCopyImageToBuffer(
+                *pNativeUploadCommandBuffer,
+                *pNativeImageSrc,
+                srcImageLayout,
+                *pNativeBufferDest,
+                1,
+                &copyRegion
+            );
+
+            vkEndCommandBuffer(*pNativeUploadCommandBuffer);
+
+            mpCopyCommandQueue->execCommandBufferSynchronized(
+                *mpImageReadBackCommandBuffer,
+                *mpDevice,
+                true);
+
+            void* pImageData = mpAttachmentReadBackBuffer->getMemoryOpen(iDataSize);
+            afImageData.resize(iImageWidth * iImageHeight * 4);
+            memcpy(afImageData.data(), pImageData, iImageWidth * iImageHeight * sizeof(float4));
+
+            mpAttachmentReadBackBuffer->closeMemory();
+
+            mpImageReadBackCommandBuffer->reset();
         }
 
         std::mutex sMutex;

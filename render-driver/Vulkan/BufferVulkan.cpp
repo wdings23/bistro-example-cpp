@@ -256,6 +256,16 @@ namespace RenderDriver
         /*
         **
         */
+        void CBuffer::closeMemory()
+        {
+            vkUnmapMemory(
+                *mpNativeDevice, 
+                mNativeDeviceMemory);
+        }
+
+        /*
+        **
+        */
         void CBuffer::setID(std::string const& id)
         {
             RenderDriver::Common::CObject::setID(id);

@@ -2207,7 +2207,11 @@ namespace Render
                 int32_t iImageHeight = pImage->getDescriptor().miHeight;
                 std::string outputDir = std::string("/Users/dingwings/Downloads/debug-output-attachments/") + baseName + ".exr";
 #if defined(_MSC_VER)
-                outputDir = std::string("D:\\Users\\Dingwings\\Downloads\\debug-output-attachments\\") + baseName + ".exr";
+                std::ostringstream oss;
+                oss << "D:\\Downloads\\debug-output-attachments\\" << baseName << "-frame-" << miFrameIndex << ".exr";
+
+                //outputDir = std::string("D:\\Downloads\\debug-output-attachments\\") + baseName + ".exr";
+                outputDir = oss.str();
 #endif // _MSC_VER
                 char const* pError = nullptr;
                 int32_t iRet = SaveEXR(

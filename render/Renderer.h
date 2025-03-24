@@ -922,10 +922,15 @@ namespace Render
 
                 uint32_t miStartCaptureFrame;
 
-                void debugRenderJobOutputAttachments(Render::Common::CRenderJob* pRenderJob);
+                
             
             public:
                 uint64_t maiRenderJobFenceValues[RenderDriver::Common::CCommandQueue::Type::NumTypes];
+
+                void debugRenderJobOutputAttachments(Render::Common::CRenderJob* pRenderJob);
+                std::unique_ptr<RenderDriver::Common::CBuffer> mpAttachmentReadBackBuffer;
+                std::unique_ptr<RenderDriver::Common::CCommandBuffer> mpImageReadBackCommandBuffer;
+                std::unique_ptr<RenderDriver::Common::CCommandAllocator> mpImageReadBackCommandAllocator;
         };
 
     }   // Common

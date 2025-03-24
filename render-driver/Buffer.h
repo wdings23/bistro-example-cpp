@@ -69,6 +69,8 @@ namespace RenderDriver
 
             virtual void* getMemoryOpen(uint32_t iDataSize);
 
+            virtual void closeMemory() {};
+
         protected:
             BufferDescriptor                                    mDesc;
 
