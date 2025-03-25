@@ -772,8 +772,8 @@ TemporalRestirResult temporalRestir(
         fDistanceAttenuation * 
         fOneOverPDF;
 
-    float fSrcPct = 1.0f;
-    float fDstPct = 1.0f;
+    float fDstPct = 0.2f;
+    float fSrcPct = 1.0f - fDstPct;
     if (bTraceRay)
     {
         float4 prevSH0 = prevSphericalHarmonicCoefficientTexture0[prevInputCoord];
@@ -786,9 +786,6 @@ TemporalRestirResult temporalRestir(
             prevSH1 = float4(0.0f);
             prevSH2 = float4(0.0f);
         }
-
-        fSrcPct = 0.9f;
-        fDstPct = 0.1f;
 
         encodeToSphericalHarmonicCoefficients2(
             candidateRadiance.xyz,

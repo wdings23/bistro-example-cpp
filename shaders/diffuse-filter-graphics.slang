@@ -2,6 +2,11 @@
 
 #define PI 3.14159f
 
+struct ConstantBufferData
+{
+    uint32_t miRadius;
+};
+
 struct AxisInfo
 {
     float3 mTangent;
@@ -28,10 +33,16 @@ struct VertexStageOutput
 [[vk::binding(0, 0)]] Texture2D<float4> diffuseRadianceTexture;
 [[vk::binding(1, 0)]] Texture2D<float4> worldPositionTexture;
 [[vk::binding(2, 0)]] Texture2D<float4> normalTexture;
-[[vk::binding(3, 0)]] SamplerState textureSampler;
+[[vk::binding(3, 0)]] Texture2D<float4> ambientOcclusionTexture;
+[[vk::binding(4, 0)]] SamplerState textureSampler;
 
-[[vk::binding(0, 1)]] Texture2D<float4> blueNoiseTexture;
-[[vk::binding(1, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
+[[vk::binding(0, 1)]] Texture2D<float4> blueNoiseTexture0;
+[[vk::binding(1, 1)]] Texture2D<float4> blueNoiseTexture1;
+[[vk::binding(2, 1)]] Texture2D<float4> blueNoiseTexture2;
+[[vk::binding(3, 1)]] Texture2D<float4> blueNoiseTexture3;
+[[vk::binding(4, 1)]] Texture2D<float4> blueNoiseTexture4;
+[[vk::binding(5, 1)]] ConstantBuffer<ConstantBufferData> constantBuffer;
+[[vk::binding(6, 1)]] ConstantBuffer<DefaultUniformData> defaultUniformBuffer;
 
 [shader("vertex")]
 VertexStageOutput VSMain(
@@ -70,13 +81,13 @@ float4 blur2(
     float fTwoPI = 6.283185f;
     float kfPositionThreshold = 1.0f;
     float kfAngleThreshold = 0.9f;
-    float fRadius = 3.0f;
+    float fRadius = 8.0f;
 
-    uint2 textureSize;
-    blueNoiseTexture.GetDimensions(textureSize.x, textureSize.y);
-    uint32_t iTotalTextureSize = textureSize.x * textureSize.y;
+    uint2 blueNoiseTextureSize;
+    blueNoiseTexture0.GetDimensions(blueNoiseTextureSize.x, blueNoiseTextureSize.y);
+    uint32_t iTotalTextureSize = blueNoiseTextureSize.x * blueNoiseTextureSize.y;
     uint32_t iTileSize = 32u;
-    uint32_t iNumTilesPerRow = textureSize.x / iTileSize;
+    uint32_t iNumTilesPerRow = blueNoiseTextureSize.x / iTileSize;
     uint32_t iNumTotalTiles = iNumTilesPerRow * iNumTilesPerRow;
 
     float fOneOverScreenWidth = 1.0f / float(defaultUniformBuffer.miScreenWidth);
@@ -101,9 +112,9 @@ float4 blur2(
         textureSampler,
         texCoord);
     
-    float2 screenCoord = float2(
-        uint32_t(texCoord.x * float(defaultUniformBuffer.miScreenWidth)),
-        uint32_t(texCoord.y * float(defaultUniformBuffer.miScreenHeight))
+    int2 screenCoord = int2(
+        int32_t(texCoord.x * float(defaultUniformBuffer.miScreenWidth)),
+        int32_t(texCoord.y * float(defaultUniformBuffer.miScreenHeight))
     );
 
     float2 oneOverScreenDimension = float2(
@@ -111,85 +122,97 @@ float4 blur2(
         1.0f / float(defaultUniformBuffer.miScreenHeight)
     );
 
-    int32_t iNumSamples = 24;
-    float2 screenUV = texCoord.xy;
+    float fAO = ambientOcclusionTexture[screenCoord].x / ambientOcclusionTexture[screenCoord].y;
+
+    int32_t iRadius = constantBuffer.miRadius;
+    iRadius = max(int32_t((fAO) * float(iRadius)), 1);
+    ret = float4(0.0f);
     float fTotalWeight = 1.0f;
-    uint32_t iCurrIndex = uint32_t(defaultUniformBuffer.miFrame) * uint32_t(iNumSamples);
-    for(int32_t iSample = 0; iSample < iNumSamples; iSample++)
+    for (int32_t iY = -iRadius; iY <= iRadius; iY++)
     {
-        uint32_t iTileX = (iCurrIndex + uint32_t(iSample)) % iNumTilesPerRow;
-        uint32_t iTileY = ((iCurrIndex + uint32_t(iSample)) / iNumTilesPerRow) % (iNumTilesPerRow * iNumTilesPerRow);
-
-        uint32_t iTileOffsetX = (iCurrIndex + uint32_t(iSample)) % iTileSize;
-        uint32_t iTileOffsetY = ((iCurrIndex + uint32_t(iSample)) / iTileSize) % (iTileSize * iTileSize);
-
-        uint32_t iOffsetX = iTileOffsetX + iTileX * iTileSize;
-        uint32_t iOffsetY = iTileOffsetY + iTileY * iTileSize; 
-
-        screenCoord.x = (screenCoord.x + iOffsetX) % textureSize.x;
-        screenCoord.y = (screenCoord.y + iOffsetY) % textureSize.y;
-        var sampleBlueNoiseUV = float2(
-            float(screenCoord.x) / float(textureSize.x),
-            float(screenCoord.y) / float(textureSize.y) 
-        );
-
-        var blueNoise = blueNoiseTexture.Sample(
-            textureSampler,
-            sampleBlueNoiseUV
-        ).xyz;
-
-        let fTheta = blueNoise.x * 2.0f * PI;
-        let fCosTheta = cos(fTheta);
-        let fSinTheta = sin(fTheta);
-
-        float kfRadiusMultSpeed = 100.0f;
-
-        //float fCurrRadius = max(
-        //    fRadius * ((kfRadiusMultSpeed - min(ret.w, (kfRadiusMultSpeed - 1.0f))) / kfRadiusMultSpeed),
-        //    4.0f);
-
-        float fCurrRadius = fRadius;
-
-        float fSampleRadius = (fCurrRadius * max(blueNoise.y, 0.7f));
-        float2 offset = float2(
-            fCosTheta * fSampleRadius,
-            fSinTheta * fSampleRadius
-        );
-        float2 uvOffset = offset * oneOverScreenDimension;
-
-        float2 sampleUV = screenUV + uvOffset;
-        float4 sampleWorldPosition = worldPositionTexture.Sample(
-            textureSampler,
-            sampleUV
-        );
-        float3 sampleNormal = normalTexture.Sample(
-            textureSampler,
-            sampleUV
-        ).xyz;
-        float3 diff = sampleWorldPosition.xyz - worldPosition.xyz;
-
-        uint32_t iSampleMesh = uint32_t(sampleWorldPosition.w - fract(sampleWorldPosition.w));
-
-        float fPlaneDistance = abs(dot(diff, normal));
-        float fDP = dot(sampleNormal, normal);
-        if(/*length(diff) > kfPositionThreshold ||*/
-            abs(fDP) < kfAngleThreshold || 
-            iSampleMesh != iMesh)
+        for (int32_t iX = -iRadius; iX <= iRadius; iX++)
         {
-            continue;
+            int2 offset = int2(iX, iY);
+            int2 sampleScreenCoord = screenCoord + offset;
+
+            float3 radiance = diffuseRadianceTexture[sampleScreenCoord].xyz;
+            float3 sampleWorldPosition = worldPositionTexture[sampleScreenCoord].xyz;
+            float3 sampleNormal = normalTexture[sampleScreenCoord].xyz;
+            float3 diff = sampleWorldPosition - worldPosition.xyz;
+            float fDP = max(dot(sampleNormal, normal.xyz), 0.0f);
+            float fPlaneDistance = dot(diff, normal) + fPlaneD;
+            float fPlaneWeight = min(abs(1.0f / (fPlaneDistance + 0.001f)), 1.0f);
+
+            float fWeight = clamp(fPlaneWeight, 0.0f, 1.0f) * fDP;
+            ret.x += radiance.x * fWeight;
+            ret.y += radiance.y * fWeight;
+            ret.z += radiance.z * fWeight;
+            fTotalWeight += fWeight;
+        }
+    }
+
+#if 0
+    float fTotalWeight = 1.0f;
+    uint32_t iFrame = defaultUniformBuffer.miFrame;
+    int32_t iNumSamples = 32;
+    for (int32_t i = 0; i < iNumSamples; i++)
+    {
+        uint32_t iTotalFrames = defaultUniformBuffer.miFrame * iNumSamples + i;
+        int2 blueNoiseScreenCoord = int2(
+            (screenCoord.x + iTotalFrames) % blueNoiseTextureSize.x,
+            ((screenCoord.y + iTotalFrames) / blueNoiseTextureSize.x) % blueNoiseTextureSize.y
+        );
+
+        float3 blueNoise = float3(0.0f, 0.0f, 0.0f);
+        if (iFrame % 5 == 0)
+        {
+            blueNoise = blueNoiseTexture0[blueNoiseScreenCoord].xyz;
+        }
+        else if (iFrame % 5 == 1)
+        {
+            blueNoise = blueNoiseTexture1[blueNoiseScreenCoord].xyz;
+        }
+        else if (iFrame % 5 == 2)
+        {
+            blueNoise = blueNoiseTexture2[blueNoiseScreenCoord].xyz;
+        }
+        else if (iFrame % 5 == 3)
+        {
+            blueNoise = blueNoiseTexture3[blueNoiseScreenCoord].xyz;
+        }
+        else if (iFrame % 5 == 4)
+        {
+            blueNoise = blueNoiseTexture4[blueNoiseScreenCoord].xyz;
         }
 
-        float3 radiance = diffuseRadianceTexture.Sample(
-            textureSampler,
-            sampleUV  
-        ).xyz;
-        
-        float fWeight = 1.0f; 
+        float fCurrRadius = max(blueNoise.y * fRadius, 1.0f); 
+
+        float fTheta = blueNoise.x * 2.0f * PI;
+        float fSinTheta = sin(fTheta);
+        float fCosTheta = cos(fTheta);
+
+        int2 offset = int2(
+            int32_t(fCosTheta * fCurrRadius),
+            int32_t(fSinTheta * fCurrRadius)
+        );
+
+        int2 sampleScreenCoord = screenCoord + offset;
+
+        float3 radiance = diffuseRadianceTexture[sampleScreenCoord].xyz;
+        float3 sampleWorldPosition = worldPositionTexture[sampleScreenCoord].xyz;
+        float3 sampleNormal = normalTexture[sampleScreenCoord].xyz;
+        float3 diff = sampleWorldPosition - worldPosition.xyz;
+        float fDP = max(dot(sampleNormal, normal.xyz), 0.0f);
+        float fPlaneDistance = dot(diff, normal) + fPlaneD;
+        float fPlaneWeight = min(abs(1.0f / (fPlaneDistance + 0.001f)), 1.0f);
+
+        float fWeight = clamp(fPlaneWeight, 0.0f, 1.0f) * fDP;
         ret.x += radiance.x * fWeight;
         ret.y += radiance.y * fWeight;
         ret.z += radiance.z * fWeight;
         fTotalWeight += fWeight;
     }
+#endif // #if 0
 
     ret.x /= fTotalWeight;
     ret.y /= fTotalWeight;

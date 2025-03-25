@@ -182,7 +182,7 @@
             "ConstantBuffer": [ 
                 {
                     "name": "step",
-                    "data": 2,
+                    "data": 1,
                     "data type": "int"
                 }
             ]
@@ -195,7 +195,7 @@
             "ConstantBuffer": [ 
                 {
                     "name": "step",
-                    "data": 1,
+                    "data": 2,
                     "data type": "int"
                 }
             ]
@@ -269,7 +269,27 @@
             "Name": "Diffuse Filter Graphics",
             "Pipeline": "diffuse-filter-graphics.json",
             "Type": "Graphics",
-            "PassType": "Full Triangle"
+            "PassType": "Full Triangle",
+            "ConstantBuffer": [ 
+                {
+                    "name": "radius",
+                    "data": 8,
+                    "data type": "int"
+                }
+            ]
+        },
+        {
+            "Name": "Diffuse Filter 1 Graphics",
+            "Pipeline": "diffuse-filter-1-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle",
+            "ConstantBuffer": [ 
+                {
+                    "name": "radius",
+                    "data": 5,
+                    "data type": "int"
+                }
+            ]
         },
         {
             "Name": "Build Irradiance Cache Ray Trace",

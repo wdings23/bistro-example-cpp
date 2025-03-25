@@ -35,9 +35,9 @@
         },
 
         {
-            "Name" : "Decoded Spherical Harmonics Output",
+            "Name" : "Filtered Output",
             "Type": "TextureInput",
-            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
+            "ParentJobName": "Diffuse Filter Graphics"
         },
         {
             "Name" : "World Position Output",

@@ -16,9 +16,9 @@
             "ParentJobName": "Temporal Restir Diffuse Ray Trace"
         },
         {
-            "Name" : "TAA Output",
+            "Name" : "Filtered Output",
             "Type": "TextureInput",
-            "ParentJobName": "TAA Resolve Graphics"
+            "ParentJobName": "Diffuse Filter 1 Graphics"
         }
     ],
     "ShaderResources": [
