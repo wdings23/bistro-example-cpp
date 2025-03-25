@@ -12,9 +12,9 @@
 
 
         {
-            "Name" : "Diffuse SVG Filter Radiance 2 Output",
+            "Name" : "Filtered Output",
             "Type": "TextureInput",
-            "ParentJobName": "Diffuse SVG Filter 2 Graphics"
+            "ParentJobName": "Diffuse Filter 1 Graphics"
         },
         {
             "Name" : "Specular SVG Filter Radiance 1 Output",

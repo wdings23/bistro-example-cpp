@@ -125,7 +125,7 @@ float4 blur2(
     float fAO = ambientOcclusionTexture[screenCoord].x / ambientOcclusionTexture[screenCoord].y;
 
     int32_t iRadius = constantBuffer.miRadius;
-    iRadius = max(int32_t((fAO) * float(iRadius)), 1);
+    iRadius = max(int32_t((fAO) * float(iRadius)), 2);
     ret = float4(0.0f);
     float fTotalWeight = 1.0f;
     for (int32_t iY = -iRadius; iY <= iRadius; iY++)

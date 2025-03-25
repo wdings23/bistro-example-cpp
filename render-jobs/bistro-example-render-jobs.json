@@ -273,7 +273,7 @@
             "ConstantBuffer": [ 
                 {
                     "name": "radius",
-                    "data": 8,
+                    "data": 10,
                     "data type": "int"
                 }
             ]
@@ -286,7 +286,7 @@
             "ConstantBuffer": [ 
                 {
                     "name": "radius",
-                    "data": 5,
+                    "data": 6,
                     "data type": "int"
                 }
             ]
