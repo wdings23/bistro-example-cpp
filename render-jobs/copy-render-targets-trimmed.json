@@ -1,0 +1,277 @@
+{
+    "Type": "Copy",
+    "PassType": "Copy",
+    "Attachments": [
+        {
+            "Name": "Previous World Position Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Deferred Indirect Graphics",
+            "ParentName": "World Position Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Normal Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Deferred Indirect Graphics",
+            "ParentName": "Normal Output",
+            "Format": "rgba16float"
+        },
+        {
+            "Name": "Previous Motion Vector Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Deferred Indirect Graphics",
+            "ParentName": "Motion Vector Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Diffuse Sky Light Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Atmosphere Graphics",
+            "ParentName": "Diffuse Sky Light Output",
+            "Format": "rgba32float",
+            "ScaleWidth": 0.25,
+            "ScaleHeight": 0.25
+        },
+        {
+            "Name": "Previous Sky Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Atmosphere Graphics",
+            "ParentName": "Sky Output",
+            "Format": "rgba32float",
+            "ScaleWidth": 0.25,
+            "ScaleHeight": 0.25
+        },
+        {
+            "Name": "Previous Sun Light Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Atmosphere Graphics",
+            "ParentName": "Sun Light Output",
+            "Format": "rgba32float",
+            "ScaleWidth": 0.25,
+            "ScaleHeight": 0.25
+        },
+        
+
+        {
+            "Name": "Previous Temporal Radiance Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace",
+            "ParentName": "Temporal Restir Radiance Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Temporal Reservoir Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace",
+            "ParentName": "Temporal Restir Reservoir Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Temporal Hit Position Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace",
+            "ParentName": "Temporal Restir Hit Position Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Temporal Hit Normal Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace",
+            "ParentName": "Temporal Restir Hit Normal Output",
+            "Format": "rgba32float"
+        },
+
+        {
+            "Name": "Previous Ambient Occlusion Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace",
+            "ParentName": "Ambient Occlusion Output",
+            "Format": "rgba32float"
+        },
+
+        {
+            "Name": "Previous Spherical Harmonics 0 Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace",
+            "ParentName": "Spherical Harmonics 0 Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Spherical Harmonics 1 Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace",
+            "ParentName": "Spherical Harmonics 1 Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Spherical Harmonics 2 Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace",
+            "ParentName": "Spherical Harmonics 2 Output",
+            "Format": "rgba32float"
+        },
+
+        {
+            "Name": "Previous Temporal Accumulation Diffuse",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Accumulation Graphics",
+            "ParentName": "Diffuse Accumulated Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Temporal Accumulation Emissive",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Accumulation Graphics",
+            "ParentName": "Emissive Accumulated Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Temporal Accumulation Specular",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Accumulation Graphics",
+            "ParentName": "Specular Accumulated Output",
+            "Format": "rgba32float"
+        },
+
+
+        {
+            "Name": "Previous TAA Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "TAA Resolve Graphics",
+            "ParentName": "TAA Output",
+            "Format": "rgba32float"
+        },
+        
+        {
+            "Name": "Previous Emissive Temporal Restir Radiance Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Emissive Graphics",
+            "ParentName": "Emissive Temporal Restir Radiance Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Emissive Temporal Restir Reservoir Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Emissive Graphics",
+            "ParentName": "Emissive Temporal Restir Reservoir Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Emissive Temporal Restir Hit Position Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Emissive Graphics",
+            "ParentName": "Emissive Temporal Restir Hit Position Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Emissive Temporal Restir Hit Normal Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Emissive Graphics",
+            "ParentName": "Emissive Temporal Restir Hit Normal Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Emissive Spherical Harmonics 0 Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Emissive Graphics",
+            "ParentName": "Emissive Spherical Harmonics 0 Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Emissive Spherical Harmonics 1 Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Emissive Graphics",
+            "ParentName": "Emissive Spherical Harmonics 1 Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Emissive Spherical Harmonics 2 Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Temporal Restir Emissive Graphics",
+            "ParentName": "Emissive Spherical Harmonics 2 Output",
+            "Format": "rgba32float"
+        },
+
+        {
+            "Name": "Previous Specular Temporal Restir Radiance Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Specular Temporal Restir Ray Trace",
+            "ParentName": "Specular Temporal Restir Radiance Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Specular Temporal Restir Reservoir Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Specular Temporal Restir Ray Trace",
+            "ParentName": "Specular Temporal Restir Reservoir Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Specular Temporal Restir Hit Position Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Specular Temporal Restir Ray Trace",
+            "ParentName": "Specular Temporal Restir Hit Position Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Specular Temporal Restir Hit Normal Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Specular Temporal Restir Ray Trace",
+            "ParentName": "Specular Temporal Restir Hit Normal Output",
+            "Format": "rgba32float"
+        },
+
+        {
+            "Name": "Previous Specular Spherical Harmonics 0 Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Specular Temporal Restir Ray Trace",
+            "ParentName": "Specular Spherical Harmonics 0 Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Specular Spherical Harmonics 1 Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Specular Temporal Restir Ray Trace",
+            "ParentName": "Specular Spherical Harmonics 1 Output",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Specular Spherical Harmonics 2 Output",
+            "Type": "TextureOutput",
+            "ParentJobName": "Specular Temporal Restir Ray Trace",
+            "ParentName": "Specular Spherical Harmonics 2 Output",
+            "Format": "rgba32float"
+        },
+
+        {
+            "Name": "Previous Normal Composite Output",
+            "Type": "TextureOutput",
+            "ParentName" : "Normal Composite Output",
+            "ParentJobName": "Normal Composite Graphics",
+            "Format": "rgba32float"
+        },
+
+
+        {
+            "Name": "Previous Diffuse Filtered Output",
+            "Type": "TextureOutput",
+            "ParentName" : "Filtered Diffuse Output",
+            "ParentJobName": "Radiance Filter 1 Graphics",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Emissive Filtered Output",
+            "Type": "TextureOutput",
+            "ParentName" : "Filtered Emissive Output",
+            "ParentJobName": "Radiance Filter 1 Graphics",
+            "Format": "rgba32float"
+        },
+        {
+            "Name": "Previous Specular Filtered Output",
+            "Type": "TextureOutput",
+            "ParentName" : "Filtered Specular Output",
+            "ParentJobName": "Radiance Filter 1 Graphics",
+            "Format": "rgba32float"
+        }
+    ]
+}

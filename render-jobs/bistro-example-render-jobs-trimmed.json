@@ -1,0 +1,191 @@
+{
+    "Jobs" :
+    [
+        {
+            "Name": "Mesh Culling Compute",
+            "Pipeline": "mesh-culling-compute.json",
+            "Type": "Compute",
+            "PassType": "Compute",
+            "Dispatch": [10, 1, 1]
+        },
+        {
+            "Name": "Atmosphere Graphics",
+            "Pipeline": "atmosphere.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Deferred Indirect Graphics",
+            "Pipeline": "deferred-indirect.json",
+            "Type": "Graphics",
+            "PassType": "Draw Meshes"
+        },
+        {
+            "Name": "Down Rez Depth Gather Graphics",
+            "Pipeline": "down-rez-depth-gather.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Down Rez Depth 1 Graphics",
+            "Pipeline": "down-rez-depth-1.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Down Rez Depth 2 Graphics",
+            "Pipeline": "down-rez-depth-2.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Down Rez Depth 3 Graphics",
+            "Pipeline": "down-rez-depth-3.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Down Rez Depth 4 Graphics",
+            "Pipeline": "down-rez-depth-4.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Down Rez Depth 5 Graphics",
+            "Pipeline": "down-rez-depth-5.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Down Rez Depth 6 Graphics",
+            "Pipeline": "down-rez-depth-6.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Down Rez Depth 7 Graphics",
+            "Pipeline": "down-rez-depth-7.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Secondary Mesh Culling Compute",
+            "Pipeline": "secondary-mesh-culling-compute.json",
+            "Type": "Compute",
+            "PassType": "Compute",
+            "Dispatch": [10, 1, 1]
+        },
+        {
+            "Name": "Secondary Deferred Indirect Graphics",
+            "Pipeline": "secondary-deferred-indirect-graphics.json",
+            "Type": "Compute",
+            "PassType": "Compute",
+            "Dispatch": [10, 1, 1]
+        },
+        {
+            "Name": "Normal Composite Graphics",
+            "Pipeline": "normal-composite-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Ray Traced Shadow",
+            "Pipeline": "ray-traced-shadow.json",
+            "Type": "Ray Trace",
+            "PassType": "Ray Trace"
+        },
+        {
+            "Name": "Texture Page Queue Compute",
+            "Pipeline": "texture-page-queue-compute.json",
+            "Type": "Compute",
+            "PassType": "Compute",
+            "Dispatch": [8, 1, 1]
+        },
+        {
+            "Name": "Texture Atlas Graphics",
+            "Pipeline": "texture-atlas-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Temporal Restir Diffuse Ray Trace",
+            "Pipeline": "temporal-restir-diffuse-ray-trace.json",
+            "Type": "Ray Trace",
+            "PassType": "Ray Trace"
+        },
+        {
+            "Name": "Temporal Restir Emissive Graphics",
+            "Pipeline": "temporal-restir-emissive-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Specular Temporal Restir Ray Trace",
+            "Pipeline": "specular-temporal-restir-ray-trace.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Radiance Filter Graphics",
+            "Pipeline": "radiance-filter-0-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle",
+            "ConstantBuffer": [ 
+                {
+                    "name": "radius",
+                    "data": 10,
+                    "data type": "int"
+                }
+            ]
+        },
+        {
+            "Name": "Temporal Accumulation Graphics",
+            "Pipeline": "temporal-accumulation-trimmed-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Radiance Filter 1 Graphics",
+            "Pipeline": "radiance-filter-1-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle",
+            "ConstantBuffer": [ 
+                {
+                    "name": "radius",
+                    "data": 6,
+                    "data type": "int"
+                }
+            ]
+        },
+        {
+            "Name": "Light Composite Graphics",
+            "Pipeline": "light-composite-trimmed-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Build Irradiance Cache Ray Trace",
+            "Pipeline": "build-irradiance-cache.json",
+            "Type": "Ray Trace",
+            "PassType": "Ray Trace"
+        },
+        {
+            "Name": "TAA Resolve Graphics",
+            "Pipeline": "taa-resolve-graphics.json",
+            "Type": "Graphics",
+            "PassType": "Full Triangle"
+        },
+        {
+            "Name": "Swap Chain Graphics",
+            "Pipeline": "swap-chain-bistro-example.json",
+            "Type": "Graphics",
+            "PassType": "Swap Chain"
+        },
+        {
+            "Name": "Copy Render Targets",
+            "Pipeline": "copy-render-targets-trimmed.json",
+            "Type": "Copy",
+            "PassType": "Copy"
+        }
+    ]
+}

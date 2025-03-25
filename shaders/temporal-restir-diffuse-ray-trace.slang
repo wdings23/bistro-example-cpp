@@ -499,10 +499,6 @@ void rayGen()
     );
 
     result.mAmbientOcclusion.y += 1;
-    if (result.mIntersectionResult.miHitTriangle != UINT32_MAX)
-    {
-        result.mAmbientOcclusion.x += 1;
-    }
     result.mReservoir.w = clamp(result.mReservoir.x / max(result.mReservoir.z * result.mReservoir.y, 0.001f), 0.0f, 1.0f);
 
     float fReservoirWeight = (result.mReservoir.z <= 3.0f) ? 1.0f : result.mReservoir.w;
@@ -643,7 +639,7 @@ TemporalRestirResult temporalRestir(
 
             intersectionInfo.miHitTriangle = uint32_t(payload.mOutput.y);
             intersectionInfo.mBarycentricCoordinate = payload.mBarycentricCoord.xyz;
-            if(payload.mOutput.x <= 2.0f)
+            if(payload.mOutput.x <= 1.0f)
             {
                 ret.mAmbientOcclusion.x += 1.0f;
             }

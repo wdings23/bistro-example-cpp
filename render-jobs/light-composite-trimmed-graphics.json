@@ -1,0 +1,87 @@
+{
+    "Type": "Graphics",
+    "PassType": "Full Triangle",
+    "Shader": "lighting-composite-graphics.shader",
+    "Attachments": [
+        {
+            "Name" : "Light Composite Radiance Output",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
+        },
+
+
+
+        {
+            "Name" : "Filtered Diffuse Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Radiance Filter 1 Graphics"
+        },
+        {
+            "Name" : "Filtered Specular Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Radiance Filter 1 Graphics"
+        },
+        {
+            "Name" : "Filtered Emissive Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Radiance Filter 1 Graphics"
+        },
+        {
+            "Name" : "Direct Sun Light Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Ray Traced Shadow"
+        },
+        {
+            "Name" : "Sky Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Atmosphere Graphics"
+        },
+        {
+            "Name" : "Albedo Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Texture Atlas Graphics"
+        },
+        {
+            "Name": "Texture Coordinate Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name": "Temporal Restir Reservoir Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
+        },
+        {
+            "Name": "Ambient Occlusion Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
+        },
+        {
+            "Name" : "Specular Temporal Restir Radiance Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Specular Temporal Restir Ray Trace"
+        }
+
+    ],
+    "ShaderResources": [   
+        
+    ],
+    "BlendStates": [
+        {
+            "Enabled": "False"
+        }
+    ],
+    "DepthStencilState":
+    {
+        "DepthEnable": "False",
+        "DepthWriteMask": "One",
+        "DepthFunc": "LessEqual",
+        "StencilEnable": "False"
+    },
+    "RasterState":
+    {
+        "FillMode": "Solid",
+        "CullMode": "None",
+        "FrontFace": "CounterClockwise"
+    }
+}

@@ -33,7 +33,7 @@ struct VertexStageOutput
 [[vk::binding(5, 0)]] Texture2D<float4> albedoTexture;
 [[vk::binding(6, 0)]] Texture2D<float4> texCoordTexture;
 [[vk::binding(7, 0)]] Texture2D<float4> reservoirTexture;
-[[vk::binding(8, 0)]] Texture2D<float> ambientOcclusionTexture;
+[[vk::binding(8, 0)]] Texture2D<float4> ambientOcclusionTexture;
 
 [[vk::binding(9, 0)]] Texture2D<float4> currSpecularRadianceTexture;
 
@@ -76,7 +76,7 @@ float4 PSMain(
     float fAO = ambientOcclusionTexture.Sample(
         sampler,
         texCoord
-    );
+    ).z;
 
     float3 ret = float3(0.0f, 0.0f, 0.0f);
     if (sampleTexCoord.w <= 0.0f)

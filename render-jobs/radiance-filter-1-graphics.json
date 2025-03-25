@@ -1,0 +1,114 @@
+{
+    "Type": "Graphics",
+    "PassType": "Full Triangle",
+    "Shader": "radiance-filter-graphics.shader",
+    "Attachments": [
+        {
+            "Name" : "Filtered Diffuse Output",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
+        },
+        {
+            "Name" : "Filtered Emissive Output",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
+        },
+        {
+            "Name" : "Filtered Specular Output",
+            "Type": "TextureOutput",
+            "Format": "rgba32float"
+        },
+
+        {
+            "Name" : "Diffuse Accumulated Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Temporal Accumulation Graphics"
+        },
+        {
+            "Name" : "Emissive Accumulated Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Temporal Accumulation Graphics"
+        },
+        {
+            "Name" : "Specular Accumulated Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Temporal Accumulation Graphics"
+        },
+        
+        {
+            "Name" : "World Position Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Deferred Indirect Graphics"
+        },
+        {
+            "Name" : "Normal Composite Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Normal Composite Graphics"
+        },
+        {
+            "Name" : "Ambient Occlusion Output",
+            "Type": "TextureInput",
+            "ParentJobName": "Temporal Restir Diffuse Ray Trace"
+        }
+    ],
+    "ShaderResources": [   
+        {
+            "name": "blue noise texture 0",
+            "type": "texture2d",
+            "shader_stage": "fragment",
+            "format": "rgb8unorm",
+            "usage": "uniform",
+            "file_path": "D:\\projects\\free-blue-noise-textures\\256_256\\LDR_RGBA_1.png"
+        },
+        {
+            "name": "blue noise texture 1",
+            "type": "texture2d",
+            "shader_stage": "fragment",
+            "format": "rgb8unorm",
+            "usage": "uniform",
+            "file_path": "D:\\projects\\free-blue-noise-textures\\256_256\\LDR_RGBA_2.png"
+        },
+        {
+            "name": "blue noise texture 2",
+            "type": "texture2d",
+            "shader_stage": "fragment",
+            "format": "rgb8unorm",
+            "usage": "uniform",
+            "file_path": "D:\\projects\\free-blue-noise-textures\\256_256\\LDR_RGBA_3.png"
+        },
+        {
+            "name": "blue noise texture 3",
+            "type": "texture2d",
+            "shader_stage": "fragment",
+            "format": "rgb8unorm",
+            "usage": "uniform",
+            "file_path": "D:\\projects\\free-blue-noise-textures\\256_256\\LDR_RGBA_4.png"
+        },
+        {
+            "name": "blue noise texture 4",
+            "type": "texture2d",
+            "shader_stage": "fragment",
+            "format": "rgb8unorm",
+            "usage": "uniform",
+            "file_path": "D:\\projects\\free-blue-noise-textures\\256_256\\LDR_RGBA_5.png"
+        }
+    ],
+    "BlendStates": [
+        {
+            "Enabled": "False"
+        }
+    ],
+    "DepthStencilState":
+    {
+        "DepthEnable": "False",
+        "DepthWriteMask": "One",
+        "DepthFunc": "LessEqual",
+        "StencilEnable": "False"
+    },
+    "RasterState":
+    {
+        "FillMode": "Solid",
+        "CullMode": "None",
+        "FrontFace": "CounterClockwise"
+    }
+}
