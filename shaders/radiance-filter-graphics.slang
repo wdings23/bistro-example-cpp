@@ -24,6 +24,7 @@ struct PSOutput
     float4 mDiffuseOutput : SV_TARGET0;
     float4 mEmissiveOutput : SV_TARGET1;
     float4 mSpecularOutput : SV_TARGET2;
+    float4 mAmbientOcclusionOutput : SV_TARGET3;
 };
 
 struct VertexStageOutput
@@ -37,6 +38,7 @@ struct BlurOutput
     float3                          mDiffuseRadiance;
     float3                          mEmissiveRadiance;
     float3                          mSpecularRadiance;
+    float                           mfAmbientOcclusion;
 };
 
 [[vk::binding(0, 0)]] Texture2D<float4> diffuseRadianceTexture;
@@ -83,6 +85,7 @@ PSOutput PSMain(VertexStageOutput in)
     out.mDiffuseOutput = float4(blurOutput.mDiffuseRadiance.xyz, 1.0f);
     out.mEmissiveOutput = float4(blurOutput.mEmissiveRadiance.xyz, 1.0f);
     out.mSpecularOutput = float4(blurOutput.mSpecularRadiance.xyz, 1.0f);
+    out.mAmbientOcclusionOutput = float4(blurOutput.mfAmbientOcclusion, blurOutput.mfAmbientOcclusion, blurOutput.mfAmbientOcclusion, 1.0f);
 
     return out;
 }
@@ -127,6 +130,7 @@ BlurOutput blur2(
     ret.mDiffuseRadiance = float3(0.0f);
     ret.mEmissiveRadiance = float3(0.0f);
     ret.mSpecularRadiance = float3(0.0f);
+    ret.mfAmbientOcclusion = 0.0f;
 
     int2 screenCoord = int2(
         int32_t(texCoord.x * float(defaultUniformBuffer.miScreenWidth)),
@@ -143,6 +147,7 @@ BlurOutput blur2(
     int32_t iRadius = constantBuffer.miRadius;
     iRadius = max(int32_t((fAO) * float(iRadius)), 3);
     float fTotalWeight = 1.0f;
+    float fTotalAOWeight = 0.0f;
     for (int32_t iY = -iRadius; iY <= iRadius; iY++)
     {
         for (int32_t iX = -iRadius; iX <= iRadius; iX++)
@@ -165,6 +170,14 @@ BlurOutput blur2(
             ret.mDiffuseRadiance += diffuseRadiance * fWeight;
             ret.mEmissiveRadiance += emissiveRadiance * fWeight;
             ret.mSpecularRadiance += specularRadiance * fWeight;
+
+            if (iX >= -2 && iX <= 2 && iY >= -2 && iY <= 2)
+            {
+                fAO = ambientOcclusionTexture[sampleScreenCoord].x / ambientOcclusionTexture[sampleScreenCoord].y;
+                ret.mfAmbientOcclusion += (1.0f - fAO) * fWeight;
+                fTotalAOWeight += fWeight;
+            }
+
             fTotalWeight += fWeight;
         }
     }
@@ -173,6 +186,8 @@ BlurOutput blur2(
     ret.mDiffuseRadiance *= fOneOverTotalWeight;
     ret.mEmissiveRadiance *= fOneOverTotalWeight;
     ret.mSpecularRadiance *= fOneOverTotalWeight;
+
+    ret.mfAmbientOcclusion /= fTotalAOWeight;
 
     return ret;
 }

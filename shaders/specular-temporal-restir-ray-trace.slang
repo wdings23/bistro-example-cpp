@@ -441,7 +441,7 @@ void rayGen()
     float fDstPct = 0.2f;
     float fSrcPct = 1.0f - fDstPct;
     encodeToSphericalHarmonicCoefficients2(
-        radianceOutput[rayIndex].xyz * 10.0f,
+        radianceOutput[rayIndex].xyz,
         normalize(result.mHitPosition.xyz - worldPosition.xyz),
         rayIndex,
         prevSH0,
